@@ -1,25 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+
+import { Box, Flex, Text } from "@blend-ui/core";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      <Flex justifyContent="center" alignItems="center" minHeight="100vh">
+        <Box width="200px" p={30} border="2px solid" borderRadius={4}>
+          <Text textAlign="center" textStyle="h3">
+            Center this
+          </Text>
+        </Box>
+      </Flex>
+    </React.Fragment>
   );
 }
 
