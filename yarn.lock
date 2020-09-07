@@ -1243,21 +1243,21 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
-"@blend-ui/core@0.1.14-alpha.0":
-  version "0.1.14-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-0.1.14-alpha.0.tgz#e242ecf8ac6b6a8eb8856a86f8b52eb6f6767189"
-  integrity sha512-qImc1kTytr1Fj4NwGKH+Mr0uek0DGPxxalGE9STSooYALlwEAOxu0VETAi04aiRjOZPNu8zmIDIhVk/IrRHRSA==
+"@blend-ui/core@0.1.16-alpha.0":
+  version "0.1.16-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-0.1.16-alpha.0.tgz#13d84a812aedd8fa919dadbdf067ffc655c72a0d"
+  integrity sha512-2L9Iz8CsGofy4S+DXIVe6U/JHiBH3ANNfaY/h/PEm8dqAHX8Q2LUG9yjvukf9ecmkgreLoYQhsMKh51eOz3Cdg==
   dependencies:
-    "@blend-ui/icons" "^0.1.14-alpha.0"
+    "@blend-ui/icons" "^0.1.16-alpha.0"
     "@styled-system/theme-get" "^5.1.2"
     react "^16.13.1"
     react-dom "^16.13.1"
     styled-components "^5.1.1"
 
-"@blend-ui/icons@^0.1.14-alpha.0":
-  version "0.1.14-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/icons/-/icons-0.1.14-alpha.0.tgz#3fa99dcb6436ffd3055a2f7431dc1d64cc1cbc0f"
-  integrity sha512-cGfvL2JMyiRnkYmmPV3cTKX2BC/8lx+VJFvleCLJu83F+fKCAmIxHI5V8hIaLOYfPb6v7XOUPp4EWHzbApEmIg==
+"@blend-ui/icons@0.1.16-alpha.0", "@blend-ui/icons@^0.1.16-alpha.0":
+  version "0.1.16-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/icons/-/icons-0.1.16-alpha.0.tgz#0bffbae706f58b177240c0c171eafccce718b51c"
+  integrity sha512-VOZR9xDS9Xgv21XxO4KlGX+TJAEFYKOSQ3+0W8AHoRh+pRu7+gNf1zSYivRKcpgSut8OtO26ARuI9BOMgiNptg==
   dependencies:
     "@iconify/react" "^1.1.3"
     "@styled-system/theme-get" "^5.1.2"
