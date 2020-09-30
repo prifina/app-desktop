@@ -4,9 +4,9 @@ const strings = {
     invalidEntry: "Value is required",
     invalidPhoneNumber: "Phone number is not valid",
     invalidEmail: "Email is not valid",
-    usernameExists: "Username exists",
-    usernameError: "Username is too short (<{{length}})",
-    usernameError2: "Spaces are not allowed in username",
+    usernameExists: "Username already exists",
+    usernameError: "Username is too short (under {{length}} characters)",
+    usernameError2: "Spaces are not allowed in the username",
     invalidPassword: "Password confirmation failed",
     createAccountTitle: "Create an account",
     firstNamePlaceholder: "First Name",
@@ -19,15 +19,15 @@ const strings = {
     phoneNumberPlaceholder: "Phone Number",
     phonePrompt: "This number will be used for 2-step verification",
     passwordPlaceholder: "Password",
-    passwordPrompt: "Strong password is required",
+    passwordPrompt: "A strong password is required",
     confirmPlaceholder: "Confirm Password",
     signInButton: "Sign In",
     nextButton: "Next",
     /* Landing page */
     welcomeMessage: "Hello",
     landingPage:
-      "We are a team of enthusiasts who understand how important web security is. That is why we have created this environment that will help you implement your boldest ideas without fear for your data.",
-    landingPageInfo: "Fill the form on the right",
+      "We are a team working on the future of personal applications. This is why we have created this personal cloud environment that will help you implement your boldest ideas while allowing individuals to keep their data.",
+    landingPageInfo: "Fill in the form on the right",
     /* Terms & conditions */
     termsTitle: "Prifina's Terms of Use",
     agreeementTitle: "Agreement",
@@ -41,7 +41,7 @@ const strings = {
       "To access Prifina’s Services, you will need to create an account (“Account”).",
     dataTitle: "Your Data",
     dataText:
-      "Your data is fully in your control. Only you can access your data and your data profiles. Third parties can access your data only with your permission.",
+      "Your data is fully under your control. Only you can access your data and your data profiles. Third parties can access your data only with your permission.",
     materialsTitle: "Third Party Materials",
     materialsText:
       "Certain portions of the Service may include, display, or make available content, data, information, applications, or materials from third parties (“Third-Party Materials”).",
@@ -53,7 +53,7 @@ const strings = {
     verificationTitle: "Setup your 2-step verification method",
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
-      "In order to keep your personal data safe and secure you have to provide your email and phone details",
+      "In order to keep your personal data safe and secure, you have to provide your email and phone details",
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive a code?",
     sendAgainLinkText: "Send again",
@@ -62,7 +62,7 @@ const strings = {
     /* Email verification */
     emailVerificationTitle: "Setup your email verification",
     emailVerificationText:
-      "In order to keep your personal data safe and secure you have to provide your email and phone details",
+      "In order to keep your personal data safe and secure, you have to provide your email and phone details",
     emailMissing: "Didn't receive an email?",
   },
 };
