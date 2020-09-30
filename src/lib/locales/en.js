@@ -53,7 +53,7 @@ const strings = {
     verificationTitle: "Setup your 2-step verification method",
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
-      "In order to keep your personal data safe and secure you have to provide your email and phone details",
+      "Please provide your email and phone details in order to keep your personal data safe and secure",
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive a code?",
     sendAgainLinkText: "Send again",
