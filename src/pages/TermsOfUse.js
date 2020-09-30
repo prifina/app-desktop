@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 
 import ProgressContainer from "../components/ProgressContainer";
-
 import styled from "styled-components";
+import i18n from "../lib/i18n";
+i18n.init();
 
 const StyledBox = styled(Box)`
   scrollbar-width: 4px;
@@ -41,40 +42,46 @@ const StyledBox = styled(Box)`
 
 const texts = [
   {
-    title: "Agreement",
-    text:
-      "By using or visiting any of Prifina’s websites, or any of our products, software, or applications, you signify your agreement to these Terms.",
+    title: i18n.__("agreeementTitle"),
+    text: i18n.__("agreementText"),
   },
   {
-    title: "The Service",
-    text: "Some of the things you can do through the Service are listed below.",
+    title: i18n.__("serviceTitle"),
+    text: i18n.__("serviceText"),
   },
   {
-    title: "Accounts",
-    text:
-      "To access Prifina’s Services, you will need to create an account (“Account”).",
+    title: i18n.__("accountsTitle"),
+    text: i18n.__("accountsText"),
   },
   {
-    title: "Your Data",
-    text:
-      "Your data is fully in your control. Only you can access your data and your data profiles. Third parties can access your data only with your permission.",
+    title: i18n.__("dataTitle"),
+    text: i18n.__("dataText"),
   },
   {
-    title: "Third Party Materials",
-    text:
-      "Certain portions of the Service may include, display, or make available content, data, information, applications, or materials from third parties (“Third-Party Materials”).",
+    title: i18n.__("materialsTitle"),
+    text: i18n.__("materialsText"),
   },
 ];
 const TermsOfUse = (props) => {
   console.log("Terms ", props);
   const { colors } = useTheme();
-  console.log("THEME ", colors);
+  //console.log("THEME ", colors);
+  const [scrolled, setScrolled] = useState(false);
+  const _handleScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    //console.log(e.target);
+    //console.log(bottom);
+    if (bottom) {
+      setScrolled(true);
+    }
+  };
   return (
-    <ProgressContainer title={"Prifina's Terms of Use"} progress={66}>
+    <ProgressContainer title={i18n.__("termsTitle")} progress={66}>
       <Box mt={40} height={313}>
-        <StyledBox height={"100%"} colors={colors}>
+        <StyledBox height={"100%"} colors={colors} onScroll={_handleScroll}>
           {texts.map((t, i) => (
-            <React.Fragment>
+            <React.Fragment key={"text-" + i}>
               <Text textStyle={"caption"} bold>
                 {t.title}
               </Text>
@@ -88,10 +95,10 @@ const TermsOfUse = (props) => {
 
       <Box mt={63} display={"inline-flex"}>
         <Flex>
-          <Button variation={"outline"}>Decline</Button>
+          <Button variation={"outline"}>{i18n.__("Decline")}</Button>
         </Flex>
         <Flex ml={99}>
-          <Button disabled>Approve</Button>
+          <Button disabled={!scrolled}>{i18n.__("Approve")}</Button>
         </Flex>
       </Box>
     </ProgressContainer>

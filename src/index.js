@@ -1,29 +1,17 @@
 import React from "react";
-import ReactDOM from "react-dom";
 
-import { ThemeProvider } from "@blend-ui/core";
-import App from "./App";
+import { render } from "react-dom";
+import { default as App } from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "@blend-ui/core";
 
-const MainApp = () => (
+render(
   <ThemeProvider>
-    <App />
-  </ThemeProvider>
-);
-
-/*
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
-*/
-
-ReactDOM.render(
-  <React.StrictMode>
-    <MainApp />
-  </React.StrictMode>,
+    <Router>
+      <App />
+    </Router>
+  </ThemeProvider>,
   document.getElementById("root")
 );
 

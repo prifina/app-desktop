@@ -5,7 +5,7 @@ import { CircularProgress, CircularProgressLabel } from "@blend-ui/progress";
 import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 
 const ProgressContainer = ({ title, progress, children, ...props }) => {
-  console.log("CONTAINER ", props, title, progress);
+  //console.log("CONTAINER ", props, title, progress);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   return (
@@ -16,7 +16,7 @@ const ProgressContainer = ({ title, progress, children, ...props }) => {
         minHeight={"437px"}
         backgroundColor={colors.baseWhite}
         pl={29}
-        pr={29}
+        pr={28}
         pb={29}
         mt={20}
         {...props}
@@ -29,7 +29,7 @@ const ProgressContainer = ({ title, progress, children, ...props }) => {
           </CircularProgress>
         </Box>
 
-        <Divider pt={4}>
+        <Divider mt={-4}>
           <Text textStyle={"h6"}>{title}</Text>
         </Divider>
         {children}

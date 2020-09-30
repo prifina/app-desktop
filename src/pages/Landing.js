@@ -1,16 +1,22 @@
 import React from "react";
 import { Box, Flex, Text, useTheme } from "@blend-ui/core";
 //import { ReactComponent as BackPlate } from "../assets/back-plate.svg";
-import BackPlate from "../assets/plate.svg";
+//import BackPlate from "../assets/plate.svg";
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
 import { Background } from "../assets/background-image";
+//import { Plate } from "../assets/back-plate-png";
+import Plate from "../assets/back-plate.png";
 
 import { BlendIcon } from "@blend-ui/icons";
 import bxChevronRight from "@iconify/icons-bx/bx-chevron-right";
 
 import styled from "styled-components";
 
-const backPlatePath = "../assets/back-plate.svg";
+import CreateAccount from "./CreateAccount";
+import i18n from "../lib/i18n";
+i18n.init();
+
+//const backPlatePath = "../assets/back-plate.svg";
 
 const StyledBox = styled(Box)`
   border-radius: 20px;
@@ -32,7 +38,7 @@ const StyledBackground = styled(Box)`
   z-index: 1;
 `;
 const StyledPlate = styled(Box)`
-  background-image: url(${BackPlate});
+  background-image: url(${Plate});
   background-repeat: no-repeat;
   background-size: cover;
   border-top-right-radius: 20px;
@@ -48,32 +54,6 @@ height={"960px"}
 ></StyledBackground>
 */
 
-const texts = [
-  {
-    title: "Agreement",
-    text:
-      "By using or visiting any of Prifina’s websites, or any of our products, software, or applications, you signify your agreement to these Terms.",
-  },
-  {
-    title: "The Service",
-    text: "Some of the things you can do through the Service are listed below.",
-  },
-  {
-    title: "Accounts",
-    text:
-      "To access Prifina’s Services, you will need to create an account (“Account”).",
-  },
-  {
-    title: "Your Data",
-    text:
-      "Your data is fully in your control. Only you can access your data and your data profiles. Third parties can access your data only with your permission.",
-  },
-  {
-    title: "Third Party Materials",
-    text:
-      "Certain portions of the Service may include, display, or make available content, data, information, applications, or materials from third parties (“Third-Party Materials”).",
-  },
-];
 const Landing = (props) => {
   console.log("LANDING ", props);
   const { colors } = useTheme();
@@ -89,15 +69,12 @@ const Landing = (props) => {
               </Box>
               <Box mt={"283px"}>
                 <Text fontSize={"74px"} lineHeight={"101px"}>
-                  Hello
+                  {i18n.__("welcomeMessage")}
                 </Text>
               </Box>
               <Box width={"533px"}>
                 <Text as={"p"} fontSize={18} lineHeight={"144.5%"}>
-                  We are a team of enthusiasts who understand how important web
-                  security is. That is why we have created this environment that
-                  will help you implement your boldest ideas without fear for
-                  your data.
+                  {i18n.__("landingPage")}
                 </Text>
               </Box>
               <Box
@@ -107,7 +84,7 @@ const Landing = (props) => {
                 alignItems={"center"}
               >
                 <Text fontSize={18} color={colors.baseSecondary} pr={13}>
-                  Fill the form on the right
+                  {i18n.__("landingPageInfo")}
                 </Text>
                 <BlendIcon
                   iconify={bxChevronRight}
@@ -117,8 +94,14 @@ const Landing = (props) => {
               </Box>
             </Box>
           </Flex>
-          <Flex width={"56%"} height={"955px"}>
-            <StyledPlate height={"955px"} width={"100%"} />
+          <Flex width={"56%"} height={"920px"} justifyContent={"flex-end"}>
+            <StyledPlate height={"920px"} width={"795px"}>
+              <Flex justifyContent={"flex-end"}>
+                <Box position={"relative"} right={"64px"} top={"135px"}>
+                  <CreateAccount />
+                </Box>
+              </Flex>
+            </StyledPlate>
           </Flex>
         </Box>
         <StyledBackground width={"100%"} height={"854px"} />
@@ -127,4 +110,5 @@ const Landing = (props) => {
   );
 };
 
+//<img src={Plate} height={"920px"} width={"795px"} />
 export default Landing;

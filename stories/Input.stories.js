@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@blend-ui/core";
 
-import { accountIcon, BlendIcon } from "@blend-ui/icons";
+import { BlendIcon } from "@blend-ui/icons";
+import { default as eyeIcon } from "@iconify/icons-bx/bx-show";
 
 export default { title: "Input" };
 
@@ -38,7 +39,15 @@ input4.story = {
   name: "Input Styled no border",
 };
 
-export const input5 = () => <BlendIcon iconify={accountIcon} />;
+export const input5 = () => {
+  const [hidePassword, setHidePassword] = useState(true);
+  const onHide = (e) => {
+    console.log("HIDE PASSWORD ", hidePassword);
+    //e.preventDefault();
+    //setHidePassword(!hidePassword);
+  };
+  return <BlendIcon iconify={eyeIcon} onClick={onHide} />;
+};
 input5.story = {
   name: "Icon Input ",
 };
