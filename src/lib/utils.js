@@ -80,6 +80,19 @@ export function checkPassword(password, requiredLength, checkList) {
   return checkResult;
 }
 
+export function countryList() {
+  const phoneUtil = PhoneNumberUtil.getInstance();
+  const countryCodes = phoneUtil.getSupportedRegions();
+  const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
+    type: "region",
+  });
+  const countries = countryCodes.map((code) => {
+    return regionNamesInEnglish.of(code);
+    //return phoneUtil.getCountryCodeForRegion(code);
+  });
+
+  return countries;
+}
 export function isValidNumber(phoneNumber) {
   /*  return new Promise(function (resolve, reject) {
 
@@ -100,13 +113,16 @@ export function isValidNumber(phoneNumber) {
       const numberType = phoneUtil.getNumberType(number);
       const possibleTypes = Object.keys(PhoneNumberType);
       for (let i = 0; i < possibleTypes.length; i++) {
-        if (PhoneNumberType[possibleTypes[i]] == numberType) {
+        if (PhoneNumberType[possibleTypes[i]] === numberType) {
           result.numberType = possibleTypes[i];
           break;
         }
       }
     }
     /*
+    console.log(phoneUtil.format(number, PNF.INTERNATIONAL));
+    // => +1 202-456-1414
+
     PhoneNumberType.FIXED_LINE
     PhoneNumberType.MOBILE
     PhoneNumberType.FIXED_LINE_OR_MOBILE

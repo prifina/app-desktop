@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 
 import ProgressContainer from "../components/ProgressContainer";
+import DeclineDialog from "../components/DeclineDialog";
 import styled from "styled-components";
 import i18n from "../lib/i18n";
 i18n.init();
@@ -67,6 +68,7 @@ const TermsOfUse = (props) => {
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   const [scrolled, setScrolled] = useState(false);
+  const [decline, setDecline] = useState(false);
   const _handleScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
@@ -76,32 +78,63 @@ const TermsOfUse = (props) => {
       setScrolled(true);
     }
   };
+  const declineTerms = (e) => {
+    setDecline(true);
+    e.preventDefault();
+  };
+  const onDialogClose = (e, action) => {
+    console.log("CLOSE ", e, action);
+    setDecline(false);
+    e.preventDefault();
+  };
+  const onDialogClick = (e, action) => {
+    console.log("BUTTON ", e, action);
+    setDecline(false);
+    e.preventDefault();
+  };
   return (
-    <ProgressContainer title={i18n.__("termsTitle")} progress={66}>
-      <Box mt={40} height={313}>
-        <StyledBox height={"100%"} colors={colors} onScroll={_handleScroll}>
-          {texts.map((t, i) => (
-            <React.Fragment key={"text-" + i}>
-              <Text textStyle={"caption"} bold>
-                {t.title}
-              </Text>
-              <Text as={"p"} textStyle={"caption"}>
-                {t.text}
-              </Text>
-            </React.Fragment>
-          ))}
-        </StyledBox>
-      </Box>
+    <React.Fragment>
+      {decline && (
+        <DeclineDialog onClose={onDialogClose} onButtonClick={onDialogClick} />
+      )}
 
-      <Box mt={63} display={"inline-flex"}>
-        <Flex>
-          <Button variation={"outline"}>{i18n.__("Decline")}</Button>
-        </Flex>
-        <Flex ml={99}>
-          <Button disabled={!scrolled}>{i18n.__("Approve")}</Button>
-        </Flex>
-      </Box>
-    </ProgressContainer>
+      <ProgressContainer title={i18n.__("termsTitle")} progress={66}>
+        <Box textAlign="center">
+          <Text textStyle={"caption"} bold>
+            {i18n.__("termsLastUpdated")}
+          </Text>
+        </Box>
+        <Box mt={22} height={313}>
+          <StyledBox height={"100%"} colors={colors} onScroll={_handleScroll}>
+            {texts.map((t, i) => (
+              <React.Fragment key={"text-" + i}>
+                <Text textStyle={"caption"} bold>
+                  {t.title}
+                </Text>
+                <Text as={"p"} textStyle={"caption"}>
+                  {t.text}
+                </Text>
+              </React.Fragment>
+            ))}
+          </StyledBox>
+        </Box>
+
+        <Box mt={63} display={"inline-flex"}>
+          <Flex>
+            <Button
+              variation={"outline"}
+              colorStyle={"error"}
+              onClick={declineTerms}
+            >
+              {i18n.__("Decline")}
+            </Button>
+          </Flex>
+          <Flex ml={99}>
+            <Button disabled={!scrolled}>{i18n.__("Approve")}</Button>
+          </Flex>
+        </Box>
+      </ProgressContainer>
+    </React.Fragment>
   );
 };
 

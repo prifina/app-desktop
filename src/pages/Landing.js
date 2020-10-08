@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Flex, Text, useTheme } from "@blend-ui/core";
 //import { ReactComponent as BackPlate } from "../assets/back-plate.svg";
 //import BackPlate from "../assets/plate.svg";
@@ -13,6 +13,9 @@ import bxChevronRight from "@iconify/icons-bx/bx-chevron-right";
 import styled from "styled-components";
 
 import CreateAccount from "./CreateAccount";
+import TermsOfUse from "./TermsOfUse";
+import NotFoundPage from "../components/NotFoundPage";
+
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -34,7 +37,7 @@ const StyledBackground = styled(Box)`
   border-top-right-radius: 0;
   opacity: 0.3;
   position: relative;
-  top: -854px;
+  top: -632px;
   z-index: 1;
 `;
 const StyledPlate = styled(Box)`
@@ -43,6 +46,7 @@ const StyledPlate = styled(Box)`
   background-size: cover;
   border-top-right-radius: 20px;
   z-index: 3;
+  border-left: 1px solid rgba(255, 255, 255, 0); // chrome bug of showing border on transparent image
 `;
 
 //background-position: 0 170px;
@@ -58,11 +62,22 @@ const Landing = (props) => {
   console.log("LANDING ", props);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
+  const [stepCounter, setStepCounter] = useState(1);
+
+  const checkAction = (action) => {
+    switch (action) {
+      case "register":
+        setStepCounter(2);
+        break;
+      default:
+        setStepCounter(0);
+    }
+  };
   return (
     <React.Fragment>
-      <StyledBox minWidth={"1440px"} maxHeight={"1024px"} minHeight={"1024px"}>
+      <StyledBox minWidth={"1440px"} maxHeight={"792px"} minHeight={"792px"}>
         <Box display={"inline-flex"} width={"100%"}>
-          <Flex width={"44%"} height={"1024px"}>
+          <Flex width={"44%"} height={"792px"}>
             <Box display={"inline-block"} zIndex={2} ml={"63px"}>
               <Box mt={"24px"}>
                 <PrifinaText width={"69px"} height={"27px"} />
@@ -94,17 +109,22 @@ const Landing = (props) => {
               </Box>
             </Box>
           </Flex>
-          <Flex width={"56%"} height={"920px"} justifyContent={"flex-end"}>
-            <StyledPlate height={"920px"} width={"795px"}>
+          <Flex width={"56%"} height={"730px"} justifyContent={"flex-end"}>
+            <StyledPlate height={"730px"} width={"753px"}>
               <Flex justifyContent={"flex-end"}>
-                <Box position={"relative"} right={"64px"} top={"135px"}>
-                  <CreateAccount />
+                <Box position={"relative"} right={"64px"} top={"62px"}>
+                  {stepCounter === 0 && <NotFoundPage />}
+                  {stepCounter === 1 && (
+                    <CreateAccount onAction={checkAction} />
+                  )}
+
+                  {stepCounter === 2 && <TermsOfUse onAction={checkAction} />}
                 </Box>
               </Flex>
             </StyledPlate>
           </Flex>
         </Box>
-        <StyledBackground width={"100%"} height={"854px"} />
+        <StyledBackground width={"100%"} height={"631px"} />
       </StyledBox>
     </React.Fragment>
   );

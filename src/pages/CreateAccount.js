@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useRef } from "react";
+import React, { useState, useReducer } from "react";
 import { IconField, Button, Input, Box, Flex } from "@blend-ui/core";
 
 import bxPhone from "@iconify/icons-bx/bx-phone";
@@ -23,7 +23,7 @@ import i18n from "../lib/i18n";
 
 i18n.init();
 
-const CreateAccount = (props) => {
+const CreateAccount = ({ onAction, ...props }) => {
   //console.log("Account ", props);
 
   //console.log(i18n.__("Testing"));
@@ -183,7 +183,6 @@ const CreateAccount = (props) => {
       lengthStatus[fld] = true;
       if (fields[fld].length === 0) {
         lengthStatus[fld] = false;
-        lengthStatus[fld];
         states[fld].status = true;
         states[fld].msg = i18n.__("invalidEntry");
       }
@@ -369,7 +368,7 @@ const CreateAccount = (props) => {
         valid: !invalidPasswordStatus,
       },
     });
-    //console.log("PASSWORD focus...", passwordStatus);
+    console.log("PASSWORD quality Status...", invalidPasswordStatus);
     if (invalidPasswordStatus) {
       setInputPasswordFocus();
       return false;
@@ -496,10 +495,23 @@ const CreateAccount = (props) => {
           }}
           onBlur={(e) => {
             if (e.target.value.length !== 0) {
-              const res = checkPasswordQuality(e.target.value);
-              if (res) {
-                onPopper(e, false);
+              console.log("BLUR CHECK");
+              const inValidFields = Object.keys(fields).filter((fld) => {
+                console.log("BLUR CHECK ", fld, fields[fld].status);
+                return fields[fld].status === true;
+              });
+              console.log("BLUR CHECK ", inValidFields);
+              if (inValidFields.length === 0) {
+                const res = checkPasswordQuality(e.target.value);
+                if (res) {
+                  onPopper(e, false);
+                }
+              } else {
+                e.preventDefault();
+                e.stopPropagation();
               }
+            } else {
+              onPopper(e, false);
             }
           }}
           addPopper={addPopper}
@@ -516,7 +528,7 @@ const CreateAccount = (props) => {
           error={state.password.status}
         />
       </Box>
-      <Box mt={20}>
+      <Box mt={10}>
         <PasswordField
           placeholder={i18n.__("confirmPlaceholder")}
           id={"passwordConfirm"}
@@ -533,12 +545,26 @@ const CreateAccount = (props) => {
         />
       </Box>
 
-      <Box mt={83 - (state.password.status ? 18 : 0)} display={"inline-flex"}>
+      <Box mt={66 - (state.password.status ? 13 : 0)} display={"inline-flex"}>
         <Flex>
-          <Button variation={"outline"}>{i18n.__("signInButton")}</Button>
+          <Button
+            variation={"outline"}
+            onClick={() => {
+              onAction("signin");
+            }}
+          >
+            {i18n.__("signInButton")}
+          </Button>
         </Flex>
         <Flex ml={99}>
-          <Button disabled={nextDisabled}>{i18n.__("nextButton")}</Button>
+          <Button
+            disabled={nextDisabled}
+            onClick={() => {
+              onAction("register");
+            }}
+          >
+            {i18n.__("nextButton")}
+          </Button>
         </Flex>
       </Box>
     </ProgressContainer>

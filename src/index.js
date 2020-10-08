@@ -4,14 +4,12 @@ import { render } from "react-dom";
 import { default as App } from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "@blend-ui/core";
+//import { ThemeProvider } from "@blend-ui/core";
 
 render(
-  <ThemeProvider>
-    <Router>
-      <App />
-    </Router>
-  </ThemeProvider>,
+  <Router>
+    <App />
+  </Router>,
   document.getElementById("root")
 );
 
