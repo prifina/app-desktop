@@ -19,14 +19,12 @@ const strings = {
     firstNamePlaceholder: "First Name",
     lastNamePlaceholder: "Last Name",
     usernamePlaceholder: "User Name",
-    usernamePrompt:
-      "This should be longer than {{length}} characters and no spaces are allowed",
     emailPlaceholder: "Email",
     emailPrompt: "This email will be used for 2-step verification",
     phoneNumberPlaceholder: "Phone Number",
     phonePrompt: "This number will be used for 2-step verification",
     passwordPlaceholder: "Password",
-    passwordPrompt: "A strong password is required",
+
     confirmPlaceholder: "Confirm Password",
 
     /* Landing page */

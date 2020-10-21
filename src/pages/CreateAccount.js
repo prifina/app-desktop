@@ -402,7 +402,7 @@ const CreateAccount = ({ onAction, ...props }) => {
           />
         </Flex>
       </Box>
-      <Box mt={20}>
+      <Box mt={28}>
         <IconField>
           <IconField.LeftIcon
             iconify={bxUser}
@@ -415,16 +415,18 @@ const CreateAccount = ({ onAction, ...props }) => {
             name={"username"}
             onChange={_handleChange}
             onBlur={(e) => checkUsername(e.target.value)}
+            /*
             promptMsg={i18n.__("usernamePrompt", {
               length: config.usernameLength,
             })}
+            */
             errorMsg={state.username.msg}
             error={state.username.status}
             ref={inputUsername}
           />
         </IconField>
       </Box>
-      <Box mt={10}>
+      <Box mt={state.username.status ? 5 : 28}>
         <IconField>
           <IconField.LeftIcon
             iconify={bxEnvelope}
@@ -444,7 +446,7 @@ const CreateAccount = ({ onAction, ...props }) => {
           />
         </IconField>
       </Box>
-      <Box mt={10}>
+      <Box mt={state.email.status ? 5 : 28}>
         <IconField>
           <IconField.LeftIcon
             iconify={bxPhone}
@@ -464,7 +466,7 @@ const CreateAccount = ({ onAction, ...props }) => {
           />
         </IconField>
       </Box>
-      <Box mt={10}>
+      <Box mt={state.phone.status ? 5 : 28}>
         <PasswordField
           placeholder={i18n.__("passwordPlaceholder")}
           onFocus={(e) => {
@@ -523,12 +525,12 @@ const CreateAccount = ({ onAction, ...props }) => {
             checkInputPassword(e.target.value);
           }}
           ref={inputPassword}
-          promptMsg={i18n.__("passwordPrompt")}
+          /* promptMsg={i18n.__("passwordPrompt")} */
           errorMsg={state.password.msg}
           error={state.password.status}
         />
       </Box>
-      <Box mt={10}>
+      <Box mt={state.password.status ? 5 : 28}>
         <PasswordField
           placeholder={i18n.__("confirmPlaceholder")}
           id={"passwordConfirm"}
