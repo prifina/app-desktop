@@ -66,7 +66,7 @@ const Landing = (props) => {
   console.log("LANDING ", props);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
-  const [stepCounter, setStepCounter] = useState(2);
+  const [stepCounter, setStepCounter] = useState(1);
 
   const checkAction = (action) => {
     switch (action) {
