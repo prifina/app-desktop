@@ -46,6 +46,7 @@ export const select = () => (
       onChange={(e) => {
         console.log("Change ", e.target.value);
       }}
+      searchLength={1}
     />
   </Box>
 );
@@ -56,6 +57,7 @@ export const select2 = () => (
   <Box>
     <Label htmlFor="cabinClass">Cabin Class</Label>
     <SearchSelect
+      ml={10}
       id="cabinClass"
       name="cabinClass"
       defaultValue="1"

@@ -17,7 +17,7 @@ const ProgressContainer = ({ title, progress, children, ...props }) => {
         backgroundColor={colors.baseWhite}
         pl={29}
         pr={28}
-        pb={29}
+        pb={15}
         mt={20}
         {...props}
       >

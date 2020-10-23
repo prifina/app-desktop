@@ -14,9 +14,13 @@ import styled from "styled-components";
 
 import CreateAccount from "./CreateAccount";
 import TermsOfUse from "./TermsOfUse";
+import EmailVerification from "./EmailVerification";
+import PhoneVerification from "./PhoneVerification";
+
 import NotFoundPage from "../components/NotFoundPage";
 
 import i18n from "../lib/i18n";
+import { PhoneNumberFormat } from "google-libphonenumber";
 i18n.init();
 
 //const backPlatePath = "../assets/back-plate.svg";
@@ -62,12 +66,21 @@ const Landing = (props) => {
   console.log("LANDING ", props);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
-  const [stepCounter, setStepCounter] = useState(1);
+  const [stepCounter, setStepCounter] = useState(2);
 
   const checkAction = (action) => {
     switch (action) {
       case "register":
         setStepCounter(2);
+        break;
+      case "terms":
+        setStepCounter(1);
+        break;
+      case "email":
+        setStepCounter(3);
+        break;
+      case "phone":
+        setStepCounter(4);
         break;
       default:
         setStepCounter(0);
@@ -119,6 +132,12 @@ const Landing = (props) => {
                   )}
 
                   {stepCounter === 2 && <TermsOfUse onAction={checkAction} />}
+                  {stepCounter === 3 && (
+                    <EmailVerification onAction={checkAction} />
+                  )}
+                  {stepCounter === 4 && (
+                    <PhoneVerification onAction={checkAction} />
+                  )}
                 </Box>
               </Flex>
             </StyledPlate>

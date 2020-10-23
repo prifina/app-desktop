@@ -1,17 +1,27 @@
 import React, { useState, useReducer } from "react";
-import { IconField, Button, Input, Box, Flex } from "@blend-ui/core";
+import {
+  IconField,
+  Button,
+  Input,
+  Box,
+  Flex,
+  Text,
+  useTheme,
+} from "@blend-ui/core";
 
-import bxPhone from "@iconify/icons-bx/bx-phone";
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
+import PhoneNumberField from "../components/PhoneNumberField";
+
 import { useFormFields } from "../lib/formFields";
 import {
   checkPassword,
   validEmail,
   validUsername,
   isValidNumber,
+  countryList,
 } from "../lib/utils";
 import { UseFocus } from "../lib/componentUtils";
 import config from "../config";
@@ -29,6 +39,21 @@ const CreateAccount = ({ onAction, ...props }) => {
   //console.log(i18n.__("Testing"));
 
   //console.log(i18n.__("testMessage"));
+  const { colors } = useTheme();
+  const selectOptions = countryList().map((cc) => {
+    return {
+      key: "+" + cc.countryCode,
+      value: cc.regionName,
+      component: (
+        <React.Fragment>
+          <Text as="span">{cc.regionName}</Text>
+          <Text as="span" color={colors.textMuted} fontSize={"xs"} pl={4}>
+            (+{cc.countryCode})
+          </Text>
+        </React.Fragment>
+      ),
+    };
+  });
 
   const [fields, _handleChange] = useFormFields({
     firstName: "",
@@ -40,6 +65,7 @@ const CreateAccount = ({ onAction, ...props }) => {
     passwordConfirm: "",
   });
 
+  const [regionCode, setRegioncode] = useState("000");
   const [nextDisabled, setNextDisabled] = useState(true);
   const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
 
@@ -206,7 +232,8 @@ const CreateAccount = ({ onAction, ...props }) => {
 
   const checkPhone = (phone) => {
     //console.log("FIELDS ", fields);
-    const checkResult = isValidNumber(phone);
+    console.log(phone, regionCode);
+    const checkResult = isValidNumber(regionCode + phone);
     const phoneState = Object.keys(checkResult).length > 0;
     setState({
       phone: {
@@ -446,7 +473,8 @@ const CreateAccount = ({ onAction, ...props }) => {
           />
         </IconField>
       </Box>
-      <Box mt={state.email.status ? 5 : 28}>
+      {/* 
+      <Box mt={5}>
         <IconField>
           <IconField.LeftIcon
             iconify={bxPhone}
@@ -466,7 +494,31 @@ const CreateAccount = ({ onAction, ...props }) => {
           />
         </IconField>
       </Box>
-      <Box mt={state.phone.status ? 5 : 28}>
+      */}
+      <Box mt={5}>
+        <PhoneNumberField
+          options={selectOptions}
+          defaultValue={regionCode}
+          onSelect={(code) => {
+            //console.log("CODE ", code);
+            setRegioncode(code);
+          }}
+        >
+          <PhoneNumberField.InputField
+            placeholder={i18n.__("phoneNumberPlaceholder")}
+            id={"phone"}
+            name={"phone"}
+            onChange={_handleChange}
+            onBlur={(e) => checkPhone(e.target.value)}
+            promptMsg={i18n.__("phonePrompt")}
+            errorMsg={state.phone.msg}
+            error={state.phone.status}
+            ref={inputPhone}
+            disabled={regionCode === "000"}
+          />
+        </PhoneNumberField>
+      </Box>
+      <Box mt={5}>
         <PasswordField
           placeholder={i18n.__("passwordPlaceholder")}
           onFocus={(e) => {
@@ -547,27 +599,31 @@ const CreateAccount = ({ onAction, ...props }) => {
         />
       </Box>
 
-      <Box mt={66 - (state.password.status ? 13 : 0)} display={"inline-flex"}>
-        <Flex>
-          <Button
-            variation={"outline"}
-            onClick={() => {
-              onAction("signin");
-            }}
-          >
-            {i18n.__("signInButton")}
-          </Button>
-        </Flex>
-        <Flex ml={99}>
-          <Button
-            disabled={nextDisabled}
-            onClick={() => {
-              onAction("register");
-            }}
-          >
-            {i18n.__("nextButton")}
-          </Button>
-        </Flex>
+      <Box mt={66 - (state.password.status ? 18 : 0)} textAlign={"center"}>
+        <Button
+          disabled={nextDisabled}
+          onClick={() => {
+            onAction("register");
+          }}
+        >
+          {i18n.__("nextButton")}
+        </Button>
+        <Box mt={10}>
+          <Box display={"inline-flex"}>
+            <Flex alignItems={"center"}>
+              <Text textStyle={"caption2"} mr={5}>
+                {i18n.__("existingAccount")}
+              </Text>
+              <Button
+                variation={"link"}
+                fontSize={"10px"}
+                lineHeight={"normal"}
+              >
+                {i18n.__("loginLink")}
+              </Button>
+            </Flex>
+          </Box>
+        </Box>
       </Box>
     </ProgressContainer>
   );

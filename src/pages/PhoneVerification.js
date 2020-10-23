@@ -13,7 +13,7 @@ import { UseFocus } from "../lib/componentUtils";
 import i18n from "../lib/i18n";
 i18n.init();
 
-const PhoneVerification = (props) => {
+const PhoneVerification = ({ onAction, ...props }) => {
   const [fields, _handleChange] = useFormFields({
     verificationCode: "",
   });
@@ -75,8 +75,10 @@ const PhoneVerification = (props) => {
             </Box>
             <Box mt={inputError.status ? 0 : 3} display={"inline-flex"}>
               <Flex alignItems={"center"}>
-                <Text textStyle={"caption2"}>{i18n.__("codeMissing")}</Text>
-                <Button variation={"link"} fontSize={"xxs"}>
+                <Text textStyle={"caption2"} mr={5}>
+                  {i18n.__("codeMissing")}
+                </Text>
+                <Button variation={"link"} fontSize={"10px"}>
                   {i18n.__("sendAgainLinkText")}
                 </Button>
               </Flex>
@@ -84,7 +86,7 @@ const PhoneVerification = (props) => {
           </Box>
         </Box>
       </Box>
-
+      {/* 
       <Box mt={inputError.status ? 54 : 84} display={"inline-flex"}>
         <Flex>
           <Button variation={"outline"}>{i18n.__("backButton")}</Button>
@@ -96,6 +98,14 @@ const PhoneVerification = (props) => {
             {i18n.__("verifyButton")}
           </Button>
         </Flex>
+      </Box>
+      */}
+      <Box mt={inputError.status ? 60 : 84} textAlign={"center"}>
+        <Button
+          disabled={inputError.status || fields.verificationCode.length !== 6}
+        >
+          {i18n.__("verifyButton")}
+        </Button>
       </Box>
     </ProgressContainer>
   );

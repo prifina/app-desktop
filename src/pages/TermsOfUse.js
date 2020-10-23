@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 
 import ProgressContainer from "../components/ProgressContainer";
@@ -63,12 +63,13 @@ const texts = [
     text: i18n.__("materialsText"),
   },
 ];
-const TermsOfUse = (props) => {
+const TermsOfUse = ({ onAction, ...props }) => {
   console.log("Terms ", props);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   const [scrolled, setScrolled] = useState(false);
   const [decline, setDecline] = useState(false);
+  const [isActive, setActive] = useState(false);
   const _handleScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
@@ -82,6 +83,10 @@ const TermsOfUse = (props) => {
     setDecline(true);
     e.preventDefault();
   };
+  const approveTerms = (e) => {
+    setActive(true);
+    e.preventDefault();
+  };
   const onDialogClose = (e, action) => {
     console.log("CLOSE ", e, action);
     setDecline(false);
@@ -90,8 +95,22 @@ const TermsOfUse = (props) => {
   const onDialogClick = (e, action) => {
     console.log("BUTTON ", e, action);
     setDecline(false);
+    if (action === "decline") {
+      onAction("terms");
+    }
     e.preventDefault();
   };
+  useEffect(() => {
+    let timer = null;
+    if (isActive) {
+      timer = setTimeout(() => {
+        console.log("This will run after 5 second!");
+        onAction("email");
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [isActive]);
+
   return (
     <React.Fragment>
       {decline && (
@@ -119,19 +138,31 @@ const TermsOfUse = (props) => {
           </StyledBox>
         </Box>
 
-        <Box mt={63} display={"inline-flex"}>
-          <Flex>
-            <Button
-              variation={"outline"}
-              colorStyle={"error"}
-              onClick={declineTerms}
-            >
-              {i18n.__("Decline")}
-            </Button>
-          </Flex>
-          <Flex ml={99}>
-            <Button disabled={!scrolled}>{i18n.__("Approve")}</Button>
-          </Flex>
+        <Box mt={63} display={isActive ? "block" : "inline-flex"}>
+          {!isActive && (
+            <React.Fragment>
+              <Flex>
+                <Button
+                  variation={"outline"}
+                  colorStyle={"error"}
+                  onClick={declineTerms}
+                >
+                  {i18n.__("declineButton")}
+                </Button>
+              </Flex>
+
+              <Flex ml={99}>
+                <Button disabled={!scrolled} onClick={approveTerms}>
+                  {i18n.__("approveButton")}
+                </Button>
+              </Flex>
+            </React.Fragment>
+          )}
+          {isActive && (
+            <Box textAlign={"center"}>
+              <Button disabled={true}>{i18n.__("accountButton")}</Button>
+            </Box>
+          )}
         </Box>
       </ProgressContainer>
     </React.Fragment>

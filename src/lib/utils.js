@@ -81,14 +81,32 @@ export function checkPassword(password, requiredLength, checkList) {
 }
 
 export function countryList() {
+  // there are unsupported codes... https://en.wikipedia.org/wiki/List_of_country_calling_codes
+  // like +1 671 –  Guam
   const phoneUtil = PhoneNumberUtil.getInstance();
-  const countryCodes = phoneUtil.getSupportedRegions();
+  //console.log(phoneUtil.getSupportedCallingCodes());
+  //console.log(phoneUtil.getRegionCodeForCountryCode(358));
+
+  //const countryCodes = phoneUtil.getSupportedRegions();
+  const countryCodes = phoneUtil.getSupportedCallingCodes();
   const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
     type: "region",
   });
-  const countries = countryCodes.map((code) => {
-    return regionNamesInEnglish.of(code);
+
+  //console.log("COUNTRY CODES ", countryCodes);
+  let countries = [];
+  countryCodes.forEach((code) => {
+    //return regionNamesInEnglish.of(code);
     //return phoneUtil.getCountryCodeForRegion(code);
+    const regionCode = phoneUtil.getRegionCodeForCountryCode(code);
+    if (regionCode !== "001") {
+      const regionName = regionNamesInEnglish.of(regionCode);
+      countries.push({
+        countryCode: code,
+        regionCode: regionCode,
+        regionName: regionName,
+      });
+    }
   });
 
   return countries;

@@ -13,7 +13,7 @@ import { UseFocus } from "../lib/componentUtils";
 import i18n from "../lib/i18n";
 i18n.init();
 
-const EmailVerification = (props) => {
+const EmailVerification = ({ onAction, ...props }) => {
   //console.log("Phone ", props);
 
   const [fields, _handleChange] = useFormFields({
@@ -38,7 +38,10 @@ const EmailVerification = (props) => {
       setInputError({ status: false, msg: "" });
     }
   };
-
+  const verifyClick = (e) => {
+    onAction("phone");
+    e.preventDefault();
+  };
   return (
     <ProgressContainer
       title={i18n.__("verificationTitle")}
@@ -82,8 +85,10 @@ const EmailVerification = (props) => {
             </Box>
             <Box mt={inputError.status ? 0 : 3} display={"inline-flex"}>
               <Flex alignItems={"center"}>
-                <Text textStyle={"caption2"}>{i18n.__("emailMissing")}</Text>
-                <Button variation={"link"} fontSize={"xxs"}>
+                <Text textStyle={"caption2"} mr={5}>
+                  {i18n.__("emailMissing")}
+                </Text>
+                <Button variation={"link"} fontSize={"10px"}>
                   {i18n.__("sendAgainLinkText")}
                 </Button>
               </Flex>
@@ -91,7 +96,7 @@ const EmailVerification = (props) => {
           </Box>
         </Box>
       </Box>
-
+      {/*            
       <Box mt={inputError.status ? 50 : 80} display={"inline-flex"}>
         <Flex>
           <Button variation={"outline"}>{i18n.__("backButton")}</Button>
@@ -103,6 +108,15 @@ const EmailVerification = (props) => {
             {i18n.__("verifyButton")}
           </Button>
         </Flex>
+      </Box>
+      */}
+      <Box mt={inputError.status ? 53 : 80} textAlign={"center"}>
+        <Button
+          disabled={inputError.status || fields.verificationCode.length !== 6}
+          onClick={verifyClick}
+        >
+          {i18n.__("verifyButton")}
+        </Button>
       </Box>
     </ProgressContainer>
   );

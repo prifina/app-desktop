@@ -5,8 +5,10 @@ const strings = {
     signInButton: "Sign In",
     declineButton: "Decline",
     approveButton: "Approve",
+    accountButton: "Creating account",
     backButton: "Back",
     verifyButton: "Verify",
+    loginLink: "Login",
     /* Create account */
     invalidEntry: "Value is required",
     invalidPhoneNumber: "Phone number is not valid",
@@ -26,6 +28,7 @@ const strings = {
     passwordPlaceholder: "Password",
 
     confirmPlaceholder: "Confirm Password",
+    existingAccount: "Have an account?",
 
     /* Landing page */
     welcomeMessage: "Hello",
@@ -50,8 +53,7 @@ const strings = {
     materialsTitle: "Third Party Materials",
     materialsText:
       "Certain portions of the Service may include, display, or make available content, data, information, applications, or materials from third parties (“Third-Party Materials”).",
-    declineButton: "Decline",
-    approveButton: "Approve",
+
     /* Phone verification */
     codeDigitsError: "Only numbers are allowed",
     codeLengthError: "The code must be 6 digits long",
