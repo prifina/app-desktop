@@ -37,12 +37,13 @@ const selectOptions = countryList().map((cc) => {
 export default { title: "Phone number Field" };
 
 export const fieldinput = () => (
-  <PhoneNumberField
-    defaultValue="000"
-    options={selectOptions}
-    searchLength={1}
-    showList={true}
-  >
+  <PhoneNumberField>
+    <PhoneNumberField.RegionField
+      defaultValue="000"
+      options={selectOptions}
+      searchLength={1}
+      showList={true}
+    />
     <PhoneNumberField.InputField placeholder={"Enter value here"} />
   </PhoneNumberField>
 );

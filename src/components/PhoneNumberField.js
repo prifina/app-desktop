@@ -8,7 +8,7 @@ import { BlendIcon } from "@blend-ui/icons";
 import styled from "styled-components";
 import { space } from "styled-system";
 import { useId } from "@reach/auto-id";
-import { UseFocus } from "../lib/componentUtils";
+//import { UseFocus } from "../lib/componentUtils";
 
 const StyledBox = styled(Box)`
   ${space}
@@ -59,18 +59,7 @@ const StyledBox = styled(Box)`
 const InputContext = createContext();
 const useInputContext = () => useContext(InputContext);
 
-const PhoneNumberField = ({
-  children,
-  disabled,
-  id,
-  options,
-  defaultValue,
-  searchLength = 3,
-  showList = false,
-  selectOption = "key",
-  onSelect,
-  ...props
-}) => {
+const PhoneNumberField = ({ children, disabled, id, ...props }) => {
   //console.log("ICON FIELD ", props);
   const isIcon = (item) => item.type.isIcon || item.type.isIconButton;
   const { colors } = useTheme();
@@ -104,11 +93,15 @@ const PhoneNumberField = ({
   //containerRef={boxRef}
   const boxRef = createRef();
   //const searchRef = createRef();
-  const [inpuSelect, setSelectFocus] = UseFocus();
 
   return (
     <InputContext.Provider
-      value={{ disabled, inputError, inputId, setSelectFocus, defaultValue }}
+      value={{
+        disabled,
+        inputError,
+        inputId,
+        boxRef,
+      }}
     >
       <StyledBox
         disabled={disabled || null}
@@ -116,24 +109,6 @@ const PhoneNumberField = ({
         ref={boxRef}
       >
         <LeftIcon iconify={bxPhone} color={"componentPrimary"} size={"17"} />
-        <SearchSelect
-          id={selectId}
-          name={selectId}
-          defaultValue={defaultValue}
-          options={options}
-          onChange={(code) => {
-            //console.log("Select Change ", code);
-            onSelect(code);
-          }}
-          showList={showList}
-          searchLength={searchLength}
-          size={"sm"}
-          width={"60px"}
-          selectOption={selectOption}
-          containerRef={boxRef}
-          containerOffset={"-38px"}
-          ref={inpuSelect}
-        />
         {children}
       </StyledBox>
       {errorMsg !== "" && inputError && (
@@ -154,19 +129,52 @@ const PhoneNumberField = ({
   );
 };
 
+const SelectField = forwardRef(
+  (
+    {
+      options,
+      defaultValue,
+      searchLength = 3,
+      showList = false,
+      selectOption = "key",
+      ...props
+    },
+    ref
+  ) => {
+    const { selectId, boxRef } = useInputContext();
+
+    //const theme = useTheme();
+
+    return (
+      <SearchSelect
+        id={selectId}
+        name={selectId}
+        defaultValue={defaultValue}
+        options={options}
+        showList={showList}
+        searchLength={searchLength}
+        size={"sm"}
+        width={"60px"}
+        selectOption={selectOption}
+        containerRef={boxRef}
+        containerOffset={"-38px"}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+
 const InputField = forwardRef(
   ({ children, errorMsg, promptMsg, ...props }, ref) => {
-    const {
-      disabled,
-      inputId,
-      setSelectFocus,
-      defaultValue,
-    } = useInputContext();
+    const { disabled, inputId } = useInputContext();
     const theme = useTheme();
     //console.log("INPUT ", defaultValue);
-    if (defaultValue === "000" && !props.disabled) {
+    /*
+    if (defaultValue === "000" && renderStatus) {
       setSelectFocus();
     }
+    */
     return (
       <Input
         id={inputId}
@@ -213,7 +221,9 @@ const LeftIcon = styled((props) => {
 `;
 
 InputField.displayName = "PhoneNumberInputField";
-
 PhoneNumberField.InputField = InputField;
+SelectField.displayName = "PhoneNumberRegionField";
+
+PhoneNumberField.RegionField = SelectField;
 
 export default PhoneNumberField;

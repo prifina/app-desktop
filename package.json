@@ -3,7 +3,7 @@
   "version": "0.1.5-alpha.0",
   "private": true,
   "dependencies": {
-    "@blend-ui/core": "1.1.27-alpha.0",
+    "@blend-ui/core": "1.1.28-alpha.0",
     "@blend-ui/icons": "1.1.4-alpha.0",
     "@blend-ui/modal": "1.0.5-alpha.0",
     "@blend-ui/progress": "1.0.3-alpha.0",

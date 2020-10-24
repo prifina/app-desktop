@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useRef } from "react";
 import {
   IconField,
   Button,
@@ -66,6 +66,7 @@ const CreateAccount = ({ onAction, ...props }) => {
   });
 
   const [regionCode, setRegioncode] = useState("000");
+  //const [regionStatus, setRegionstatus] = useState(false);
   const [nextDisabled, setNextDisabled] = useState(true);
   const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
 
@@ -113,6 +114,7 @@ const CreateAccount = ({ onAction, ...props }) => {
     }
   );
 
+  const [inputSelect, setSelectFocus] = UseFocus();
   const [inputUsername, setInputUsernameFocus] = UseFocus();
   const [inputEmail, setInputEmailFocus] = UseFocus();
   const [inputPhone, setInputPhoneFocus] = UseFocus();
@@ -243,7 +245,9 @@ const CreateAccount = ({ onAction, ...props }) => {
       },
     });
     if (!phoneState) {
-      setInputPhoneFocus();
+      if (regionCode === "000") {
+        setInputPhoneFocus();
+      }
     } else {
       checkDisabled("phone");
     }
@@ -403,6 +407,15 @@ const CreateAccount = ({ onAction, ...props }) => {
       return true;
     }
   };
+  /*
+  const [renderStatus, setRederstatus] = useState(false);
+  useEffect(() => {
+    // code to run after render goes here
+    setRederstatus(true);
+  });
+  */
+  //ref={mergeRefs(setReferenceElement, ref)}
+
   return (
     <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
       <Box mt={40} display="inline-flex">
@@ -466,7 +479,11 @@ const CreateAccount = ({ onAction, ...props }) => {
             name={"email"}
             onChange={_handleChange}
             onBlur={(e) => checkEmail(e.target.value)}
-            promptMsg={i18n.__("emailPrompt")}
+            promptMsg={
+              !state.email.status && fields.email.length > 0
+                ? i18n.__("emailPrompt")
+                : ""
+            }
             errorMsg={state.email.msg}
             error={state.email.status}
             ref={inputEmail}
@@ -494,31 +511,54 @@ const CreateAccount = ({ onAction, ...props }) => {
           />
         </IconField>
       </Box>
-      */}
-      <Box mt={5}>
-        <PhoneNumberField
-          options={selectOptions}
+       options={selectOptions}
           defaultValue={regionCode}
           onSelect={(code) => {
             //console.log("CODE ", code);
             setRegioncode(code);
           }}
-        >
+          ref={inputSelect}
+          
+      */}
+      <Box mt={state.email.status || fields.email.length > 0 ? 5 : 28}>
+        <PhoneNumberField>
+          <PhoneNumberField.RegionField
+            defaultValue={regionCode}
+            options={selectOptions}
+            searchLength={1}
+            showList={false}
+            ref={inputSelect}
+            onChange={(e, code) => {
+              //console.log("REGION", e);
+              //console.log("REGION", code);
+              setRegioncode(code);
+            }}
+          />
           <PhoneNumberField.InputField
             placeholder={i18n.__("phoneNumberPlaceholder")}
             id={"phone"}
             name={"phone"}
             onChange={_handleChange}
-            onBlur={(e) => checkPhone(e.target.value)}
-            promptMsg={i18n.__("phonePrompt")}
+            onBlur={(e) => {
+              if (regionCode !== "000") {
+                checkPhone(e.target.value);
+              } else {
+                setSelectFocus();
+              }
+            }}
+            promptMsg={
+              !state.phone.status && fields.phone.length > 0
+                ? i18n.__("phonePrompt")
+                : ""
+            }
             errorMsg={state.phone.msg}
             error={state.phone.status}
             ref={inputPhone}
-            disabled={regionCode === "000"}
+            /* disabled={regionCode === "000"} */
           />
         </PhoneNumberField>
       </Box>
-      <Box mt={5}>
+      <Box mt={state.phone.status || fields.phone.length > 0 ? 5 : 28}>
         <PasswordField
           placeholder={i18n.__("passwordPlaceholder")}
           onFocus={(e) => {
