@@ -12,11 +12,13 @@ const strings = {
     /* Create account */
     invalidEntry: "Value is required",
     invalidPhoneNumber: "Phone number is not valid",
+    invalidRegion: "Select region code",
     invalidEmail: "Email is not valid",
     usernameExists: "Username already exists",
     usernameError: "Username is too short (under {{length}} characters)",
     usernameError2: "Spaces are not allowed in the username",
     invalidPassword: "Password confirmation failed",
+    passwordQuality: "Password conditions failed",
     createAccountTitle: "Create an account",
     firstNamePlaceholder: "First Name",
     lastNamePlaceholder: "Last Name",

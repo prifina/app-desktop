@@ -66,14 +66,14 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
 
   const uuid = useId();
   const _id = id || uuid;
-  console.log("ID ", uuid, _id);
+  //console.log("ID ", uuid, _id);
   const formatIds = (id) => ({
     select: `search-${id}-select`,
     input: `search-${id}-input`,
   });
   const selectId = formatIds(_id)["select"];
   const inputId = formatIds(_id)["input"];
-  console.log("ID ", _id, inputId);
+  //console.log("ID ", _id, inputId);
   let inputError = false;
   let errorMsg = "";
   let promptMsg = "";
@@ -100,6 +100,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
         disabled,
         inputError,
         inputId,
+        selectId,
         boxRef,
       }}
     >

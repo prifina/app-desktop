@@ -1,76 +1,92 @@
-/* global localStorage */
+// /* global localStorage */
 
-import React, { useEffect, useState, useRef, useReducer } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useEffect, useReducer } from "react";
+//import { useHistory } from "react-router-dom";
 
 import { withRouter } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
-//import { createTheme } from "@blend-ui/core";
-//import { default as builderTheme } from "./theme";
-//import { ThemeProvider } from "styled-components";
+import { AppContext } from "./lib/contextLib";
+import Amplify, { Auth } from "aws-amplify";
 import { ThemeProvider } from "@blend-ui/core";
 
-//import { AppContext } from "./lib/contextLib";
+import config from "./config";
 
-//import { Auth } from "aws-amplify";
+const APIConfig = {
+  aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
+  aws_appsync_region: config.main_region,
+  aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
+};
 
-//const theme = createTheme(builderTheme);
+const AUTHConfig = {
+  // To get the aws credentials, you need to configure
+  // the Auth module with your Cognito Federated Identity Pool
+  mandatorySignIn: false,
+  userPoolId: config.cognito.USER_POOL_ID,
+  identityPoolId: config.cognito.IDENTITY_POOL_ID,
+  userPoolWebClientId: config.cognito.APP_CLIENT_ID,
+  region: config.main_region,
+};
+
+async function initAuth(newAuth = false) {
+  Auth.configure(AUTHConfig);
+  Amplify.configure(APIConfig);
+  console.log(AUTHConfig);
+  console.log(APIConfig);
+
+  console.log("INIT AUTH ", new Date(), Auth);
+  let session;
+  if (newAuth) {
+    try {
+      await Auth.signIn("tero-test", "Huuhaa12!#");
+    } catch (e) {
+      console.log("ERR", e);
+    }
+  }
+  session = await Auth.currentSession();
+
+  return session;
+}
 
 function App() {
-  const history = useHistory();
+  //const history = useHistory();
   console.log("APP START");
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
-      isAuthenticating: false,
-      currentUser: {},
-      isAuthenticated: false,
-    }
-  );
-  // const isMountedRef = useIsMountedRef();
-  /*
-  const [state, setState] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    {
-      schemaInfo: {},
-      isUpdated: true,
       isAuthenticating: true,
       currentUser: {},
       isAuthenticated: false,
     }
   );
-  */
 
-  /*
   useEffect(() => {
     async function onLoad() {
       let _currentUser = {};
+
       try {
         //await Auth.currentSession();
         // console.log("AUTH CHECK ", isAuthenticating);
-        initAuth(false);
-        const _currentSession = await Auth.currentSession();
-       
-        console.log("APP AUTH ", _currentSession);
-        //console.log("USER ", _currentSession.getIdToken().payload);
-        const token = _currentSession.getIdToken().payload;
-        _currentUser = {
-          username: token["cognito:username"],
-          organization: token["custom:organization"] || "",
-        };
-     
+        const _currentSession = await initAuth(false);
+        //console.log("AUTH ", Auth);
+        //const _currentSession = await Auth.currentSession();
+        //Auth.currentAuthenticatedUser().then((user) => console.log(user));
+        //Auth.currentCredentials().then((creds) => console.log(creds));
+        // Auth.currentSession() does not currently support federated identities. Please store the auth0 session info manually(for example, store tokens into the local storage).Auth.currentAuthenticatedUser().then(user => console.log(user));
 
-        const _defaultSchema = await emptySchema();
-        //setDefaultSchema(_defaultSchema);
-        localStorage.setItem(
-          "builderDefaultSchema",
-          JSON.stringify(_defaultSchema)
-        );
-        //localStorage.setItem('builderDefaultSchemaId', 'unique-id');
+        console.log("APP AUTH ", _currentSession);
+        if (_currentSession) {
+          const token = _currentSession.getIdToken().payload;
+          _currentUser = {
+            username: token["cognito:username"],
+            organization: token["custom:organization"] || "",
+            given_name: token["given_name"],
+            client: token["aud"],
+          };
+        }
         setState({
           isAuthenticating: false,
           currentUser: _currentUser,
-          isAuthenticated: true,
+          isAuthenticated: _currentSession ? true : false,
         });
       } catch (e) {
         console.log("ERR ", e);
@@ -83,42 +99,32 @@ function App() {
           isAuthenticated: false,
         });
       }
-      //setState({ isAuthenticating: false, currentUser: _currentUser });
-      //setIsAuthenticating(false);
     }
 
     onLoad();
   }, [state.isAuthenticated]);
-*/
 
-  /*
-  const _userAuth = (auth) => {
-    initAuth(false);
-    //userHasAuthenticated(auth);
+  const userAuth = (auth) => {
     setState({ isAuthenticated: auth });
   };
-  const _updateContent = (update) => {
-    setState({ isUpdated: update });
-  };
-  */
-  /*
-  const {
-    schemaInfo,
-    isUpdated,
-    currentUser,
-    isAuthenticating,
-    isAuthenticated,
-  } = state;
-  */
+
   const { currentUser, isAuthenticating, isAuthenticated } = state;
 
-  //console.log("AUTH CHECK ", isAuthenticating, isUpdated, schemaId);
-  //{(!isAuthenticating && !isUpdated) || (schemaId === null && <Routes />)}
   return (
-    <ThemeProvider>
-      {!isAuthenticating && <Routes />}
-      {isAuthenticating && <div>Loading...</div>}
-    </ThemeProvider>
+    <AppContext.Provider
+      value={{
+        isAuthenticated,
+        currentUser,
+        APIConfig,
+        AUTHConfig,
+        userAuth,
+      }}
+    >
+      <ThemeProvider>
+        {!isAuthenticating && <Routes />}
+        {isAuthenticating && <div>Loading...</div>}
+      </ThemeProvider>
+    </AppContext.Provider>
   );
 }
 

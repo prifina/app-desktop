@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Box, Flex, Text, useTheme } from "@blend-ui/core";
 //import { ReactComponent as BackPlate } from "../assets/back-plate.svg";
 //import BackPlate from "../assets/plate.svg";
@@ -16,11 +17,14 @@ import CreateAccount from "./CreateAccount";
 import TermsOfUse from "./TermsOfUse";
 import EmailVerification from "./EmailVerification";
 import PhoneVerification from "./PhoneVerification";
+import { useAppContext } from "../lib/contextLib";
+
+import { useHistory } from "react-router-dom";
 
 import NotFoundPage from "../components/NotFoundPage";
+import Logout from "./Logout";
 
 import i18n from "../lib/i18n";
-import { PhoneNumberFormat } from "google-libphonenumber";
 i18n.init();
 
 //const backPlatePath = "../assets/back-plate.svg";
@@ -64,28 +68,70 @@ height={"960px"}
 
 const Landing = (props) => {
   console.log("LANDING ", props);
+  const history = useHistory();
+  const { isAuthenticated, userAuth } = useAppContext();
+  const { pathname, search } = useLocation();
+  console.log("LOCATION ", pathname, search);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
-  const [stepCounter, setStepCounter] = useState(1);
+  let initStep = 1;
+  if (pathname === "/verify-email") {
+    initStep = 3;
+  } else if (pathname === "/verify-phone") {
+    initStep = 4;
+  }
 
-  const checkAction = (action) => {
+  //console.log("STEP ", initStep);
+  const [stepCounter, setStepCounter] = useState(initStep);
+  //const [accountFields, setAccountFields] = useState({});
+  /*
+  const [accountFields, setAccountFields] = useState({
+    email: { value: "tro9999@gmail.com" },
+    firstName: { value: "Tero" },
+    lastName: { value: "Ahola" },
+    password: { value: "Huuhaa12!#" },
+    phone: { value: "407077102" },
+    regionCode: "+358",
+    username: { value: "tero-testing3" },
+  });
+  */
+  const [accountFields, setAccountFields] = useState({});
+
+  useEffect(() => {
+    if (stepCounter !== initStep) {
+      setStepCounter(initStep);
+    }
+    // stepCounter is missing dependency... fix this logic later
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initStep]);
+
+  const checkAction = (action, fields) => {
     switch (action) {
       case "register":
+        console.log("ACCOUNT FIELDS ", fields);
+        setAccountFields(fields);
         setStepCounter(2);
         break;
       case "terms":
         setStepCounter(1);
         break;
       case "email":
-        setStepCounter(3);
+        userAuth(true);
+        history.replace("/verify-email");
+        // use route instead
+        //setStepCounter(3);
         break;
       case "phone":
+        //history.replace("/verify-phone");
+        // use route instead
         setStepCounter(4);
         break;
       default:
         setStepCounter(0);
     }
   };
+
+  console.log("STEP COUNTER ", stepCounter);
   return (
     <React.Fragment>
       <StyledBox minWidth={"1440px"} maxHeight={"792px"} minHeight={"792px"}>
@@ -125,13 +171,20 @@ const Landing = (props) => {
           <Flex width={"56%"} height={"730px"} justifyContent={"flex-end"}>
             <StyledPlate height={"730px"} width={"753px"}>
               <Flex justifyContent={"flex-end"}>
-                <Box position={"relative"} right={"64px"} top={"62px"}>
+                <Box
+                  position={"relative"}
+                  right={"64px"}
+                  top={"62px"}
+                  key={"step-" + stepCounter}
+                >
                   {stepCounter === 0 && <NotFoundPage />}
-                  {stepCounter === 1 && (
+                  {stepCounter === 1 && !isAuthenticated && (
                     <CreateAccount onAction={checkAction} />
                   )}
-
-                  {stepCounter === 2 && <TermsOfUse onAction={checkAction} />}
+                  {stepCounter === 1 && isAuthenticated && <Logout />}
+                  {stepCounter === 2 && (
+                    <TermsOfUse onAction={checkAction} fields={accountFields} />
+                  )}
                   {stepCounter === 3 && (
                     <EmailVerification onAction={checkAction} />
                   )}

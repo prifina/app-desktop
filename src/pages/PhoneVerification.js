@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Box, Flex, Button, Text, IconField } from "@blend-ui/core";
 
 import bxKey from "@iconify/icons-bx/bx-key";
@@ -9,12 +9,19 @@ import { useFormFields } from "../lib/formFields";
 
 import { onlyDigitChars } from "../lib/utils";
 import { UseFocus } from "../lib/componentUtils";
+import Amplify, { API } from "aws-amplify";
+import { useAppContext } from "../lib/contextLib";
+import { verifyCodeMutation } from "../graphql/api";
+import { useHistory } from "react-router-dom";
 
 import i18n from "../lib/i18n";
 i18n.init();
 
 const PhoneVerification = ({ onAction, ...props }) => {
-  const [fields, _handleChange] = useFormFields({
+  const history = useHistory();
+  const { APIConfig, currentUser } = useAppContext();
+  Amplify.configure(APIConfig);
+  const [verificationFields, _handleChange] = useFormFields({
     verificationCode: "",
   });
   const [inputCode, setInputCodeFocus] = UseFocus();
@@ -35,6 +42,26 @@ const PhoneVerification = ({ onAction, ...props }) => {
     if (validCode) {
       setInputError({ status: false, msg: "" });
     }
+  };
+  const verifyClick = async (e) => {
+    try {
+      const result = await verifyCodeMutation(
+        API,
+        [
+          currentUser.username,
+          currentUser.client,
+          "phone",
+          verificationFields.verificationCode,
+        ].join("#")
+      );
+      console.log(result);
+      // redirects to logout...
+      history.replace("/");
+    } catch (e) {
+      console.log("ERR", e);
+      //history.replace("/");
+    }
+    //e.preventDefault();
   };
   return (
     <ProgressContainer title={i18n.__("verificationTitle")} progress={100}>
@@ -102,7 +129,11 @@ const PhoneVerification = ({ onAction, ...props }) => {
       */}
       <Box mt={inputError.status ? 60 : 84} textAlign={"center"}>
         <Button
-          disabled={inputError.status || fields.verificationCode.length !== 6}
+          disabled={
+            inputError.status ||
+            verificationFields.verificationCode.length !== 6
+          }
+          onClick={verifyClick}
         >
           {i18n.__("verifyButton")}
         </Button>

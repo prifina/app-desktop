@@ -54,9 +54,11 @@ export function validUsername(username, requiredLength) {
   if (username.length < requiredLength) {
     return "LENGTH";
   }
+  /*
   if (username === "tero") {
     return "EXISTS";
   }
+  */
   return "";
 }
 export function checkPassword(password, requiredLength, checkList) {
@@ -75,6 +77,7 @@ export function checkPassword(password, requiredLength, checkList) {
   const listResult = checkList.some((c) => {
     return String(password).indexOf(c) > -1;
   });
+  console.log(listResult, checkList, password);
   checkResult[3] = checkResult[0] && !listResult;
 
   return checkResult;

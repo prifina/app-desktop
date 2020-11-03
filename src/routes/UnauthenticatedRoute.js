@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-//import { useAppContext } from "../lib/contextLib";
+import { useAppContext } from "../lib/contextLib";
 
 function querystring(name, url = window.location.href) {
   name = name.replace(/[[]]/g, "\\$&");
@@ -19,8 +19,7 @@ function querystring(name, url = window.location.href) {
 }
 
 export default function UnauthenticatedRoute({ children, ...rest }) {
-  //const { isAuthenticated } = useAppContext();
-  const isAuthenticated = false;
+  const { isAuthenticated } = useAppContext();
   const redirect = querystring("redirect");
   //const schemaId = localStorage.getItem("builderDefaultSchemaId");
 

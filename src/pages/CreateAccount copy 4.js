@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useReducer, useEffect, useCallback } from "react";
 import {
   IconField,
   Button,
@@ -34,6 +34,37 @@ import Amplify, { API } from "aws-amplify";
 import i18n from "../lib/i18n";
 
 i18n.init();
+
+function checkEmail(email) {
+  //console.log("FIELDS ", fields);
+  const emailState = validEmail(email);
+  //console.log("CHECKING ", emailState);
+
+  return !emailState;
+}
+
+function checkPasswordQuality(verifications, passwordVerification) {
+  //checkInputPassword(password);
+  console.log(
+    "Checking password quality... ",
+    passwordVerification,
+    verifications
+  );
+  const verifyList = verifications || passwordVerification;
+  const invalidPasswordStatus = verifyList.some((v, i) => {
+    console.log("STEP ", v, i);
+    return v === false;
+  });
+  return invalidPasswordStatus;
+}
+
+function checkInputPassword(password, options) {
+  //console.log(password);
+  const checkResult = checkPassword(password, config.passwordLength, options);
+  console.log("PASS CHECK ", checkResult);
+  //setPasswordVerification(checkResult);
+  return checkResult;
+}
 
 const CreateAccount = ({ onAction, ...props }) => {
   const { APIConfig } = useAppContext();
@@ -149,7 +180,7 @@ const CreateAccount = ({ onAction, ...props }) => {
 
     return !phoneState;
   };
-
+  /*
   const checkEmail = (email) => {
     //console.log("FIELDS ", fields);
     const emailState = validEmail(email);
@@ -157,7 +188,7 @@ const CreateAccount = ({ onAction, ...props }) => {
 
     return !emailState;
   };
-
+*/
   const checkUsername = async (username) => {
     //console.log("FIELDS2 ", fields);
     //console.log(await checkUsernameQuery(API, "tero-test"));
@@ -190,7 +221,7 @@ const CreateAccount = ({ onAction, ...props }) => {
 
     return userMsg;
   };
-
+  /*
   const checkInputPassword = (password) => {
     //console.log(password);
     const checkResult = checkPassword(password, config.passwordLength, [
@@ -203,7 +234,8 @@ const CreateAccount = ({ onAction, ...props }) => {
     setPasswordVerification(checkResult);
     return checkResult;
   };
-
+  */
+  /*
   const checkPasswordQuality = (verifications) => {
     //checkInputPassword(password);
     console.log(
@@ -218,291 +250,294 @@ const CreateAccount = ({ onAction, ...props }) => {
     });
     return invalidPasswordStatus;
   };
+  */
 
   //  const checkFields = async () => {
-  useEffect(() => {
-    async function checkFields() {
-      let states = { ...state };
-      let statesUpdated = false;
-      Object.keys(states).forEach((fld) => {
-        if (document.getElementById(fld)) {
-          const fieldValue = document.getElementById(fld).value;
+  const checkFields = useCallback(async () => {
+    let states = { ...state };
+    let statesUpdated = false;
+    Object.keys(states).forEach((fld) => {
+      if (document.getElementById(fld)) {
+        const fieldValue = document.getElementById(fld).value;
 
-          if (fieldValue !== states[fld].value) {
-            statesUpdated = true;
-            states[fld].value = fieldValue;
+        if (fieldValue !== states[fld].value) {
+          statesUpdated = true;
+          states[fld].value = fieldValue;
 
-            console.log("KEYS ", fld);
-          }
+          console.log("KEYS ", fld);
         }
-      });
-
-      let fieldStatuses = [];
-
-      if (states["firstName"].value.length > 0 && !states["firstName"].valid) {
-        statesUpdated = true;
-
-        states["firstName"].status = false;
-        states["firstName"].msg = "";
-        states["firstName"].valid = true;
-      } else if (
-        states["firstName"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["firstName"].status = true;
-        states["firstName"].msg = i18n.__("invalidEntry");
-        states["firstName"].valid = false;
-
-        fieldStatuses.push("firstName");
       }
-      if (states["lastName"].value.length > 0 && !states["lastName"].valid) {
-        statesUpdated = true;
-        states["lastName"].status = false;
-        states["lastName"].msg = "";
-        states["lastName"].valid = true;
-      } else if (
-        states["lastName"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["lastName"].status = true;
-        states["lastName"].msg = i18n.__("invalidEntry");
-        states["lastName"].valid = false;
+    });
 
-        fieldStatuses.push("lastName");
-      }
+    let fieldStatuses = [];
 
-      if (states["username"].value.length > 0 && !states["username"].valid) {
-        const userError = await checkUsername(states["username"].value);
-        statesUpdated = true;
-        if (userError !== "") {
-          states["username"].status = true;
-          states["username"].msg = userError;
-          states["username"].valid = false;
+    if (states["firstName"].value.length > 0 && !states["firstName"].valid) {
+      statesUpdated = true;
 
-          fieldStatuses.push("username");
-        } else {
-          states["username"].status = false;
-          states["username"].msg = "";
-          states["username"].valid = true;
-        }
-      } else if (
-        states["username"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
+      states["firstName"].status = false;
+      states["firstName"].msg = "";
+      states["firstName"].valid = true;
+    } else if (
+      states["firstName"].value.length === 0 &&
+      states.checkLengthStatus
+    ) {
+      statesUpdated = true;
+      states["firstName"].status = true;
+      states["firstName"].msg = i18n.__("invalidEntry");
+      states["firstName"].valid = false;
+
+      fieldStatuses.push("firstName");
+    }
+    if (states["lastName"].value.length > 0 && !states["lastName"].valid) {
+      statesUpdated = true;
+      states["lastName"].status = false;
+      states["lastName"].msg = "";
+      states["lastName"].valid = true;
+    } else if (
+      states["lastName"].value.length === 0 &&
+      states.checkLengthStatus
+    ) {
+      statesUpdated = true;
+      states["lastName"].status = true;
+      states["lastName"].msg = i18n.__("invalidEntry");
+      states["lastName"].valid = false;
+
+      fieldStatuses.push("lastName");
+    }
+
+    if (states["username"].value.length > 0 && !states["username"].valid) {
+      const userError = await checkUsername(states["username"].value);
+      statesUpdated = true;
+      if (userError !== "") {
         states["username"].status = true;
-        states["username"].msg = i18n.__("invalidEntry");
+        states["username"].msg = userError;
         states["username"].valid = false;
 
         fieldStatuses.push("username");
+      } else {
+        states["username"].status = false;
+        states["username"].msg = "";
+        states["username"].valid = true;
       }
+    } else if (
+      states["username"].value.length === 0 &&
+      states.checkLengthStatus
+    ) {
+      statesUpdated = true;
+      states["username"].status = true;
+      states["username"].msg = i18n.__("invalidEntry");
+      states["username"].valid = false;
 
-      if (states["email"].value.length > 0 && !states["email"].valid) {
-        const emailError = checkEmail(states["email"].value);
-        statesUpdated = true;
-        if (emailError) {
-          states["email"].status = true;
-          states["email"].msg = i18n.__("invalidEmail");
-          states["email"].valid = false;
+      fieldStatuses.push("username");
+    }
 
-          fieldStatuses.push("email");
-        } else {
-          states["email"].status = false;
-          states["email"].msg = "";
-          states["email"].valid = true;
-        }
-      } else if (
-        states["email"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
+    if (states["email"].value.length > 0 && !states["email"].valid) {
+      const emailError = checkEmail(states["email"].value);
+
+      statesUpdated = true;
+      if (emailError) {
         states["email"].status = true;
-        states["email"].msg = i18n.__("invalidEntry");
+        states["email"].msg = i18n.__("invalidEmail");
         states["email"].valid = false;
 
         fieldStatuses.push("email");
+      } else {
+        states["email"].status = false;
+        states["email"].msg = "";
+        states["email"].valid = true;
       }
+    } else if (states["email"].value.length === 0 && states.checkLengthStatus) {
+      statesUpdated = true;
+      states["email"].status = true;
+      states["email"].msg = i18n.__("invalidEntry");
+      states["email"].valid = false;
 
-      if (states["phone"].value.length > 0 && !states["phone"].valid) {
-        statesUpdated = true;
-        if (inputSelect.current.value === "") {
-          states["phone"].status = true;
-          states["phone"].msg = i18n.__("invalidRegion");
-          states["phone"].valid = false;
-          fieldStatuses.push("regionCode");
-        } else {
-          const phoneError = checkPhone(
-            inputSelect.current.value,
-            states["phone"].value
-          );
-          if (phoneError) {
-            states["phone"].status = true;
-            states["phone"].msg = i18n.__("invalidPhoneNumber");
-            states["phone"].valid = false;
+      fieldStatuses.push("email");
+    }
 
-            fieldStatuses.push("phone");
-          } else {
-            states["phone"].status = false;
-            states["phone"].msg = "";
-            states["phone"].valid = true;
-            states["regionCode"] = inputSelect.current.value;
-          }
-        }
-      } else if (
-        states["phone"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
+    if (states["phone"].value.length > 0 && !states["phone"].valid) {
+      statesUpdated = true;
+      if (inputSelect.current.value === "") {
         states["phone"].status = true;
-        states["phone"].msg = i18n.__("invalidEntry");
+        states["phone"].msg = i18n.__("invalidRegion");
         states["phone"].valid = false;
-        fieldStatuses.push("phone");
-      }
-
-      if (states["password"].value.length > 0 && !states["password"].valid) {
-        const passwordCheckResult = checkInputPassword(
-          states["password"].value
+        fieldStatuses.push("regionCode");
+      } else {
+        const phoneError = checkPhone(
+          inputSelect.current.value,
+          states["phone"].value
         );
-        const passwordError = checkPasswordQuality(passwordCheckResult);
-        statesUpdated = true;
-        states["checkLengthStatus"] = true;
+        if (phoneError) {
+          states["phone"].status = true;
+          states["phone"].msg = i18n.__("invalidPhoneNumber");
+          states["phone"].valid = false;
 
-        if (passwordError) {
-          states["password"].status = true;
-          states["password"].msg = i18n.__("passwordQuality");
-          states["password"].valid = false;
-          fieldStatuses.push("password");
+          fieldStatuses.push("phone");
         } else {
-          states["password"].status = false;
-          states["password"].msg = "";
-          states["password"].valid = true;
+          states["phone"].status = false;
+          states["phone"].msg = "";
+          states["phone"].valid = true;
+          states["regionCode"] = inputSelect.current.value;
         }
-      } else if (
-        states["password"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
+      }
+    } else if (states["phone"].value.length === 0 && states.checkLengthStatus) {
+      statesUpdated = true;
+      states["phone"].status = true;
+      states["phone"].msg = i18n.__("invalidEntry");
+      states["phone"].valid = false;
+      fieldStatuses.push("phone");
+    }
+
+    if (states["password"].value.length > 0 && !states["password"].valid) {
+      const passwordCheckResult = checkInputPassword(states["password"].value, [
+        states.firstName.value,
+        states.lastName.value,
+        states.username.value,
+        states.email.value,
+      ]);
+      const passwordError = checkPasswordQuality(
+        passwordCheckResult,
+        passwordVerification
+      );
+      statesUpdated = true;
+      states["checkLengthStatus"] = true;
+
+      if (passwordError) {
         states["password"].status = true;
-        states["password"].msg = i18n.__("invalidEntry");
+        states["password"].msg = i18n.__("passwordQuality");
         states["password"].valid = false;
         fieldStatuses.push("password");
+      } else {
+        states["password"].status = false;
+        states["password"].msg = "";
+        states["password"].valid = true;
       }
+    } else if (
+      states["password"].value.length === 0 &&
+      states.checkLengthStatus
+    ) {
+      statesUpdated = true;
+      states["password"].status = true;
+      states["password"].msg = i18n.__("invalidEntry");
+      states["password"].valid = false;
+      fieldStatuses.push("password");
+    }
 
-      if (
-        states["passwordConfirm"].value.length > 0 &&
-        !states["passwordConfirm"].valid
-      ) {
-        statesUpdated = true;
-        states["checkLengthStatus"] = true;
-        const confirmError =
-          states["passwordConfirm"].value !== states["password"].value;
+    if (
+      states["passwordConfirm"].value.length > 0 &&
+      !states["passwordConfirm"].valid
+    ) {
+      statesUpdated = true;
+      states["checkLengthStatus"] = true;
+      const confirmError =
+        states["passwordConfirm"].value !== states["password"].value;
 
-        if (confirmError) {
-          states["password"].status = true;
-          states["passwordConfirm"].status = true;
-          states["password"].msg = i18n.__("invalidPassword");
-          states["passwordConfirm"].msg = i18n.__("invalidPassword");
-          states["password"].valid = false;
-          states["passwordConfirm"].valid = false;
-          fieldStatuses.push("password");
-        } else {
-          states["password"].status = false;
-          states["password"].msg = "";
-          states["passwordConfirm"].valid = true;
-          states["passwordConfirm"].status = false;
-          states["passwordConfirm"].msg = "";
-        }
-      } else if (
-        states["passwordConfirm"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
+      if (confirmError) {
+        states["password"].status = true;
         states["passwordConfirm"].status = true;
-        states["passwordConfirm"].msg = i18n.__("invalidEntry");
+        states["password"].msg = i18n.__("invalidPassword");
+        states["passwordConfirm"].msg = i18n.__("invalidPassword");
+        states["password"].valid = false;
         states["passwordConfirm"].valid = false;
         fieldStatuses.push("password");
-      }
-
-      if (states.regionCode === "000" && inputSelect.current.value !== "") {
-        statesUpdated = true;
-        states.regionCode = inputSelect.current.value;
-        console.log("REGION UPDATE ", states, inputSelect.current.value);
-      }
-
-      //search-input-fld
-      if (fieldStatuses.length > 0) {
-        let firstStatus = fieldStatuses[0];
-        const selectSearchID = inputSelect.current.id;
-        const activeID = document.activeElement.id;
-        if (firstStatus === "regionCode") {
-          firstStatus = selectSearchID;
-        }
-        console.log("FOCUS ", firstStatus);
-
-        if (activeID !== firstStatus) {
-          if (firstStatus === "firstName") {
-            setInputFirstnameFocus();
-          } else if (firstStatus === "lastName") {
-            setInputLastnameFocus();
-          } else if (firstStatus === "usermame") {
-            setInputUsernameFocus();
-          } else if (firstStatus === "email") {
-            setInputEmailFocus();
-          } else if (firstStatus === "phone") {
-            setInputPhoneFocus();
-          } else if (firstStatus === selectSearchID) {
-            setSelectFocus();
-          } else if (firstStatus === "password") {
-            if (activeID !== "passwordConfirm") {
-              setInputPasswordFocus();
-            }
-          } else {
-            console.log("UNKNOWN FIELD ", firstStatus);
-          }
-        }
-
-        setNextDisabled(true);
       } else {
-        if (states.checkLengthStatus) {
-          console.log("ALL GOOD, activate Next button");
-          setNextDisabled(false);
+        states["password"].status = false;
+        states["password"].msg = "";
+        states["passwordConfirm"].valid = true;
+        states["passwordConfirm"].status = false;
+        states["passwordConfirm"].msg = "";
+      }
+    } else if (
+      states["passwordConfirm"].value.length === 0 &&
+      states.checkLengthStatus
+    ) {
+      statesUpdated = true;
+      states["passwordConfirm"].status = true;
+      states["passwordConfirm"].msg = i18n.__("invalidEntry");
+      states["passwordConfirm"].valid = false;
+      fieldStatuses.push("password");
+    }
+
+    if (states.regionCode === "000" && inputSelect.current.value !== "") {
+      statesUpdated = true;
+      states.regionCode = inputSelect.current.value;
+      console.log("REGION UPDATE ", states, inputSelect.current.value);
+    }
+
+    //search-input-fld
+    if (fieldStatuses.length > 0) {
+      let firstStatus = fieldStatuses[0];
+      const selectSearchID = inputSelect.current.id;
+      const activeID = document.activeElement.id;
+      if (firstStatus === "regionCode") {
+        firstStatus = selectSearchID;
+      }
+      console.log("FOCUS ", firstStatus);
+
+      if (activeID !== firstStatus) {
+        if (firstStatus === "firstName") {
+          setInputFirstnameFocus();
+        } else if (firstStatus === "lastName") {
+          setInputLastnameFocus();
+        } else if (firstStatus === "usermame") {
+          setInputUsernameFocus();
+        } else if (firstStatus === "email") {
+          setInputEmailFocus();
+        } else if (firstStatus === "phone") {
+          setInputPhoneFocus();
+        } else if (firstStatus === selectSearchID) {
+          setSelectFocus();
+        } else if (firstStatus === "password") {
+          if (activeID !== "passwordConfirm" && activeID !== "password") {
+            setInputPasswordFocus();
+          }
         } else {
-          console.log("PASSWORD NOT YET ENTERED....");
+          console.log("UNKNOWN FIELD ", firstStatus);
         }
       }
 
-      //console.log("UPDATES ", checks);
-      if (statesUpdated) {
-        console.log("UPDATE STATES ");
-        //setState(Object.assign({}, states));
-        setState(states);
+      setNextDisabled(true);
+    } else {
+      if (states.checkLengthStatus) {
+        console.log("ALL GOOD, activate Next button");
+        setNextDisabled(false);
+      } else {
+        console.log("PASSWORD NOT YET ENTERED....");
       }
-      /*
+    }
+
+    //console.log("UPDATES ", checks);
+    if (statesUpdated) {
+      console.log("UPDATE STATES ");
+      //setState(Object.assign({}, states));
+      setState(states);
+    }
+    /*
     if (checkLengthStatus) {
       const checkEmpty = checkLengths();
     }
     */
 
-      console.log("STATE FIELDS ", state, states);
-      console.log("REGION CODE ", states.regionCode);
-      console.log("SELECT ", inputSelect.current.value);
-      /*
+    console.log("STATE FIELDS ", state, states);
+    console.log("REGION CODE ", states.regionCode);
+    console.log("SELECT ", inputSelect.current.value);
+    /*
     if (regionCode === "000" && inputSelect.current.value !== "") {
       setRegioncode(inputSelect.current.value);
     }
     */
-    }
-    const activeField = document.activeElement.id;
+  }, [
+    state,
+    inputSelect,
+    setInputEmailFocus,
+    setInputFirstnameFocus,
+    setInputLastnameFocus,
+    setInputPasswordFocus,
+    setInputPhoneFocus,
+    setInputUsernameFocus,
+    setSelectFocus,
+  ]);
 
-    if (
-      activeField !== "search-input-fld" &&
-      activeField !== inputSelect.current.id
-    ) {
-      checkFields();
-    }
-  }, [seconds]);
   /*
   const hydrate = useCallback(( _state, _errors=false ) => {
     console.log('hydrate()');
@@ -528,23 +563,31 @@ useEffect(() => {
 }, [])
 */
 
-  /*
   useEffect(() => {
     //console.log("INTERVAL STATE FIELDS ", state);
     const activeField = document.activeElement.id;
 
     if (
-      activeField !== "search-input-fld" &&
-      activeField !== inputSelect.current.id
+      (activeField !== "search-input-fld" &&
+        activeField !== inputSelect.current.id) ||
+      (activeField === inputSelect.current.id &&
+        inputSelect.current.value !== "")
     ) {
+      /*
+      console.log(
+        "SELECT VALUE ",
+        inputSelect.current.value,
+        typeof inputSelect.current.value
+      );
+      */
       checkFields();
     }
-  }, [seconds]);
-*/
+  }, [seconds, inputSelect, checkFields]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setSeconds((seconds) => seconds + 1);
-    }, 500);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -710,8 +753,13 @@ useEffect(() => {
           name={"password"}
           onChange={(e) => {
             handleChange(e);
-            /* check password popup */
-            checkInputPassword(e.target.value);
+            const checkResult = checkInputPassword(e.target.value, [
+              state.firstName.value,
+              state.lastName.value,
+              state.username.value,
+              state.email.value,
+            ]);
+            setPasswordVerification(checkResult);
           }}
           ref={inputPassword}
           /* promptMsg={i18n.__("passwordPrompt")} */
