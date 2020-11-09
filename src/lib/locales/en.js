@@ -58,7 +58,7 @@ const strings = {
 
     /* Phone verification */
     codeDigitsError: "Only numbers are allowed",
-    codeLengthError: "The code must be 6 digits long",
+    codeLengthError: "The code must be six digits long",
     verificationTitle: "Setup your 2-step verification method",
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
