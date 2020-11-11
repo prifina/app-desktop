@@ -35,3 +35,5 @@ props { 
 - [ ] Label
 - [ ] Project
 - [ ] Milestone
+
+*Guidelines:* ["GitHub Issue Card Template"](https://docs.google.com/document/d/1kyk7G7o19gZscVL-TEA1p1nVmP2NYk0Gf2w_MCcgXgk/edit#heading=h.antcpmcoy5u2)
