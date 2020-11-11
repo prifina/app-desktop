@@ -66,7 +66,7 @@ const strings = {
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive the code?",
     sendAgainLinkText: "Send again",
-    invalidCode: "Incorrect code, please re-enter the correct code",
+    invalidCode: "Incorrect code, please re-enter the correct code.",
 
     /* Email verification */
     emailVerificationTitle: "Setup your email verification",
