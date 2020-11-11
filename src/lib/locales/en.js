@@ -35,7 +35,7 @@ const strings = {
     /* Landing page */
     welcomeMessage: "Hello",
     landingPage:
-      "We are a team working on the future of personal applications. This is why we have created this personal cloud environment that will help you implement your boldest ideas while allowing individuals to keep their data.",
+      "We are a team working on the future of personal applications. That's why we created this personal cloud environment that will help you implement your boldest ideas while allowing individuals to keep their data.",
     landingPageInfo: "Fill in the form on the right",
     /* Terms & conditions */
     termsTitle: "Prifina's Terms of Use",
@@ -62,7 +62,7 @@ const strings = {
     verificationTitle: "Setup your two-step verification method",
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
-      "Please provide your email and phone details to keep your account secure",
+      "Please provide your email and phone details in order to keep your account secure",
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive the code?",
     sendAgainLinkText: "Send again",
