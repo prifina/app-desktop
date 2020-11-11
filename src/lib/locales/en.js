@@ -24,9 +24,9 @@ const strings = {
     lastNamePlaceholder: "Last Name",
     usernamePlaceholder: "User Name",
     emailPlaceholder: "Email",
-    emailPrompt: "This email will be used for 2-step verification",
+    emailPrompt: "This email will be used for two-step verification",
     phoneNumberPlaceholder: "Phone Number",
-    phonePrompt: "This number will be used for 2-step verification",
+    phonePrompt: "This number will be used for two-step verification",
     passwordPlaceholder: "Password",
 
     confirmPlaceholder: "Confirm Password",
@@ -39,7 +39,7 @@ const strings = {
     landingPageInfo: "Fill in the form on the right",
     /* Terms & conditions */
     termsTitle: "Prifina's Terms of Use",
-    termsLastUpdated: "Last Updated: October, 2020",
+    termsLastUpdated: "Last updated: October, 2020",
     agreeementTitle: "Agreement",
     agreementText:
       "By using or visiting any of Prifina’s websites, or any of our products, software, or applications, you signify your agreement to these Terms.",
@@ -59,22 +59,22 @@ const strings = {
     /* Phone verification */
     codeDigitsError: "Only numbers are allowed",
     codeLengthError: "The code must be 6 digits long",
-    verificationTitle: "Setup your 2-step verification method",
+    verificationTitle: "Setup your two-step verification method",
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
       "Please provide your email and phone details in order to keep your account secure",
     codePropmt: "Enter the code here",
-    codeMissing: "Didn't receive a code?",
+    codeMissing: "Didn't receive the code?",
     sendAgainLinkText: "Send again",
     invalidCode: "Incorrect code, please re-enter the correct code",
 
     /* Email verification */
     emailVerificationTitle: "Setup your email verification",
     emailVerificationText:
-      "In order to keep your personal data safe and secure, you have to provide your email and phone details",
-    emailMissing: "Didn't receive an email?",
+      "Please provide your email and phone details to keep your account secure",
+    emailMissing: "Didn't receive the code?",
     /* Decline dialog */
-    declineTitle: "Decline Prifina’s terms of use?",
+    declineTitle: "Decline Prifina’s Terms of Use?",
     declineText:
       "By declining our Terms of Use, you are rejecting the usage of the Prifina application.",
   },
