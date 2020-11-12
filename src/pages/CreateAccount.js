@@ -15,6 +15,7 @@ import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
+import { useHistory } from "react-router-dom";
 
 //import { useFormFields } from "../lib/formFields";
 import {
@@ -36,6 +37,7 @@ import i18n from "../lib/i18n";
 i18n.init();
 
 const CreateAccount = ({ onAction, ...props }) => {
+  const history = useHistory();
   const { APIConfig } = useAppContext();
   Amplify.configure(APIConfig);
   //console.log("Account ", props);
@@ -584,6 +586,10 @@ useEffect(() => {
       }
     }
   };
+  const loginLink = (e) => {
+    history.replace("/login");
+    e.preventDefault();
+  };
   return (
     <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
       <Box mt={40} display="inline-flex">
@@ -763,6 +769,7 @@ useEffect(() => {
                 variation={"link"}
                 fontSize={"10px"}
                 lineHeight={"normal"}
+                onClick={loginLink}
               >
                 {i18n.__("loginLink")}
               </Button>

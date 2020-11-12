@@ -11,6 +11,8 @@ import { ThemeProvider } from "@blend-ui/core";
 
 import config from "./config";
 
+//import { countryList } from "./lib/utils";
+
 const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
   aws_appsync_region: config.main_region,
@@ -50,6 +52,7 @@ async function initAuth(newAuth = false) {
 function App() {
   //const history = useHistory();
   console.log("APP START");
+  //console.log(JSON.stringify(countryList()));
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {

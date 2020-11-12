@@ -92,7 +92,7 @@ const mergeRefs = (...refs) => {
 };
 
 const PasswordField = forwardRef(
-  ({ placeholder, addPopper, verifications, ...props }, ref) => {
+  ({ placeholder, addPopper = false, verifications = [], ...props }, ref) => {
     const theme = useTheme();
     //const referenceElement = ref;
 
