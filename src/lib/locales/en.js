@@ -86,7 +86,7 @@ const strings = {
     invalidLogin: "Incorrect username or password.",
     forgotUsername: "Forgot username?",
     forgotPassword: "Forgot password?",
-    createAccount: "Create Account",
+    createAccount: "Create account",
     confirmTitle: "Secure login",
     authConfirmTitle: "Enter authentication code",
     authConfirmationText:
