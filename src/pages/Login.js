@@ -72,6 +72,8 @@ const Login = ({ onAction, ...props }) => {
       );
       console.log("LOGIN", user);
       if (user.preferredMFA === "NOMFA") {
+        //const mfa = await Auth.setPreferredMFA(user, "SMS");
+        //console.log("MFA ", mfa);
         history.replace("/");
         userAuth(true);
       } else if (user.challengeName === "SMS_MFA") {
