@@ -87,10 +87,10 @@ const strings = {
     forgotUsername: "Forgot username?",
     forgotPassword: "Forgot password?",
     createAccount: "Create Account",
-    confirmTitle: "Confirm two-step verification method",
-    authConfirmTitle: "Confirm your login",
+    confirmTitle: "Secure login",
+    authConfirmTitle: "Enter authentication code",
     authConfirmationText:
-      "Please provide your authentication confirmation code.",
+      "We've sent you the authentication code. Please enter it below to login.",
   },
 };
 
