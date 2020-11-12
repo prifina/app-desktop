@@ -1,0 +1,26 @@
+.app-statistics-information{
+    tr{
+            th{
+                text-align: left;
+                font-size: 12px;
+                font-weight: 700;
+                border-bottom: 1px solid $table-border-color;
+            }
+            td{
+                text-align: right;
+                font-size: 12px;
+                font-weight: 400;
+                border-bottom: 1px solid $table-border-color;
+            }
+
+    }
+    tr:last-child{
+        th{
+        border-bottom: 0px solid $table-border-color;
+         }
+        td{
+        border-bottom: 0px solid $table-border-color;
+        }
+    }
+
+}

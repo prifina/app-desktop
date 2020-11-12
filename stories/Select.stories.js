@@ -1,5 +1,5 @@
 import React from "react";
-import { Label, Box, Text, SearchSelect } from "@blend-ui/core";
+import { Label, Box, Text, SearchSelect, Input } from "@blend-ui/core";
 
 export default { title: "Search Select" };
 /*
@@ -71,4 +71,10 @@ export const select2 = () => (
 );
 select2.story = {
   name: "Search Select with full list visible",
+};
+
+
+export const Select3 = () => <Input placeholder={"Search app directory"} />;
+Select3.story = {
+  name: "Dashboard Search",
 };

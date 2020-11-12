@@ -5,7 +5,7 @@ import { default as App } from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
 //import { ThemeProvider } from "@blend-ui/core";
-
+import 'flexboxgrid/dist/flexboxgrid.css';
 render(
   <Router>
     <App />

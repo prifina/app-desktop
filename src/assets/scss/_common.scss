@@ -1,0 +1,82 @@
+body{
+    font-size: 12px;
+    line-height: 15.18px;
+    color: $body-font-color;
+}
+p{
+    font-size: 12px;
+    line-height: 15.18px;
+}
+h4{
+    font-size: 24px;
+    line-height: 30.36px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    color: $heading-font-color;
+}
+
+h4{
+    font-size: 18px;
+    line-height: 22.77px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    color: $heading-font-color;
+}
+.paragraph-heading-strong{
+    font-weight: 700;
+    text-shadow: none;
+    font-size: 14px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    color: $heading-font-color;
+}
+.breadcrumbs-container {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.breadcrumbs-previous-page{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 18px;
+    align-items: center;
+    color: $breadcrumb-font-color;
+    padding: 5px;
+}
+.breadcrumbs-divider{
+    width: 2px;
+    height: 2px;
+    background: $breadcrumb-font-color;
+}
+.breadcrumbs-active-page{
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 18px;
+    align-items: center;
+    color: $breadcrumb-font-color;
+    padding: 5px;
+}
+.app-details-key-features-list{
+    padding-left: 0;
+    list-style-position: inside;
+    list-style-type: '- ';
+}
+
+.gallery-item{
+    width: 250px;
+}
+.tab-description{
+    color: $tab-description-color;
+}
+.tabs-main-heading{
+    font-size: 37px;
+    line-height: 47px;
+    font-weight: 500;
+    color: $tabs-main-heading-color;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}

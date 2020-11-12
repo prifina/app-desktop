@@ -1,0 +1,27 @@
+.header-container{
+    display: flex;
+    align-self: center;
+    align-items: center;
+    
+    .site-logo-icon{
+        margin-right: 10px;
+    }
+    .site-logo-text{
+        margin-right: 15px;
+
+    }
+    .site-tagline{
+        margin-right: 15px;
+        margin-left: 15px;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 23px;
+        color: $site-tagline-color;
+
+    }
+    .sit-tagline-divider{
+        height: 35px;
+        border-right: 2px solid $site-tagline-color;
+    }
+}

@@ -1,0 +1,130 @@
+.table-responsive{
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.users-list-view{
+    width: 100%;
+    tr{
+        th{
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+        }
+        td{
+            font-size: 12px;
+            font-weight: 400;
+            border-bottom: 1px solid $table-border-color;
+            padding: 10px;
+            text-align: center;
+        }
+        td:nth-child(1){
+            padding-left: 0px;
+            text-align: left;
+            display: flex;
+        }
+        td:nth-child(2){
+            text-align: left;
+        }
+}
+tr:last-child{
+    td{
+    border-bottom: 0px solid $table-border-color;
+    }
+}
+}
+
+.listing-app__type-facebook{
+    background: rgba($facebook-color,0.2);
+    color: $facebook-color;
+    border-radius: 15px;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+
+}
+.listing-app__type-youtube{
+    background: rgba($youtube-color,0.2);
+    color: $youtube-color;
+    border-radius: 15px;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+}
+.listing-app__type-linkedin{
+    background: rgba($linkedin-color,0.2);
+    color: $linkedin-color;
+    border-radius: 15px;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+}
+.listing-app__type-twitter{
+    background: rgba($twitter-color,0.2);
+    color: $twitter-color;
+    border-radius: 15px;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+}
+.listing-app__type-instagram{
+    background: rgba($instagram-color,0.2);
+    color: $instagram-color;
+    border-radius: 15px;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+}
+
+
+.listing-app__view-facebook{
+    background: $facebook-color;
+    color: $white-font-color;
+    border-radius: 3rem;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+.listing-app__view-youtube{
+    background: $youtube-color;
+    color: $white-font-color;
+    border-radius: 3rem;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+.listing-app__view-linkedin{
+    background: $linkedin-color;
+    color: $white-font-color;
+    border-radius: 3rem;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+.listing-app__view-twitter{
+    background: $twitter-color;
+    color: $white-font-color;
+    border-radius: 3rem;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+.listing-app__view-instagram{
+    background: $instagram-color;
+    color: $white-font-color;
+    border-radius: 3rem;
+    padding: 5px 15px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+.row-container {
+    background:#F3F6FD
+}

@@ -1,8 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
-import { useAppContext } from "../lib/contextLib";
-import { Auth } from "aws-amplify";
-import { v4 as uuidv4 } from "uuid";
 
 import ProgressContainer from "../components/ProgressContainer";
 import DeclineDialog from "../components/DeclineDialog";
@@ -66,11 +63,8 @@ const texts = [
     text: i18n.__("materialsText"),
   },
 ];
-const TermsOfUse = ({ onAction, fields, ...props }) => {
+const TermsOfUse = ({ onAction, ...props }) => {
   console.log("Terms ", props);
-  const { AUTHConfig } = useAppContext();
-  Auth.configure(AUTHConfig);
-
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   const [scrolled, setScrolled] = useState(false);
@@ -89,50 +83,9 @@ const TermsOfUse = ({ onAction, fields, ...props }) => {
     setDecline(true);
     e.preventDefault();
   };
-  const approveTerms = async (e) => {
+  const approveTerms = (e) => {
     setActive(true);
-    /* create account */
-
-    const uuid = uuidv4();
-    try {
-      /*
-      const user = {
-        username: uuid,
-        password: fields.password.value,
-        attributes: {
-          email: fields.email.value,
-          phone_number: fields.regionCode + fields.phone.value,
-          family_name: fields.lastName.value,
-          given_name: fields.firstName.value,
-          name: fields.username.value,
-        },
-      };
-*/
-      let phoneNumber = fields.phone.value;
-      if (phoneNumber.startsWith("0")) {
-        phoneNumber = phoneNumber.substr(1);
-      }
-      const { user } = await Auth.signUp({
-        username: uuid,
-        password: fields.password.value,
-        attributes: {
-          email: fields.email.value,
-          phone_number: fields.regionCode + phoneNumber,
-          family_name: fields.lastName.value,
-          given_name: fields.firstName.value,
-          name: fields.username.value,
-        },
-      });
-      console.log(user);
-      // initial signIn... so can verify email/phone...
-      await Auth.signIn(fields.username.value, fields.password.value);
-
-      onAction("email");
-    } catch (error) {
-      console.log("error signing up:", error);
-    }
-
-    // e.preventDefault();
+    e.preventDefault();
   };
   const onDialogClose = (e, action) => {
     console.log("CLOSE ", e, action);
@@ -147,7 +100,7 @@ const TermsOfUse = ({ onAction, fields, ...props }) => {
     }
     e.preventDefault();
   };
-  /*
+  useEffect(() => {
     let timer = null;
     if (isActive) {
       timer = setTimeout(() => {
@@ -156,8 +109,7 @@ const TermsOfUse = ({ onAction, fields, ...props }) => {
       }, 5000);
     }
     return () => clearTimeout(timer);
-  }, [isActive,onAction]);
-  */
+  }, [isActive]);
 
   return (
     <React.Fragment>

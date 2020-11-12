@@ -4,24 +4,20 @@ import NotFoundPage from "../components/NotFoundPage";
 
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
-import AppliedRoute from "./AppliedRoute";
 
 //const Dashboard = React.lazy(() => import("../components/Dashboard"));
 //const Login = React.lazy(() => import("../components/Login"));
 import Landing from "../pages/Landing";
+import AppDetail from "../pages/AppDetail";
+import Listing from "../pages/Listing";
 
 export default () => (
   <React.Suspense fallback={"Loading routing..."}>
     <Switch>
-      <AppliedRoute path="/" exact>
-        <Landing />
-      </AppliedRoute>
-      <AuthenticatedRoute path="/verify-email" exact>
-        <Landing />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/verify-phone" exact>
-        <Landing />
-      </AuthenticatedRoute>
+      <UnauthenticatedRoute path="/" exact component={Landing}/>
+      <UnauthenticatedRoute path="/detail" exact component={AppDetail}/>
+      <UnauthenticatedRoute path="/listing" exact component={Listing}/>
+     
 
       <Route component={NotFoundPage} />
     </Switch>

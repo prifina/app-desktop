@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useReducer, useRef } from "react";
 import {
   IconField,
   Button,
@@ -9,14 +9,13 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
-import { useAppContext } from "../lib/contextLib";
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
 
-//import { useFormFields } from "../lib/formFields";
+import { useFormFields } from "../lib/formFields";
 import {
   checkPassword,
   validEmail,
@@ -26,8 +25,7 @@ import {
 } from "../lib/utils";
 import { UseFocus } from "../lib/componentUtils";
 import config from "../config";
-import { checkUsernameQuery } from "../graphql/api";
-import Amplify, { API } from "aws-amplify";
+
 //import strings from "../lib/locales/en";
 
 //const { i18n } = require("../lib/i18n");
@@ -36,8 +34,6 @@ import i18n from "../lib/i18n";
 i18n.init();
 
 const CreateAccount = ({ onAction, ...props }) => {
-  const { APIConfig } = useAppContext();
-  Amplify.configure(APIConfig);
   //console.log("Account ", props);
 
   //console.log(i18n.__("Testing"));
@@ -59,14 +55,20 @@ const CreateAccount = ({ onAction, ...props }) => {
     };
   });
 
-  //const [autofillStatus, setAutofillStatus] = useState(true);
-  //const [checkLengthStatus, setCheckLengthStatus] = useState(false);
-  //const [regionCode, setRegioncode] = useState("000");
-  //const [regionStatus, setRegionstatus] = useState(false);
+  const [fields, _handleChange] = useFormFields({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    phone: "",
+    password: "",
+    passwordConfirm: "",
+  });
 
-  const [seconds, setSeconds] = useState(0);
+  const [regionCode, setRegioncode] = useState("000");
+  //const [regionStatus, setRegionstatus] = useState(false);
   const [nextDisabled, setNextDisabled] = useState(true);
-  //const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
+  const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
 
   const [passwordVerification, setPasswordVerification] = useState([
     false,
@@ -83,46 +85,32 @@ const CreateAccount = ({ onAction, ...props }) => {
         status: false,
         msg: "",
         valid: false,
-        value: "",
       },
       phone: {
         status: false,
         msg: "",
         valid: false,
-        value: "",
       },
       password: {
         status: false,
         msg: "",
         valid: false,
-        value: "",
       },
       username: {
         status: false,
         msg: "",
         valid: false,
-        value: "",
       },
       lastName: {
         status: false,
         msg: "",
-        valid: false,
-        value: "",
+        valid: true,
       },
       firstName: {
         status: false,
         msg: "",
-        valid: false,
-        value: "",
+        valid: true,
       },
-      passwordConfirm: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      regionCode: "000",
-      checkLengthStatus: false,
     }
   );
 
@@ -141,463 +129,305 @@ const CreateAccount = ({ onAction, ...props }) => {
     setAddPopper(status);
   };
 
-  const checkPhone = (region, phone) => {
-    //console.log("FIELDS ", fields);
-    console.log(phone, region);
-    const checkResult = isValidNumber(region + phone);
-    const phoneState = Object.keys(checkResult).length > 0;
+  const checkDisabled = (fieldCheck, passwordConfirm) => {
+    //console.log(Object.keys(state));
+    let validationState = false;
+    validationState = Object.keys(state).some((fld) => {
+      console.log(fld, state[fld].valid);
+      return state[fld].valid === false;
+    });
 
-    return !phoneState;
+    console.log(
+      fieldCheck,
+      validationState,
+      passwordConfirm,
+      passwordConfirmEntered
+    );
+
+    if (typeof passwordConfirm !== "undefined") {
+      validationState = !passwordConfirm;
+    }
+
+    //firstName
+    //lastName
+    if (
+      (fieldCheck === "username" || fieldCheck === "password") &&
+      (!validationState || fields.password.length === 0)
+    ) {
+      if (fields.firstName.length === 0) {
+        setState({
+          firstName: {
+            status: true,
+          },
+        });
+        setInputFirstnameFocus();
+        validationState = true;
+      } else if (fields.lastName.length === 0) {
+        setState({
+          lastName: {
+            status: true,
+          },
+        });
+        setInputLastnameFocus();
+        validationState = true;
+      }
+    }
+
+    //passwordVerification
+    if (fieldCheck === "password" && passwordConfirmEntered) {
+      console.log("Checking password strength...");
+      const invalidPasswordStatus = passwordVerification.some((v, i) => {
+        //console.log("STEP ", v, i);
+        return v === false;
+      });
+      setState({
+        password: {
+          status: invalidPasswordStatus,
+          msg: invalidPasswordStatus ? i18n.__("invalidPassword") : "",
+          valid: !invalidPasswordStatus,
+        },
+      });
+      //console.log("PASSWORD focus...", passwordStatus);
+      if (invalidPasswordStatus) {
+        validationState = true;
+        setInputPasswordFocus();
+      }
+    }
+
+    if (passwordConfirmEntered && state.password.valid) {
+      const checkResult = checkLengths();
+      validationState = Object.keys(checkResult).some((fld) => {
+        return fld === false;
+      });
+    }
+
+    setNextDisabled(validationState);
+  };
+
+  const checkLengths = () => {
+    let lengthStatus = {};
+    let states = { ...state };
+    Object.keys(state).forEach((fld) => {
+      lengthStatus[fld] = true;
+      if (fields[fld].length === 0) {
+        lengthStatus[fld] = false;
+        states[fld].status = true;
+        states[fld].msg = i18n.__("invalidEntry");
+      }
+    });
+    setState(states);
+    if (fields.firstName.length === 0) {
+      setInputFirstnameFocus();
+    } else if (fields.lastName.length === 0) {
+      setInputLastnameFocus();
+    } else if (fields.username.length === 0) {
+      setInputUsernameFocus();
+    } else if (fields.email.length === 0) {
+      setInputEmailFocus();
+    } else if (fields.phone.length === 0) {
+      setInputPhoneFocus();
+    } else if (fields.password.length === 0) {
+      setInputPasswordFocus();
+    }
+    return lengthStatus;
+  };
+
+  const checkPhone = (phone) => {
+    //console.log("FIELDS ", fields);
+    console.log(phone, regionCode);
+    const checkResult = isValidNumber(regionCode + phone);
+    const phoneState = Object.keys(checkResult).length > 0;
+    setState({
+      phone: {
+        status: !phoneState,
+        msg: !phoneState ? i18n.__("invalidPhoneNumber") : "",
+        valid: phoneState,
+      },
+    });
+    if (!phoneState) {
+      if (regionCode === "000") {
+        setInputPhoneFocus();
+      }
+    } else {
+      checkDisabled("phone");
+    }
   };
 
   const checkEmail = (email) => {
     //console.log("FIELDS ", fields);
     const emailState = validEmail(email);
     //console.log("CHECKING ", emailState);
-
-    return !emailState;
+    setState({
+      email: {
+        status: !emailState,
+        msg: !emailState ? i18n.__("invalidEmail") : "",
+        valid: emailState,
+      },
+    });
+    if (!emailState) {
+      setInputEmailFocus();
+    } else {
+      checkDisabled("email");
+    }
   };
 
-  const checkUsername = async (username) => {
+  const checkUsername = (username) => {
     //console.log("FIELDS2 ", fields);
-    //console.log(await checkUsernameQuery(API, "tero-test"));
+
     const userState = validUsername(username, config.usernameLength);
     let userError = userState !== "";
     let userMsg = "";
-
+    if (userState === "EXISTS") {
+      userMsg = i18n.__("usernameExists");
+    }
     if (userState === "LENGTH") {
       userMsg = i18n.__("usernameError", { length: config.usernameLength });
     }
     if (userState === "SPACES") {
       userMsg = i18n.__("usernameError2");
     }
-    console.log("USER ", username, userError);
-    if (!userError) {
-      const userExists = await checkUsernameQuery(API, username);
-      console.log(userExists);
-      //{"data":{"checkUsername":false}}
 
-      if (
-        typeof userExists.data !== "undefined" &&
-        userExists.data.checkUsername
-      ) {
-        userError = true;
-        userMsg = i18n.__("usernameExists");
-      }
+    setState({
+      username: {
+        status: userError,
+        msg: userError ? userMsg : "",
+        valid: !userError,
+      },
+    });
+    if (userError) {
+      setInputUsernameFocus();
+    } else {
+      checkDisabled("username");
     }
-
-    console.log(userMsg);
-
-    return userMsg;
   };
 
   const checkInputPassword = (password) => {
     //console.log(password);
     const checkResult = checkPassword(password, config.passwordLength, [
-      state.firstName.value,
-      state.lastName.value,
-      state.username.value,
-      state.email.value,
+      fields.firstName,
+      fields.lastName,
+      fields.username,
+      fields.email,
     ]);
-    console.log("PASS CHECK ", checkResult);
+    //console.log(checkResult);
+    if (state.password.status && fields.password.length === 0) {
+      console.log("PASSWORD ERROR MSG");
+      setState({
+        password: {
+          status: false,
+          msg: "",
+        },
+      });
+    }
     setPasswordVerification(checkResult);
-    return checkResult;
   };
 
-  const checkPasswordQuality = (verifications) => {
-    //checkInputPassword(password);
-    console.log(
-      "Checking password quality... ",
-      passwordVerification,
-      verifications
-    );
-    const verifyList = verifications || passwordVerification;
-    const invalidPasswordStatus = verifyList.some((v, i) => {
-      console.log("STEP ", v, i);
+  const checkConfirmPassword = (password, onBlur = false) => {
+    console.log("Confirm ", password);
+    const confirmStatus =
+      fields.password === password && fields.password.length > 0;
+    console.log(confirmStatus);
+
+    if (checkConfirmPassword && !confirmStatus) {
+      setState({
+        password: {
+          status: !confirmStatus,
+          msg: !confirmStatus ? i18n.__("invalidPassword") : "",
+          valid: confirmStatus,
+        },
+      });
+      setNextDisabled(true);
+    } else {
+      setState({
+        password: {
+          valid: confirmStatus,
+        },
+      });
+    }
+
+    setPasswordConfirmEntered(confirmStatus ? true : passwordConfirmEntered);
+    if (!confirmStatus && onBlur) {
+      setState({
+        password: {
+          status: !confirmStatus,
+          msg: !confirmStatus ? i18n.__("invalidPassword") : "",
+          valid: confirmStatus,
+        },
+      });
+      console.log("CONFIRM PASSWORD focus...");
+      setNextDisabled(true);
+      setInputPasswordFocus();
+    } else {
+      //checkDisabled("password", confirmStatus);
+    }
+    if (confirmStatus) {
+      checkDisabled("password", confirmStatus);
+    }
+  };
+
+  const checkName = (fieldName, value) => {
+    if (
+      fieldName === "firstName" &&
+      value.length > 0 &&
+      state.firstName.status
+    ) {
+      setState({
+        firstName: {
+          status: false,
+        },
+      });
+    }
+    if (fieldName === "lastName" && value.length > 0 && state.lastName.status) {
+      setState({
+        lastName: {
+          status: false,
+        },
+      });
+    }
+  };
+  const checkPasswordQuality = (password) => {
+    checkInputPassword(password);
+    console.log("Checking password quality...");
+    const invalidPasswordStatus = passwordVerification.some((v, i) => {
+      //console.log("STEP ", v, i);
       return v === false;
     });
-    return invalidPasswordStatus;
+    setState({
+      password: {
+        status: invalidPasswordStatus,
+        msg: invalidPasswordStatus ? i18n.__("invalidPassword") : "",
+        valid: !invalidPasswordStatus,
+      },
+    });
+    console.log("PASSWORD quality Status...", invalidPasswordStatus);
+    if (invalidPasswordStatus) {
+      setInputPasswordFocus();
+      return false;
+    } else {
+      return true;
+    }
   };
-
-  //  const checkFields = async () => {
-  useEffect(() => {
-    async function checkFields() {
-      let states = { ...state };
-      let statesUpdated = false;
-      Object.keys(states).forEach((fld) => {
-        if (document.getElementById(fld)) {
-          const fieldValue = document.getElementById(fld).value;
-
-          if (fieldValue !== states[fld].value) {
-            statesUpdated = true;
-            states[fld].value = fieldValue;
-
-            console.log("KEYS ", fld);
-          }
-        }
-      });
-
-      let fieldStatuses = [];
-
-      if (states["firstName"].value.length > 0 && !states["firstName"].valid) {
-        statesUpdated = true;
-
-        states["firstName"].status = false;
-        states["firstName"].msg = "";
-        states["firstName"].valid = true;
-      } else if (
-        states["firstName"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["firstName"].status = true;
-        states["firstName"].msg = i18n.__("invalidEntry");
-        states["firstName"].valid = false;
-
-        fieldStatuses.push("firstName");
-      }
-      if (states["lastName"].value.length > 0 && !states["lastName"].valid) {
-        statesUpdated = true;
-        states["lastName"].status = false;
-        states["lastName"].msg = "";
-        states["lastName"].valid = true;
-      } else if (
-        states["lastName"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["lastName"].status = true;
-        states["lastName"].msg = i18n.__("invalidEntry");
-        states["lastName"].valid = false;
-
-        fieldStatuses.push("lastName");
-      }
-
-      if (states["username"].value.length > 0 && !states["username"].valid) {
-        const userError = await checkUsername(states["username"].value);
-        statesUpdated = true;
-        if (userError !== "") {
-          states["username"].status = true;
-          states["username"].msg = userError;
-          states["username"].valid = false;
-
-          fieldStatuses.push("username");
-        } else {
-          states["username"].status = false;
-          states["username"].msg = "";
-          states["username"].valid = true;
-        }
-      } else if (
-        states["username"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["username"].status = true;
-        states["username"].msg = i18n.__("invalidEntry");
-        states["username"].valid = false;
-
-        fieldStatuses.push("username");
-      }
-
-      if (states["email"].value.length > 0 && !states["email"].valid) {
-        const emailError = checkEmail(states["email"].value);
-        statesUpdated = true;
-        if (emailError) {
-          states["email"].status = true;
-          states["email"].msg = i18n.__("invalidEmail");
-          states["email"].valid = false;
-
-          fieldStatuses.push("email");
-        } else {
-          states["email"].status = false;
-          states["email"].msg = "";
-          states["email"].valid = true;
-        }
-      } else if (
-        states["email"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["email"].status = true;
-        states["email"].msg = i18n.__("invalidEntry");
-        states["email"].valid = false;
-
-        fieldStatuses.push("email");
-      }
-
-      if (states["phone"].value.length > 0 && !states["phone"].valid) {
-        statesUpdated = true;
-        if (inputSelect.current.value === "") {
-          states["phone"].status = true;
-          states["phone"].msg = i18n.__("invalidRegion");
-          states["phone"].valid = false;
-          fieldStatuses.push("regionCode");
-        } else {
-          const phoneError = checkPhone(
-            inputSelect.current.value,
-            states["phone"].value
-          );
-          if (phoneError) {
-            states["phone"].status = true;
-            states["phone"].msg = i18n.__("invalidPhoneNumber");
-            states["phone"].valid = false;
-
-            fieldStatuses.push("phone");
-          } else {
-            states["phone"].status = false;
-            states["phone"].msg = "";
-            states["phone"].valid = true;
-            states["regionCode"] = inputSelect.current.value;
-          }
-        }
-      } else if (
-        states["phone"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["phone"].status = true;
-        states["phone"].msg = i18n.__("invalidEntry");
-        states["phone"].valid = false;
-        fieldStatuses.push("phone");
-      }
-
-      if (states["password"].value.length > 0 && !states["password"].valid) {
-        const passwordCheckResult = checkInputPassword(
-          states["password"].value
-        );
-        const passwordError = checkPasswordQuality(passwordCheckResult);
-        statesUpdated = true;
-        states["checkLengthStatus"] = true;
-
-        if (passwordError) {
-          states["password"].status = true;
-          states["password"].msg = i18n.__("passwordQuality");
-          states["password"].valid = false;
-          fieldStatuses.push("password");
-        } else {
-          states["password"].status = false;
-          states["password"].msg = "";
-          states["password"].valid = true;
-        }
-      } else if (
-        states["password"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["password"].status = true;
-        states["password"].msg = i18n.__("invalidEntry");
-        states["password"].valid = false;
-        fieldStatuses.push("password");
-      }
-
-      if (
-        states["passwordConfirm"].value.length > 0 &&
-        !states["passwordConfirm"].valid
-      ) {
-        statesUpdated = true;
-        states["checkLengthStatus"] = true;
-        const confirmError =
-          states["passwordConfirm"].value !== states["password"].value;
-
-        if (confirmError) {
-          states["password"].status = true;
-          states["passwordConfirm"].status = true;
-          states["password"].msg = i18n.__("invalidPassword");
-          states["passwordConfirm"].msg = i18n.__("invalidPassword");
-          states["password"].valid = false;
-          states["passwordConfirm"].valid = false;
-          fieldStatuses.push("password");
-        } else {
-          states["password"].status = false;
-          states["password"].msg = "";
-          states["passwordConfirm"].valid = true;
-          states["passwordConfirm"].status = false;
-          states["passwordConfirm"].msg = "";
-        }
-      } else if (
-        states["passwordConfirm"].value.length === 0 &&
-        states.checkLengthStatus
-      ) {
-        statesUpdated = true;
-        states["passwordConfirm"].status = true;
-        states["passwordConfirm"].msg = i18n.__("invalidEntry");
-        states["passwordConfirm"].valid = false;
-        fieldStatuses.push("password");
-      }
-
-      if (states.regionCode === "000" && inputSelect.current.value !== "") {
-        statesUpdated = true;
-        states.regionCode = inputSelect.current.value;
-        console.log("REGION UPDATE ", states, inputSelect.current.value);
-      }
-
-      //search-input-fld
-      if (fieldStatuses.length > 0) {
-        let firstStatus = fieldStatuses[0];
-        const selectSearchID = inputSelect.current.id;
-        const activeID = document.activeElement.id;
-        if (firstStatus === "regionCode") {
-          firstStatus = selectSearchID;
-        }
-        console.log("FOCUS ", firstStatus);
-
-        if (activeID !== firstStatus) {
-          if (firstStatus === "firstName") {
-            setInputFirstnameFocus();
-          } else if (firstStatus === "lastName") {
-            setInputLastnameFocus();
-          } else if (firstStatus === "usermame") {
-            setInputUsernameFocus();
-          } else if (firstStatus === "email") {
-            setInputEmailFocus();
-          } else if (firstStatus === "phone") {
-            setInputPhoneFocus();
-          } else if (firstStatus === selectSearchID) {
-            setSelectFocus();
-          } else if (firstStatus === "password") {
-            if (activeID !== "passwordConfirm") {
-              setInputPasswordFocus();
-            }
-          } else {
-            console.log("UNKNOWN FIELD ", firstStatus);
-          }
-        }
-
-        setNextDisabled(true);
-      } else {
-        if (states.checkLengthStatus) {
-          console.log("ALL GOOD, activate Next button");
-          setNextDisabled(false);
-        } else {
-          console.log("PASSWORD NOT YET ENTERED....");
-        }
-      }
-
-      //console.log("UPDATES ", checks);
-      if (statesUpdated) {
-        console.log("UPDATE STATES ");
-        //setState(Object.assign({}, states));
-        setState(states);
-      }
-      /*
-    if (checkLengthStatus) {
-      const checkEmpty = checkLengths();
-    }
-    */
-
-      console.log("STATE FIELDS ", state, states);
-      console.log("REGION CODE ", states.regionCode);
-      console.log("SELECT ", inputSelect.current.value);
-      /*
-    if (regionCode === "000" && inputSelect.current.value !== "") {
-      setRegioncode(inputSelect.current.value);
-    }
-    */
-    }
-    const activeField = document.activeElement.id;
-
-    if (
-      activeField !== "search-input-fld" &&
-      activeField !== inputSelect.current.id
-    ) {
-      checkFields();
-    }
-  }, [seconds]);
   /*
-  const hydrate = useCallback(( _state, _errors=false ) => {
-    console.log('hydrate()');
-    setState(prevState => ({...prevState,..._state}));
-    if(_errors){
-        setErrors(prevErros => ({...prevErrors,..._errors}));
-    }
-},[]);
-
-useEffect(()=>{
-  hydrate({
-      name:'Garrett',
-      email:'test@test.com',
-      newsletter: 'yes'
+  const [renderStatus, setRederstatus] = useState(false);
+  useEffect(() => {
+    // code to run after render goes here
+    setRederstatus(true);
   });
-},[hydrate]);
+  */
+  //ref={mergeRefs(setReferenceElement, ref)}
 
-useEffect(() => {
-  function fetchBusinesses() {
-    ...
-  }
-  fetchBusinesses()
-}, [])
-*/
-
-  /*
-  useEffect(() => {
-    //console.log("INTERVAL STATE FIELDS ", state);
-    const activeField = document.activeElement.id;
-
-    if (
-      activeField !== "search-input-fld" &&
-      activeField !== inputSelect.current.id
-    ) {
-      checkFields();
-    }
-  }, [seconds]);
-*/
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((seconds) => seconds + 1);
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
-
-  /*
-  useEffect(() => {
-    let interval = setInterval(() => {
-      console.log("INTERVAL STATE FIELDS ", state);
-      checkFields();
-     
-      console.log("USER ", document.getElementById("firstName").value);
-      console.log("USER REF", inputFirstname.current.value);
-      console.log("USER FLD", fields["firstName"].length);
-      console.log("FOCUS", document.activeElement.id);
-     
-      //clearInterval(interval);
-      //console.log("STATE FIELDS ", state);
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-*/
-
-  const handleChange = (event) => {
-    //console.log(event.target.id);
-    if (event.target) {
-      console.log("CHANGE ", event.target.id, event.target.value);
-      let fld = Object.assign({}, state[event.target.id]);
-      fld.value = event.target.value;
-      fld.valid = false;
-      setState({
-        [event.target.id]: fld,
-      });
-      if (event.target.id === "password") {
-        //setCheckLengthStatus(true);
-        setState({ checkLengthStatus: true });
-      }
-    }
-  };
   return (
     <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
       <Box mt={40} display="inline-flex">
         <Flex width={"168px"}>
           <Input
-            autoFocus={true}
             placeholder={i18n.__("firstNamePlaceholder")}
             id={"firstName"}
             name={"firstName"}
-            //onChange={_handleChange}
-            onChange={handleChange}
-            //onBlur={(e) => checkInputField("firstName", e)}
+            onChange={_handleChange}
             ref={inputFirstname}
             error={state.firstName.status}
+            onBlur={(e) => checkName("firstName", e.target.value)}
           />
         </Flex>
         <Flex ml={25} width={"168px"}>
@@ -605,10 +435,10 @@ useEffect(() => {
             placeholder={i18n.__("lastNamePlaceholder")}
             id={"lastName"}
             name={"lastName"}
-            onChange={handleChange}
-            //onBlur={(e) => checkInputField("lastName", e)}
+            onChange={_handleChange}
             ref={inputLastname}
             error={state.lastName.status}
+            onBlur={(e) => checkName("lastName", e.target.value)}
           />
         </Flex>
       </Box>
@@ -623,8 +453,13 @@ useEffect(() => {
             placeholder={i18n.__("usernamePlaceholder")}
             id={"username"}
             name={"username"}
-            onChange={handleChange}
-            //onBlur={(e) => checkInputField("username", e)}
+            onChange={_handleChange}
+            onBlur={(e) => checkUsername(e.target.value)}
+            /*
+            promptMsg={i18n.__("usernamePrompt", {
+              length: config.usernameLength,
+            })}
+            */
             errorMsg={state.username.msg}
             error={state.username.status}
             ref={inputUsername}
@@ -642,66 +477,135 @@ useEffect(() => {
             placeholder={i18n.__("emailPlaceholder")}
             id={"email"}
             name={"email"}
-            onChange={handleChange}
-            promptMsg={state.email.valid ? i18n.__("emailPrompt") : ""}
+            onChange={_handleChange}
+            onBlur={(e) => checkEmail(e.target.value)}
+            promptMsg={
+              !state.email.status && fields.email.length > 0
+                ? i18n.__("emailPrompt")
+                : ""
+            }
             errorMsg={state.email.msg}
             error={state.email.status}
             ref={inputEmail}
-            //onBlur={(e) => checkInputField("email", e)}
           />
         </IconField>
       </Box>
-
-      <Box mt={state.email.valid || state.email.status ? 5 : 28}>
+      {/* 
+      <Box mt={5}>
+        <IconField>
+          <IconField.LeftIcon
+            iconify={bxPhone}
+            color={"componentPrimary"}
+            size={"17"}
+          />
+          <IconField.InputField
+            placeholder={i18n.__("phoneNumberPlaceholder")}
+            id={"phone"}
+            name={"phone"}
+            onChange={_handleChange}
+            onBlur={(e) => checkPhone(e.target.value)}
+            promptMsg={i18n.__("phonePrompt")}
+            errorMsg={state.phone.msg}
+            error={state.phone.status}
+            ref={inputPhone}
+          />
+        </IconField>
+      </Box>
+       options={selectOptions}
+          defaultValue={regionCode}
+          onSelect={(code) => {
+            //console.log("CODE ", code);
+            setRegioncode(code);
+          }}
+          ref={inputSelect}
+          
+      */}
+      <Box mt={state.email.status || fields.email.length > 0 ? 5 : 28}>
         <PhoneNumberField>
           <PhoneNumberField.RegionField
-            defaultValue={state.regionCode}
+            defaultValue={regionCode}
             options={selectOptions}
             searchLength={1}
             showList={false}
             ref={inputSelect}
-            /* id="select-search" */
             onChange={(e, code) => {
               //console.log("REGION", e);
               //console.log("REGION", code);
-              console.log("REGION SELECT ", e, code);
-              handleChange({
-                target: {
-                  id: "regionCode",
-                  value: code,
-                },
-              });
-
-              //setState({ regionCode: code });
-              // this doesn't work????
-              //setRegioncode(code);
-              //setInputPhoneFocus();
+              setRegioncode(code);
             }}
           />
           <PhoneNumberField.InputField
             placeholder={i18n.__("phoneNumberPlaceholder")}
             id={"phone"}
             name={"phone"}
-            onChange={handleChange}
-            promptMsg={state.phone.valid ? i18n.__("phonePrompt") : ""}
+            onChange={_handleChange}
+            onBlur={(e) => {
+              if (regionCode !== "000") {
+                checkPhone(e.target.value);
+              } else {
+                setSelectFocus();
+              }
+            }}
+            promptMsg={
+              !state.phone.status && fields.phone.length > 0
+                ? i18n.__("phonePrompt")
+                : ""
+            }
             errorMsg={state.phone.msg}
             error={state.phone.status}
             ref={inputPhone}
-            //onBlur={(e) => checkInputField("phone", e)}
-
             /* disabled={regionCode === "000"} */
           />
         </PhoneNumberField>
       </Box>
-      <Box mt={state.phone.valid || state.phone.status ? 5 : 28}>
+      <Box mt={state.phone.status || fields.phone.length > 0 ? 5 : 28}>
         <PasswordField
           placeholder={i18n.__("passwordPlaceholder")}
           onFocus={(e) => {
-            if (!state.password.valid || state.password.value.length === 0) {
+            const checkResult = checkLengths();
+
+            const validFields = Object.keys(checkResult).filter((fld) => {
+              return checkResult[fld] === true;
+            });
+            console.log("FOCUS ", validFields);
+            if (
+              (validFields.length > 4 && !validFields.password) ||
+              validFields.password
+            ) {
               onPopper(e, true);
+              if (fields.password !== fields.passwordConfirm) {
+                setState({
+                  password: {
+                    status: true,
+                    msg: i18n.__("invalidPassword"),
+                    valid: false,
+                  },
+                });
+              }
             } else {
               e.preventDefault();
               e.stopPropagation();
+            }
+          }}
+          onBlur={(e) => {
+            if (e.target.value.length !== 0) {
+              console.log("BLUR CHECK");
+              const inValidFields = Object.keys(fields).filter((fld) => {
+                console.log("BLUR CHECK ", fld, fields[fld].status);
+                return fields[fld].status === true;
+              });
+              console.log("BLUR CHECK ", inValidFields);
+              if (inValidFields.length === 0) {
+                const res = checkPasswordQuality(e.target.value);
+                if (res) {
+                  onPopper(e, false);
+                }
+              } else {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            } else {
+              onPopper(e, false);
             }
           }}
           addPopper={addPopper}
@@ -709,16 +613,13 @@ useEffect(() => {
           id={"password"}
           name={"password"}
           onChange={(e) => {
-            handleChange(e);
-            /* check password popup */
+            _handleChange(e);
             checkInputPassword(e.target.value);
           }}
           ref={inputPassword}
           /* promptMsg={i18n.__("passwordPrompt")} */
           errorMsg={state.password.msg}
           error={state.password.status}
-          onBlur={(e) => onPopper(e, false)}
-          //onBlur={(e) => checkInputField("password", e)}
         />
       </Box>
       <Box mt={state.password.status ? 5 : 28}>
@@ -726,29 +627,23 @@ useEffect(() => {
           placeholder={i18n.__("confirmPlaceholder")}
           id={"passwordConfirm"}
           name={"passwordConfirm"}
-          onChange={handleChange}
-          errorMsg={
-            state.passwordConfirm.status
-              ? state.passwordConfirm.msg
-              : state.password.msg
-          }
-          error={state.password.status || state.passwordConfirm.status}
-          //onBlur={(e) => checkInputField("passwordConfirm", e)}
-          /* interestingly this removes autofill from all fields??? */
-          autoComplete="new-password"
+          onBlur={(e) => {
+            checkConfirmPassword(e.target.value, true);
+          }}
+          onChange={(e) => {
+            _handleChange(e);
+            checkConfirmPassword(e.target.value);
+          }}
+          errorMsg={state.password.msg}
+          error={state.password.status}
         />
       </Box>
 
-      <Box
-        mt={
-          66 - (state.password.status || state.passwordConfirm.status ? 18 : 0)
-        }
-        textAlign={"center"}
-      >
+      <Box mt={66 - (state.password.status ? 18 : 0)} textAlign={"center"}>
         <Button
           disabled={nextDisabled}
           onClick={() => {
-            onAction("register", state);
+            onAction("register");
           }}
         >
           {i18n.__("nextButton")}
