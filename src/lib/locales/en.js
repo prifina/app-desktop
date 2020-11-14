@@ -63,7 +63,7 @@ const strings = {
     /* Phone verification */
     codeDigitsError: "Only numbers are allowed",
     codeLengthError: "The code must be six digits long",
-    verificationTitle: "Setup your 2-step verification method",
+    verificationTitle: "Setup your two-step verification method",
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
       "Please provide your email and phone details in order to keep your account secure",
@@ -86,7 +86,7 @@ const strings = {
     invalidLogin: "Incorrect username or password.",
     forgotUsername: "Forgot username?",
     forgotPassword: "Forgot password?",
-    createAccount: "Create Account",
+    createAccount: "Create account",
     confirmTitle: "Secure login",
     authConfirmTitle: "Enter authentication code",
     authConfirmationText:
