@@ -16,7 +16,7 @@ const strings = {
     invalidPhoneNumber: "Phone number is not valid",
     invalidRegion: "Select region code",
     invalidEmail: "Email is not valid",
-    usernameExists: "Username already exists",
+    usernameExists: "Invalid username.",
     usernameError: "Username is too short (under {{length}} characters)",
     usernameError2: "Spaces are not allowed in the username",
     invalidPassword: "Password confirmation failed",
@@ -24,11 +24,11 @@ const strings = {
     createAccountTitle: "Create an account",
     firstNamePlaceholder: "First Name",
     lastNamePlaceholder: "Last Name",
-    usernamePlaceholder: "User Name",
+    usernamePlaceholder: "Username",
     emailPlaceholder: "Email",
-    emailPrompt: "This email will be used for two-step verification",
+    emailPrompt: "This email will be used for two-step verification.",
     phoneNumberPlaceholder: "Phone Number",
-    phonePrompt: "This number will be used for two-step verification",
+    phonePrompt: "This number will be used for two-step verification.",
     passwordPlaceholder: "Password",
 
     confirmPlaceholder: "Confirm Password",
@@ -63,24 +63,23 @@ const strings = {
     /* Phone verification */
     codeDigitsError: "Only numbers are allowed",
     codeLengthError: "The code must be six digits long",
-    verificationTitle: "Setup your 2-step verification method",
-    phoneVerificationTitle: "Setup your phone verification",
+    verificationTitle: "Setup your two-step verification method",
+    phoneVerificationTitle: "Setup phone verification",
     phoneVerificationText:
-      "Please provide your email and phone details in order to keep your account secure",
+      "Please provide your email address and phone number in order to keep your account secure",
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive the code?",
-    sendAgainLinkText: "Send again",
-    invalidCode: "Incorrect code, please re-enter the correct code.",
+    sendAgainLinkText: "Send again.",
+    invalidCode: "Incorrect code, please enter the correct code.",
 
     /* Email verification */
-    emailVerificationTitle: "Setup your email verification",
+    emailVerificationTitle: "Setup email verification",
     emailVerificationText:
-      "Please provide your email and phone details to keep your account secure",
+      "Please provide your email address and phone number to keep your account secure",
     emailMissing: "Didn't receive the code?",
     /* Decline dialog */
     declineTitle: "Decline Prifina’s Terms of Use?",
-    declineText:
-      "By declining our Terms of Use, you are rejecting the usage of the Prifina application.",
+    declineText: "By declining Prifina's Terms of Use you will not be able to use the Prifina application.",
     /* Login */
     loginPage: "Login to your account",
     invalidLogin: "Incorrect username or password.",
