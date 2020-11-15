@@ -17,6 +17,8 @@ import CreateAccount from "./CreateAccount";
 import TermsOfUse from "./TermsOfUse";
 import EmailVerification from "./EmailVerification";
 import PhoneVerification from "./PhoneVerification";
+import Login from "./Login";
+
 import { useAppContext } from "../lib/contextLib";
 
 import { useHistory } from "react-router-dom";
@@ -74,11 +76,17 @@ const Landing = (props) => {
   console.log("LOCATION ", pathname, search);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
-  let initStep = 1;
+  let initStep = 5;
   if (pathname === "/verify-email") {
     initStep = 3;
   } else if (pathname === "/verify-phone") {
     initStep = 4;
+  } else if (pathname === "/login") {
+    initStep = 5;
+  } else if (pathname === "/register") {
+    initStep = 1;
+  } else if (pathname === "/" && isAuthenticated) {
+    initStep = 6;
   }
 
   //console.log("STEP ", initStep);
@@ -143,12 +151,14 @@ const Landing = (props) => {
               </Box>
               <Box mt={"283px"}>
                 <Text fontSize={"74px"} lineHeight={"101px"}>
-                  {i18n.__("welcomeMessage")}
+                  {stepCounter > 4 && i18n.__("loginWelcomeMessage")}
+                  {stepCounter < 5 && i18n.__("welcomeMessage")}
                 </Text>
               </Box>
               <Box width={"533px"}>
                 <Text as={"p"} fontSize={18} lineHeight={"144.5%"}>
-                  {i18n.__("landingPage")}
+                  {stepCounter > 4 && i18n.__("loginLandingPage")}
+                  {stepCounter < 5 && i18n.__("landingPage")}
                 </Text>
               </Box>
               <Box
@@ -157,14 +167,18 @@ const Landing = (props) => {
                 height={"26px"}
                 alignItems={"center"}
               >
-                <Text fontSize={18} color={colors.baseSecondary} pr={13}>
-                  {i18n.__("landingPageInfo")}
-                </Text>
-                <BlendIcon
-                  iconify={bxChevronRight}
-                  color={colors.componentPrimary}
-                  size={"17"}
-                />
+                {stepCounter < 5 && (
+                  <React.Fragment>
+                    <Text fontSize={18} color={colors.baseSecondary} pr={13}>
+                      {i18n.__("landingPageInfo")}
+                    </Text>
+                    <BlendIcon
+                      iconify={bxChevronRight}
+                      color={colors.componentPrimary}
+                      size={"17"}
+                    />
+                  </React.Fragment>
+                )}
               </Box>
             </Box>
           </Flex>
@@ -181,7 +195,7 @@ const Landing = (props) => {
                   {stepCounter === 1 && !isAuthenticated && (
                     <CreateAccount onAction={checkAction} />
                   )}
-                  {stepCounter === 1 && isAuthenticated && <Logout />}
+                  {stepCounter === 6 && isAuthenticated && <Logout />}
                   {stepCounter === 2 && (
                     <TermsOfUse onAction={checkAction} fields={accountFields} />
                   )}
@@ -191,6 +205,7 @@ const Landing = (props) => {
                   {stepCounter === 4 && (
                     <PhoneVerification onAction={checkAction} />
                   )}
+                  {stepCounter === 5 && <Login />}
                 </Box>
               </Flex>
             </StyledPlate>

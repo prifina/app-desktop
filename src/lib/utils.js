@@ -9,6 +9,8 @@ import {
   PhoneNumberType,
 } from "google-libphonenumber";
 
+import countries from "../countries";
+
 // eslint-disable-next-line
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
@@ -86,6 +88,7 @@ export function checkPassword(password, requiredLength, checkList) {
 export function countryList() {
   // there are unsupported codes... https://en.wikipedia.org/wiki/List_of_country_calling_codes
   // like +1 671 –  Guam
+  /*
   const phoneUtil = PhoneNumberUtil.getInstance();
   //console.log(phoneUtil.getSupportedCallingCodes());
   //console.log(phoneUtil.getRegionCodeForCountryCode(358));
@@ -111,8 +114,10 @@ export function countryList() {
       });
     }
   });
+  */
+  const staticCountryList = countries;
 
-  return countries;
+  return staticCountryList;
 }
 export function isValidNumber(phoneNumber) {
   /*  return new Promise(function (resolve, reject) {

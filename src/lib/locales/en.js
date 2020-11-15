@@ -8,6 +8,8 @@ const strings = {
     accountButton: "Creating account",
     backButton: "Back",
     verifyButton: "Verify",
+    confirmButton: "Confirm",
+    loginButton: "Login",
     loginLink: "Login",
     /* Create account */
     invalidEntry: "Value is required",
@@ -33,6 +35,8 @@ const strings = {
     existingAccount: "Have an account?",
 
     /* Landing page */
+    loginWelcomeMessage: "My Prifina",
+    loginLandingPage: "Login to access your personal data cloud.",
     welcomeMessage: "Hello",
     landingPage:
       "We are a team working on the future of personal applications. That's why we created this personal cloud environment that will help you implement your boldest ideas while allowing individuals to keep their data.",
@@ -75,8 +79,17 @@ const strings = {
     emailMissing: "Didn't receive the code?",
     /* Decline dialog */
     declineTitle: "Decline Prifina’s Terms of Use?",
-    declineText:
-      "By declining Prifina's Terms of Use you will not be able to use the Prifina application.",
+    declineText: "By declining Prifina's Terms of Use you will not be able to use the Prifina application.",
+    /* Login */
+    loginPage: "Login to your account",
+    invalidLogin: "Incorrect username or password.",
+    forgotUsername: "Forgot username?",
+    forgotPassword: "Forgot password?",
+    createAccount: "Create Account",
+    confirmTitle: "Secure login",
+    authConfirmTitle: "Enter authentication code",
+    authConfirmationText:
+      "We've sent you the authentication code. Please enter it below to login.",
   },
 };
 

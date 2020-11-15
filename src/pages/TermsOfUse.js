@@ -124,8 +124,14 @@ const TermsOfUse = ({ onAction, fields, ...props }) => {
         },
       });
       console.log(user);
+
       // initial signIn... so can verify email/phone...
-      await Auth.signIn(fields.username.value, fields.password.value);
+      const currentUser = await Auth.signIn(
+        fields.username.value,
+        fields.password.value
+      );
+      const mfa = await Auth.setPreferredMFA(currentUser, "SMS");
+      console.log("MFA ", mfa);
 
       onAction("email");
     } catch (error) {

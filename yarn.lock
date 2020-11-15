@@ -2457,10 +2457,10 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
-"@blend-ui/core@1.1.29-alpha.0":
-  version "1.1.29-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.29-alpha.0.tgz#1817376239de3b3bb6f09a20ae81e0ed6bfc82aa"
-  integrity sha512-MQitStwlG3niThdn1OpRHZLCYYFFGuYgQhdds06vwRPNSvaSONHnraUDskls0j0Q41cQRzSopw5m59sb6B2G6A==
+"@blend-ui/core@1.1.31-alpha.0":
+  version "1.1.31-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.31-alpha.0.tgz#7604d765b061e0214f5ac35c838bdd51a85d7925"
+  integrity sha512-zrBD37J7hsU6kjEbVQ3MBDnnkHwRuEFxpZCBrMG+6V0q7zqtbU+BNEpB98VwqJP/Fxb1aPV5tI0fLRKNix6tkg==
   dependencies:
     "@blend-ui/icons" "^1.1.4-alpha.0"
     "@popperjs/core" "^2.5.3"
