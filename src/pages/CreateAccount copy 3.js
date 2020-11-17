@@ -28,24 +28,18 @@ import {
 import { UseFocus } from "../lib/componentUtils";
 import config from "../config";
 import { checkUsernameQuery } from "../graphql/api";
-import Amplify, { API, Auth } from "aws-amplify";
+import Amplify, { API } from "aws-amplify";
 //import strings from "../lib/locales/en";
 
 //const { i18n } = require("../lib/i18n");
 import i18n from "../lib/i18n";
-import TermsOfUse from "./TermsOfUse";
-
-import EmailVerification from "./EmailVerification";
-import PhoneVerification from "./PhoneVerification";
 
 i18n.init();
 
-const CreateAccount = (props) => {
+const CreateAccount = ({ onAction, ...props }) => {
   const history = useHistory();
-  const { APIConfig, AUTHConfig } = useAppContext();
+  const { APIConfig } = useAppContext();
   Amplify.configure(APIConfig);
-  Auth.configure(AUTHConfig);
-
   //console.log("Account ", props);
 
   //console.log(i18n.__("Testing"));
@@ -66,10 +60,13 @@ const CreateAccount = (props) => {
       ),
     };
   });
-  const [currentUser, setCurrentUser] = useState({});
-  const [seconds, setSeconds] = useState(0);
-  const [registerStep, setRegisterStep] = useState(0);
 
+  //const [autofillStatus, setAutofillStatus] = useState(true);
+  //const [checkLengthStatus, setCheckLengthStatus] = useState(false);
+  //const [regionCode, setRegioncode] = useState("000");
+  //const [regionStatus, setRegionstatus] = useState(false);
+
+  const [seconds, setSeconds] = useState(0);
   const [nextDisabled, setNextDisabled] = useState(true);
   //const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
 
@@ -503,21 +500,75 @@ const CreateAccount = (props) => {
 
     if (
       activeField !== "search-input-fld" &&
-      inputSelect.current &&
       activeField !== inputSelect.current.id
     ) {
       checkFields();
     }
   }, [seconds]);
-
-  useEffect(() => {
-    if (registerStep === 0) {
-      const interval = setInterval(() => {
-        setSeconds((seconds) => seconds + 1);
-      }, 500);
-      return () => clearInterval(interval);
+  /*
+  const hydrate = useCallback(( _state, _errors=false ) => {
+    console.log('hydrate()');
+    setState(prevState => ({...prevState,..._state}));
+    if(_errors){
+        setErrors(prevErros => ({...prevErrors,..._errors}));
     }
-  }, [registerStep]);
+},[]);
+
+useEffect(()=>{
+  hydrate({
+      name:'Garrett',
+      email:'test@test.com',
+      newsletter: 'yes'
+  });
+},[hydrate]);
+
+useEffect(() => {
+  function fetchBusinesses() {
+    ...
+  }
+  fetchBusinesses()
+}, [])
+*/
+
+  /*
+  useEffect(() => {
+    //console.log("INTERVAL STATE FIELDS ", state);
+    const activeField = document.activeElement.id;
+
+    if (
+      activeField !== "search-input-fld" &&
+      activeField !== inputSelect.current.id
+    ) {
+      checkFields();
+    }
+  }, [seconds]);
+*/
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds((seconds) => seconds + 1);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  /*
+  useEffect(() => {
+    let interval = setInterval(() => {
+      console.log("INTERVAL STATE FIELDS ", state);
+      checkFields();
+     
+      console.log("USER ", document.getElementById("firstName").value);
+      console.log("USER REF", inputFirstname.current.value);
+      console.log("USER FLD", fields["firstName"].length);
+      console.log("FOCUS", document.activeElement.id);
+     
+      //clearInterval(interval);
+      //console.log("STATE FIELDS ", state);
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+*/
 
   const handleChange = (event) => {
     //console.log(event.target.id);
@@ -539,244 +590,194 @@ const CreateAccount = (props) => {
     history.replace("/login");
     e.preventDefault();
   };
-  const nextStepAction = async (step, session) => {
-    if (step === 4) {
-      await Auth.signOut();
-      history.replace("/");
-    } else if (step === 2) {
-      //userAuth(true);
-      if (session) {
-        const token = session.getIdToken().payload;
-        const _currentUser = {
-          username: token["cognito:username"],
-          organization: token["custom:organization"] || "",
-          given_name: token["given_name"],
-          client: token["aud"],
-        };
-        setCurrentUser(_currentUser);
-      }
-      setRegisterStep(step);
-    } else {
-      setRegisterStep(step);
-    }
-  };
   return (
-    <React.Fragment>
-      {registerStep === 3 && (
-        <Box mt={80}>
-          <PhoneVerification
-            invalidLink={config.invalidVerificationLink}
-            currentUser={currentUser}
-            nextStep={nextStepAction}
+    <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
+      <Box mt={40} display="inline-flex">
+        <Flex width={"168px"}>
+          <Input
+            autoFocus={true}
+            placeholder={i18n.__("firstNamePlaceholder")}
+            id={"firstName"}
+            name={"firstName"}
+            //onChange={_handleChange}
+            onChange={handleChange}
+            //onBlur={(e) => checkInputField("firstName", e)}
+            ref={inputFirstname}
+            error={state.firstName.status}
           />
-        </Box>
-      )}
-      {registerStep === 2 && (
-        <Box mt={80}>
-          <EmailVerification
-            invalidLink={config.invalidVerificationLink}
-            currentUser={currentUser}
-            nextStep={nextStepAction}
+        </Flex>
+        <Flex ml={25} width={"168px"}>
+          <Input
+            placeholder={i18n.__("lastNamePlaceholder")}
+            id={"lastName"}
+            name={"lastName"}
+            onChange={handleChange}
+            //onBlur={(e) => checkInputField("lastName", e)}
+            ref={inputLastname}
+            error={state.lastName.status}
           />
-        </Box>
-      )}
-      {registerStep === 1 && (
-        <TermsOfUse nextStep={nextStepAction} fields={state} />
-      )}
-      {registerStep === 0 && (
-        <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
-          <Box mt={40} display="inline-flex">
-            <Flex width={"168px"}>
-              <Input
-                autoFocus={true}
-                placeholder={i18n.__("firstNamePlaceholder")}
-                id={"firstName"}
-                name={"firstName"}
-                //onChange={_handleChange}
-                onChange={handleChange}
-                //onBlur={(e) => checkInputField("firstName", e)}
-                ref={inputFirstname}
-                error={state.firstName.status}
-              />
-            </Flex>
-            <Flex ml={25} width={"168px"}>
-              <Input
-                placeholder={i18n.__("lastNamePlaceholder")}
-                id={"lastName"}
-                name={"lastName"}
-                onChange={handleChange}
-                //onBlur={(e) => checkInputField("lastName", e)}
-                ref={inputLastname}
-                error={state.lastName.status}
-              />
-            </Flex>
-          </Box>
-          <Box mt={28}>
-            <IconField>
-              <IconField.LeftIcon
-                iconify={bxUser}
-                color={"componentPrimary"}
-                size={"17"}
-              />
-              <IconField.InputField
-                placeholder={i18n.__("usernamePlaceholder")}
-                id={"username"}
-                name={"username"}
-                onChange={handleChange}
-                //onBlur={(e) => checkInputField("username", e)}
-                errorMsg={state.username.msg}
-                error={state.username.status}
-                ref={inputUsername}
-              />
-            </IconField>
-          </Box>
-          <Box mt={state.username.status ? 5 : 28}>
-            <IconField>
-              <IconField.LeftIcon
-                iconify={bxEnvelope}
-                color={"componentPrimary"}
-                size={"17"}
-              />
-              <IconField.InputField
-                placeholder={i18n.__("emailPlaceholder")}
-                id={"email"}
-                name={"email"}
-                onChange={handleChange}
-                promptMsg={state.email.valid ? i18n.__("emailPrompt") : ""}
-                errorMsg={state.email.msg}
-                error={state.email.status}
-                ref={inputEmail}
-                //onBlur={(e) => checkInputField("email", e)}
-              />
-            </IconField>
-          </Box>
+        </Flex>
+      </Box>
+      <Box mt={28}>
+        <IconField>
+          <IconField.LeftIcon
+            iconify={bxUser}
+            color={"componentPrimary"}
+            size={"17"}
+          />
+          <IconField.InputField
+            placeholder={i18n.__("usernamePlaceholder")}
+            id={"username"}
+            name={"username"}
+            onChange={handleChange}
+            //onBlur={(e) => checkInputField("username", e)}
+            errorMsg={state.username.msg}
+            error={state.username.status}
+            ref={inputUsername}
+          />
+        </IconField>
+      </Box>
+      <Box mt={state.username.status ? 5 : 28}>
+        <IconField>
+          <IconField.LeftIcon
+            iconify={bxEnvelope}
+            color={"componentPrimary"}
+            size={"17"}
+          />
+          <IconField.InputField
+            placeholder={i18n.__("emailPlaceholder")}
+            id={"email"}
+            name={"email"}
+            onChange={handleChange}
+            promptMsg={state.email.valid ? i18n.__("emailPrompt") : ""}
+            errorMsg={state.email.msg}
+            error={state.email.status}
+            ref={inputEmail}
+            //onBlur={(e) => checkInputField("email", e)}
+          />
+        </IconField>
+      </Box>
 
-          <Box mt={state.email.valid || state.email.status ? 5 : 28}>
-            <PhoneNumberField>
-              <PhoneNumberField.RegionField
-                defaultValue={state.regionCode}
-                options={selectOptions}
-                searchLength={1}
-                showList={false}
-                ref={inputSelect}
-                /* id="select-search" */
-                onChange={(e, code) => {
-                  //console.log("REGION", e);
-                  //console.log("REGION", code);
-                  console.log("REGION SELECT ", e, code);
-                  handleChange({
-                    target: {
-                      id: "regionCode",
-                      value: code,
-                    },
-                  });
+      <Box mt={state.email.valid || state.email.status ? 5 : 28}>
+        <PhoneNumberField>
+          <PhoneNumberField.RegionField
+            defaultValue={state.regionCode}
+            options={selectOptions}
+            searchLength={1}
+            showList={false}
+            ref={inputSelect}
+            /* id="select-search" */
+            onChange={(e, code) => {
+              //console.log("REGION", e);
+              //console.log("REGION", code);
+              console.log("REGION SELECT ", e, code);
+              handleChange({
+                target: {
+                  id: "regionCode",
+                  value: code,
+                },
+              });
 
-                  //setState({ regionCode: code });
-                  // this doesn't work????
-                  //setRegioncode(code);
-                  //setInputPhoneFocus();
-                }}
-              />
-              <PhoneNumberField.InputField
-                placeholder={i18n.__("phoneNumberPlaceholder")}
-                id={"phone"}
-                name={"phone"}
-                onChange={handleChange}
-                promptMsg={state.phone.valid ? i18n.__("phonePrompt") : ""}
-                errorMsg={state.phone.msg}
-                error={state.phone.status}
-                ref={inputPhone}
-                //onBlur={(e) => checkInputField("phone", e)}
+              //setState({ regionCode: code });
+              // this doesn't work????
+              //setRegioncode(code);
+              //setInputPhoneFocus();
+            }}
+          />
+          <PhoneNumberField.InputField
+            placeholder={i18n.__("phoneNumberPlaceholder")}
+            id={"phone"}
+            name={"phone"}
+            onChange={handleChange}
+            promptMsg={state.phone.valid ? i18n.__("phonePrompt") : ""}
+            errorMsg={state.phone.msg}
+            error={state.phone.status}
+            ref={inputPhone}
+            //onBlur={(e) => checkInputField("phone", e)}
 
-                /* disabled={regionCode === "000"} */
-              />
-            </PhoneNumberField>
-          </Box>
-          <Box mt={state.phone.valid || state.phone.status ? 5 : 28}>
-            <PasswordField
-              placeholder={i18n.__("passwordPlaceholder")}
-              onFocus={(e) => {
-                if (
-                  !state.password.valid ||
-                  state.password.value.length === 0
-                ) {
-                  onPopper(e, true);
-                } else {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }
-              }}
-              addPopper={addPopper}
-              verifications={passwordVerification}
-              id={"password"}
-              name={"password"}
-              onChange={(e) => {
-                handleChange(e);
-                /* check password popup */
-                checkInputPassword(e.target.value);
-              }}
-              ref={inputPassword}
-              /* promptMsg={i18n.__("passwordPrompt")} */
-              errorMsg={state.password.msg}
-              error={state.password.status}
-              onBlur={(e) => onPopper(e, false)}
-              //onBlur={(e) => checkInputField("password", e)}
-            />
-          </Box>
-          <Box mt={state.password.status ? 5 : 28}>
-            <PasswordField
-              placeholder={i18n.__("confirmPlaceholder")}
-              id={"passwordConfirm"}
-              name={"passwordConfirm"}
-              onChange={handleChange}
-              errorMsg={
-                state.passwordConfirm.status
-                  ? state.passwordConfirm.msg
-                  : state.password.msg
-              }
-              error={state.password.status || state.passwordConfirm.status}
-              //onBlur={(e) => checkInputField("passwordConfirm", e)}
-              /* interestingly this removes autofill from all fields??? */
-              autoComplete="new-password"
-            />
-          </Box>
-
-          <Box
-            mt={
-              66 -
-              (state.password.status || state.passwordConfirm.status ? 18 : 0)
+            /* disabled={regionCode === "000"} */
+          />
+        </PhoneNumberField>
+      </Box>
+      <Box mt={state.phone.valid || state.phone.status ? 5 : 28}>
+        <PasswordField
+          placeholder={i18n.__("passwordPlaceholder")}
+          onFocus={(e) => {
+            if (!state.password.valid || state.password.value.length === 0) {
+              onPopper(e, true);
+            } else {
+              e.preventDefault();
+              e.stopPropagation();
             }
-            textAlign={"center"}
-          >
-            <Button
-              disabled={nextDisabled}
-              onClick={(e) => {
-                setRegisterStep(1);
-              }}
-            >
-              {i18n.__("nextButton")}
-            </Button>
-            <Box mt={10}>
-              <Box display={"inline-flex"}>
-                <Flex alignItems={"center"}>
-                  <Text textStyle={"caption2"} mr={5}>
-                    {i18n.__("existingAccount")}
-                  </Text>
-                  <Button
-                    variation={"link"}
-                    fontSize={"10px"}
-                    lineHeight={"normal"}
-                    onClick={loginLink}
-                  >
-                    {i18n.__("loginLink")}
-                  </Button>
-                </Flex>
-              </Box>
-            </Box>
+          }}
+          addPopper={addPopper}
+          verifications={passwordVerification}
+          id={"password"}
+          name={"password"}
+          onChange={(e) => {
+            handleChange(e);
+            /* check password popup */
+            checkInputPassword(e.target.value);
+          }}
+          ref={inputPassword}
+          /* promptMsg={i18n.__("passwordPrompt")} */
+          errorMsg={state.password.msg}
+          error={state.password.status}
+          onBlur={(e) => onPopper(e, false)}
+          //onBlur={(e) => checkInputField("password", e)}
+        />
+      </Box>
+      <Box mt={state.password.status ? 5 : 28}>
+        <PasswordField
+          placeholder={i18n.__("confirmPlaceholder")}
+          id={"passwordConfirm"}
+          name={"passwordConfirm"}
+          onChange={handleChange}
+          errorMsg={
+            state.passwordConfirm.status
+              ? state.passwordConfirm.msg
+              : state.password.msg
+          }
+          error={state.password.status || state.passwordConfirm.status}
+          //onBlur={(e) => checkInputField("passwordConfirm", e)}
+          /* interestingly this removes autofill from all fields??? */
+          autoComplete="new-password"
+        />
+      </Box>
+
+      <Box
+        mt={
+          66 - (state.password.status || state.passwordConfirm.status ? 18 : 0)
+        }
+        textAlign={"center"}
+      >
+        <Button
+          disabled={nextDisabled}
+          onClick={() => {
+            onAction("register", state);
+          }}
+        >
+          {i18n.__("nextButton")}
+        </Button>
+        <Box mt={10}>
+          <Box display={"inline-flex"}>
+            <Flex alignItems={"center"}>
+              <Text textStyle={"caption2"} mr={5}>
+                {i18n.__("existingAccount")}
+              </Text>
+              <Button
+                variation={"link"}
+                fontSize={"10px"}
+                lineHeight={"normal"}
+                onClick={loginLink}
+              >
+                {i18n.__("loginLink")}
+              </Button>
+            </Flex>
           </Box>
-        </ProgressContainer>
-      )}
-    </React.Fragment>
+        </Box>
+      </Box>
+    </ProgressContainer>
   );
 };
 

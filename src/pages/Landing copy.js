@@ -14,6 +14,9 @@ import bxChevronRight from "@iconify/icons-bx/bx-chevron-right";
 import styled from "styled-components";
 
 import CreateAccount from "./CreateAccount";
+import TermsOfUse from "./TermsOfUse";
+import EmailVerification from "./EmailVerification";
+import PhoneVerification from "./PhoneVerification";
 import Login from "./Login";
 
 import { useAppContext } from "../lib/contextLib";
@@ -74,7 +77,11 @@ const Landing = (props) => {
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   let initStep = 5;
-  if (pathname === "/login") {
+  if (pathname === "/verify-email") {
+    initStep = 3;
+  } else if (pathname === "/verify-phone") {
+    initStep = 4;
+  } else if (pathname === "/login") {
     initStep = 5;
   } else if (pathname === "/register") {
     initStep = 1;
@@ -133,7 +140,10 @@ const Landing = (props) => {
   };
 
   console.log("STEP COUNTER ", stepCounter);
-  const topMargin = "62px";
+  let topMargin = "62px";
+  if (stepCounter === 5) {
+    topMargin = "162px";
+  }
   return (
     <React.Fragment>
       <StyledBox minWidth={"1440px"} maxHeight={"792px"} minHeight={"792px"}>
@@ -186,9 +196,19 @@ const Landing = (props) => {
                   key={"step-" + stepCounter}
                 >
                   {stepCounter === 0 && <NotFoundPage />}
-                  {stepCounter === 1 && !isAuthenticated && <CreateAccount />}
+                  {stepCounter === 1 && !isAuthenticated && (
+                    <CreateAccount onAction={checkAction} />
+                  )}
                   {stepCounter === 6 && isAuthenticated && <Logout />}
-
+                  {stepCounter === 2 && (
+                    <TermsOfUse onAction={checkAction} fields={accountFields} />
+                  )}
+                  {stepCounter === 3 && (
+                    <EmailVerification onAction={checkAction} />
+                  )}
+                  {stepCounter === 4 && (
+                    <PhoneVerification onAction={checkAction} />
+                  )}
                   {stepCounter === 5 && <Login />}
                 </Box>
               </Flex>

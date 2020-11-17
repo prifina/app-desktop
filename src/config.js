@@ -1,4 +1,6 @@
 const prod = {
+  invalidVerificationLink:
+    "https://prifina.zendesk.com/hc/en-us/articles/360051754911",
   passwordLength: 10,
   usernameLength: 6,
   auth_region: process.env.REACT_APP_AUTH_REGION,
@@ -18,6 +20,8 @@ const prod = {
 const dev = {
   passwordLength: 10,
   usernameLength: 6,
+  invalidVerificationLink:
+    "https://prifina.zendesk.com/hc/en-us/articles/360051754911",
 };
 
 // Default to dev if not set

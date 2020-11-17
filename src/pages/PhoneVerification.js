@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Flex, Button, Text, IconField } from "@blend-ui/core";
+import { Box, Flex, Button, Text, IconField, Link } from "@blend-ui/core";
 
 import bxKey from "@iconify/icons-bx/bx-key";
 import { ReactComponent as Phone } from "../assets/phone.svg";
@@ -12,14 +12,19 @@ import { UseFocus } from "../lib/componentUtils";
 import Amplify, { API } from "aws-amplify";
 import { useAppContext } from "../lib/contextLib";
 import { verifyCodeMutation } from "../graphql/api";
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
 
 import i18n from "../lib/i18n";
 i18n.init();
 
-const PhoneVerification = ({ onAction, ...props }) => {
-  const history = useHistory();
-  const { APIConfig, currentUser } = useAppContext();
+const PhoneVerification = ({
+  invalidLink,
+  currentUser,
+  nextStep,
+  ...props
+}) => {
+  //const history = useHistory();
+  const { APIConfig } = useAppContext();
   Amplify.configure(APIConfig);
   const [verificationFields, _handleChange] = useFormFields({
     verificationCode: "",
@@ -55,10 +60,13 @@ const PhoneVerification = ({ onAction, ...props }) => {
         ].join("#")
       );
       console.log(result);
+
       // redirects to logout...
-      history.replace("/");
+      //history.replace("/");
+      nextStep(4);
     } catch (e) {
       console.log("ERR", e);
+      setInputError({ status: true, msg: i18n.__("invalidCode") });
       //history.replace("/");
     }
     //e.preventDefault();
@@ -105,9 +113,9 @@ const PhoneVerification = ({ onAction, ...props }) => {
                 <Text textStyle={"caption2"} mr={5}>
                   {i18n.__("codeMissing")}
                 </Text>
-                <Button variation={"link"} fontSize={"10px"}>
+                <Link href={invalidLink} target="_blank" fontSize={"10px"}>
                   {i18n.__("sendAgainLinkText")}
-                </Button>
+                </Link>
               </Flex>
             </Box>
           </Box>

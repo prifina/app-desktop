@@ -22,12 +22,15 @@ export default () => (
       <UnauthenticatedRoute path="/register" exact>
         <Landing />
       </UnauthenticatedRoute>
+
+      {/*
       <AuthenticatedRoute path="/verify-email" exact>
         <Landing />
       </AuthenticatedRoute>
       <AuthenticatedRoute path="/verify-phone" exact>
         <Landing />
       </AuthenticatedRoute>
+      */}
 
       <Route component={NotFoundPage} />
     </Switch>

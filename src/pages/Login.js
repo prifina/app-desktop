@@ -66,11 +66,35 @@ const Login = ({ onAction, ...props }) => {
   const loginClick = async () => {
     try {
       //this.setState({loading: true, disabled: true});
-      const user = await Auth.signIn(
-        loginFields.username,
-        loginFields.password
-      );
+      let user = await Auth.signIn(loginFields.username, loginFields.password);
       console.log("LOGIN", user);
+
+      if (
+        user.hasOwnProperty("preferredMFA") &&
+        user.preferredMFA === "NOMFA"
+      ) {
+        if (!user.attributes.phone_number_verified) {
+          await Auth.signOut();
+          setUsernameError({
+            status: true,
+            msg: "User has unverified phone number",
+          });
+          console.log("ERROR PHONE NUMBER UNVERIFIED...", user);
+        } else {
+          const mfa = await Auth.setPreferredMFA(user, "SMS");
+          console.log("MFA ", mfa);
+          user = await Auth.signIn(loginFields.username, loginFields.password);
+        }
+      }
+      if (
+        user.hasOwnProperty("challengeName") &&
+        user.challengeName === "SMS_MFA"
+      ) {
+        setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+        setConfirmCode(true);
+      }
+
+      /*
       if (user.preferredMFA === "NOMFA") {
         //const mfa = await Auth.setPreferredMFA(user, "SMS");
         //console.log("MFA ", mfa);
@@ -80,7 +104,7 @@ const Login = ({ onAction, ...props }) => {
         setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
         setConfirmCode(true);
       }
-
+*/
       //preferredMFA: "NOMFA"
       //challengeName: "SMS_MFA"
       /*
@@ -161,157 +185,161 @@ CODE_DELIVERY_DESTINATION: "+********7102"
   return (
     <React.Fragment>
       {confirmCode && (
-        <ConfirmAuth backButton={backButtonClick} authOptions={authOptions} />
+        <Box mt={100}>
+          <ConfirmAuth backButton={backButtonClick} authOptions={authOptions} />
+        </Box>
       )}
       {!confirmCode && (
-        <ProgressContainer
-          title={i18n.__("loginPage")}
-          progress={50}
-          pr={19}
-          minHeight={406}
-        >
-          <Box mt={60 - (invalidLogin == 2 ? 22 : 0)} textAlign={"center"}>
-            {invalidLogin == 2 && (
-              <Text colorStyle={"error"} fontSize={"xs"}>
-                {i18n.__("invalidLogin")}
-              </Text>
-            )}
-          </Box>
-          <Box>
-            <IconField>
-              <IconField.LeftIcon
-                iconify={bxUser}
-                color={"componentPrimary"}
-                size={"17"}
-              />
-              <IconField.InputField
-                autoFocus={true}
-                placeholder={i18n.__("usernamePlaceholder")}
-                id={"username"}
-                name={"username"}
+        <Box mt={120}>
+          <ProgressContainer
+            title={i18n.__("loginPage")}
+            progress={50}
+            pr={19}
+            minHeight={406}
+          >
+            <Box mt={60 - (invalidLogin == 2 ? 22 : 0)} textAlign={"center"}>
+              {invalidLogin == 2 && (
+                <Text colorStyle={"error"} fontSize={"xs"}>
+                  {i18n.__("invalidLogin")}
+                </Text>
+              )}
+            </Box>
+            <Box>
+              <IconField>
+                <IconField.LeftIcon
+                  iconify={bxUser}
+                  color={"componentPrimary"}
+                  size={"17"}
+                />
+                <IconField.InputField
+                  autoFocus={true}
+                  placeholder={i18n.__("usernamePlaceholder")}
+                  id={"username"}
+                  name={"username"}
+                  onChange={(e) => {
+                    //console.log("USER ", e.target.value);
+                    _handleChange(e);
+                    if (
+                      loginFields.password.length > 7 &&
+                      !passwordError.status
+                    ) {
+                      const userError = checkUsername(e.target.value, true);
+                      if (userError !== "") {
+                        setUsernameError({ status: true, msg: userError });
+                      } else {
+                        setUsernameError({ status: false, msg: "" });
+                        setPasswordError({
+                          status: false,
+                          msg: "",
+                        });
+                        setInvalidLogin(1);
+                      }
+                    }
+                  }}
+                  errorMsg={usernameError.msg}
+                  error={usernameError.status}
+                  ref={inputUsername}
+                  onBlur={(e) => {
+                    const userError = checkUsername(e.target.value);
+                    if (userError !== "") {
+                      console.log(userError);
+                      setUsernameError({ status: true, msg: userError });
+                      setInputUsernameFocus();
+                      e.preventDefault();
+                    } else {
+                      setUsernameError({ status: false, msg: "" });
+                    }
+                  }}
+                />
+              </IconField>
+
+              <Box
+                display={"inline-flex"}
+                justifyContent={"flex-end"}
+                width={[1]}
+                style={{
+                  position: "relative",
+                  top: usernameError.status ? "-33px" : "-7px",
+                }}
+              >
+                <Flex>
+                  <Button variation={"link"} fontSize={"10px"}>
+                    {i18n.__("forgotUsername")}
+                  </Button>
+                </Flex>
+              </Box>
+            </Box>
+
+            <Box mt={usernameError.status ? -19 : 9}>
+              <PasswordField
+                placeholder={i18n.__("passwordPlaceholder")}
+                id={"password"}
+                name={"password"}
                 onChange={(e) => {
-                  //console.log("USER ", e.target.value);
+                  //console.log("PASS ", e.target.value);
                   _handleChange(e);
-                  if (
-                    loginFields.password.length > 7 &&
-                    !passwordError.status
-                  ) {
-                    const userError = checkUsername(e.target.value, true);
+                  const passwordError = checkPassword(e.target.value);
+                  if (passwordError) {
+                    setPasswordError({
+                      status: true,
+                      msg: i18n.__("passwordQuality"),
+                    });
+                  } else if (e.target.value.length > 7) {
+                    setPasswordError({
+                      status: false,
+                      msg: "",
+                    });
+                    const userError = checkUsername(loginFields.username, true);
                     if (userError !== "") {
                       setUsernameError({ status: true, msg: userError });
                     } else {
                       setUsernameError({ status: false, msg: "" });
-                      setPasswordError({
-                        status: false,
-                        msg: "",
-                      });
                       setInvalidLogin(1);
                     }
                   }
                 }}
-                errorMsg={usernameError.msg}
-                error={usernameError.status}
-                ref={inputUsername}
-                onBlur={(e) => {
-                  const userError = checkUsername(e.target.value);
-                  if (userError !== "") {
-                    console.log(userError);
-                    setUsernameError({ status: true, msg: userError });
-                    setInputUsernameFocus();
-                    e.preventDefault();
-                  } else {
-                    setUsernameError({ status: false, msg: "" });
-                  }
-                }}
+                errorMsg={passwordError.msg}
+                error={passwordError.status}
+                ref={inputPassword}
               />
-            </IconField>
-
-            <Box
-              display={"inline-flex"}
-              justifyContent={"flex-end"}
-              width={[1]}
-              style={{
-                position: "relative",
-                top: usernameError.status ? "-33px" : "-7px",
-              }}
-            >
-              <Flex>
-                <Button variation={"link"} fontSize={"10px"}>
-                  {i18n.__("forgotUsername")}
-                </Button>
-              </Flex>
-            </Box>
-          </Box>
-
-          <Box mt={usernameError.status ? -19 : 9}>
-            <PasswordField
-              placeholder={i18n.__("passwordPlaceholder")}
-              id={"password"}
-              name={"password"}
-              onChange={(e) => {
-                //console.log("PASS ", e.target.value);
-                _handleChange(e);
-                const passwordError = checkPassword(e.target.value);
-                if (passwordError) {
-                  setPasswordError({
-                    status: true,
-                    msg: i18n.__("passwordQuality"),
-                  });
-                } else if (e.target.value.length > 7) {
-                  setPasswordError({
-                    status: false,
-                    msg: "",
-                  });
-                  const userError = checkUsername(loginFields.username, true);
-                  if (userError !== "") {
-                    setUsernameError({ status: true, msg: userError });
-                  } else {
-                    setUsernameError({ status: false, msg: "" });
-                    setInvalidLogin(1);
-                  }
-                }
-              }}
-              errorMsg={passwordError.msg}
-              error={passwordError.status}
-              ref={inputPassword}
-            />
-            <Box
-              display={"inline-flex"}
-              justifyContent={"flex-end"}
-              width={[1]}
-              style={{
-                position: "relative",
-                top: passwordError.status ? "-33px" : "-7px",
-              }}
-            >
-              <Flex>
-                <Button variation={"link"} fontSize={"10px"}>
-                  {i18n.__("forgotPassword")}
-                </Button>
-              </Flex>
-            </Box>
-          </Box>
-
-          <Box mt={passwordError.status ? 49 : 77} display={"inline-flex"}>
-            <Flex>
-              <Button variation={"outline"} onClick={createAccountClick}>
-                {i18n.__("createAccount")}
-              </Button>
-            </Flex>
-            <Flex ml={99}>
-              <Button
-                disabled={
-                  passwordError.status ||
-                  usernameError.status ||
-                  invalidLogin == 0
-                }
-                onClick={loginClick}
+              <Box
+                display={"inline-flex"}
+                justifyContent={"flex-end"}
+                width={[1]}
+                style={{
+                  position: "relative",
+                  top: passwordError.status ? "-33px" : "-7px",
+                }}
               >
-                {i18n.__("loginButton")}
-              </Button>
-            </Flex>
-          </Box>
-        </ProgressContainer>
+                <Flex>
+                  <Button variation={"link"} fontSize={"10px"}>
+                    {i18n.__("forgotPassword")}
+                  </Button>
+                </Flex>
+              </Box>
+            </Box>
+
+            <Box mt={passwordError.status ? 49 : 77} display={"inline-flex"}>
+              <Flex>
+                <Button variation={"outline"} onClick={createAccountClick}>
+                  {i18n.__("createAccount")}
+                </Button>
+              </Flex>
+              <Flex ml={99}>
+                <Button
+                  disabled={
+                    passwordError.status ||
+                    usernameError.status ||
+                    invalidLogin == 0
+                  }
+                  onClick={loginClick}
+                >
+                  {i18n.__("loginButton")}
+                </Button>
+              </Flex>
+            </Box>
+          </ProgressContainer>
+        </Box>
       )}
     </React.Fragment>
   );

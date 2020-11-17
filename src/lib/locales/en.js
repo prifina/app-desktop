@@ -69,7 +69,7 @@ const strings = {
       "Please provide your email address and phone number in order to keep your account secure",
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive the code?",
-    sendAgainLinkText: "Send again.",
+    sendAgainLinkText: "Click here.",
     invalidCode: "Incorrect code, please enter the correct code.",
 
     /* Email verification */
@@ -79,7 +79,8 @@ const strings = {
     emailMissing: "Didn't receive the code?",
     /* Decline dialog */
     declineTitle: "Decline Prifina’s Terms of Use?",
-    declineText: "By declining Prifina's Terms of Use you will not be able to use the Prifina application.",
+    declineText:
+      "By declining Prifina's Terms of Use you will not be able to use the Prifina application.",
     /* Login */
     loginPage: "Login to your account",
     invalidLogin: "Incorrect username or password.",

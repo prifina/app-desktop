@@ -66,7 +66,7 @@ const texts = [
     text: i18n.__("materialsText"),
   },
 ];
-const TermsOfUse = ({ nextStep, fields, ...props }) => {
+const TermsOfUse = ({ onAction, fields, ...props }) => {
   console.log("Terms ", props);
   const { AUTHConfig } = useAppContext();
   Auth.configure(AUTHConfig);
@@ -108,7 +108,6 @@ const TermsOfUse = ({ nextStep, fields, ...props }) => {
         },
       };
 */
-
       let phoneNumber = fields.phone.value;
       if (phoneNumber.startsWith("0")) {
         phoneNumber = phoneNumber.substr(1);
@@ -131,11 +130,10 @@ const TermsOfUse = ({ nextStep, fields, ...props }) => {
         fields.username.value,
         fields.password.value
       );
-      //const mfa = await Auth.setPreferredMFA(currentUser, "SMS");
-      //console.log("MFA ", mfa);
-      const session = await Auth.currentSession();
-      //onAction("email");
-      nextStep(2, session);
+      const mfa = await Auth.setPreferredMFA(currentUser, "SMS");
+      console.log("MFA ", mfa);
+
+      onAction("email");
     } catch (error) {
       console.log("error signing up:", error);
     }
@@ -151,8 +149,7 @@ const TermsOfUse = ({ nextStep, fields, ...props }) => {
     console.log("BUTTON ", e, action);
     setDecline(false);
     if (action === "decline") {
-      // back to create account page
-      nextStep(1);
+      onAction("terms");
     }
     e.preventDefault();
   };
