@@ -1,10 +1,12 @@
 // MyComponent.stories.js
 
 import React from 'react';
+import styled from "styled-components";
 import imageFile from '../assets/Adventure_icon.svg';
 import image1 from '../assets/maxresdefault1.png';
 import image2 from '../assets/maxresdefault2.png';
 import image3 from '../assets/maxresdefault3.png';
+
 
 export default {
   title: 'Image',
@@ -15,12 +17,6 @@ const image = {
   alt: 'my image',
 };
 
-const imageS = {
-  src1: image1,
-  src2: image2,
-  src3: image3,
-  alt: 'my image',
-};
 
 export const ThumbnailImage = () => (
   <img 
@@ -31,10 +27,28 @@ export const ThumbnailImage = () => (
 );
 
 
-export const ScreenImages = () => (
-  <React.Fragment>
-    <img src={imageS.src1} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item mr-4`]} />
-    <img src={imageS.src2} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item mr-4`]} />
-    <img src={imageS.src3} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item`]} />
-  </React.Fragment>  
-);
+export const ScreenImages = () => {
+  const ImageBox = styled.div`
+    .gallery-item{
+      width: auto;
+      height: 227px;
+      object-fit: cover;
+    }
+  `;
+  const imageS = {
+    src1: image1,
+    src2: image2,
+    src3: image3,
+    alt: 'my image',
+  };
+  
+  return(
+    <React.Fragment>
+      <ImageBox>
+        <img src={imageS.src1} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item mr-4`]} />
+        <img src={imageS.src2} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item mr-4`]} />
+        <img src={imageS.src3} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item`]} />
+      </ImageBox>
+    </React.Fragment>  
+  );
+}

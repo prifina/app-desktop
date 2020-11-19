@@ -1,35 +1,75 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import styled from "styled-components";
 import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
 import Line from "../assets/Line.png";
 import { ReactComponent as Search } from '../assets/images/search.svg';
+import { Box, Text, useTheme } from "@blend-ui/core";
 
 
+const AppDetailHeaderContainer = ({ user }) => {
+  const Header = styled.div`     
+    display: flex;
+    width: 100%;
+    align-items: center;
+  `;    
+  const HeaderIteam = styled.div`     
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 20px 35px;
+    .site-logo-icon{
+      margin-right:15px;
+    }
+    .sit-tagline-divider{
+      font-size: 23px;
+      margin-top: -3px;
+      padding: 0 10px;
+      color: #B8C1C6;
+    }
+    .site-tagline{
+      font-size: 18px;
+      color: #B8C1C6;
+    }
+  `;  
+  const HeaderSearchBox = styled.div`    
+    margin: 0 auto;
+    .header-searchbox{
+      font-size: 14px;
+      line-height: 1.42857143;
+      color:#B8C1C6;
+      background-color:#FBFBFB;
+      border: 1px solid #D1D5DE;
+      border-radius: 15px;
+      padding: 6px 6px 6px 40px;
+      width: 256px;
+      .search-icon{
+        color: #EEEEEE;
+      }
+    }
+  `;
+  return (  
+    <Header>
+        <HeaderIteam mt="4" className="Header">
+          <PrifinaLogo className="site-logo-icon"/> 
+          <PrifinaText className="site-logo-text"/> 
+          <span className="sit-tagline-divider"> | </span> 
+          <span className="site-tagline">App Directory</span>
+          <HeaderSearchBox>
+            <Box>
+              <Search className="search-icon"/>
+              <input className="header-searchbox" placeholder="Search app directory"></input>
+            </Box>
+          </HeaderSearchBox> 
+        </HeaderIteam>
+    </Header>
 
-const AppDetailHeaderContainer = ({ user, onLogin, onLogout, onCreateAccount }) => (
-  <header>
-    <div className="wrapper">
-      <div className="header-container mt-4">
-        <PrifinaLogo className="site-logo-icon"/> <PrifinaText className="site-logo-text"/> <span className="sit-tagline-divider"></span> <span className="site-tagline">App Directory</span>
-        <div style={{marginLeft:'310px'}}>
-          <div className="search-box">
-            <Search className="search-icon"/>
-            <input className="header-searchbox" placeholder="Search app directory"></input>
-          </div>
-        </div> 
-      </div>
-    </div>
-  </header>
-
-);
+  );
+}
 
 AppDetailHeaderContainer.propTypes = {
-  user: PropTypes.shape({}),
-  onLogin: PropTypes.func.isRequired,
-  onLogout: PropTypes.func.isRequired,
-  onCreateAccount: PropTypes.func.isRequired,
+  user: PropTypes.shape({})
 };
 
 AppDetailHeaderContainer.defaultProps = {

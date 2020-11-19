@@ -3,81 +3,8 @@
 			// background:#F3F6FD;
 			margin: 0 8px 0;
 		}
-		.mainSideBar{
-			width: 100px;
-			text-align: center;
-			// margin-top: 30px;
-			border-right: 2px solid #DFEBEF;
-			// height: calc(100vh - 46px);
-			height: calc(100vh);
-			background: $vertical-tabs-background-color;
-		}
-		.mainSideBar ul{
-			margin-top: 25px;
-			padding: 0;
-			list-style: none;
-		}
-		.mainSideBar ul li {
-    	margin-bottom: 25px;
-		}
-		.mainSideBar ul li a{
-			opacity: 0.4;
-			transition: all 0.4s ease-in;
-		}
-		.mainSideBar ul li:hover a{
-			opacity: 1;
-		}
-		.mainSideBar ul li.active a{
-			opacity: 1;
-		}
-		.SubMenuSideBar{
-			padding: 0 0 0 40px;
-			width: 200px;
-			background: $vertical-tabs-background-color;
-		}
-		.SubMenuSideBar h5{
-			font-size: 14px;
-		}
-		.SubMenuSideBar h5 img{
-			margin-right: 5px;			
-			vertical-align: text-top;
-		}
-		.SubMenuSideBar ul{
-			padding-left: 20px;
-    	list-style: none;
-		}
-		.SubMenuSideBar ul li{
-			font-size: 16px;
-    	padding-bottom: 20px;
-			color: #383838;
-			letter-spacing: 0.5px;
-		}
-		.SubMenuSideBar ul li a{
-			color: #383838;
-			text-decoration: none;
-		}
-		.SubMenuSideBar ul li.active{			
-			position: relative;
-		}
-		.SubMenuSideBar ul li.active a{
-			color: #6967FF;
-			font-weight: 700;
-		}
-		.SubMenuSideBar ul li:hover a{
-			color: #6967FF;
-		}
-		.SubMenuSideBar ul li.active::after{
-			content: '';
-			width: 0;
-			height: 0;
-			border-top: 10px solid transparent;
-			border-right: 15px solid white;
-			border-bottom: 10px solid transparent;
-			display: block;
-			position: absolute;
-			right: 0px;
-			top: 0;
-		}
+		
+		
 		.mainBody{
 			background: #FFFFFF;
 			// box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.05);
@@ -179,6 +106,4 @@
 		margin-right: 5px;
 		margin-bottom: 2px;
 	}
-	.active-left-li {
-	    margin-right: 5px;
-	}
+	

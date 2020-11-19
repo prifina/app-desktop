@@ -30,36 +30,7 @@ h4{
     margin-top: 5px;
     color: $heading-font-color;
 }
-.breadcrumbs-container {
-    display: flex;
-    align-self: center;
-    align-items: center;
-    margin-bottom: 10px;
-}
 
-.breadcrumbs-previous-page{
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 18px;
-    align-items: center;
-    color: $breadcrumb-font-color;
-    padding: 5px;
-}
-.breadcrumbs-divider{
-    width: 2px;
-    height: 2px;
-    background: $breadcrumb-font-color;
-}
-.breadcrumbs-active-page{
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 18px;
-    align-items: center;
-    color: $breadcrumb-font-color;
-    padding: 5px;
-}
 .app-details-key-features-list{
     padding-left: 0;
     list-style-position: inside;

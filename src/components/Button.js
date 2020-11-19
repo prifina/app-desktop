@@ -11,7 +11,81 @@ import '../assets/scss/style.css';
 const Button = ({ btnType = 'default', backgroundColor,variant, fullWidth, size,className, label, ...props }) => {
   // console.log('btnType',btnType)
 
+
+  const Btn = styled.div`
+  .storybook-button--default, .storybook-button--primary, .storybook-button--secondary {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .5rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 2rem;
+    -webkit-transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  }
+  
+  .storybook-button--primary {
+    color: #ffffff;
+    background-color: #4285F4;
+    border-color: #4285F4;
+  }
+  
+  .storybook-button--secondary {
+    color: #ffffff;
+    background-color: #00847A;
+    border-color: #00847A;
+  }
+  
+  .storybook-button--small {
+    padding: .5rem 1rem;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 2rem;
+  }
+  
+  .storybook-button--medium {
+    padding: .5rem 1.5rem;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 2rem;
+  }
+  
+  .storybook-button--large {
+    padding: .5rem 1.5rem;
+    font-size: 16px;
+    line-height: 1.5;
+    border-radius: 2rem;
+  }
+  
+  .storybook-button--solid {
+    color: #ffffff;
+    background-color: #4285F4;
+    border-color: #4285F4;
+  }
+  
+  .storybook-button--outline {
+    color: #4285F4;
+    background-color: transparent;
+    border-color: #4285F4;
+  }
+  
+  .storybook-button--btn-block {
+    display: block;
+    width: 100%;
+  }
+  `;
   return (
+    <Btn>
     <button
       type="button"
       className={[ `storybook-button--${btnType}` ,(size) ? `storybook-button--${size}` : ``,(variant) ? `storybook-button--${variant}` : ``, (fullWidth) ? `storybook-button--btn-block` : '',(className)? className:``].join(' ')}
@@ -19,6 +93,7 @@ const Button = ({ btnType = 'default', backgroundColor,variant, fullWidth, size,
     >
       {label}
     </button>
+    </Btn>
   );
 };
 

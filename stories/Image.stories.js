@@ -31,7 +31,7 @@ export const ThumbnailImage = () => (
 );
 
 
-export const ScreenImages = () => (
+export const ScreenImages = () => (  
   <React.Fragment>
     <img src={imageS.src1} alt={imageS.alt} className={[`storybook-image--app-thumbnail-gallery-item mr-4`]} />
     <img src={imageS.src2} alt={imageS.alt} className={[`storybook-image--app-thumbnail-gallery-item mr-4`]} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
-import '../assets/scss/style.css';
+import styled from "styled-components";
+// import '../assets/scss/style.css';
 
 import AppDetailHeaderContainer from "../components/AppDetailHeaderContainer";
 import AppDetailLeftContainer from "../components/AppDetailLeftContainer";
@@ -26,28 +27,27 @@ const AppDetail = ({ onAction, ...props }) => {
     return () => clearTimeout(timer);
   }, [isActive]);
 
+  const StyledBox = styled(Box)`
+    border-radius: 20px;
+    border: 1px solid #f5f8f7;
+    background-color: ${(props) =>
+      props.colors ? props.colors.baseWhite : "#F5F8F7"};
+  `;
   return (
     <React.Fragment>
-      <div className="container">
-          <div class="row">
-            <AppDetailHeaderContainer />
-          </div>
-
-          <div class="row">
-            <div class="col-xs-12
-                      col-sm-12
-                      col-md-3
-                      col-lg-3">
+      <StyledBox minWidth={"1440px"} >
+        <Flex width={"100%"}>
+          <AppDetailHeaderContainer />
+        </Flex>
+        <Box display={"inline-flex"} width={"100%"} >
+          <Flex width={"25%"}  justifyContent={"center"} ml={10} ml={10}>
               <AppDetailLeftContainer />
-            </div>  
-            <div class="col-xs-12
-                      col-sm-12
-                      col-md-9
-                      col-lg-9">
+          </Flex>  
+          <Flex width={"75%"}  justifyContent={"flex-end"} ml={30} ml={10}>
               <AppDetailRightContainer />
-            </div>
-          </div>
-      </div>
+          </Flex>
+        </Box>
+      </StyledBox>
     </React.Fragment>
   );
 };
