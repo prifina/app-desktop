@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 // import '../assets/scss/style.css';
 
+import Ellipse61 from '../assets/Ellipse61.png';
+import Ellipse62 from '../assets/Ellipse62.png';
+import Ellipse63 from '../assets/Ellipse63.png';
+import Ellipse64 from '../assets/Ellipse64.png';
+import Ellipse65 from '../assets/Ellipse65.png';
+import Ellipse66 from '../assets/Ellipse66.png';
+import Ellipse67 from '../assets/Ellipse67.png';
+import Ellipse68 from '../assets/Ellipse68.png';
+
 import ListingLeftContainer from "../components/ListingLeftContainer";
 import ListingRightContainer from "../components/ListingRightContainer";
 
@@ -10,11 +19,115 @@ import i18n from "../lib/i18n";
 i18n.init();
 
 
+
 const Listing = ({ onAction, ...props }) => {
   console.log("Terms ", props);
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   const [isActive, setActive] = useState(false);
+
+  const [headTable, setHeadTable] = useState(
+    {
+      image: '',
+      full_name: 'Full Name',
+      alias: 'Alias',
+      app: 'App',
+      relationship: 'Relationship',
+      source: 'Source',
+      data_connect: 'Data Connect',
+      latest_interaction: 'Latest Interaction',
+      action: ''
+    });
+  const [dataTable, setDataTable] = useState([
+    {
+      image: Ellipse61,
+      full_name: 'Eric Chaney',
+      alias: 'erch',
+      app: 'Facebook',
+      relationship: 'Friend',
+      source: 'EricChaney@gmail.com',
+      data_connect: 'March 19,2020',
+      latest_interaction: 'April 19,2020',
+      action: 'Facebook'
+    },
+    {
+      image: Ellipse62,
+      full_name: 'Janer Doe',
+      alias: 'N/A',
+      app: 'Youtube',
+      relationship: 'Follower',
+      source: 'N/A',
+      data_connect: 'March 14,2020',
+      latest_interaction: 'April 14,2020',
+      action: 'Youtube'
+    },
+    {
+      image: Ellipse63,
+      full_name: 'Diana Redding',
+      alias: 'd.red',
+      app: 'LinkedIn',
+      relationship: 'Connection',
+      source: 'N/A',
+      data_connect: 'March 12,2020',
+      latest_interaction: 'April 19,2020',
+      action: 'LinkedIn'
+    },
+    {
+      image: Ellipse64,
+      full_name: 'Eric Chaney',
+      alias: 'erch',
+      app: 'Twitter',
+      relationship: 'Follower',
+      source: 'EricChaney@gmail.com',
+      data_connect: 'March 09,2020',
+      latest_interaction: 'April 14,2020',
+      action: 'Twitter'
+    },
+    {
+      image: Ellipse65,
+      full_name: 'James Rob',
+      alias: 'erch',
+      app: 'Facebook',
+      relationship: 'Friend',
+      source: 'EricChaney@gmail.com',
+      data_connect: 'March 19,2020',
+      latest_interaction: 'April 19,2020',
+      action: 'Facebook'
+    },
+    {
+      image: Ellipse66,
+      full_name: 'Derek Coule',
+      alias: 'erch',
+      app: 'Facebook',
+      relationship: 'Friend',
+      source: 'EricChaney@gmail.com',
+      data_connect: 'March 19,2020',
+      latest_interaction: 'April 19,2020',
+      action: 'Facebook'
+    },
+    {
+      image: Ellipse67,
+      full_name: 'Emily Johnson',
+      alias: 'erCh',
+      app: 'Instagram',
+      relationship: 'Connection',
+      source: 'N/A',
+      data_connect: 'March 19,2020',
+      latest_interaction: 'April 19,2020',
+      action: 'Instagram'
+    },
+    {
+      image: Ellipse68,
+      full_name: 'Greg Rust ',
+      alias: 'gRust',
+      app: 'Twitter',
+      relationship: 'Follower',
+      source: 'N/A',
+      data_connect: 'March 19,2020',
+      latest_interaction: 'April 19,2020',
+      action: 'Twitter'
+    }
+  ]);
   
   useEffect(() => {
     let timer = null;
@@ -108,7 +221,10 @@ const Listing = ({ onAction, ...props }) => {
               <ListingLeftContainer />
           </Flex>  
           <Flex className="bodyRightContainer" height={"100%"} justifyContent={"flex-end"} >
-              <ListingRightContainer />
+              <ListingRightContainer 
+                headTable = {headTable}
+                dataTable = {dataTable}
+              />
           </Flex>
         </Box>
       </StyledBox>

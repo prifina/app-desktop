@@ -6,7 +6,8 @@ import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
 import Line from "../assets/Line.png";
 import { ReactComponent as Search } from '../assets/images/search.svg';
 import { Box, Text, useTheme } from "@blend-ui/core";
-
+import i18n from "../lib/i18n";
+i18n.init();
 
 const AppDetailHeaderContainer = ({ user }) => {
   const Header = styled.div`     
@@ -55,11 +56,11 @@ const AppDetailHeaderContainer = ({ user }) => {
           <PrifinaLogo className="site-logo-icon"/> 
           <PrifinaText className="site-logo-text"/> 
           <span className="sit-tagline-divider"> | </span> 
-          <span className="site-tagline">App Directory</span>
+          <span className="site-tagline">{i18n.__("appDirectory")}</span>
           <HeaderSearchBox>
             <Box>
               <Search className="search-icon"/>
-              <input className="header-searchbox" placeholder="Search app directory"></input>
+              <input className="header-searchbox" placeholder={i18n.__("appheaderSearch")}></input>
             </Box>
           </HeaderSearchBox> 
         </HeaderIteam>

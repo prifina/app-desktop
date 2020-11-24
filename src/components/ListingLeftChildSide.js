@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import styled from "styled-components";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 import { ReactComponent as Back } from '../assets/images/arrow.svg';
+import i18n from "../lib/i18n";
+i18n.init();
+
 
 const ListingLeftChildSide = ({ user }) => {
   const SubMenuSideBar = styled.div`        
@@ -58,16 +61,16 @@ const ListingLeftChildSide = ({ user }) => {
   `;
   return(
       <SubMenuSideBar>
-        <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}><a className="back-to-home-navigation"><Back className="mr-1"/> Back to Home</a></Text>
+        <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}><a className="back-to-home-navigation"><Back className="mr-1"/> {i18n.__("listBacktoHome")}</a></Text>
         <ul>
-          <li className="active" > <a href="#">Connections </a></li>
-          <li> <a href="#"> Events </a> </li>
-          <li> <a href="#"> Files </a> </li>
-          <li> <a href="#"> Groups </a> </li>
-          <li> <a href="#"> Journeys </a> </li>
-          <li> <a href="#"> Photos </a> </li>
-          <li> <a href="#"> Places </a> </li>
-          <li> <a href="#"> Posts </a> </li>
+          <li className="active"> <a href="#"> {i18n.__("listConnections")} </a></li>
+          <li> <a href="#"> {i18n.__("listEvents")}  </a> </li>
+          <li> <a href="#"> {i18n.__("listFiles")}  </a> </li>
+          <li> <a href="#"> {i18n.__("listGroups")}  </a> </li>
+          <li> <a href="#"> {i18n.__("listJourneys")}  </a> </li>
+          <li> <a href="#"> {i18n.__("listPhotos")}  </a> </li>
+          <li> <a href="#"> {i18n.__("listPlaces")}  </a> </li>
+          <li> <a href="#"> {i18n.__("listPosts")}  </a> </li>
         </ul>
     </SubMenuSideBar>
   );

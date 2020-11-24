@@ -6,6 +6,8 @@ import {TableInformation} from "./TableInformation";
 import Button from "./Button";
 import { ReactComponent as Vector4 } from '../assets/Vector-4.svg';
 import { Box, Text, useTheme } from "@blend-ui/core";
+import i18n from "../lib/i18n";
+i18n.init();
 
 
 const AppDetailLeftContainer = ({ user }) => {
@@ -23,7 +25,7 @@ const AppDetailLeftContainer = ({ user }) => {
   
   return (
     <BrowseAppsBox>
-      <Text as={"h4"} fontSize={18} lineHeight={"30.36px"}><Vector4 /> Browse Apps </Text> 
+      <Text as={"h4"} fontSize={18} lineHeight={"30.36px"}><Vector4 /> {i18n.__("appBrowseApps")} </Text> 
       <Box>
         <ThumbnailImage />
 
@@ -31,7 +33,7 @@ const AppDetailLeftContainer = ({ user }) => {
           <Button
           btnType="primary"
           fullWidth={true}
-          label="Install"
+          label={i18n.__("appInstall")}
           variant="solid"
           className="mt-3 mb-2"
           />
@@ -40,7 +42,7 @@ const AppDetailLeftContainer = ({ user }) => {
           <Button
             btnType="secondary"
             fullWidth={true}
-            label="Report App Issues"
+            label={i18n.__("appReportAppIssues")}
             size="medium"
             variant="outline"
             className=" mb-2"
@@ -50,19 +52,19 @@ const AppDetailLeftContainer = ({ user }) => {
           <Button
             btnType="secondary"
             fullWidth={true}
-            label="Email Support"
+            label={i18n.__("appEmailSupport")}
             size="medium"
             variant="outline"
             className=" mb-4"
           />
         </Box>
         <Box>
-          <Text as={"h4"} mb={0} fontSize={18} lineHeight={"30.36px"}>Data Permissions</Text>
-          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}>This data will only use data locally and no data will be shared out side of your data cloud.</Text>
+          <Text as={"h4"} mb={0} fontSize={18} lineHeight={"30.36px"}>{i18n.__("appDataPermissions")}</Text>
+          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}>{i18n.__("appDataPermissionsData")}</Text>
         </Box>
         <Box>
-          <Text as={"h4"}  mb={0} fontSize={18} lineHeight={"30.36px"}>Compatibility</Text>
-          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}>This app shares the following profiles [Profile 1] [Profile 2] with third parties (Bank of America) and (Shazam) in order to provide the apps services.</Text>
+          <Text as={"h4"}  mb={0} fontSize={18} lineHeight={"30.36px"}>{i18n.__("appCompatibility")}</Text>
+          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}>{i18n.__("appCompatibilityData")}</Text>
         </Box>
         <TableInformation />
       </Box>

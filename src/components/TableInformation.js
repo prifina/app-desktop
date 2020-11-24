@@ -3,6 +3,10 @@
 import React from 'react';
 import styled from "styled-components";
 import { Box, Text, useTheme } from "@blend-ui/core";
+import i18n from "../lib/i18n";
+i18n.init();
+
+
 export default {
   title: 'Table View',
 };
@@ -53,54 +57,54 @@ export const TableInformation = () => {
 
   return (
     <TableInformationBox>
-      <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}>Information</Text>
+      <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}>{i18n.__("appInformation")}</Text>
        
       <InformationList >
 
         <InformationListBody>
 
           <InformationListItem>
-            <InformationListHead>Developer</InformationListHead>
-            <InformationListItembody>Prifina</InformationListItembody>
+            <InformationListHead>{i18n.__("appDeveloper")}</InformationListHead>
+            <InformationListItembody>{i18n.__("prifina")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Last Updated</InformationListHead>
-            <InformationListItembody>03/05/2020</InformationListItembody>
+            <InformationListHead>{i18n.__("appLastUpdated")}</InformationListHead>
+            <InformationListItembody>{i18n.__("appLastUpdatedData")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Category</InformationListHead>
-            <InformationListItembody>Data</InformationListItembody>
+            <InformationListHead>{i18n.__("appCategory")}</InformationListHead>
+            <InformationListItembody>{i18n.__("appData")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Approximate Size</InformationListHead>
-            <InformationListItembody>TBD</InformationListItembody>
+            <InformationListHead>{i18n.__("appApproximateSize")}</InformationListHead>
+            <InformationListItembody>{i18n.__("appTBD")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Language support</InformationListHead>
-            <InformationListItembody>English (U.S.)</InformationListItembody>
+            <InformationListHead>{i18n.__("appLanguagesupport")}</InformationListHead>
+            <InformationListItembody>{i18n.__("appLanguagesupportData")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Age</InformationListHead>
+            <InformationListHead>{i18n.__("appAge")}</InformationListHead>
             <InformationListItembody>18+</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Compatibility</InformationListHead>
+            <InformationListHead>{i18n.__("appCompatibility")}</InformationListHead>
             <InformationListItembody>Win 10, MacOS</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>Installation</InformationListHead>            
+            <InformationListHead>{i18n.__("appInstallation")}</InformationListHead>            
             <InformationListHead></InformationListHead>    
           </InformationListItem>
 
           <InformationListItem>                    
-            <InformationListItembody colSpan={2}> Download this app while signed into your Prifina account </InformationListItembody>
+            <InformationListItembody colSpan={2}>{i18n.__("appInstallationData")}</InformationListItembody>
           </InformationListItem>
 
         </InformationListBody>

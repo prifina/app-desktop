@@ -3,15 +3,18 @@ import PropTypes from 'prop-types';
 // import '../assets/scss/style.css';
 import { Box, Flex, Text, useTheme, Input } from "@blend-ui/core";
 import styled from "styled-components";
-
 import TableListing from "./TableListing";
 import { ReactComponent as Filter } from '../assets/images/Icon_filter_ho.svg';
 import { ReactComponent as Search } from '../assets/images/search.svg';
 
+import i18n from "../lib/i18n";
+i18n.init();
 
 
 
-const ListingRightContainer = ({ user }) => {
+
+const ListingRightContainer = (props) => {
+  // console.log("props",props)
   const TabContent = styled.div`
     clear: both;
     border-radius: 20px 0px 20px 20px;
@@ -38,44 +41,56 @@ const ListingRightContainer = ({ user }) => {
       width:266px;
     }
   `;
-  
+  const Subtitle5 = styled.h5`
+    font-size: 18px;
+  `;
+  const Subtitle2 = styled.h2`
+    font-size: 37px;
+  `;
+  const BodyText1 = styled.p`
+    font-size:12px;
+    color:#C4C7D8;
+  `;
   return (
     <Box width={"100%"}>
       <Box m={40} >
-        <Text as={"h5"} fontSize={18} >Console</Text>
-        <Text as={"h2"} fontSize={37} > Connections </Text>
+        <Subtitle5> {i18n.__("listConsole")}</Subtitle5>
+        <Subtitle2> {i18n.__("listConnections")} </Subtitle2>
         <Box className="btn-group">
-            <button className="btn"> Hidden Connections </button>
-            <button className="btn active"> All Connections </button>
+            <button className="btn"> {i18n.__("listHiddenConnections")} </button>
+            <button className="btn active"> {i18n.__("listAllConnections")} </button>
         </Box>
         <TabContent>
-          <Text as={"p"} fontSize={12} color="#C4C7D8" lineHeight={"15px"}>This is an combined list of connections pulled from the third-party applications that you installed and connected to the console</Text>
+          <BodyText1>{i18n.__("listDetail")}</BodyText1>
           <Flex justifyContent={"space-between"}>
             <Box className="connection-filter-container">
               <Filter className="search-icon"/>
               <select className="connection-filter round">
-                <option value="1"> First Name </option>
+                <option value="1"> {i18n.__("listFirstName")}  </option>
               </select>
             </Box>
             <Box className="connection-searchbox-container">
               <Search className="search-icon"/>
-              <Input className="searchInput" type="text" placeholder="Search console"/>
+              <Input className="searchInput" type="text" placeholder={i18n.__("listSearchconsole")}/>
             </Box>
           </Flex>
-          <TableListing />
+          <TableListing 
+            dataTable = {props.dataTable}
+            headTable = {props.headTable}
+          />
         </TabContent>
       </Box>
     </Box>  
   )
 }
 
-ListingRightContainer.propTypes = {
-  user: PropTypes.shape({})
-};
+// ListingRightContainer.propTypes = {
+//   user: PropTypes.shape({})
+// };
 
-ListingRightContainer.defaultProps = {
-  user: null,
-};
+// ListingRightContainer.defaultProps = {
+//   // user: null,
+// };
 
 
 export default ListingRightContainer;

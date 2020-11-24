@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, Text, useTheme } from "@blend-ui/core";
 import styled from "styled-components";
+import PropTypes from 'prop-types';
 import Ellipse61 from '../assets/Ellipse61.png';
 import Ellipse62 from '../assets/Ellipse62.png';
 import Ellipse63 from '../assets/Ellipse63.png';
@@ -15,7 +16,8 @@ import Button from "./Button";
 
 
 
-const TableListing = () => {    
+const TableListing = (props) => {   
+  // console.log("props",props) 
   const TableBox = styled.table`
     width: 100%;
     margin-top: 25px;       
@@ -133,149 +135,54 @@ const TableListing = () => {
         <TableThead>
 
           <TableBoxIteam>
-            <TableTheadIteam></TableTheadIteam>
-            <TableTheadIteam>Full Name</TableTheadIteam>
-            <TableTheadIteam>Alias</TableTheadIteam>
-            <TableTheadIteam>App</TableTheadIteam>
-            <TableTheadIteam>Relationship</TableTheadIteam>
-            <TableTheadIteam>Source</TableTheadIteam>
-            <TableTheadIteam>Data Connected</TableTheadIteam>
-            <TableTheadIteam>Latest Interaction</TableTheadIteam>
-            <TableTheadIteam></TableTheadIteam>
+            <TableTheadIteam>{props.headTable.image}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.full_name}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.alias}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.app}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.relationship}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.source}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.data_connect}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.latest_interaction}</TableTheadIteam>
+            <TableTheadIteam>{props.headTable.action}</TableTheadIteam>
           </TableBoxIteam>
 
         </TableThead>
 
         <TableTbody>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse61} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Eric Chaney</TableTbodyIteam>
-            <TableTbodyIteam>erCh</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeFacebookBtn href="#">Facebook</TypeFacebookBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Friend</TableTbodyIteam>
-            <TableTbodyIteam>EricChaney@gmail.com</TableTbodyIteam>
-            <TableTbodyIteam>March 19,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 19,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewFacebookBtn href="#">View in Facebook</ViewFacebookBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse62} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Janer Doe</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeYoutubeBtn href="#">Youtube</TypeYoutubeBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Follower</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>March 14,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 14,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewYoutubeBtn href="#">View in Youtube</ViewYoutubeBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse63} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Diana Redding</TableTbodyIteam>
-            <TableTbodyIteam>d.red</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypelinkedinBtn href="#">LinkedIn</TypelinkedinBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Connection</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>March 12,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 19,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewlinkedinBtn href="#">View in LinkedIn</ViewlinkedinBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse64} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Eric Chaney</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeTwitterBtn href="#">Twitter</TypeTwitterBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Follower</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>March 09,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 14,2020</TableTbodyIteam>
-            <TableTbodyIteam>              
-              <ViewTwitterBtn href="#">View in Twitter</ViewTwitterBtn>            
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse65} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>James Rob</TableTbodyIteam>
-            <TableTbodyIteam>JRob</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeFacebookBtn href="#">Facebook</TypeFacebookBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Friend</TableTbodyIteam>
-            <TableTbodyIteam>JamesRob@gmail.com</TableTbodyIteam>
-            <TableTbodyIteam>March 07,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 19,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewFacebookBtn href="#">View in Facebook</ViewFacebookBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse66} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Derek Coule</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeFacebookBtn href="#">Facebook</TypeFacebookBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Follower</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>March 04,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 14,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewFacebookBtn href="#">View in Facebook</ViewFacebookBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse67} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Emily Johnson</TableTbodyIteam>
-            <TableTbodyIteam>erCh</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeInstagramBtn href="#" >Instagram</TypeInstagramBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Connection</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>March 03,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 19,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewInstagramBtn href="#">View in Instagram</ViewInstagramBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
-          <TableBoxIteam>
-            <TableTbodyIteam><img src={Ellipse68} className="listingUserProfileImage" /></TableTbodyIteam>
-            <TableTbodyIteam>Greg Rust</TableTbodyIteam>
-            <TableTbodyIteam>gRust</TableTbodyIteam>
-            <TableTbodyIteam>
-              <TypeTwitterBtn href="#">Twitter</TypeTwitterBtn>
-            </TableTbodyIteam>
-            <TableTbodyIteam>Follower</TableTbodyIteam>
-            <TableTbodyIteam>N/A</TableTbodyIteam>
-            <TableTbodyIteam>March 01,2020</TableTbodyIteam>
-            <TableTbodyIteam>April 14,2020</TableTbodyIteam>
-            <TableTbodyIteam>
-              <ViewTwitterBtn href="#">View in Twitter</ViewTwitterBtn>
-            </TableTbodyIteam>
-          </TableBoxIteam>
-
+          {props.dataTable.length > 0 && props.dataTable.map(row => {
+            let app = <TypeInstagramBtn href="#">Facebook</TypeInstagramBtn>
+            let action = <ViewInstagramBtn href="#">View in Facebook</ViewInstagramBtn>
+            if(row.app === 'Facebook'){
+              app = <TypeFacebookBtn href="#">Facebook</TypeFacebookBtn>
+              action = <ViewFacebookBtn href="#">View in Facebook</ViewFacebookBtn>
+            }else if(row.app === 'Twitter'){
+              app = <TypeTwitterBtn href="#">Facebook</TypeTwitterBtn>
+              action = <ViewTwitterBtn href="#">View in Facebook</ViewTwitterBtn>
+            }else if(row.app === 'LinkedIn'){
+              app = <TypelinkedinBtn href="#">Facebook</TypelinkedinBtn>
+              action = <ViewlinkedinBtn href="#">View in Facebook</ViewlinkedinBtn>
+            }else if(row.app === 'Youtube'){
+              app = <TypeYoutubeBtn href="#">Facebook</TypeYoutubeBtn>
+              action = <ViewYoutubeBtn href="#">View in Facebook</ViewYoutubeBtn>
+            }
+            return (
+              <TableBoxIteam>
+                <TableTbodyIteam><img src={row.image} className="listingUserProfileImage" /></TableTbodyIteam>
+                <TableTbodyIteam>{row.full_name}</TableTbodyIteam>
+                <TableTbodyIteam>{row.alias}</TableTbodyIteam>
+                <TableTbodyIteam>
+                  {app}
+                </TableTbodyIteam>
+                <TableTbodyIteam>{row.relationship}</TableTbodyIteam>
+                <TableTbodyIteam>{row.source}</TableTbodyIteam>
+                <TableTbodyIteam>{row.data_connect}</TableTbodyIteam>
+                <TableTbodyIteam>{row.latest_interaction}</TableTbodyIteam>
+                <TableTbodyIteam>
+                  {action}
+                </TableTbodyIteam>
+              </TableBoxIteam>
+            )  
+          })}
         </TableTbody>
 
       </TableBox>
@@ -283,4 +190,13 @@ const TableListing = () => {
   );
 }
 
-export default  TableListing;
+
+TableListing.propTypes = {
+  user: PropTypes.shape({})
+};
+
+TableListing.defaultProps = {
+  user: null,
+};
+
+export default TableListing;

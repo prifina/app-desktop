@@ -3,6 +3,8 @@ import styled from "styled-components";
 import PropTypes from 'prop-types';
 import {ScreenImages} from "./Image";
 import { Box, Text, useTheme,  } from "@blend-ui/core";
+import i18n from "../lib/i18n";
+i18n.init();
 
 
 const AppDetailRightContainer = ({ user }) => {
@@ -94,48 +96,48 @@ const AppDetailRightContainer = ({ user }) => {
   `;   
   return (
     <DetailRightContainerBox>
-      <Text as={"h2"} fontSize={24} lineHeight={"20.36px"}>Dashboard</Text> 
+      <Text as={"h2"} fontSize={24} lineHeight={"20.36px"}>{i18n.__("appDashboard")}</Text> 
 
       <Box className="breadcrumbs-container">
-        <span className="breadcrumbs-previous-page">Prifina</span>
+        <span className="breadcrumbs-previous-page">{i18n.__("prifina")}</span>
         <span className="breadcrumbs-Boxider">.</span>
-        <span className="breadcrumbs-active-page">Data</span>
+        <span className="breadcrumbs-active-page">{i18n.__("appData")}</span>
       </Box>
 
       <Box>
         <ScreenImages />
         
         <Box>
-          <Text as={"h3"} fontSize={18} lineHeight={"20.36px"}>Description</Text>
-          <Text as={"p"} fontSize={14} lineHeight={"1.7"} mb={0}>Have you ever wondered what insights can be gathered from your everyday data? Prifina’s dashboard app is the answer. This app allows you to view your raw data through visual analytics and insights, with additional features such as a discovery feed and third party widgets.</Text> 
-          <Text as={"p"} fontSize={14} lineHeight={"1.7"} >Feeling overwhelmed by your data? This dashboard makes understanding this information easier, by allowing you to participate and understand the analytics process by visualizing trends and occurrences. This is designed for quick analysis and informational awareness to reduce the complexity of understanding the information.</Text>
+          <Text as={"h3"} fontSize={18} lineHeight={"20.36px"}>{i18n.__("appDescription")}</Text>
+          <Text as={"p"} fontSize={14} lineHeight={"1.7"} mb={0}>{i18n.__("appDescriptionData1")}</Text> 
+          <Text as={"p"} fontSize={14} lineHeight={"1.7"} >{i18n.__("appDescriptionData2")}</Text>
         </Box>
 
         <Box>
-          <Text as={"h4"} fontSize={18} lineHeight={"15.36px"}>Key Features</Text>
+          <Text as={"h4"} fontSize={18} lineHeight={"15.36px"}>{i18n.__("appKeyFeatures")}</Text>
 
-          <Text as={"h5"} fontSize={14}  mb={0}>Data Visualizations</Text>
+          <Text as={"h5"} fontSize={14}  mb={0}>{i18n.__("appDataVisualizations")}</Text>
           <List>
-            <ListItem> Customize your categories to view different data insights </ListItem>
-            <ListItem> Learn how to understand your data in the form of tables, charts, and other visual gauges</ListItem>
+            <ListItem>{i18n.__("appDataVisualizationsData1")}</ListItem>
+            <ListItem>{i18n.__("appDataVisualizationsData2")}</ListItem>
           </List>          
 
-          <Text as={"h5"} fontSize={14} mb={0}>Data Insights</Text>
+          <Text as={"h5"} fontSize={14} mb={0}>{i18n.__("appDataInsights")}</Text>
           <List >
-            <ListItem fontSize={14}>Discover trends and patterns in your everyday life </ListItem>
-            <ListItem>Use these insights to better understand the patterns in the different areas of your life</ListItem>
+            <ListItem fontSize={14}>{i18n.__("appDataInsightsData1")}</ListItem>
+            <ListItem>{i18n.__("appDataInsightsData2")}</ListItem>
           </List>    
 
-          <Text as={"h5"} fontSize={14} mb={0}>Third Party Widgets</Text>
+          <Text as={"h5"} fontSize={14} mb={0}>{i18n.__("appThirdPartyWidgets")}</Text>
           <List>
-            <ListItem>Access frequently used functions directly from the dashboard</ListItem>
-            <ListItem>Reduce the frequency of clicking to open other apps</ListItem>
+            <ListItem>{i18n.__("appThirdPartyWidgetsData1")}</ListItem>
+            <ListItem>{i18n.__("appThirdPartyWidgetsData2")}</ListItem>
           </List> 
 
-          <Text as={"h5"} fontSize={14} mb={0}>Discovery Feed</Text>
+          <Text as={"h5"} fontSize={14} mb={0}>{i18n.__("appDiscoveryFeed")}</Text>
           <List>
-            <ListItem>Get customized topics and news on items that interest you</ListItem>
-            <ListItem>Find information on your interests without searching for them</ListItem>
+            <ListItem>{i18n.__("appDiscoveryFeedData1")}</ListItem>
+            <ListItem>{i18n.__("appDiscoveryFeedData2")}</ListItem>
           </List> 
         </Box>
       </Box>
