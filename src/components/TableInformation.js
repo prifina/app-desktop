@@ -2,7 +2,9 @@
 
 import React from 'react';
 import styled from "styled-components";
-import { Box, Text, useTheme } from "@blend-ui/core";
+import { Text } from "@blend-ui/core";
+import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -14,93 +16,200 @@ export default {
 
 export const TableInformation = () => {
   const TableInformationBox = styled.div`
-    h5{        
-      color: #383838;
-      font-size: 18px ;
-      margin-bottom: 10px;
-    }
+    ${space}
   `;    
   const InformationList = styled.table`    
-    margin-bottom: 20px;
-  `;   
-  const InformationListHeader = styled.thead`    
+    ${space}
   `;   
   const InformationListHead = styled.th`
-    text-align: left;
-    font-size: 12px;
-    font-weight: 700;
-    border-bottom: 1px solid #EDEDED;
-    width:50%;
-    font-weight: bold;
-    color: #383838;
-    padding-bottom: 6px;
+    ${space}
+    ${color}
+    ${layout}
+    ${flexbox}
+    ${typography}
+    ${border}
+    ${position}
+    
   `;
   const InformationListBody = styled.tbody`
   `;   
   const InformationListItem = styled.tr`    
     &:last-child{
       th{
-        border-bottom: 0px solid #EDEDED;
+        border-bottom: 0px solid ${colors.table_bd};
       }
       td{
-        border-bottom: 0px solid #EDEDED;
+        border-bottom: 0px solid ${colors.table_bd};
         text-align: left;
       }
     }
   `;     
   const InformationListItembody = styled.td`
-    text-align: right;
-    font-size: 12px;
-    font-weight: 400;
-    border-bottom: 1px solid #EDEDED;    
+    ${space}
+    ${color}
+    ${layout}
+    ${flexbox}
+    ${typography}
+    ${border}
+    ${position}
+     
   `;
 
   return (
     <TableInformationBox>
-      <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}>{i18n.__("appInformation")}</Text>
+      <Text as={"h5"} fontSize={18} mb="10px" color={colors.text_h4} lineHeight={"20.36px"}>{i18n.__("appInformation")}</Text>
        
-      <InformationList >
+      <InformationList mb="20px">
 
         <InformationListBody>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appDeveloper")}</InformationListHead>
-            <InformationListItembody>{i18n.__("prifina")}</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >
+            {i18n.__("appDeveloper")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            {i18n.__("prifina")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appLastUpdated")}</InformationListHead>
-            <InformationListItembody>{i18n.__("appLastUpdatedData")}</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appLastUpdated")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            {i18n.__("appLastUpdatedData")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appCategory")}</InformationListHead>
-            <InformationListItembody>{i18n.__("appData")}</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appCategory")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            {i18n.__("appData")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appApproximateSize")}</InformationListHead>
-            <InformationListItembody>{i18n.__("appTBD")}</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appApproximateSize")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            {i18n.__("appTBD")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appLanguagesupport")}</InformationListHead>
-            <InformationListItembody>{i18n.__("appLanguagesupportData")}</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appLanguagesupport")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            {i18n.__("appLanguagesupportData")}</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appAge")}</InformationListHead>
-            <InformationListItembody>18+</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appAge")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            18+</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appCompatibility")}</InformationListHead>
-            <InformationListItembody>Win 10, MacOS</InformationListItembody>
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appCompatibility")}</InformationListHead>
+            <InformationListItembody
+              textAlign='right'
+              fontSize='12px'
+              fontWeight='400'
+              borderBottom={"1px solid " +colors.table_bd} 
+            >
+            Win 10, MacOS</InformationListItembody>
           </InformationListItem>
 
           <InformationListItem>
-            <InformationListHead>{i18n.__("appInstallation")}</InformationListHead>            
-            <InformationListHead></InformationListHead>    
+            <InformationListHead 
+              textAlign='left'
+              fontSize='12px'
+              fontWeight='bold'
+              borderBottom={"1px solid " +colors.table_bd}
+              width="50%"
+              color={colors.text_h4}
+              pb="6px"
+            >{i18n.__("appInstallation")}</InformationListHead>            
+            <InformationListHead 
+       
+            ></InformationListHead>    
           </InformationListItem>
 
           <InformationListItem>                    

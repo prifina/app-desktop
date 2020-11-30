@@ -3,6 +3,8 @@
 import React from 'react';
 import { Box, Text, useTheme } from "@blend-ui/core";
 import styled from "styled-components";
+import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
+import colors from "../lib/colors";
 import PropTypes from 'prop-types';
 import Ellipse61 from '../assets/Ellipse61.png';
 import Ellipse62 from '../assets/Ellipse62.png';
@@ -17,13 +19,13 @@ import Button from "./Button";
 
 
 const TableListing = (props) => {   
+  const theme = useTheme();
   // console.log("props",props) 
   const TableBox = styled.table`
-    width: 100%;
-    margin-top: 25px;       
+    ${space}       
+    ${typography}       
   `;
   const TableThead = styled.thead`
-  
   `;
   const TableTbody = styled.tbody`
   `;
@@ -33,22 +35,20 @@ const TableListing = (props) => {
     }
   `;
   const TableTheadIteam = styled.th`
-    font-size: 14px;
-    text-align: center;
-    padding: 10px;
-    color: #383838;
+    ${space}  
+    ${typography}  
+    ${color}  
     &:nth-child(2){
       text-align: left;
     }
   `;
   const TableTbodyIteam = styled.td`
-    font-size: 12px;
-    font-weight: 400;
-    border-bottom: 1px solid #EEEFF6;
-    padding: 10px;
-    text-align: center;
-    color: #383838;
-    min-height: 53px;
+    ${space}  
+    ${typography}  
+    ${color}  
+    ${border}
+    ${layout}
+    
     img{ 
       height: 28px;
       object-fit: cover;
@@ -89,61 +89,61 @@ const TableListing = (props) => {
     }        
   `;
   const ViewFacebookBtn = styled.a`
-    background: #3B5998;
-    color: #fff;
+    background: ${colors.fb};
+    color: ${theme.colors.textLight};
   `;
   const ViewYoutubeBtn = styled.a`
-    background: #CD201F;
-    color: #fff;
+    background: ${colors.youtube};
+    color: ${theme.colors.textLight};
   `;
   const ViewlinkedinBtn = styled.a`
-    background: #006699;
-    color: #fff;
+    background: ${colors.linkedin};
+    color: ${theme.colors.textLight};
   `;
   const ViewTwitterBtn = styled.a`
-    background: #01BBF6;
-    color: #fff;
+    background: ${colors.twitter};
+    color: ${theme.colors.textLight};
   `;
   const ViewInstagramBtn = styled.a`
-    background: #924AC8;
-    color: #fff;
+    background: ${colors.instgram};
+    color: ${theme.colors.textLight};
   `;
 
   const TypeFacebookBtn = styled.a`
-    background: rgba(59, 89, 152, 0.2);
-    color: #3B5998;
+    background: ${colors.fb_btn};
+    color: ${colors.fb};
   `;
   const TypeYoutubeBtn = styled.a`
-    background: rgba(205, 32, 31, 0.2);
-    color: #CD201F;
+    background: ${colors.youtube_btn};
+    color: ${colors.youtube};
   `;
   const TypelinkedinBtn = styled.a`
-    background: rgba(0, 102, 153, 0.2);
-    color: #006699;
+    background: ${colors.linkedin_btn};
+    color: ${colors.linkedin};
   `;
   const TypeTwitterBtn = styled.a`
-    background: rgba(1, 187, 246, 0.2);
-    color: #01BBF6;
+    background: ${colors.twitter_btn};
+    color: ${colors.twitter};
   `;
   const TypeInstagramBtn = styled.a`
-    background: rgba(146, 74, 200, 0.2);
-    color: #924AC8;
+    background: ${colors.instgram_btn};
+    color: ${colors.instgram};
   `;
   return(
     <Box>
-      <TableBox >
+      <TableBox width="100%" mt="25px">
         <TableThead>
 
           <TableBoxIteam>
-            <TableTheadIteam>{props.headTable.image}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.full_name}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.alias}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.app}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.relationship}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.source}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.data_connect}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.latest_interaction}</TableTheadIteam>
-            <TableTheadIteam>{props.headTable.action}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.image}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.full_name}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.alias}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.app}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.relationship}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.source}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.data_connect}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.latest_interaction}</TableTheadIteam>
+            <TableTheadIteam font-size="14px" padding="10px" textAlign="center" color={colors.text_h4}>{props.headTable.action}</TableTheadIteam>
           </TableBoxIteam>
 
         </TableThead>
@@ -167,17 +167,17 @@ const TableListing = (props) => {
             }
             return (
               <TableBoxIteam>
-                <TableTbodyIteam><img src={row.image} className="listingUserProfileImage" /></TableTbodyIteam>
-                <TableTbodyIteam>{row.full_name}</TableTbodyIteam>
-                <TableTbodyIteam>{row.alias}</TableTbodyIteam>
-                <TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px"><img src={row.image} className="listingUserProfileImage" /></TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.full_name}</TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.alias}</TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">
                   {app}
                 </TableTbodyIteam>
-                <TableTbodyIteam>{row.relationship}</TableTbodyIteam>
-                <TableTbodyIteam>{row.source}</TableTbodyIteam>
-                <TableTbodyIteam>{row.data_connect}</TableTbodyIteam>
-                <TableTbodyIteam>{row.latest_interaction}</TableTbodyIteam>
-                <TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.relationship}</TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.source}</TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.data_connect}</TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.latest_interaction}</TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">
                   {action}
                 </TableTbodyIteam>
               </TableBoxIteam>

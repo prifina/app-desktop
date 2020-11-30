@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
-import '../assets/scss/style.css';
+import { useTheme  } from "@blend-ui/core";
+import colors from "../lib/colors";
+// import '../assets/scss/style.css';
+
 
 
 
@@ -9,8 +12,8 @@ import '../assets/scss/style.css';
  * Primary UI component for user interaction
  */
 const Button = ({ btnType = 'default', backgroundColor,variant, fullWidth, size,className, label, ...props }) => {
-  // console.log('btnType',btnType)
-
+  const theme = useTheme();
+  // console.log('btnType',theme)
 
   const Btn = styled.div`
   .storybook-button--default, .storybook-button--primary, .storybook-button--secondary {
@@ -35,15 +38,15 @@ const Button = ({ btnType = 'default', backgroundColor,variant, fullWidth, size,
   }
   
   .storybook-button--primary {
-    color: #ffffff;
-    background-color: #4285F4;
-    border-color: #4285F4;
+    color: ${theme.colors.textLight};
+    background-color: ${colors.btn_pry};
+    border-color: ${colors.btn_pry};
   }
   
   .storybook-button--secondary {
-    color: #ffffff;
-    background-color: #00847A;
-    border-color: #00847A;
+    color: ${theme.colors.textLight};
+    background-color: ${colors.btn_scd};
+    border-color: ${colors.btn_scd};
   }
   
   .storybook-button--small {
@@ -68,15 +71,15 @@ const Button = ({ btnType = 'default', backgroundColor,variant, fullWidth, size,
   }
   
   .storybook-button--solid {
-    color: #ffffff;
-    background-color: #4285F4;
-    border-color: #4285F4;
+    color: ${theme.colors.textLight};
+    background-color: ${colors.btn_pry};
+    border-color: ${colors.btn_pry};
   }
   
   .storybook-button--outline {
-    color: #4285F4;
+    color: ${colors.btn_pry};
     background-color: transparent;
-    border-color: #4285F4;
+    border-color: ${colors.btn_pry};
   }
   
   .storybook-button--btn-block {

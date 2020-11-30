@@ -6,14 +6,15 @@ import styled from "styled-components";
 import AppDetailHeaderContainer from "../components/AppDetailHeaderContainer";
 import AppDetailLeftContainer from "../components/AppDetailLeftContainer";
 import AppDetailRightContainer from "../components/AppDetailRightContainer";
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
 
 const AppDetail = ({ onAction, ...props }) => {
   console.log("Terms ", props);
-  const { colors } = useTheme();
-  //console.log("THEME ", colors);
+  const { theme } = useTheme();
+  // console.log("THEME ", colors);
   const [isActive, setActive] = useState(false);
   
   useEffect(() => {
@@ -29,9 +30,8 @@ const AppDetail = ({ onAction, ...props }) => {
 
   const StyledBox = styled(Box)`
     border-radius: 20px;
-    border: 1px solid #f5f8f7;
-    background-color: ${(props) =>
-      props.colors ? props.colors.baseWhite : "#F5F8F7"};
+    border: 1px solid ${colors.appdetail_box};
+    background-color: ${colors.appdetail_box_bg};
   `;
   return (
     <React.Fragment>

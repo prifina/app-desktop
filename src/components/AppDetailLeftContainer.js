@@ -1,31 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
+import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
 import {ThumbnailImage} from "./Image";
 import {TableInformation} from "./TableInformation";
 import Button from "./Button";
 import { ReactComponent as Vector4 } from '../assets/Vector-4.svg';
 import { Box, Text, useTheme } from "@blend-ui/core";
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
 
 const AppDetailLeftContainer = ({ user }) => {
-  const { colors } = useTheme(); {
     const BrowseAppsBox = styled.div`     
-      width:230px;
-      h4{        
-        color: #383838;
-        margin-bottom: 5px;
-      }
-      p{
-        color: #565656;
-      }
+      ${layout}
     `;    
   
   return (
-    <BrowseAppsBox>
-      <Text as={"h4"} fontSize={18} lineHeight={"30.36px"}><Vector4 /> {i18n.__("appBrowseApps")} </Text> 
+    <BrowseAppsBox width="230px">
+      <Text as={"h4"} fontSize={18} lineHeight={"30.36px"} color={colors.text_h4} mb="5px"><Vector4 /> {i18n.__("appBrowseApps")} </Text> 
       <Box>
         <ThumbnailImage />
 
@@ -59,18 +53,17 @@ const AppDetailLeftContainer = ({ user }) => {
           />
         </Box>
         <Box>
-          <Text as={"h4"} mb={0} fontSize={18} lineHeight={"30.36px"}>{i18n.__("appDataPermissions")}</Text>
-          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}>{i18n.__("appDataPermissionsData")}</Text>
+          <Text as={"h4"} mb={0} fontSize={18} lineHeight={"30.36px"} color={colors.text_h4} mb="5px">{i18n.__("appDataPermissions")}</Text>
+          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}  color={colors.text_p}>{i18n.__("appDataPermissionsData")}</Text>
         </Box>
         <Box>
-          <Text as={"h4"}  mb={0} fontSize={18} lineHeight={"30.36px"}>{i18n.__("appCompatibility")}</Text>
-          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"}>{i18n.__("appCompatibilityData")}</Text>
+          <Text as={"h4"}  mb={0} fontSize={18} lineHeight={"30.36px"} color={colors.text_h4} mb="5px">{i18n.__("appCompatibility")}</Text>
+          <Text as={"p"} mt={2} fontSize={12} lineHeight={"15px"} color={colors.text_p}>{i18n.__("appCompatibilityData")}</Text>
         </Box>
         <TableInformation />
       </Box>
     </BrowseAppsBox>
   )
-}
 }
 AppDetailLeftContainer.propTypes = {
   user: PropTypes.shape({})

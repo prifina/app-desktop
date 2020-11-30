@@ -1,22 +1,19 @@
 import React from 'react';
 import styled from "styled-components";
+import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
 import PropTypes from 'prop-types';
 import {ScreenImages} from "./Image";
 import { Box, Text, useTheme,  } from "@blend-ui/core";
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
 
 const AppDetailRightContainer = ({ user }) => {
   const DetailRightContainerBox = styled.div`     
-    height: 100%;
-    padding-right: 15px;
-    h2{        
-      color: #383838;
-      font-size: 24px;
-      padding-top: 40px;
-      margin-bottom: 5px;
-    }
+    ${layout}
+    ${space}
+    
     .breadcrumbs-container {
       display: flex;
       align-self: center;
@@ -30,13 +27,13 @@ const AppDetailRightContainer = ({ user }) => {
         font-size: 14px;
         line-height: 18px;
         align-items: center;
-        color: #B8C1C6;
+        color: ${colors.divider};
         padding: 5px;
     }
     .breadcrumbs-divider{
         width: 2px;
         height: 2px;
-        background: #B8C1C6;
+        background: ${colors.divider};
     }
     .breadcrumbs-active-page{
         font-style: normal;
@@ -44,31 +41,22 @@ const AppDetailRightContainer = ({ user }) => {
         font-size: 14px;
         line-height: 18px;
         align-items: center;
-        color: #B8C1C6;
+        color: ${colors.divider};
         padding: 5px;
     }
     .breadcrumbs-Boxider{
       align-self: baseline;
-      color: #B8C1C6;
+      color: ${colors.divider};
       font-size: 14px;
-    }
-    h4{
-      margin-top:40px;
-      margin-bottom:25px
-    }
-    h5{
-      margin-top:15px;      
     }
   `; 
   const List = styled.ul`
     /* */
+    ${space}
     list-style-type: none;
-    margin: 0;
     list-style-position: outside;
     padding-inline-start: 20px;
     margin-block-start: 0px;
-    padding: 0;
-    padding-left: 20px;
   `;
 
   const ListItem = styled.li`
@@ -95,8 +83,8 @@ const AppDetailRightContainer = ({ user }) => {
     }
   `;   
   return (
-    <DetailRightContainerBox>
-      <Text as={"h2"} fontSize={24} lineHeight={"20.36px"}>{i18n.__("appDashboard")}</Text> 
+    <DetailRightContainerBox height="100%" pr="15px">
+      <Text as={"h2"} fontSize={24} lineHeight={"20.36px"} pt="40px" mb="5px" color={colors.text_h4}>{i18n.__("appDashboard")}</Text> 
 
       <Box className="breadcrumbs-container">
         <span className="breadcrumbs-previous-page">{i18n.__("prifina")}</span>
@@ -108,34 +96,34 @@ const AppDetailRightContainer = ({ user }) => {
         <ScreenImages />
         
         <Box>
-          <Text as={"h3"} fontSize={18} lineHeight={"20.36px"}>{i18n.__("appDescription")}</Text>
+          <Text as={"h3"} fontSize={18} lineHeight={"20.36px"} >{i18n.__("appDescription")}</Text>
           <Text as={"p"} fontSize={14} lineHeight={"1.7"} mb={0}>{i18n.__("appDescriptionData1")}</Text> 
           <Text as={"p"} fontSize={14} lineHeight={"1.7"} >{i18n.__("appDescriptionData2")}</Text>
         </Box>
 
         <Box>
-          <Text as={"h4"} fontSize={18} lineHeight={"15.36px"}>{i18n.__("appKeyFeatures")}</Text>
+          <Text as={"h4"} fontSize={18} lineHeight={"15.36px"} mt="40px" mb="25px">{i18n.__("appKeyFeatures")}</Text>
 
-          <Text as={"h5"} fontSize={14}  mb={0}>{i18n.__("appDataVisualizations")}</Text>
-          <List>
+          <Text as={"h5"} fontSize={14} mt="15px" mb={0}>{i18n.__("appDataVisualizations")}</Text>
+          <List m="0px" p="0px" pl="20px">
             <ListItem>{i18n.__("appDataVisualizationsData1")}</ListItem>
             <ListItem>{i18n.__("appDataVisualizationsData2")}</ListItem>
           </List>          
 
-          <Text as={"h5"} fontSize={14} mb={0}>{i18n.__("appDataInsights")}</Text>
-          <List >
+          <Text as={"h5"} fontSize={14} mt="15px" mb={0}>{i18n.__("appDataInsights")}</Text>
+          <List m="0px" p="0px" pl="20px">
             <ListItem fontSize={14}>{i18n.__("appDataInsightsData1")}</ListItem>
             <ListItem>{i18n.__("appDataInsightsData2")}</ListItem>
           </List>    
 
-          <Text as={"h5"} fontSize={14} mb={0}>{i18n.__("appThirdPartyWidgets")}</Text>
-          <List>
+          <Text as={"h5"} fontSize={14} mt="15px" mb={0}>{i18n.__("appThirdPartyWidgets")}</Text>
+          <List m="0px" p="0px" pl="20px">
             <ListItem>{i18n.__("appThirdPartyWidgetsData1")}</ListItem>
             <ListItem>{i18n.__("appThirdPartyWidgetsData2")}</ListItem>
           </List> 
 
-          <Text as={"h5"} fontSize={14} mb={0}>{i18n.__("appDiscoveryFeed")}</Text>
-          <List>
+          <Text as={"h5"} fontSize={14} mt="15px" mb={0}>{i18n.__("appDiscoveryFeed")}</Text>
+          <List m="0px" p="0px" pl="20px">
             <ListItem>{i18n.__("appDiscoveryFeedData1")}</ListItem>
             <ListItem>{i18n.__("appDiscoveryFeedData2")}</ListItem>
           </List> 

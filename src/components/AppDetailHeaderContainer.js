@@ -1,25 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
+import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
 import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
 import Line from "../assets/Line.png";
 import { ReactComponent as Search } from '../assets/images/search.svg';
 import { Box, Text, useTheme } from "@blend-ui/core";
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
 const AppDetailHeaderContainer = ({ user }) => {
-  const Header = styled.div`     
-    display: flex;
-    width: 100%;
-    align-items: center;
+  // console.log('colors',colors)
+  const theme = useTheme();
+
+  const Header = styled.div`    
+    ${typography}    
+    ${flexbox}    
+    ${layout}       
   `;    
-  const HeaderIteam = styled.div`     
-    display: flex;
-    width: 100%;
-    align-items: center;
-    padding: 20px 35px;
+  const HeaderIteam = styled.div`    
+    ${typography}    
+    ${flexbox}    
+    ${layout}      
+    ${space}      
+    display:flex;
     .site-logo-icon{
       margin-right:15px;
     }
@@ -27,11 +33,11 @@ const AppDetailHeaderContainer = ({ user }) => {
       font-size: 23px;
       margin-top: -3px;
       padding: 0 10px;
-      color: #B8C1C6;
+      color: ${colors.divider};
     }
     .site-tagline{
       font-size: 18px;
-      color: #B8C1C6;
+      color: ${colors.divider};
     }
   `;  
   const HeaderSearchBox = styled.div`    
@@ -39,20 +45,20 @@ const AppDetailHeaderContainer = ({ user }) => {
     .header-searchbox{
       font-size: 14px;
       line-height: 1.42857143;
-      color:#B8C1C6;
-      background-color:#FBFBFB;
-      border: 1px solid #D1D5DE;
+      color: ${colors.divider};
+      background-color: ${colors.search_box_bg};
+      border: 1px solid ${colors.search_box_bd};
       border-radius: 15px;
       padding: 6px 6px 6px 40px;
       width: 256px;
       .search-icon{
-        color: #EEEEEE;
+        color: ${colors.search_box_cl};
       }
     }
   `;
   return (  
-    <Header>
-        <HeaderIteam mt="4" className="Header">
+    <Header  width="100%" alignItems='center' flex='1' >
+        <HeaderIteam mt="4" className="Header" flex='1' width="100%" textAlign='center' pt="20px" pb="35px">
           <PrifinaLogo className="site-logo-icon"/> 
           <PrifinaText className="site-logo-text"/> 
           <span className="sit-tagline-divider"> | </span> 

@@ -1,25 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
+import { space, color, layout, flexbox } from 'styled-system'
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 import { ReactComponent as Back } from '../assets/images/arrow.svg';
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
 
 const ListingLeftChildSide = ({ user }) => {
-  const SubMenuSideBar = styled.div`        
-    padding: 0 0 0 40px;
-    width: 220px;
-    background: #F3F6FD;
-    height: 100vh;
-    padding-top: 25px;
-    margin-right: -20px;
-    h5{
-      font-size: 14px;
-    }
+  const SubMenuSideBar = styled.div`
+    ${space}
+    ${color}
+    ${layout}
+    ${flexbox}
     h5 img{
-      margin-right: 5px;			
       vertical-align: text-top;
     }
     ul{
@@ -29,22 +25,22 @@ const ListingLeftChildSide = ({ user }) => {
     ul li{
       font-size: 16px;
       padding-bottom: 20px;
-      color: #383838;
+      color: ${colors.text_h4};
       letter-spacing: 0.5px;
     }
     ul li a{
-      color: #383838;
+      color: ${colors.text_h4};
       text-decoration: none;
     }
     ul li.active{			
       position: relative;
     }
     ul li.active a{
-      color: #6967FF;
+      color: ${colors.li_hover};
       font-weight: 700;
     }
-    ul li:hover a{
-      color: #6967FF;
+    ul li:hover a {
+      color: ${colors.li_hover};
     }
     ul li.active::after{
       content: '';
@@ -60,8 +56,8 @@ const ListingLeftChildSide = ({ user }) => {
     }    
   `;
   return(
-      <SubMenuSideBar>
-        <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}><a className="back-to-home-navigation"><Back className="mr-1"/> {i18n.__("listBacktoHome")}</a></Text>
+       <SubMenuSideBar bg={colors.ul_div} pt="25px" mr="-20px" width="220px"  height="100vh" pl="40px">
+        <Text as={"h5"} fontSize={14} lineHeight={"20.36px"}><a ><Back mr="0.25em"/> {i18n.__("listBacktoHome")}</a></Text>
         <ul>
           <li className="active"> <a href="#"> {i18n.__("listConnections")} </a></li>
           <li> <a href="#"> {i18n.__("listEvents")}  </a> </li>

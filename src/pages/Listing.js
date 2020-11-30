@@ -15,6 +15,7 @@ import ListingLeftContainer from "../components/ListingLeftContainer";
 import ListingRightContainer from "../components/ListingRightContainer";
 
 import styled from "styled-components";
+import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -22,8 +23,8 @@ i18n.init();
 
 const Listing = ({ onAction, ...props }) => {
   console.log("Terms ", props);
-  const { colors } = useTheme();
-  //console.log("THEME ", colors);
+  const theme = useTheme();
+  //console.log("THEME ", theme);
   const [isActive, setActive] = useState(false);
 
   const [headTable, setHeadTable] = useState(
@@ -142,30 +143,94 @@ const Listing = ({ onAction, ...props }) => {
 
   const StyledBox = styled(Box)`
     border-radius: 20px;
-    border: 1px solid #f5f8f7;
-    background-color: ${(props) => props.colors ? props.colors.baseWhite : "#fff"};
+    border: 1px solid ${colors.appdetail_box};
+    background-color: ${theme.colors.textLight};
     .bodyRightContainer{
       border-radius: 20px;
-      border: 1px solid #f5f8f7;
-      background-color: #fff;
+      border: 1px solid ${colors.appdetail_box};
+      background-color: ${theme.colors.textLight};
       margin: 0;
       width: 100%;
-      box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: -4px 0px 8px ${colors.right_container_shadow};
       height: 100vh;
+      & button,
+      & optgroup,
+      & textarea {
+        font-family: inherit;
+        font-size: 100%;
+        line-height: 1.15;
+        margin: 0;
+      }    
+      & .btn-group {
+        position: relative;
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        vertical-align: middle;
+        float: right;
+      }
+      
+      & .btn {
+        display: inline-block;
+        font-weight: 400;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 20px 40px 15px;
+        font-size: 14px;
+        line-height: 1.5;
+        border-radius: .25rem;
+        -webkit-transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+        color: ${colors.text_h4};
+        background: transparent;
+      }
+      
+      & .btn-group > .btn.active,
+      & .btn-group > .btn:active,
+      & .btn-group > .btn:focus {
+        outline: none;
+      }
+      
+      & .btn-group > .btn.active {
+        background: ${theme.colors.textLight};
+        border-radius: 20px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        font-weight: 700;
+      }
+      
+      & .btn-group > .btn:active,
+      & .btn-group > .btn:focus {
+        background: ${theme.colors.textLight};
+        border-radius: 20px;
+        -webkit-box-shadow: 0px -3px 8px ${colors.right_container_shadow};
+                box-shadow: 0px -3px 8px ${colors.right_container_shadow};
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        font-weight: 700;
+      }
       & h5{
         font-weight: 500;
-        color: #99A0B0;
+        color: ${colors.text_h5};
         margin: 0;
       }
       & h2{
         font-weight: 500;
         // font-size: 37px;
-        color: #383838;
+        color: ${colors.text_h4};
         margin: 10px 0 0;
       }
       & button.active{
-        color: #6967FF;
-        box-shadow: 0px -5px 8px rgba(0,0,0,0.05);  
+        color: ${colors.li_hover};
+        box-shadow: 0px -5px 8px ${colors.right_container_shadow};  
         position:relative;
       }
       & button.active:before {
@@ -174,8 +239,8 @@ const Listing = ({ onAction, ...props }) => {
         bottom: -2px;
         left: -15px;
         height: 18px;
-        border-right: 30px solid #fff;
-        background: #fff;
+        border-right: ${"30px solid " +theme.colors.textLight};
+        background: ${theme.colors.textLight};
         -webkit-border-bottom-right-radius: 80px 50px;
         -moz-border-radius-bottomright: 80px 50px;
         border-bottom-right-radius: 80px 50px;
@@ -196,7 +261,7 @@ const Listing = ({ onAction, ...props }) => {
         left: -21px;
         width: 30px;
         height: 18px;
-        background: #fff;
+        background: ${theme.colors.textLight};
         -webkit-border-bottom-right-radius: 40px 50px;
         -moz-border-radius-bottomright: 40px 50px;
         border-bottom-right-radius: 40px 50px;

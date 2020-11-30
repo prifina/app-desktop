@@ -1,0 +1,35 @@
+const colors = 
+  {
+    appdetail_box: '#f5f8f7',
+    appdetail_box_bg: '#F5F8F7',
+    divider: '#B8C1C6',
+    search_box_bg: '#FBFBFB',
+    search_box_bd: '#D1D5DE',
+    search_box_cl: '#EEEEEE',
+    text_h4: '#383838',
+    text_h5: '#99A0B0',
+    text_p: '#565656',
+    btn_pry: '#4285F4',
+    btn_scd: '#00847A',
+    li_hover: '#6967FF',
+    ul_bd: '#DFEBEF',
+    ul_div: '#F3F6FD',
+    filter_bg: '#ACACAC',
+    input_bg: '#6967ff',
+    text_p1: '#C4C7D8',
+    table_bd: '#EDEDED',
+    table_bd_b: '#EEEFF6',
+    fb: '#3B5998',
+    fb_btn: 'rgba(59, 89, 152, 0.2)',
+    youtube: '#CD201F',
+    youtube_btn: 'rgba(205, 32, 31, 0.2)',
+    linkedin: '#006699',
+    linkedin_btn: 'rgba(0, 102, 153, 0.2)',
+    twitter: '#01BBF6',
+    twitter_btn: 'rgba(1, 187, 246, 0.2)',
+    instgram: '#924AC8',
+    instgram_btn: 'rgba(146, 74, 200, 0.2)',
+    right_container_shadow: 'rgba(0, 0, 0, 0.05)'
+  }
+
+export default colors;
