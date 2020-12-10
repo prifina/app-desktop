@@ -23,7 +23,6 @@ import {
 import { UseFocus } from "../lib/componentUtils";
 import i18n from "../lib/i18n";
 import config from "../config";
-import { useToast } from "@blend-ui/toast";
 
 i18n.init();
 /*
@@ -43,8 +42,6 @@ const Login = ({ onAction, ...props }) => {
   const { APIConfig, userAuth } = useAppContext();
   Amplify.configure(APIConfig);
   //const isMountedRef = useIsMountedRef();
-  const alerts = useToast();
-  //console.log("USE ", useToast);
 
   const [loginFields, _handleChange] = useFormFields({
     username: "",
@@ -73,8 +70,30 @@ const Login = ({ onAction, ...props }) => {
       let user = await Auth.signIn(loginFields.username, loginFields.password);
       console.log("LOGIN", user);
 
-      setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
-      setConfirmCode(true);
+      if (
+        user.hasOwnProperty("preferredMFA") &&
+        user.preferredMFA === "NOMFA"
+      ) {
+        if (!user.attributes.phone_number_verified) {
+          await Auth.signOut();
+          setUsernameError({
+            status: true,
+            msg: "User has unverified phone number",
+          });
+          console.log("ERROR PHONE NUMBER UNVERIFIED...", user);
+        } else {
+          const mfa = await Auth.setPreferredMFA(user, "SMS");
+          console.log("MFA ", mfa);
+          user = await Auth.signIn(loginFields.username, loginFields.password);
+        }
+      }
+      if (
+        user.hasOwnProperty("challengeName") &&
+        user.challengeName === "SMS_MFA"
+      ) {
+        setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+        setConfirmCode(true);
+      }
 
       /*
       if (user.preferredMFA === "NOMFA") {
@@ -100,7 +119,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
         e.code === "NotAuthorizedException" ||
         e.code === "UserNotFoundException"
       ) {
-        alerts.error(i18n.__("invalidLogin"), {});
         setInvalidLogin(2);
         setInputUsernameFocus();
       }
@@ -180,7 +198,14 @@ CODE_DELIVERY_DESTINATION: "+********7102"
             pr={19}
             minHeight={406}
           >
-            <Box mt={60}>
+            <Box mt={60 - (invalidLogin === 2 ? 22 : 0)} textAlign={"center"}>
+              {invalidLogin === 2 && (
+                <Text colorStyle={"error"} fontSize={"xs"}>
+                  {i18n.__("invalidLogin")}
+                </Text>
+              )}
+            </Box>
+            <Box>
               <IconField>
                 <IconField.LeftIcon
                   iconify={bxUser}
@@ -200,43 +225,30 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                       !passwordError.status
                     ) {
                       const userError = checkUsername(e.target.value, true);
-
                       if (userError !== "") {
-                        if (
-                          !alerts
-                            .check()
-                            .some((alert) => alert.message === userError)
-                        )
-                          alerts.error(userError, {});
-                        //alerts.error(userError, {});
-                        //console.log(alerts.check());
-                        setUsernameError({ status: true });
+                        setUsernameError({ status: true, msg: userError });
                       } else {
-                        setUsernameError({ status: false });
+                        setUsernameError({ status: false, msg: "" });
                         setPasswordError({
                           status: false,
+                          msg: "",
                         });
                         setInvalidLogin(1);
                       }
                     }
                   }}
+                  errorMsg={usernameError.msg}
+                  error={usernameError.status}
                   ref={inputUsername}
                   onBlur={(e) => {
                     const userError = checkUsername(e.target.value);
                     if (userError !== "") {
-                      if (
-                        !alerts
-                          .check()
-                          .some((alert) => alert.message === userError)
-                      )
-                        alerts.error(userError, {});
-                      //alerts.error(userError, {});
-                      //console.log(alerts.check());
-                      setUsernameError({ status: true });
+                      console.log(userError);
+                      setUsernameError({ status: true, msg: userError });
                       setInputUsernameFocus();
                       e.preventDefault();
                     } else {
-                      setUsernameError({ status: false });
+                      setUsernameError({ status: false, msg: "" });
                     }
                   }}
                 />
@@ -271,36 +283,24 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   if (passwordError) {
                     setPasswordError({
                       status: true,
+                      msg: i18n.__("passwordQuality"),
                     });
-                    //alerts.error(i18n.__("passwordQuality"), {});
-                    const errorMsg = i18n.__("passwordQuality");
-                    if (
-                      !alerts
-                        .check()
-                        .some((alert) => alert.message === errorMsg)
-                    )
-                      alerts.error(errorMsg, {});
                   } else if (e.target.value.length > 7) {
                     setPasswordError({
                       status: false,
+                      msg: "",
                     });
                     const userError = checkUsername(loginFields.username, true);
                     if (userError !== "") {
-                      //alerts.error(userError, {});
-
-                      if (
-                        !alerts
-                          .check()
-                          .some((alert) => alert.message === userError)
-                      )
-                        alerts.error(userError, {});
-                      setUsernameError({ status: true });
+                      setUsernameError({ status: true, msg: userError });
                     } else {
-                      setUsernameError({ status: false });
+                      setUsernameError({ status: false, msg: "" });
                       setInvalidLogin(1);
                     }
                   }
                 }}
+                errorMsg={passwordError.msg}
+                error={passwordError.status}
                 ref={inputPassword}
               />
               <Box

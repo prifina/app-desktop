@@ -71,12 +71,13 @@ const strings = {
     codeMissing: "Didn't receive the code?",
     sendAgainLinkText: "Click here.",
     invalidCode: "Incorrect code, please enter the correct code.",
-
+    verifySUpportLink: "Still didn't receive the code",
     /* Email verification */
     emailVerificationTitle: "Setup email verification",
     emailVerificationText:
       "Please provide your email address and phone number to keep your account secure",
     emailMissing: "Didn't receive the code?",
+    emailVerificatioSent: "Email verification code was sent.",
     /* Decline dialog */
     declineTitle: "Decline Prifina’s Terms of Use?",
     declineText:

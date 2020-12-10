@@ -53,6 +53,26 @@ function App() {
   //const history = useHistory();
   console.log("APP START");
   //console.log(JSON.stringify(countryList()));
+  //window.matchMedia('(max-width: 600px)');
+  const userAgent =
+    typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+  const mobile = Boolean(
+    userAgent.match(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    )
+  );
+
+  console.log("USER AGENT MOBILE", mobile);
+  let mobileApp = false;
+  if (mobile) {
+    const maxD = Math.max(window.screen.availWidth, window.screen.availHeight);
+    const minD = Math.min(window.screen.availWidth, window.screen.availHeight);
+    if (minD / maxD < 0.7) {
+      //console.log('NOT TABLET....');
+      mobileApp = true;
+    }
+  }
+
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -121,6 +141,7 @@ function App() {
         APIConfig,
         AUTHConfig,
         userAuth,
+        mobileApp,
       }}
     >
       <ThemeProvider>

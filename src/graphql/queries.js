@@ -2,7 +2,31 @@ export const checkUsername = `query checkUsername($userName: String!) {
   checkUsername(userName: $userName)
 }
 `;
+
+export const getVerification = `query getVerification($user_code: String!) {
+  getVerification(user_code: $user_code) {
+    user_code
+  }
+}
+`;
+
+export const getCountryCode = `query getCountryCode {
+  getCountryCode
+}
+`;
+
 /*
+
+query MyQuery {
+  getCountryCode
+}
+
+query MyQuery {
+  getVerification(user_code: "55186bcc-4728-4512-aab1-a8f5f8db9b21##email#177143") {
+    user_code
+  }
+}
+
 export const getSchemaTypes = `query listTypesBySchema($schemaId: ID!, $nextToken: String) {
   listTypesBySchema(schemaId: $schemaId, nextToken: $nextToken) {
     items {

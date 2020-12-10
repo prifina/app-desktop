@@ -4,3 +4,7 @@ export const verifyCode = `mutation verifyCode($user_code: String!) {
     }
   }
   `;
+export const sendVerification = `mutation sendVerification($subject: String!,$message:String!) {
+    sendVerification(subject: $subject,message: $message)
+  }
+  `;

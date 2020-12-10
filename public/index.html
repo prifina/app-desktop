@@ -120,6 +120,28 @@
       content="%PUBLIC_URL%/ms-icon-144x144.png"
     />
     <meta name="theme-color" content="#ffffff" />
+    <script type="text/javascript">
+    const userAgent =
+      typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+    const mobile = Boolean(
+      userAgent.match(
+        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+      )
+    );
+
+    console.log('USER AGENT MOBILE',mobile);
+    //console.log("%REACT_APP_MOBILE_SITE%")
+    if (mobile) {
+    const maxD=Math.max(window.screen.availWidth,window.screen.availHeight);
+    const minD=Math.min(window.screen.availWidth,window.screen.availHeight);
+    if ( (minD/maxD)<0.70 ) {
+        //console.log('NOT TABLET....');
+       // window.location=window.location.protocol+'//%REACT_APP_MOBILE_SITE%/';
+    }
+    }
+   
+
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

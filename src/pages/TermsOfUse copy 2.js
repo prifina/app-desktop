@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
+import { useAppContext } from "../lib/contextLib";
+import { Auth } from "aws-amplify";
+import { v4 as uuidv4 } from "uuid";
 
 import ProgressContainer from "../components/ProgressContainer";
 import DeclineDialog from "../components/DeclineDialog";
@@ -65,12 +68,14 @@ const texts = [
 ];
 const TermsOfUse = ({ nextStep, fields, ...props }) => {
   console.log("Terms ", props);
+  const { AUTHConfig } = useAppContext();
+  Auth.configure(AUTHConfig);
 
   const { colors } = useTheme();
   //console.log("THEME ", colors);
   const [scrolled, setScrolled] = useState(false);
   const [decline, setDecline] = useState(false);
-
+  const [isActive, setActive] = useState(false);
   const _handleScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
@@ -84,8 +89,59 @@ const TermsOfUse = ({ nextStep, fields, ...props }) => {
     setDecline(true);
     e.preventDefault();
   };
-  const approveTerms = (e) => {
-    nextStep(2);
+  const approveTerms = async (e) => {
+    setActive(true);
+    /* create account */
+
+    const uuid = uuidv4();
+    try {
+      /*
+      const user = {
+        username: uuid,
+        password: fields.password.value,
+        attributes: {
+          email: fields.email.value,
+          phone_number: fields.regionCode + fields.phone.value,
+          family_name: fields.lastName.value,
+          given_name: fields.firstName.value,
+          name: fields.username.value,
+        },
+      };
+*/
+
+      let phoneNumber = fields.phone.value;
+      if (phoneNumber.startsWith("0")) {
+        phoneNumber = phoneNumber.substr(1);
+      }
+      const { user } = await Auth.signUp({
+        username: uuid,
+        password: fields.password.value,
+        attributes: {
+          email: fields.email.value,
+          phone_number: fields.regionCode + phoneNumber,
+          family_name: fields.lastName.value,
+          given_name: fields.firstName.value,
+          /* name: fields.username.value, */
+          preferred_username: fields.username.value,
+        },
+      });
+      console.log(user);
+
+      // initial signIn... so can verify email/phone...
+      const currentUser = await Auth.signIn(
+        fields.username.value,
+        fields.password.value
+      );
+      //const mfa = await Auth.setPreferredMFA(currentUser, "SMS");
+      //console.log("MFA ", mfa);
+      const session = await Auth.currentSession();
+      //onAction("email");
+      nextStep(2, session);
+    } catch (error) {
+      console.log("error signing up:", error);
+    }
+
+    // e.preventDefault();
   };
   const onDialogClose = (e, action) => {
     console.log("CLOSE ", e, action);
@@ -140,24 +196,31 @@ const TermsOfUse = ({ nextStep, fields, ...props }) => {
           </StyledBox>
         </Box>
 
-        <Box mt={63} display={"inline-flex"}>
-          <React.Fragment>
-            <Flex>
-              <Button
-                variation={"outline"}
-                colorStyle={"error"}
-                onClick={declineTerms}
-              >
-                {i18n.__("declineButton")}
-              </Button>
-            </Flex>
+        <Box mt={63} display={isActive ? "block" : "inline-flex"}>
+          {!isActive && (
+            <React.Fragment>
+              <Flex>
+                <Button
+                  variation={"outline"}
+                  colorStyle={"error"}
+                  onClick={declineTerms}
+                >
+                  {i18n.__("declineButton")}
+                </Button>
+              </Flex>
 
-            <Flex ml={99}>
-              <Button disabled={!scrolled} onClick={approveTerms}>
-                {i18n.__("approveButton")}
-              </Button>
-            </Flex>
-          </React.Fragment>
+              <Flex ml={99}>
+                <Button disabled={!scrolled} onClick={approveTerms}>
+                  {i18n.__("approveButton")}
+                </Button>
+              </Flex>
+            </React.Fragment>
+          )}
+          {isActive && (
+            <Box textAlign={"center"}>
+              <Button disabled={true}>{i18n.__("accountButton")}</Button>
+            </Box>
+          )}
         </Box>
       </ProgressContainer>
     </React.Fragment>

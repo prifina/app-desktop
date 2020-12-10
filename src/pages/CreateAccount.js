@@ -29,6 +29,9 @@ import { UseFocus } from "../lib/componentUtils";
 import config from "../config";
 import { checkUsernameQuery } from "../graphql/api";
 import Amplify, { API, Auth } from "aws-amplify";
+
+import { v4 as uuidv4 } from "uuid";
+
 //import strings from "../lib/locales/en";
 
 //const { i18n } = require("../lib/i18n");
@@ -46,6 +49,7 @@ const CreateAccount = (props) => {
   Amplify.configure(APIConfig);
   Auth.configure(AUTHConfig);
 
+  const uuid = uuidv4();
   //console.log("Account ", props);
 
   //console.log(i18n.__("Testing"));
@@ -66,9 +70,17 @@ const CreateAccount = (props) => {
       ),
     };
   });
-  const [currentUser, setCurrentUser] = useState({});
+
+  const testUser = {
+    username: uuid,
+    given_name: "Tero",
+    client: AUTHConfig.userPoolWebClientId,
+    email: "tro9999@gmail.com",
+    phone_number: "+358407077102",
+  };
+  const [currentUser, setCurrentUser] = useState(testUser);
   const [seconds, setSeconds] = useState(0);
-  const [registerStep, setRegisterStep] = useState(0);
+  const [registerStep, setRegisterStep] = useState(2);
 
   const [nextDisabled, setNextDisabled] = useState(true);
   //const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
@@ -178,8 +190,10 @@ const CreateAccount = (props) => {
     }
     console.log("USER ", username, userError);
     if (!userError) {
-      const userExists = await checkUsernameQuery(API, username);
-      console.log(userExists);
+      console.log("CHECKING USER");
+      //const userExists = await checkUsernameQuery(API, username);
+      //console.log(userExists);
+      const userExists = {};
       //{"data":{"checkUsername":false}}
 
       if (
@@ -196,6 +210,20 @@ const CreateAccount = (props) => {
     return userMsg;
   };
 
+  const isPasswordPossible = () => {
+    if (state.firstName.value.length === 0) {
+      setInputFirstnameFocus();
+    } else if (state.lastName.value.length === 0) {
+      setInputLastnameFocus();
+    } else if (state.username.value.length === 0) {
+      setInputUsernameFocus();
+    } else if (state.email.value.length === 0) {
+      setInputEmailFocus();
+    } else {
+      return true;
+    }
+    return false;
+  };
   const checkInputPassword = (password) => {
     //console.log(password);
     const checkResult = checkPassword(password, config.passwordLength, [
@@ -444,7 +472,7 @@ const CreateAccount = (props) => {
         if (firstStatus === "regionCode") {
           firstStatus = selectSearchID;
         }
-        console.log("FOCUS ", firstStatus);
+        console.log("FOCUS ", firstStatus, activeID);
 
         if (activeID !== firstStatus) {
           if (firstStatus === "firstName") {
@@ -460,8 +488,9 @@ const CreateAccount = (props) => {
           } else if (firstStatus === selectSearchID) {
             setSelectFocus();
           } else if (firstStatus === "password") {
-            if (activeID !== "passwordConfirm") {
-              setInputPasswordFocus();
+            if (activeID !== "passwordConfirm" && activeID !== "password") {
+              console.log("PASSWORD FOCUS...");
+              //setInputPasswordFocus();
             }
           } else {
             console.log("UNKNOWN FIELD ", firstStatus);
@@ -544,7 +573,22 @@ const CreateAccount = (props) => {
       await Auth.signOut();
       history.replace("/");
     } else if (step === 2) {
+      let phoneNumber = state.phone.value;
+      if (phoneNumber.startsWith("0")) {
+        phoneNumber = phoneNumber.substr(1);
+      }
+      const _currentUser = {
+        username: uuid,
+        given_name: state.firstName.value,
+        client: AUTHConfig.userPoolWebClientId,
+        email: state.email.value,
+        phone_number: state.regionCode + phoneNumber,
+      };
+      setCurrentUser(_currentUser);
+
       //userAuth(true);
+      /*
+
       if (session) {
         const token = session.getIdToken().payload;
         const _currentUser = {
@@ -555,6 +599,8 @@ const CreateAccount = (props) => {
         };
         setCurrentUser(_currentUser);
       }
+      */
+      // verifications...
       setRegisterStep(step);
     } else {
       setRegisterStep(step);
@@ -697,8 +743,8 @@ const CreateAccount = (props) => {
               placeholder={i18n.__("passwordPlaceholder")}
               onFocus={(e) => {
                 if (
-                  !state.password.valid ||
-                  state.password.value.length === 0
+                  isPasswordPossible() &&
+                  (!state.password.valid || state.password.value.length === 0)
                 ) {
                   onPopper(e, true);
                 } else {
@@ -726,6 +772,13 @@ const CreateAccount = (props) => {
           <Box mt={state.password.status ? 5 : 28}>
             <PasswordField
               placeholder={i18n.__("confirmPlaceholder")}
+              onFocus={(e) => {
+                if (state.password.value.length === 0) {
+                  setInputPasswordFocus();
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }}
               id={"passwordConfirm"}
               name={"passwordConfirm"}
               onChange={handleChange}

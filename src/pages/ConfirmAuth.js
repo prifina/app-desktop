@@ -10,12 +10,14 @@ import { useFormFields } from "../lib/formFields";
 import { onlyDigitChars } from "../lib/utils";
 import { UseFocus } from "../lib/componentUtils";
 import { useHistory } from "react-router-dom";
-
+import { useToast } from "@blend-ui/toast";
 import i18n from "../lib/i18n";
 i18n.init();
 
 const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
   const history = useHistory();
+  const alerts = useToast();
+  //console.log("TOAST ", alerts);
   const [confirmationFields, _handleChange] = useFormFields({
     confirmationCode: "",
   });
@@ -28,10 +30,18 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
     let validCode = true;
     if (!checkResult) {
       setInputError({ status: true, msg: i18n.__("codeDigitsError") });
+      //alerts.error(i18n.__("codeDigitsError"), {});
+      const errorMsg = i18n.__("codeDigitsError");
+      if (!alerts.check().some((alert) => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
       validCode = false;
     }
     if (code.length > 1 && code.length !== 6) {
       setInputError({ status: true, msg: i18n.__("codeLengthError") });
+      //alerts.error(i18n.__("codeLengthError"), {});
+      const errorMsg = i18n.__("codeLengthError");
+      if (!alerts.check().some((alert) => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
       validCode = false;
     }
     if (validCode) {
@@ -53,6 +63,10 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       console.log("ERR", e);
       if (e.code === "CodeMismatchException") {
         setInputError({ status: true, msg: i18n.__("invalidCode") });
+        //alerts.error(i18n.__("invalidCode"), {});
+        const errorMsg = i18n.__("invalidCode");
+        if (!alerts.check().some((alert) => alert.message === errorMsg))
+          alerts.error(errorMsg, {});
       }
 
       /*
@@ -94,8 +108,8 @@ name: "CodeMismatchException"
                     _handleChange(e);
                     checkInput(e.target.value);
                   }}
-                  errorMsg={inputError.msg}
-                  error={inputError.status}
+                  //errorMsg={inputError.msg}
+                  //error={inputError.status}
                   ref={inputCode}
                 />
               </IconField>
