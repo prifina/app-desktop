@@ -1,9 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Box, Flex, Text, useTheme, Input } from "@blend-ui/core";
+import { Box, Flex, Text, useTheme } from "@blend-ui/core";
 import styled from "styled-components";
 import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
 import TableListing from "./TableListing";
+import Input from "./Input";
+import Select from "./Select";
 import { ReactComponent as Filter } from '../assets/images/Icon_filter_ho.svg';
 import { ReactComponent as Search } from '../assets/images/search.svg';
 import colors from "../lib/colors";
@@ -44,6 +45,14 @@ const ListingRightContainer = (props) => {
         border: 0.0625rem solid ${colors.input_bg};
       }      
     } 
+    .search-icon-list{
+      position: absolute;
+      width: 20px;
+      margin-left: 10px;
+      margin-top: 4px;
+      margin-right: 5px;
+      margin-bottom: 2px;
+    }
     .round{
       width:266px;
     }
@@ -100,6 +109,7 @@ const ListingRightContainer = (props) => {
       }
     }
   `;
+  const dropdown= [{label: 'listFirstName',value: 1}]
   return (
     <Box width={"100%"}>
       <Box m={40} >
@@ -114,14 +124,15 @@ const ListingRightContainer = (props) => {
 
           <Flex justifyContent={"space-between"}>
             <ConnectionFilter className="connection-filter-container">
-              <Filter className="search-icon"/>
-              <select className="connection-filter round">
-                <option value="1"> {i18n.__("listFirstName")}  </option>
-              </select>
+              <Filter className="search-icon-list"/>
+              <Select 
+                className="connection-filter round" 
+                child={dropdown}
+              />
             </ConnectionFilter>
             <Box className="connection-searchbox-container">
-              <Search className="search-icon"/>
-              <Input className="searchInput" type="text" placeholder={i18n.__("listSearchconsole")}/>
+              <Search className="search-icon-list"/>
+              <Input className="searchInput" placeholder={i18n.__("listSearchconsole")}/>
             </Box>
           </Flex>
           <TableListing 
@@ -133,14 +144,6 @@ const ListingRightContainer = (props) => {
     </Box>  
   )
 }
-
-// ListingRightContainer.propTypes = {
-//   user: PropTypes.shape({})
-// };
-
-// ListingRightContainer.defaultProps = {
-//   // user: null,
-// };
 
 
 export default ListingRightContainer;

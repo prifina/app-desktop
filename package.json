@@ -29,10 +29,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false",
+    "test": "jest",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -51,6 +54,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@iconify/icons-fe": "^1.0.5",
     "@storybook/addon-actions": "v6.1.0-alpha.14",
     "@storybook/addon-docs": "v6.1.0-alpha.14",
@@ -60,6 +64,7 @@
     "@storybook/react": "v6.1.0-alpha.14",
     "@styled-system/prop-types": "^5.1.5",
     "babel-loader": "^8.1.0",
+    "jest": "^26.6.3",
     "react-test-renderer": "^16.13.1"
   }
 }

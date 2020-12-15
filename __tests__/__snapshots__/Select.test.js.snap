@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Link renders correctly 1`] = `
+<div
+  className="ThemeProvider__Base-sc-1w52cfi-0 fESRGN"
+>
+  <select
+    className="sc-bdfBwQ beJZeV"
+    id="cabinClass"
+    name="cabinClass"
+  >
+    <option
+      value="1"
+    >
+       
+      First Name
+        
+    </option>
+  </select>
+</div>
+`;

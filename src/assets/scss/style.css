@@ -1983,7 +1983,7 @@ body {
 .search-icon {
   position: absolute;
   width: 20px;
-  margin-left: 10px;
+  margin-left: -110px;
   margin-top: 4px;
   margin-right: 5px;
   margin-bottom: 2px;

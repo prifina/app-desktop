@@ -1,10 +1,12 @@
 import React from 'react';
 import styled from "styled-components";
-import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
+import { space, layout } from 'styled-system'
 import PropTypes from 'prop-types';
-import {ScreenImages} from "./Image";
-import { Box, Text, useTheme,  } from "@blend-ui/core";
+import { Box, Text } from "@blend-ui/core";
 import colors from "../lib/colors";
+import image1 from '../assets/maxresdefault1.png';
+import image2 from '../assets/maxresdefault2.png';
+import image3 from '../assets/maxresdefault3.png';
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -82,6 +84,19 @@ const AppDetailRightContainer = ({ user }) => {
       top: -5px;
     }
   `;   
+    const ImageBox = styled.div`
+      .gallery-item{
+        width: auto;
+        height: 227px;
+        object-fit: cover;
+      }
+    `;
+    const imageS = {
+      src1: image1,
+      src2: image2,
+      src3: image3,
+      alt: 'my image',
+    };
   return (
     <DetailRightContainerBox height="100%" pr="15px">
       <Text as={"h2"} fontSize={24} lineHeight={"20.36px"} pt="40px" mb="5px" color={colors.text_h4}>{i18n.__("appDashboard")}</Text> 
@@ -93,7 +108,11 @@ const AppDetailRightContainer = ({ user }) => {
       </Box>
 
       <Box>
-        <ScreenImages />
+        <ImageBox>
+          <img src={imageS.src1} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item mr-4`]} />
+          <img src={imageS.src2} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item mr-4`]} />
+          <img src={imageS.src3} alt={imageS.alt} className={[`storybook-image--app-thumbnail gallery-item`]} />
+        </ImageBox>
         
         <Box>
           <Text as={"h3"} fontSize={18} lineHeight={"20.36px"} >{i18n.__("appDescription")}</Text>

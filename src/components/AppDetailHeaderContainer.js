@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
-import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
+import { space, layout, flexbox , typography } from 'styled-system'
 import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
-import Line from "../assets/Line.png";
+import Input from "./Input";
 import { ReactComponent as Search } from '../assets/images/search.svg';
-import { Box, Text, useTheme } from "@blend-ui/core";
+import { Box } from "@blend-ui/core";
 import colors from "../lib/colors";
 import i18n from "../lib/i18n";
 i18n.init();
 
 const AppDetailHeaderContainer = ({ user }) => {
   // console.log('colors',colors)
-  const theme = useTheme();
+  // const theme = useTheme();
 
   const Header = styled.div`    
     ${typography}    
@@ -66,7 +66,8 @@ const AppDetailHeaderContainer = ({ user }) => {
           <HeaderSearchBox>
             <Box>
               <Search className="search-icon"/>
-              <input className="header-searchbox" placeholder={i18n.__("appheaderSearch")}></input>
+              <Input className="header-searchbox" placeholder={i18n.__("appheaderSearch")}/>
+              {/*<input className="header-searchbox" placeholder={i18n.__("appheaderSearch")}></input>*/}
             </Box>
           </HeaderSearchBox> 
         </HeaderIteam>

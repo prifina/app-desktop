@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
+import { Box, Flex, useTheme } from "@blend-ui/core";
 // import '../assets/scss/style.css';
 
 import Ellipse61 from '../assets/Ellipse61.png';

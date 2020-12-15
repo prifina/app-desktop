@@ -126,7 +126,6 @@ const strings = {
     listPlaces: "Places",
     listPosts: "Posts",
     listConsole: "Console",
-    listConnections: "Connections",
     listHiddenConnections: "Hidden Connections",
     listAllConnections: "All Connections",
     listDetail: "This is an combined list of connections pulled from the third-party applications that you installed and connected to the console",

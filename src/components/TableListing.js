@@ -1,20 +1,12 @@
 // MyComponent.stories.js
 
 import React from 'react';
-import { Box, Text, useTheme } from "@blend-ui/core";
+import { Box, useTheme } from "@blend-ui/core";
 import styled from "styled-components";
-import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
+import { space, color, layout, typography, border} from 'styled-system'
 import colors from "../lib/colors";
 import PropTypes from 'prop-types';
-import Ellipse61 from '../assets/Ellipse61.png';
-import Ellipse62 from '../assets/Ellipse62.png';
-import Ellipse63 from '../assets/Ellipse63.png';
-import Ellipse64 from '../assets/Ellipse64.png';
-import Ellipse65 from '../assets/Ellipse65.png';
-import Ellipse66 from '../assets/Ellipse66.png';
-import Ellipse67 from '../assets/Ellipse67.png';
-import Ellipse68 from '../assets/Ellipse68.png';
-import Button from "./Button";
+// import Button from "./Button";
 
 
 
@@ -167,7 +159,7 @@ const TableListing = (props) => {
             }
             return (
               <TableBoxIteam>
-                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px"><img src={row.image} className="listingUserProfileImage" /></TableTbodyIteam>
+                <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px"><img src={row.image} alt="profile" className="listingUserProfileImage" /></TableTbodyIteam>
                 <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.full_name}</TableTbodyIteam>
                 <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">{row.alias}</TableTbodyIteam>
                 <TableTbodyIteam fontSize="12px" fontWeight="400" textAlign="center" p="10px" color={colors.text_h4} borderBottom={"1px solid "+ colors.table_bd_b} minHeight="53px">

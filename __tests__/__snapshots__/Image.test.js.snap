@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Image renders correctly 1`] = `
+<div
+  className="ThemeProvider__Base-sc-1w52cfi-0 fESRGN"
+>
+  <img
+    alt="image"
+    className="sc-bdfBwQ eCgEDi"
+    height="auto"
+    src="https://picsum.photos/200/200"
+  />
+</div>
+`;

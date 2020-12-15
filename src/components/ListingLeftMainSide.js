@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
 import { space, color, layout, flexbox , typography, border, position} from 'styled-system'
-import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 import colors from "../lib/colors";
 
 import { ReactComponent as PrifinaVectorIcon } from '../assets/images/Icon1.svg';

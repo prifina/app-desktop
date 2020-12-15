@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button renders correctly 1`] = `
+<div
+  className="ThemeProvider__Base-sc-1w52cfi-0 fESRGN"
+>
+  <div
+    className="sc-bdfBwQ gIDPWr"
+  >
+    <button
+      className="storybook-button--default storybook-button--medium storybook-button--solid storybook-button--btn-block "
+      type="button"
+    />
+  </div>
+</div>
+`;

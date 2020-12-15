@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from "styled-components";
 import { space, color, layout, flexbox } from 'styled-system'
-import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
+import { Text } from "@blend-ui/core";
 import { ReactComponent as Back } from '../assets/images/arrow.svg';
 import colors from "../lib/colors";
 import i18n from "../lib/i18n";

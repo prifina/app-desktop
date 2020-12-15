@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
+import { Box, Flex } from "@blend-ui/core";
 import styled from "styled-components";
-// import '../assets/scss/style.css';
+import '../assets/scss/style.css';
 
 import AppDetailHeaderContainer from "../components/AppDetailHeaderContainer";
 import AppDetailLeftContainer from "../components/AppDetailLeftContainer";
@@ -13,7 +13,7 @@ i18n.init();
 
 const AppDetail = ({ onAction, ...props }) => {
   console.log("Terms ", props);
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   // console.log("THEME ", colors);
   const [isActive, setActive] = useState(false);
   
@@ -40,10 +40,10 @@ const AppDetail = ({ onAction, ...props }) => {
           <AppDetailHeaderContainer />
         </Flex>
         <Box display={"inline-flex"} width={"100%"} >
-          <Flex width={"25%"}  justifyContent={"center"} ml={10} ml={10}>
+          <Flex width={"25%"}  justifyContent={"center"} ml={10}>
               <AppDetailLeftContainer />
           </Flex>  
-          <Flex width={"75%"}  justifyContent={"flex-end"} ml={30} ml={10}>
+          <Flex width={"75%"}  justifyContent={"flex-end"} ml={10}>
               <AppDetailRightContainer />
           </Flex>
         </Box>
