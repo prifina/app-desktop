@@ -3186,12 +3186,12 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
-"@blend-ui/core@1.1.40-alpha.0":
-  version "1.1.40-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.40-alpha.0.tgz#4fdc0eabcbb3b61e64b1f1090a5b19fe0221d9fd"
-  integrity sha512-1P5ErfPG9t5LSHtYyqMWym+QDUNtn7DDkjCp5A4/XsnKts2NdIyOlMWsACu/HarwoX2/ZfASGsWNFzZ3SfB7Xw==
+"@blend-ui/core@1.1.43-alpha.0":
+  version "1.1.43-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.43-alpha.0.tgz#2733b8dd6b25c243607432b4c990d6e22f7a6ef2"
+  integrity sha512-bZLINL7usZ1dkV2jqpyAv8LBfVYOhTZtaXvIJ7HP1lWP1/CnczWipsE4cKz3DniKInPRroySjBFlgwFLPG/qLw==
   dependencies:
-    "@blend-ui/icons" "^1.1.4-alpha.0"
+    "@blend-ui/icons" "^1.1.5-alpha.0"
     "@popperjs/core" "^2.5.3"
     "@reach/auto-id" "^0.11.2"
     "@styled-system/theme-get" "^5.1.2"
@@ -3200,7 +3200,7 @@
     react-popper "^2.2.3"
     styled-components "^5.1.1"
 
-"@blend-ui/icons@1.1.4-alpha.0", "@blend-ui/icons@^1.1.4-alpha.0":
+"@blend-ui/icons@1.1.4-alpha.0":
   version "1.1.4-alpha.0"
   resolved "https://registry.yarnpkg.com/@blend-ui/icons/-/icons-1.1.4-alpha.0.tgz#8745783f029a35002725f8b3bd207207f3c989ce"
   integrity sha512-QIj/iKGe4SsjdHi4mqIcopPSLcmcWI7KU/KHQBRNXXLSOOWhGxDz27gptps5e9+IVz0EJ7R3fjm6X0uzDL4Zww==
@@ -3212,10 +3212,22 @@
     styled-components "^5.1.1"
     styled-system "^5.1.5"
 
-"@blend-ui/modal@1.0.5-alpha.0":
-  version "1.0.5-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/modal/-/modal-1.0.5-alpha.0.tgz#c8c9b4ab9cd262c93fa19047949a144c4d2c82c9"
-  integrity sha512-8u+omxtiCmMNG40eXPbhs7iO4gBUqbk/jgAnbSWq1N/EzVO6ZRdxz20Jcyvw2LJO4Mmpey0JaBj4dVNdA3YRJA==
+"@blend-ui/icons@^1.1.5-alpha.0":
+  version "1.1.5-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/icons/-/icons-1.1.5-alpha.0.tgz#4397ca8eca5350803abff5ae0c43d69862e62534"
+  integrity sha512-3gKcAHuw06dc6j1KXhKMeotYLW8YLDZZChiMhViIUy8lnFFgG+h44YSllciBsIBxrqutu3U2sqEbBPSWJOD5wA==
+  dependencies:
+    "@iconify/react" "^1.1.3"
+    "@styled-system/theme-get" "^5.1.2"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    styled-components "^5.1.1"
+    styled-system "^5.1.5"
+
+"@blend-ui/modal@1.0.6-alpha.0":
+  version "1.0.6-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/modal/-/modal-1.0.6-alpha.0.tgz#ce9e0a08041f5c99092a708278d4f41488d87241"
+  integrity sha512-2UQwcks4QGIg+wV7lovsE8KlZvYnKMp9bVw8CFjMpTQqMw32kiIK/7ddMY6LzE2n+wbq+f6DzsIMp02LrucH9g==
   dependencies:
     "@reach/auto-id" "^0.11.2"
     aria-hidden "^1.1.1"
@@ -3226,10 +3238,10 @@
     styled-components "^5.2.0"
     styled-system "^5.1.5"
 
-"@blend-ui/progress@1.0.3-alpha.0":
-  version "1.0.3-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/progress/-/progress-1.0.3-alpha.0.tgz#94f021ab95413a6e5d7c80aaa67f1d001c6b9cac"
-  integrity sha512-7zJ08NZFN5uJQyD3SvCsMpb6JB+D1yS99VlUMTEQFOAzVx6Qe0zkwhYt3JISO7+0HCi+MWD81ilGvXkyyeLIPg==
+"@blend-ui/progress@1.0.4-alpha.0":
+  version "1.0.4-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/progress/-/progress-1.0.4-alpha.0.tgz#c2bfbe496577ca85d8cad41f9f8b5400e3146632"
+  integrity sha512-F+RzKK5f5TUXvAxCMjK6QU+IbEKkOXK4zIGivztMar2/rpgEkSlCQNyrFglAwalu/6Io+isQR3ziaFvs7E/gpg==
   dependencies:
     react "^16.13.0"
     react-dom "^16.13.0"
@@ -3244,10 +3256,10 @@
     styled-components "^5.2.0"
     styled-system "^5.1.5"
 
-"@blend-ui/toast@0.0.8-alpha.0":
-  version "0.0.8-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/toast/-/toast-0.0.8-alpha.0.tgz#92d4a856a23d4b98e15ffd42af40ac8f9736accd"
-  integrity sha512-hr6t0stYiZn51KfLfpN7rzeXdEpJ1akrEAmtpPPttonsF1vMXxPQByFaEakYYpCg+sxZL2iOYbS6ZE3/2rPBtg==
+"@blend-ui/toast@0.0.9-alpha.0":
+  version "0.0.9-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/toast/-/toast-0.0.9-alpha.0.tgz#e4b0e9043fb75c4f28a22d8b3282514517c36859"
+  integrity sha512-Y/DQw2oH7CXCp8pEmTr5T691FHrsKA/SYLfmcNbprPav3Xs5BGGgwqPb7Yxc7FEC3cw+vYZRygX05YPFzW2kZQ==
   dependencies:
     "@reach/auto-id" "^0.11.2"
     aria-hidden "^1.1.1"

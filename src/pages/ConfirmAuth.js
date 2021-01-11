@@ -18,7 +18,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
   const history = useHistory();
   const alerts = useToast();
   //console.log("TOAST ", alerts);
-  const [confirmationFields, _handleChange] = useFormFields({
+  const [confirmationFields, handleChange] = useFormFields({
     confirmationCode: "",
   });
   const [inputCode, setInputCodeFocus] = UseFocus();
@@ -57,7 +57,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       );
 
       console.log("CONFIRM ", loggedUser);
-      history.replace("/");
+      history.replace("/home");
       authOptions.setAuth(true);
     } catch (e) {
       console.log("ERR", e);
@@ -104,9 +104,11 @@ name: "CodeMismatchException"
                   placeholder={i18n.__("codePropmt")}
                   id={"confirmationCode"}
                   name={"confirmationCode"}
-                  onChange={(e) => {
-                    _handleChange(e);
-                    checkInput(e.target.value);
+                  onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      checkInput(confirmationFields.confirmationCode);
+                    }
                   }}
                   //errorMsg={inputError.msg}
                   //error={inputError.status}

@@ -13,9 +13,9 @@ const strings = {
     loginLink: "Login",
     /* Create account */
     invalidEntry: "Value is required",
-    invalidPhoneNumber: "Phone number is not valid",
+    invalidPhoneNumber: "Invalid or existing phone number",
     invalidRegion: "Select region code",
-    invalidEmail: "Email is not valid",
+    invalidEmail: "Invalid or existing email",
     usernameExists: "Invalid username.",
     usernameError: "Username is too short (under {{length}} characters)",
     usernameError2: "Spaces are not allowed in the username",
@@ -33,6 +33,7 @@ const strings = {
 
     confirmPlaceholder: "Confirm Password",
     existingAccount: "Have an account?",
+    acceptTerms: "Please approve terms of use to continue.",
 
     /* Landing page */
     loginWelcomeMessage: "My Prifina",
@@ -67,6 +68,7 @@ const strings = {
     phoneVerificationTitle: "Setup your phone verification",
     phoneVerificationText:
       "Please provide your email address and phone number in order to keep your account secure",
+    phoneVerificatioSent: "Phone number verification code was sent.",
     codePropmt: "Enter the code here",
     codeMissing: "Didn't receive the code?",
     sendAgainLinkText: "Click here.",

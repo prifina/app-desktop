@@ -2,6 +2,10 @@ export const checkUsername = `query checkUsername($userName: String!) {
   checkUsername(userName: $userName)
 }
 `;
+export const checkCognitoAttribute = `query checkCognitoAttribute($attrName: String!,$attrValue: String!,$poolID: String!) {
+  checkCognitoAttribute(attrName: $attrName,attrValue: $attrValue,poolID: $poolID)
+}
+`;
 
 export const getVerification = `query getVerification($user_code: String!) {
   getVerification(user_code: $user_code) {

@@ -2,6 +2,8 @@ import React from "react";
 import { Box, Button } from "@blend-ui/core";
 
 import ProgressContainer from "../components/ProgressContainer";
+
+import { useHistory } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import { useAppContext } from "../lib/contextLib";
 
@@ -9,6 +11,7 @@ import i18n from "../lib/i18n";
 i18n.init();
 
 const Logout = (props) => {
+  const history = useHistory();
   const { userAuth } = useAppContext();
 
   const buttonClick = async (e) => {
@@ -17,7 +20,7 @@ const Logout = (props) => {
 
       await Auth.signOut();
       userAuth(false);
-      //history.replace("/");
+      history.replace("/");
       // otherwise page is not reloaded....
       // window.location.reload();
     } catch (e) {

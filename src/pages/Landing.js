@@ -22,6 +22,9 @@ import { useHistory } from "react-router-dom";
 
 import NotFoundPage from "../components/NotFoundPage";
 import Logout from "./Logout";
+
+import FinalizingAccount from "./FinalizingAccount";
+
 import { ToastContextProvider } from "@blend-ui/toast";
 import i18n from "../lib/i18n";
 i18n.init();
@@ -59,7 +62,7 @@ const StyledPlate = styled(Box)`
 const Landing = (props) => {
   console.log("LANDING ", props);
   const history = useHistory();
-  const { isAuthenticated, userAuth, mobileApp } = useAppContext();
+  const { isAuthenticated, mobileApp } = useAppContext();
   const { pathname, search } = useLocation();
   console.log("LOCATION ", pathname, search);
   const { colors } = useTheme();
@@ -69,7 +72,7 @@ const Landing = (props) => {
     initStep = 5;
   } else if (pathname === "/register") {
     initStep = 1;
-  } else if (pathname === "/" && isAuthenticated) {
+  } else if (pathname === "/home" && isAuthenticated) {
     initStep = 6;
   }
 
@@ -97,6 +100,10 @@ const Landing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initStep]);
 
+  const finalStep = (currentUser) => {
+    setAccountFields(currentUser);
+    setStepCounter(7);
+  };
   console.log("STEP COUNTER ", stepCounter);
   const topMargin = "62px";
   return (
@@ -110,68 +117,82 @@ const Landing = (props) => {
             minHeight={"792px"}
           >
             <Box display={"inline-flex"} width={"100%"}>
-              <Flex width={"44%"} height={"792px"}>
+              <Flex width={stepCounter === 7 ? "100%" : "44%"} height={"792px"}>
                 <Box display={"inline-block"} zIndex={2} ml={"63px"}>
                   <Box mt={"24px"}>
                     <PrifinaText width={"69px"} height={"27px"} />
                   </Box>
-                  <Box mt={"283px"}>
-                    <Text fontSize={"74px"} lineHeight={"101px"}>
-                      {stepCounter > 4 && i18n.__("loginWelcomeMessage")}
-                      {stepCounter < 5 && i18n.__("welcomeMessage")}
-                    </Text>
-                  </Box>
-                  <Box width={"533px"}>
-                    <Text as={"p"} fontSize={18} lineHeight={"144.5%"}>
-                      {stepCounter > 4 && i18n.__("loginLandingPage")}
-                      {stepCounter < 5 && i18n.__("landingPage")}
-                    </Text>
-                  </Box>
-                  <Box
-                    mt={"40px"}
-                    display={"inline-flex"}
-                    height={"26px"}
-                    alignItems={"center"}
-                  >
-                    {stepCounter < 5 && (
-                      <React.Fragment>
-                        <Text
-                          fontSize={18}
-                          color={colors.baseSecondary}
-                          pr={13}
-                        >
-                          {i18n.__("landingPageInfo")}
+                  {stepCounter !== 7 && (
+                    <React.Fragment>
+                      <Box mt={"283px"}>
+                        <Text fontSize={"74px"} lineHeight={"101px"}>
+                          {stepCounter > 4 && i18n.__("loginWelcomeMessage")}
+                          {stepCounter < 5 && i18n.__("welcomeMessage")}
                         </Text>
-                        <BlendIcon
-                          iconify={bxChevronRight}
-                          color={colors.componentPrimary}
-                          size={"17"}
-                        />
-                      </React.Fragment>
-                    )}
-                  </Box>
+                      </Box>
+                      <Box width={"533px"}>
+                        <Text as={"p"} fontSize={18} lineHeight={"144.5%"}>
+                          {stepCounter > 4 && i18n.__("loginLandingPage")}
+                          {stepCounter < 5 && i18n.__("landingPage")}
+                        </Text>
+                      </Box>
+                      <Box
+                        mt={"40px"}
+                        display={"inline-flex"}
+                        height={"26px"}
+                        alignItems={"center"}
+                      >
+                        {stepCounter < 5 && (
+                          <React.Fragment>
+                            <Text
+                              fontSize={18}
+                              color={colors.baseSecondary}
+                              pr={13}
+                            >
+                              {i18n.__("landingPageInfo")}
+                            </Text>
+                            <BlendIcon
+                              iconify={bxChevronRight}
+                              color={colors.componentPrimary}
+                              size={"17"}
+                            />
+                          </React.Fragment>
+                        )}
+                      </Box>
+                    </React.Fragment>
+                  )}
                 </Box>
+                {stepCounter === 7 && (
+                  <FinalizingAccount currentUser={accountFields} />
+                )}
               </Flex>
-              <Flex width={"56%"} height={"730px"} justifyContent={"flex-end"}>
-                <StyledPlate height={"730px"} width={"753px"}>
-                  <Flex justifyContent={"flex-end"}>
-                    <Box
-                      position={"relative"}
-                      right={"64px"}
-                      top={topMargin}
-                      key={"step-" + stepCounter}
-                    >
-                      {stepCounter === 0 && <NotFoundPage />}
-                      {stepCounter === 1 && !isAuthenticated && (
-                        <CreateAccount />
-                      )}
-                      {stepCounter === 6 && isAuthenticated && <Logout />}
 
-                      {stepCounter === 5 && <Login />}
-                    </Box>
-                  </Flex>
-                </StyledPlate>
-              </Flex>
+              {stepCounter !== 7 && (
+                <Flex
+                  width={"56%"}
+                  height={"730px"}
+                  justifyContent={"flex-end"}
+                >
+                  <StyledPlate height={"730px"} width={"753px"}>
+                    <Flex justifyContent={"flex-end"}>
+                      <Box
+                        position={"relative"}
+                        right={"64px"}
+                        top={topMargin}
+                        key={"step-" + stepCounter}
+                      >
+                        {stepCounter === 0 && <NotFoundPage />}
+                        {stepCounter === 1 && !isAuthenticated && (
+                          <CreateAccount finalStep={finalStep} />
+                        )}
+                        {stepCounter === 6 && isAuthenticated && <Logout />}
+
+                        {stepCounter === 5 && <Login />}
+                      </Box>
+                    </Flex>
+                  </StyledPlate>
+                </Flex>
+              )}
             </Box>
             <StyledBackground width={"100%"} height={"631px"} />
           </StyledBox>

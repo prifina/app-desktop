@@ -16,19 +16,22 @@ import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
 //import { useHistory } from "react-router-dom";
 
 import { useToast } from "@blend-ui/toast";
-import { useAccountContext } from "../lib/contextLib";
 
 import i18n from "../lib/i18n";
 i18n.init();
 
-const PhoneVerification = ({ invalidLink, ...props }) => {
+const PhoneVerification = ({
+  invalidLink,
+  currentUser,
+  nextStep,
+  ...props
+}) => {
   //const history = useHistory();
-  //console.log("USER ", currentUser);
-  const { nextStepAction, currentUser } = useAccountContext();
+  console.log("USER ", currentUser);
   const alerts = useToast();
   const { APIConfig } = useAppContext();
   Amplify.configure(APIConfig);
-  const [verificationFields, handleChange] = useFormFields({
+  const [verificationFields, _handleChange] = useFormFields({
     verificationCode: "",
   });
   const [inputCode, setInputCodeFocus] = UseFocus();
@@ -47,7 +50,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
       validCode = false;
     }
 
-    if (code.length > 1 && code.length !== 6) {
+    if (code.length > 6 || code.length === 0) {
       const errorMsg = i18n.__("codeLengthError");
       if (!alerts.check().some((alert) => alert.message === errorMsg))
         alerts.error(errorMsg, {});
@@ -86,12 +89,11 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         setInputError({ status: true });
       }
       console.log("VERIFY ", result);
-      nextStepAction(4);
+      //nextStep(4);
     } catch (e) {
       console.log("ERR", e);
       alerts.error(i18n.__("invalidCode"), {});
       setInputError({ status: true });
-      nextStepAction(4);
     }
   };
   const resendClick = async (e) => {
@@ -138,9 +140,6 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         console.log("ERR", e);
       });
   }, [currentUser]);
-  const backClickAction = (e) => {
-    nextStepAction(0);
-  };
   return (
     <ProgressContainer title={i18n.__("verificationTitle")} progress={100}>
       <Box mt={47}>
@@ -168,11 +167,9 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
                   placeholder={i18n.__("codePropmt")}
                   id={"verificationCode"}
                   name={"verificationCode"}
-                  onChange={handleChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      checkInput(verificationFields.verificationCode);
-                    }
+                  onChange={(e) => {
+                    _handleChange(e);
+                    checkInput(e.target.value);
                   }}
                   ref={inputCode}
                   error={inputError.status}
@@ -218,9 +215,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
 
       <Box mt={84} display={"inline-flex"}>
         <Flex>
-          <Button variation={"outline"} onClick={backClickAction}>
-            {i18n.__("backButton")}
-          </Button>
+          <Button variation={"outline"}>{i18n.__("backButton")}</Button>
         </Flex>
         <Flex ml={99}>
           <Button

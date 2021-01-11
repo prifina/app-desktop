@@ -73,20 +73,20 @@ const Login = ({ onAction, ...props }) => {
       let user = await Auth.signIn(loginFields.username, loginFields.password);
       console.log("LOGIN", user);
 
+      //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+      //setConfirmCode(true);
+
+      if (user.preferredMFA === "NOMFA") {
+        const mfa = await Auth.setPreferredMFA(user, "SMS");
+        console.log("MFA ", mfa);
+        user = await Auth.signIn(loginFields.username, loginFields.password);
+        console.log("LOGIN2", user);
+      } else if (user.challengeName === "SMS_MFA") {
+        //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+      }
       setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
       setConfirmCode(true);
 
-      /*
-      if (user.preferredMFA === "NOMFA") {
-        //const mfa = await Auth.setPreferredMFA(user, "SMS");
-        //console.log("MFA ", mfa);
-        history.replace("/");
-        userAuth(true);
-      } else if (user.challengeName === "SMS_MFA") {
-        setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
-        setConfirmCode(true);
-      }
-*/
       //preferredMFA: "NOMFA"
       //challengeName: "SMS_MFA"
       /*
@@ -221,6 +221,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                     }
                   }}
                   ref={inputUsername}
+                  error={usernameError.status}
                   onBlur={(e) => {
                     const userError = checkUsername(e.target.value);
                     if (userError !== "") {
@@ -248,7 +249,8 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 width={[1]}
                 style={{
                   position: "relative",
-                  top: usernameError.status ? "-33px" : "-7px",
+                  top: "-7px",
+                  /* top: usernameError.status ? "-33px" : "-7px", */
                 }}
               >
                 <Flex>
@@ -258,8 +260,10 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 </Flex>
               </Box>
             </Box>
+            {/* 
+            <Box mt={usernameError.status ? -19 : 9}> */}
 
-            <Box mt={usernameError.status ? -19 : 9}>
+            <Box mt={9}>
               <PasswordField
                 placeholder={i18n.__("passwordPlaceholder")}
                 id={"password"}
@@ -302,6 +306,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                 }}
                 ref={inputPassword}
+                error={passwordError.status}
               />
               <Box
                 display={"inline-flex"}
@@ -309,7 +314,8 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 width={[1]}
                 style={{
                   position: "relative",
-                  top: passwordError.status ? "-33px" : "-7px",
+                  top: "-7px",
+                  /* top: passwordError.status ? "-33px" : "-7px", */
                 }}
               >
                 <Flex>
@@ -319,8 +325,9 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 </Flex>
               </Box>
             </Box>
-
-            <Box mt={passwordError.status ? 49 : 77} display={"inline-flex"}>
+            {/* 
+            <Box mt={passwordError.status ? 49 : 77} display={"inline-flex"}> */}
+            <Box mt={77} display={"inline-flex"}>
               <Flex>
                 <Button variation={"outline"} onClick={createAccountClick}>
                   {i18n.__("createAccount")}

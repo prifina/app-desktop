@@ -4,8 +4,6 @@ import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 import ProgressContainer from "../components/ProgressContainer";
 import DeclineDialog from "../components/DeclineDialog";
 import styled from "styled-components";
-
-import { useAccountContext } from "../lib/contextLib";
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -65,12 +63,8 @@ const texts = [
     text: i18n.__("materialsText"),
   },
 ];
-const TermsOfUse = (props) => {
+const TermsOfUse = ({ nextStep, fields, ...props }) => {
   console.log("Terms ", props);
-  const { nextStepAction } = useAccountContext();
-
-  //console.log(nextStepAction);
-  //console.log(ctx);
 
   const { colors } = useTheme();
   //console.log("THEME ", colors);
@@ -91,20 +85,19 @@ const TermsOfUse = (props) => {
     e.preventDefault();
   };
   const approveTerms = (e) => {
-    // next step email verification ===2,... finalizing===4
-    nextStepAction(2);
+    nextStep(2);
   };
   const onDialogClose = (e, action) => {
-    //console.log("CLOSE ", e, action);
+    console.log("CLOSE ", e, action);
     setDecline(false);
     e.preventDefault();
   };
   const onDialogClick = (e, action) => {
-    //console.log("BUTTON ", e, action);
+    console.log("BUTTON ", e, action);
     setDecline(false);
     if (action === "decline") {
       // back to create account page
-      nextStepAction(0);
+      nextStep(1);
     }
     e.preventDefault();
   };

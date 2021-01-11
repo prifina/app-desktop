@@ -14,21 +14,24 @@ import { useAppContext } from "../lib/contextLib";
 import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
 //import { useHistory } from "react-router-dom";
 import { useToast } from "@blend-ui/toast";
-import { useAccountContext } from "../lib/contextLib";
 
 import i18n from "../lib/i18n";
 i18n.init();
 
-const EmailVerification = ({ invalidLink, ...props }) => {
+const EmailVerification = ({
+  invalidLink,
+  currentUser,
+  nextStep,
+  ...props
+}) => {
   //console.log("Phone ", props);
   //const history = useHistory();
-  const { nextStepAction, currentUser } = useAccountContext();
   const alerts = useToast();
   const { APIConfig } = useAppContext();
   Amplify.configure(APIConfig);
   console.log("USER ", currentUser);
 
-  const [verificationFields, handleChange] = useFormFields({
+  const [verificationFields, _handleChange] = useFormFields({
     verificationCode: "",
   });
   const [inputCode, setInputCodeFocus] = UseFocus();
@@ -48,7 +51,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       validCode = false;
     }
     //if (code.length > 1 && code.length !== 6) {
-    if (code.length > 1 && code.length !== 6) {
+    if (code.length > 6 || code.length === 0) {
       const errorMsg = i18n.__("codeLengthError");
       if (!alerts.check().some((alert) => alert.message === errorMsg))
         alerts.error(errorMsg, {});
@@ -149,12 +152,11 @@ const EmailVerification = ({ invalidLink, ...props }) => {
         */
       }
       console.log("VERIFY ", result);
-      nextStepAction(3);
+      //nextStep(3);
     } catch (e) {
       console.log("ERR", e);
       alerts.error(i18n.__("invalidCode"), {});
       setInputError({ status: true });
-      nextStepAction(3);
       /*
       setToastError({
         status: true,
@@ -176,9 +178,6 @@ path: ["verifyCode"]
 */
     }
     //e.preventDefault();
-  };
-  const backClickAction = (e) => {
-    nextStepAction(0);
   };
   return (
     <React.Fragment>
@@ -214,11 +213,9 @@ path: ["verifyCode"]
                     placeholder={i18n.__("codePropmt")}
                     id={"verificationCode"}
                     name={"verificationCode"}
-                    onChange={handleChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        checkInput(verificationFields.verificationCode);
-                      }
+                    onChange={(e) => {
+                      _handleChange(e);
+                      checkInput(e.target.value);
                     }}
                     ref={inputCode}
                     error={inputError.status}
@@ -251,9 +248,7 @@ path: ["verifyCode"]
 
         <Box mt={80} display={"inline-flex"}>
           <Flex>
-            <Button variation={"outline"} onClick={backClickAction}>
-              {i18n.__("backButton")}
-            </Button>
+            <Button variation={"outline"}>{i18n.__("backButton")}</Button>
           </Flex>
           <Flex ml={99}>
             <Button

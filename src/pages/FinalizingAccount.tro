@@ -1,0 +1,75 @@
+
+const userCode = [msg.userId, msg.clientId, subject, code].join("#");
+msgPromises.push(addVerification({ user_code: userCode }));
+if (subject === "email") {
+  const emailMsg = confirmationEmail(msg.email, msg.given_name, code);
+  msgPromises.push(sendEmail(emailMsg));
+}
+if (subject === "phone") {
+  const smsMsg = confirmationSMS(msg.given_name, code);
+
+  msgPromises.push(
+    sendSMS(msg.phone_number, smsMsg, {
+      senderID: "Prifina",
+      
+
+
+ const approveTerms = async (e) => {
+    setActive(true);
+    /* create account */
+
+    const uuid = uuidv4();
+    try {
+      /*
+      const user = {
+        username: uuid,
+        password: fields.password.value,
+        attributes: {
+          email: fields.email.value,
+          phone_number: fields.regionCode + fields.phone.value,
+          family_name: fields.lastName.value,
+          given_name: fields.firstName.value,
+          name: fields.username.value,
+        },
+      };
+*/
+
+      let phoneNumber = fields.phone.value;
+      if (phoneNumber.startsWith("0")) {
+        phoneNumber = phoneNumber.substr(1);
+      }
+      const { user } = await Auth.signUp({
+        username: uuid,
+        password: fields.password.value,
+        attributes: {
+          email: fields.email.value,
+          phone_number: fields.regionCode + phoneNumber,
+          family_name: fields.lastName.value,
+          given_name: fields.firstName.value,
+          /* name: fields.username.value, */
+        },
+      });
+      console.log(user);
+
+      // initial signIn... so can verify email/phone...
+
+      const currentUser = await Auth.signIn(uuid, fields.password.value);
+
+      //      let user = await Auth.currentAuthenticatedUser();
+
+      let result = await Auth.updateUserAttributes(currentUser, {
+        preferred_username: fields.username.value,
+      });
+      console.log("AFTER SIGN UP ", result);
+
+      //const mfa = await Auth.setPreferredMFA(currentUser, "SMS");
+      //console.log("MFA ", mfa);
+      const session = await Auth.currentSession();
+      //onAction("email");
+      nextStep(2, session);
+    } catch (error) {
+      console.log("error signing up:", error);
+    }
+
+    // e.preventDefault();
+  };

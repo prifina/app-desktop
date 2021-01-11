@@ -1,4 +1,9 @@
-import { checkUsername, getVerification, getCountryCode } from "./queries";
+import {
+  checkUsername,
+  getVerification,
+  getCountryCode,
+  checkCognitoAttribute,
+} from "./queries";
 import { verifyCode, sendVerification } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -38,6 +43,19 @@ export const checkUsernameQuery = (API, userName) => {
   return API.graphql({
     query: checkUsername,
     variables: { userName: userName },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const checkCognitoAttributeQuery = (
+  API,
+  attrName,
+  attrValue,
+  poolID
+) => {
+  return API.graphql({
+    query: checkCognitoAttribute,
+    variables: { attrName: attrName, attrValue: attrValue, poolID: poolID },
     authMode: "AWS_IAM",
   });
 };

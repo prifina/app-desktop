@@ -145,6 +145,7 @@ const SelectField = forwardRef(
     const { selectId, boxRef } = useInputContext();
 
     //const theme = useTheme();
+    //console.log("DEFAULT ", defaultValue);
 
     return (
       <SearchSelect

@@ -39,7 +39,7 @@ async function initAuth(newAuth = false) {
   let session;
   if (newAuth) {
     try {
-      await Auth.signIn("tero-test", "Huuhaa12!#");
+      await Auth.signIn("tero-test", "xxxxxx");
     } catch (e) {
       console.log("ERR", e);
     }

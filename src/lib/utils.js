@@ -119,6 +119,16 @@ export function countryList() {
 
   return staticCountryList;
 }
+
+export function addRegionCode(region, phone) {
+  let phoneNumber = phone;
+  if (phoneNumber.startsWith("0")) {
+    phoneNumber = phoneNumber.substr(1);
+  }
+  phoneNumber = region + phoneNumber;
+  return phoneNumber;
+}
+
 export function isValidNumber(phoneNumber) {
   /*  return new Promise(function (resolve, reject) {
 
@@ -128,7 +138,7 @@ export function isValidNumber(phoneNumber) {
   try {
     const phoneUtil = PhoneNumberUtil.getInstance();
     const number = phoneUtil.parseAndKeepRawInput(phoneNumber);
-    //console.log(number);
+    console.log("PhoneUtil ", number);
     isValid = phoneUtil.isValidNumber(number);
     if (isValid) {
       //const PNF = PhoneNumberFormat.PNF;

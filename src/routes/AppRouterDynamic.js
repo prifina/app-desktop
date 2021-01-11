@@ -16,6 +16,9 @@ export default () => (
       <AppliedRoute path="/" exact>
         <Landing />
       </AppliedRoute>
+      <AppliedRoute path="/home" exact>
+        <Landing />
+      </AppliedRoute>
       <UnauthenticatedRoute path="/login" exact>
         <Landing />
       </UnauthenticatedRoute>
