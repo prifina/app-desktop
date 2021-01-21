@@ -4,7 +4,9 @@ import { Box, Flex, Text, useTheme } from "@blend-ui/core";
 //import { ReactComponent as BackPlate } from "../assets/back-plate.svg";
 //import BackPlate from "../assets/plate.svg";
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
-import { Background } from "../assets/background-image";
+
+import Background from "../assets/background.png";
+//import { Background } from "../assets/background-image";
 //import { Plate } from "../assets/back-plate-png";
 import Plate from "../assets/back-plate.png";
 
@@ -21,7 +23,8 @@ import { useAppContext } from "../lib/contextLib";
 import { useHistory } from "react-router-dom";
 
 import NotFoundPage from "../components/NotFoundPage";
-import Logout from "./Logout";
+//import Logout from "./Logout";
+import Home from "./Home";
 
 import FinalizingAccount from "./FinalizingAccount";
 
@@ -45,7 +48,7 @@ const StyledBackground = styled(Box)`
   /* border-radius: 20px; 
   border-top-left-radius: 0;
   border-top-right-radius: 0; */
-  opacity: 0.3;
+  /* opacity: 0.3; */
   position: relative;
   top: -632px;
   z-index: 1;
@@ -110,7 +113,8 @@ const Landing = (props) => {
     <React.Fragment>
       <ToastContextProvider>
         {mobileApp && <div>Mobile browser APP</div>}
-        {!mobileApp && (
+        {!mobileApp && stepCounter === 6 && isAuthenticated && <Home />}
+        {!mobileApp && stepCounter !== 6 && (
           <StyledBox
             minWidth={"1440px"}
             maxHeight={"792px"}
@@ -185,7 +189,8 @@ const Landing = (props) => {
                         {stepCounter === 1 && !isAuthenticated && (
                           <CreateAccount finalStep={finalStep} />
                         )}
-                        {stepCounter === 6 && isAuthenticated && <Logout />}
+
+                        {/* stepCounter === 6 && isAuthenticated && <Logout /> */}
 
                         {stepCounter === 5 && <Login />}
                       </Box>

@@ -57,6 +57,9 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       );
 
       console.log("CONFIRM ", loggedUser);
+      //const mfa = await authOptions.Auth.setPreferredMFA(loggedUser, "NOMFA");
+      //console.log("MFA ", mfa);
+
       history.replace("/home");
       authOptions.setAuth(true);
     } catch (e) {

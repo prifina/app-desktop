@@ -22,7 +22,7 @@ export default function UnauthenticatedRoute({ children, ...rest }) {
   const { isAuthenticated } = useAppContext();
   const redirect = querystring("redirect");
   //const schemaId = localStorage.getItem("builderDefaultSchemaId");
-
+  console.log("UN AUTH ", isAuthenticated);
   let landingPage = "/";
 
   return (

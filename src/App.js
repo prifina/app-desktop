@@ -7,12 +7,18 @@ import { withRouter } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
 import { AppContext } from "./lib/contextLib";
 import Amplify, { Auth } from "aws-amplify";
-import { ThemeProvider } from "@blend-ui/core";
+import { ThemeProvider, baseStyles } from "@blend-ui/core";
+import { createGlobalStyle } from "styled-components";
 
 import config from "./config";
 
 //import { countryList } from "./lib/utils";
 
+const GlobalStyle = createGlobalStyle`
+  body {
+   ${baseStyles};
+  }
+`;
 const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
   aws_appsync_region: config.main_region,
@@ -145,8 +151,11 @@ function App() {
       }}
     >
       <ThemeProvider>
-        {!isAuthenticating && <Routes />}
-        {isAuthenticating && <div>Loading...</div>}
+        <React.Fragment>
+          <GlobalStyle />
+          {!isAuthenticating && <Routes />}
+          {isAuthenticating && <div>Loading...</div>}
+        </React.Fragment>
       </ThemeProvider>
     </AppContext.Provider>
   );

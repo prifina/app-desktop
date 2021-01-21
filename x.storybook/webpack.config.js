@@ -1,6 +1,8 @@
+// react svg import requires this...
+
 module.exports = ({ config }) => {
   const fileLoaderRule = config.module.rules.find(
-    rule => !Array.isArray(rule.test) && rule.test.test(".svg"),
+    (rule) => !Array.isArray(rule.test) && rule.test.test(".svg")
   );
   fileLoaderRule.exclude = /\.svg$/;
   config.module.rules.push({
@@ -10,6 +12,25 @@ module.exports = ({ config }) => {
   return config;
 };
 
+
+/*
+module.exports = {
+  stories: ['../src/components/**/*.stories.js'],
+  webpackFinal: (config) => {
+    return {
+      ...config,
+      module: {
+        ...config.module,
+        rules: custom.module.rules,
+      },
+      resolve: {
+        ...config.resolve,
+        ...custom.resolve,
+      }
+    };
+  },
+};
+*/
 /*
   const assetRule = config.module.rules.find(({ test }) => test.test(".svg"));
 

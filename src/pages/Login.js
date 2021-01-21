@@ -43,10 +43,18 @@ const Login = ({ onAction, ...props }) => {
   const { APIConfig, userAuth } = useAppContext();
   Amplify.configure(APIConfig);
   //const isMountedRef = useIsMountedRef();
+  //console.log("ENV ", process.env);
+  //console.log("HISTORY ", history.location.search);
+  //REACT_APP_DEBUG: "true"
+  const appDebug =
+    process.env.REACT_APP_DEBUG === "true" &&
+    history.location.search === "?debug=true";
+  console.log("APP DEBUG ", appDebug);
+
   const alerts = useToast();
   //console.log("USE ", useToast);
 
-  const [loginFields, _handleChange] = useFormFields({
+  const [loginFields, handleChange] = useFormFields({
     username: "",
     password: "",
   });
@@ -75,18 +83,25 @@ const Login = ({ onAction, ...props }) => {
 
       //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
       //setConfirmCode(true);
-
-      if (user.preferredMFA === "NOMFA") {
-        const mfa = await Auth.setPreferredMFA(user, "SMS");
-        console.log("MFA ", mfa);
-        user = await Auth.signIn(loginFields.username, loginFields.password);
-        console.log("LOGIN2", user);
-      } else if (user.challengeName === "SMS_MFA") {
-        //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+      if (appDebug) {
+        userAuth(true);
+        history.replace("/home");
+      } else {
+        if (user.preferredMFA === "NOMFA") {
+          const mfa = await Auth.setPreferredMFA(user, "SMS");
+          console.log("MFA ", mfa);
+          user = await Auth.signIn(loginFields.username, loginFields.password);
+          console.log("LOGIN2", user);
+        } else if (user.challengeName === "SMS_MFA") {
+          //normal login...
+          //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+        }
+        setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+        setConfirmCode(true);
       }
-      setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
-      setConfirmCode(true);
-
+      //userAuth(true);
+      //history.replace("/home");
+      //authOptions.setAuth(true);
       //preferredMFA: "NOMFA"
       //challengeName: "SMS_MFA"
       /*
@@ -109,9 +124,11 @@ CODE_DELIVERY_DESTINATION: "+********7102"
 
   const checkUsername = (username, checkLength = false) => {
     //const username = e.target.value;
-
+    console.log("USERNAME ", username);
     let userMsg = "";
-    if (username.length > 4) {
+    if (username.length === 0) {
+      userMsg = i18n.__("invalidEntry");
+    } else {
       const userState = validUsername(username, config.usernameLength);
       if (userState === "LENGTH") {
         userMsg = i18n.__("usernameError", { length: config.usernameLength });
@@ -119,29 +136,34 @@ CODE_DELIVERY_DESTINATION: "+********7102"
       if (userState === "SPACES") {
         userMsg = i18n.__("usernameError2");
       }
-    } else if (checkLength && username.length === 0) {
-      userMsg = i18n.__("invalidEntry");
     }
+    if (userMsg !== "") {
+      if (!alerts.check().some((alert) => alert.message === userMsg))
+        alerts.error(userMsg, {});
 
+      setUsernameError({ status: true });
+    } else {
+      setUsernameError({ status: false });
+    }
     return userMsg;
   };
   const checkPassword = (password) => {
     //const userState = validUsername(username, config.usernameLength);
     //config.passwordLength
-    let checkResult = true;
+    let checkResult = false;
     //const password = e.target.value;
-    if (password.length > 7) {
-      if (password.length < config.passwordLength) {
-        checkResult = false;
-      } else if (!(lowerCaseChars(password) && upperCaseChars(password))) {
-        checkResult = false;
-      } else if (
-        !(digitChars(password) && hasNonChars(password) && !hasSpaces(password))
-      ) {
-        checkResult = false;
-      }
+
+    if (password.length < config.passwordLength) {
+      checkResult = false;
+    } else if (!(lowerCaseChars(password) && upperCaseChars(password))) {
+      checkResult = true;
+    } else if (
+      !(digitChars(password) && hasNonChars(password) && !hasSpaces(password))
+    ) {
+      checkResult = true;
     }
-    return !checkResult;
+
+    return checkResult;
   };
 
   /*
@@ -194,50 +216,20 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   name={"username"}
                   onChange={(e) => {
                     //console.log("USER ", e.target.value);
-                    _handleChange(e);
-                    if (
-                      loginFields.password.length > 7 &&
-                      !passwordError.status
-                    ) {
-                      const userError = checkUsername(e.target.value, true);
-
-                      if (userError !== "") {
-                        if (
-                          !alerts
-                            .check()
-                            .some((alert) => alert.message === userError)
-                        )
-                          alerts.error(userError, {});
-                        //alerts.error(userError, {});
-                        //console.log(alerts.check());
-                        setUsernameError({ status: true });
-                      } else {
-                        setUsernameError({ status: false });
-                        setPasswordError({
-                          status: false,
-                        });
-                        setInvalidLogin(1);
-                      }
-                    }
+                    handleChange(e);
                   }}
                   ref={inputUsername}
                   error={usernameError.status}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const userError = checkUsername(e.target.value, true);
+                    }
+                  }}
                   onBlur={(e) => {
                     const userError = checkUsername(e.target.value);
                     if (userError !== "") {
-                      if (
-                        !alerts
-                          .check()
-                          .some((alert) => alert.message === userError)
-                      )
-                        alerts.error(userError, {});
-                      //alerts.error(userError, {});
-                      //console.log(alerts.check());
-                      setUsernameError({ status: true });
                       setInputUsernameFocus();
                       e.preventDefault();
-                    } else {
-                      setUsernameError({ status: false });
                     }
                   }}
                 />
@@ -270,7 +262,8 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 name={"password"}
                 onChange={(e) => {
                   //console.log("PASS ", e.target.value);
-                  _handleChange(e);
+                  handleChange(e);
+                  /*
                   const passwordError = checkPassword(e.target.value);
                   if (passwordError) {
                     setPasswordError({
@@ -303,6 +296,58 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                       setUsernameError({ status: false });
                       setInvalidLogin(1);
                     }
+                  }
+                  */
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    let errorMsg = "";
+                    if (e.target.value.length === 0) {
+                      errorMsg = i18n.__("invalidEntry");
+                    } else {
+                      const passwordError = checkPassword(e.target.value);
+                      if (passwordError) {
+                        errorMsg = i18n.__("passwordQuality");
+                      }
+                    }
+                    if (errorMsg !== "") {
+                      if (
+                        !alerts
+                          .check()
+                          .some((alert) => alert.message === errorMsg)
+                      )
+                        alerts.error(errorMsg, {});
+                      setPasswordError({
+                        status: true,
+                      });
+                    } else {
+                      setPasswordError({
+                        status: false,
+                      });
+                      checkUsername(loginFields.username);
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  const passwordError = checkPassword(e.target.value);
+                  if (passwordError) {
+                    const errorMsg = i18n.__("passwordQuality");
+                    if (
+                      !alerts
+                        .check()
+                        .some((alert) => alert.message === errorMsg)
+                    )
+                      alerts.error(errorMsg, {});
+                    setPasswordError({
+                      status: true,
+                    });
+
+                    setInputPasswordFocus();
+                    e.preventDefault();
+                  } else {
+                    setPasswordError({
+                      status: false,
+                    });
                   }
                 }}
                 ref={inputPassword}
@@ -338,7 +383,8 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   disabled={
                     passwordError.status ||
                     usernameError.status ||
-                    invalidLogin === 0
+                    loginFields.username.length < config.usernameLength ||
+                    loginFields.password.length < config.passwordLength
                   }
                   onClick={loginClick}
                 >

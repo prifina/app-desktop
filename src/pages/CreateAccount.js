@@ -60,7 +60,14 @@ const CreateAccount = (props) => {
   Auth.configure(AUTHConfig);
 
   const uuid = uuidv4();
-  //console.log("Account ", props);
+
+  //console.log("ENV ", process.env);
+  //console.log("HISTORY ", history.location.search);
+  //REACT_APP_DEBUG: "true"
+  const appDebug =
+    process.env.REACT_APP_DEBUG === "true" &&
+    history.location.search === "?debug=true";
+  console.log("APP DEBUG ", appDebug);
 
   //console.log(i18n.__("Testing"));
 
@@ -174,13 +181,18 @@ const CreateAccount = (props) => {
   };
 
   const checkPhoneAttr = (region, phone) => {
-    let phoneNumber = addRegionCode(region, phone);
-    return checkCognitoAttributeQuery(
-      API,
-      "phone_number",
-      phoneNumber,
-      config.cognito.USER_POOL_ID
-    );
+    //console.log("DEBUG ", appDebug);
+    if (appDebug) {
+      return Promise.resolve({});
+    } else {
+      let phoneNumber = addRegionCode(region, phone);
+      return checkCognitoAttributeQuery(
+        API,
+        "phone_number",
+        phoneNumber,
+        config.cognito.USER_POOL_ID
+      );
+    }
   };
   const phoneAlert = (errorMsg, phoneState) => {
     if (
