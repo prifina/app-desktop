@@ -1,3 +1,10 @@
+export const getInstalledApps = `query getPrifinaUser($id: String!) {
+  getPrifinaUser(id: $id) {
+    installedApps
+  }
+}
+`;
+
 export const checkUsername = `query checkUsername($userName: String!) {
   checkUsername(userName: $userName)
 }

@@ -6,7 +6,7 @@ import i18n from "../lib/i18n";
 i18n.init();
 
 const DataConsoleIcon = () => (
-  <AppIcon title={i18n.__("Data Console")} icon={DataConsole} />
+  <AppIcon title={i18n.__("Data Cloud")} icon={DataConsole} />
 );
 
 DataConsoleIcon.displayName = "DataConsole";

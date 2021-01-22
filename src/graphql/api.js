@@ -3,6 +3,7 @@ import {
   getVerification,
   getCountryCode,
   checkCognitoAttribute,
+  getInstalledApps,
 } from "./queries";
 import { verifyCode, sendVerification } from "./mutations";
 
@@ -56,6 +57,14 @@ export const checkCognitoAttributeQuery = (
   return API.graphql({
     query: checkCognitoAttribute,
     variables: { attrName: attrName, attrValue: attrValue, poolID: poolID },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const getInstalledAppsQuery = (API, userName) => {
+  return API.graphql({
+    query: getInstalledApps,
+    variables: { id: userName },
     authMode: "AWS_IAM",
   });
 };

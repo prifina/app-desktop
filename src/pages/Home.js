@@ -19,6 +19,10 @@ import styled from "styled-components";
 //import { ReactComponent as SettingsIcon } from "../assets/settings.svg";
 //import AppIcon from "../components/AppIcon";
 //import ImportComponent from "../components/ImportComponent";
+import { useIsMountedRef } from "../lib/componentUtils";
+import { getInstalledAppsQuery } from "../graphql/api";
+import { useAppContext } from "../lib/contextLib";
+import Amplify, { API } from "aws-amplify";
 
 const StyledBox = styled(Box)`
   /* border-radius: 20px; */
@@ -59,27 +63,22 @@ const array_chunks = (array, chunk_size) =>
 const Content = (props) => {
   const userMenu = useUserMenu();
   //const theme = useTheme();
+  const { APIConfig, currentUser } = useAppContext();
+  Amplify.configure(APIConfig);
+  console.log("CURRENT USER ", currentUser);
 
+  const isMountedRef = useIsMountedRef();
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     { appIcons: [], loadingStatus: true }
   );
 
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
-
+  const [installedApps, setInstalledApps] = useState([]);
+  //let installedApps = [];
+  /*
   let installedApps = JSON.parse(localStorage.getItem("PrifinaInstalledApps"));
   if (installedApps === null) {
-    /*
-    installedApps = [
-      "DevConsole",
-      "ProfileCards",
-      "DisplayApp",
-      "SmartSearch",
-      "AppMarket",
-      "DataConsole",
-      "Settings",
-    ];
-    */
     installedApps = [
       "Settings",
       "DataConsole",
@@ -91,8 +90,27 @@ const Content = (props) => {
     ];
     localStorage.setItem("PrifinaInstalledApps", JSON.stringify(installedApps));
   }
+*/
+
   useEffect(() => {
-    userMenu.show({ notifications: 0, RecentApps: [] });
+    async function fetchData() {
+      const res = await getInstalledAppsQuery(API, currentUser.username);
+      if (isMountedRef.current) {
+        console.log("INSTALLED APPS  ", res.data.getPrifinaUser);
+        setInstalledApps(JSON.parse(res.data.getPrifinaUser.installedApps));
+      }
+    }
+
+    fetchData();
+  }, [isMountedRef, currentUser.username]);
+
+  useEffect(() => {
+    userMenu.show({
+      initials: "TA",
+      effect: { hover: { width: 42 } },
+      notifications: 0,
+      RecentApps: [],
+    });
     //console.log(RecentApps);
   }, []);
   /*
@@ -172,6 +190,7 @@ const Content = (props) => {
         );
       });
       //console.log(appComponents);
+      console.log("IMPORT APP ICONS...", appComponents);
       setState({ loadingStatus: false, appIcons: appComponents });
     });
 
@@ -179,13 +198,13 @@ const Content = (props) => {
     // setSearches(searches => [...searches, query])
     // Using .concat(), wrapper function (recommended)
     // setSearches(searches => searches.concat(query))
-  }, []);
+  }, [installedApps]);
 
   const { loadingStatus, appIcons } = state;
   console.log("APP ICONS ", appIcons, appIcons.length * 100);
   // window.innerHeight-130  (130 is from top)
   const iconCols = Math.ceil(
-    (appIcons.length * 100) / (window.innerHeight - 130)
+    (appIcons.length * 115) / (window.innerHeight - 130)
   );
 
   let gridCols = "1fr";
@@ -194,16 +213,18 @@ const Content = (props) => {
   }
 
   console.log(iconCols, gridCols, appIcons.length);
-  const maxColHeight = Array(appIcons.length)
+
+  let maxColHeight = Array(appIcons.length)
     .fill(0)
     .map((v, i) => {
       return i + 1;
     })
     .filter((v, i) => {
-      console.log(v, i, v * 100);
-      return v * 100 > window.innerHeight - 130;
+      console.log(v, i, v * 115);
+      return v * 115 > window.innerHeight - 130;
     })[0];
   console.log("maxColHeight... ", maxColHeight - 1);
+  if (isNaN(maxColHeight)) maxColHeight = appIcons.length;
   if (appIcons.length > 0 && installedAppIcons.length === 0) {
     console.log("UPDATE THIS ");
     setInstalledAppIcons(array_chunks(appIcons, maxColHeight - 1));
@@ -236,6 +257,7 @@ const Content = (props) => {
                     return icons.map((appIcon, pos) => {
                       return (
                         <CssCell
+                          key={"cell-" + colIndex + "-" + pos}
                           left={installedAppIcons.length - colIndex + 1}
                           top={icons.length - pos}
                         >

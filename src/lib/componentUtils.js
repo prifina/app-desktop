@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 // Gneral Focus Hook
 export const UseFocus = () => {
@@ -9,3 +9,12 @@ export const UseFocus = () => {
 
   return [htmlElRef, setFocus];
 };
+
+export function useIsMountedRef() {
+  const isMountedRef = useRef(null);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => (isMountedRef.current = false);
+  });
+  return isMountedRef;
+}
