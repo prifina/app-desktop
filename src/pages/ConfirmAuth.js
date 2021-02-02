@@ -18,6 +18,11 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
   const history = useHistory();
   const alerts = useToast();
   //console.log("TOAST ", alerts);
+  const appDebug =
+    process.env.REACT_APP_DEBUG === "true" &&
+    history.location.search === "?debug=true";
+  console.log("APP DEBUG ", appDebug);
+
   const [confirmationFields, handleChange] = useFormFields({
     confirmationCode: "",
   });
@@ -57,8 +62,10 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       );
 
       console.log("CONFIRM ", loggedUser);
-      //const mfa = await authOptions.Auth.setPreferredMFA(loggedUser, "NOMFA");
-      //console.log("MFA ", mfa);
+      if (appDebug) {
+        const mfa = await authOptions.Auth.setPreferredMFA(loggedUser, "NOMFA");
+        console.log("MFA ", mfa);
+      }
 
       history.replace("/home");
       authOptions.setAuth(true);

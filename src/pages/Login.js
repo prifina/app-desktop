@@ -83,7 +83,7 @@ const Login = ({ onAction, ...props }) => {
 
       //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
       //setConfirmCode(true);
-      if (appDebug) {
+      if (appDebug && user.preferredMFA === "NOMFA") {
         userAuth(true);
         history.replace("/home");
       } else {

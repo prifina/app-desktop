@@ -10,6 +10,7 @@ const strings = {
     verifyButton: "Verify",
     confirmButton: "Confirm",
     loginButton: "Login",
+    logoutButton: "Logout",
     loginLink: "Login",
     /* Create account */
     invalidEntry: "Value is required",
@@ -94,6 +95,10 @@ const strings = {
     authConfirmTitle: "Enter authentication code",
     authConfirmationText:
       "We've sent you the authentication code. Please enter it below to login.",
+    /* Logout dialog */
+    logoutTitle: "Are you sure you want to sign out?",
+    logoutText:
+      "You are also logged out from your personal cloud and any local data apps open in this browser.",
   },
 };
 

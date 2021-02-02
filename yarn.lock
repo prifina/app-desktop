@@ -2507,10 +2507,10 @@
     styled-css-grid "^1.2.1"
     styled-system "^5.1.5"
 
-"@blend-ui/floating-user-menu@0.0.12-alpha.0":
-  version "0.0.12-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/floating-user-menu/-/floating-user-menu-0.0.12-alpha.0.tgz#d5850b19b9a97e0b3b682639632b7e9b1dc09c87"
-  integrity sha512-1Ur3TTPb5fbcDxOJKkwNctw5d02n3/8wPo3dy5wn4kvPN/bDqhpdri0Xm0WWI9HRG3WBz8zAxnl4hTQr9PdaZQ==
+"@blend-ui/floating-user-menu@0.0.13-alpha.0":
+  version "0.0.13-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/floating-user-menu/-/floating-user-menu-0.0.13-alpha.0.tgz#34083678820d88bdf670e2b299645b80cec96ec5"
+  integrity sha512-0NIAjA0EXqxoKWko98MWymdtEqI4JZjfUq1Asw6Qe4jgxMjAYEVsDmLqIJTaFL+VJm5SOu3TN8/AwUxYPctmSA==
   dependencies:
     "@reach/auto-id" "^0.12.1"
 
@@ -2541,10 +2541,10 @@
   resolved "https://registry.yarnpkg.com/@blend-ui/progress/-/progress-1.0.6-alpha.0.tgz#3411937b807052e8893d9c087a3ca81ca6f09a96"
   integrity sha512-4rzlbVKlrAGQ9a9WF56+zBMoQYL0fh6Ai/rzHmrWMUIUPKyBtLrBssjTfNU+5ZswViRadtO3UBFq5GcTIhz/nw==
 
-"@blend-ui/tabs@1.0.5-alpha.0":
-  version "1.0.5-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/tabs/-/tabs-1.0.5-alpha.0.tgz#a76ca8993916456e0fa3ffb28df2f3b57d1e12d0"
-  integrity sha512-OM4jzq+AVmgH9ig2VMOskBOanOw8JMzHoIKlXcEICi8RY66RUXQszKAXx/K6SEoMyJy2P4UGY28/pREauMfsgA==
+"@blend-ui/tabs@1.0.7-alpha.0":
+  version "1.0.7-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/tabs/-/tabs-1.0.7-alpha.0.tgz#caff3fb6cc3f85da9c932bbbd9dfe4685a253223"
+  integrity sha512-OG+f/l1zb8DheQs/IDKO/jM/MZylx+Tlm76mbdOuY9NSwsFgwn/ohleN05XV54wLheXTMTMXeo1xa2N6Ogv+Xw==
   dependencies:
     styled-components "^5.2.0"
     styled-system "^5.1.5"

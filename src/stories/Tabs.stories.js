@@ -19,6 +19,8 @@ export const tabs = () => {
         <Tab>User Details</Tab>
         <Tab test={true}>Usage</Tab>
         <Tab>Settings</Tab>
+        <Tab>Settings2</Tab>
+        <Tab>Settings3</Tab>
       </TabList>
       <TabPanelList>
         <TabPanel>
@@ -28,6 +30,8 @@ export const tabs = () => {
         </TabPanel>
         <TabPanel>Toka panel</TabPanel>
         <TabPanel>Kolmas panel</TabPanel>
+        <TabPanel>Kolmas2 panel</TabPanel>
+        <TabPanel>Kolmas3 panel</TabPanel>
       </TabPanelList>
     </Tabs>
   );

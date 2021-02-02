@@ -6,15 +6,15 @@ import React, { useEffect, useReducer, useState } from "react";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
 import { Box, Flex } from "@blend-ui/core";
-import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
+//import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 import {
   UserMenuContextProvider,
   useUserMenu,
 } from "@blend-ui/floating-user-menu";
 
 //import { Background } from "../assets/background-image";
-import Background from "../assets/background.png";
-import styled from "styled-components";
+//import Background from "../assets/background.png";
+//import styled from "styled-components";
 //import InstalledApps from "../components/InstalledApps";
 //import { ReactComponent as SettingsIcon } from "../assets/settings.svg";
 //import AppIcon from "../components/AppIcon";
@@ -22,28 +22,13 @@ import styled from "styled-components";
 import { useIsMountedRef } from "../lib/componentUtils";
 import { getInstalledAppsQuery } from "../graphql/api";
 import { useAppContext } from "../lib/contextLib";
-import Amplify, { API } from "aws-amplify";
+import Amplify, { API, Auth } from "aws-amplify";
+import { useHistory } from "react-router-dom";
 
-const StyledBox = styled(Box)`
-  /* border-radius: 20px; */
-  height: 100vh;
-  z-index: 1;
-  border: 1px solid #f5f8f7;
-  background-color: ${(props) =>
-    props.colors ? props.colors.baseWhite : "#F5F8F7"};
-`;
-const StyledBackground = styled(Box)`
-  background-image: url(${Background});
-  background-repeat: no-repeat;
-  background-size: cover;
-  /* opacity: 0.3; */
-  width: 100%;
-  height: 631px;
-  z-index: 2;
-  border: 1px solid #f5f8f7;
-  background-color: ${(props) =>
-    props.colors ? props.colors.baseWhite : "#F5F8F7"};
-`;
+import LogoutDialog from "../components/LogoutDialog";
+import { StyledBox, StyledBackground } from "../components/DefaultBackground";
+import { PrifinaLogo } from "../components/PrifinaLogo";
+
 /*
 const importComponent = (name) => {
   console.log("IMPORT ", name);
@@ -61,10 +46,12 @@ const array_chunks = (array, chunk_size) =>
     .map((begin) => array.slice(begin, begin + chunk_size));
 
 const Content = (props) => {
+  const history = useHistory();
   const userMenu = useUserMenu();
   //const theme = useTheme();
   const { APIConfig, currentUser } = useAppContext();
-  Amplify.configure(APIConfig);
+  //Amplify.configure(APIConfig);
+  //console.log("AMPLIFY ", Amplify.configure(), API.configure());
   console.log("CURRENT USER ", currentUser);
 
   const isMountedRef = useIsMountedRef();
@@ -75,6 +62,8 @@ const Content = (props) => {
 
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
   const [installedApps, setInstalledApps] = useState([]);
+
+  // const [logout, setLogout] = useState(true);
   //let installedApps = [];
   /*
   let installedApps = JSON.parse(localStorage.getItem("PrifinaInstalledApps"));
@@ -183,6 +172,7 @@ const Content = (props) => {
     Promise.all(appImports).then((components) => {
       console.log("COMPONENT ", components);
       const appComponents = components.map((Component, i) => {
+        console.log(Component.default.displayName);
         return (
           <div key={"app-" + i}>
             <Component.default />
@@ -238,10 +228,7 @@ const Content = (props) => {
   return (
     <React.Fragment>
       <StyledBox>
-        <Box mt={16}>
-          <PrifinaLogo width={"69px"} height={"27px"} />
-        </Box>
-
+        <PrifinaLogo />
         <StyledBackground>
           {loadingStatus && <div>This may require loading indicator...</div>}
           {!loadingStatus && (
@@ -260,6 +247,11 @@ const Content = (props) => {
                           key={"cell-" + colIndex + "-" + pos}
                           left={installedAppIcons.length - colIndex + 1}
                           top={icons.length - pos}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            console.log("APP CLICK ");
+                            history.replace("/settings");
+                          }}
                         >
                           {appIcon}
                         </CssCell>
@@ -276,11 +268,47 @@ const Content = (props) => {
 };
 
 const Home = (props) => {
+  const history = useHistory();
+  const { userAuth } = useAppContext();
+  const [logout, setLogout] = useState(false);
+
+  const onDialogClose = (e, action) => {
+    //console.log("CLOSE ", e, action);
+    setLogout(false);
+    e.preventDefault();
+  };
+  const onDialogClick = async (e, action) => {
+    //console.log("BUTTON ", e, action);
+    setLogout(false);
+    if (action === "logout") {
+      console.log("LOGOUT...");
+      try {
+        //console.log("LOGOUT...");
+        setLogout(true);
+
+        await Auth.signOut({ global: true });
+        userAuth(false);
+        history.replace("/");
+      } catch (e) {
+        console.log("error signing out: ", e);
+      }
+    }
+    e.preventDefault();
+  };
   const logOut = () => {
-    console.log("LOGOUT...");
+    //console.log("LOGOUT...");
+    setLogout(true);
   };
   return (
-    <UserMenuContextProvider onExit={logOut}>
+    <UserMenuContextProvider
+      onExit={logOut}
+      onHome={() => {
+        console.log("HOME CLICK...");
+      }}
+    >
+      {logout && (
+        <LogoutDialog onClose={onDialogClose} onButtonClick={onDialogClick} />
+      )}
       <Content />
     </UserMenuContextProvider>
   );

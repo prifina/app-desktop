@@ -58,6 +58,7 @@ async function initAuth(newAuth = false) {
 function App() {
   //const history = useHistory();
   console.log("APP START");
+
   //console.log(JSON.stringify(countryList()));
   //window.matchMedia('(max-width: 600px)');
   const userAgent =
@@ -95,6 +96,8 @@ function App() {
       try {
         //await Auth.currentSession();
         // console.log("AUTH CHECK ", isAuthenticating);
+        // check if config exists...
+        //console.log("AMPLIFY ", Amplify.configure(), Auth.configure());
         const _currentSession = await initAuth(false);
         //console.log("AUTH ", Auth);
         //const _currentSession = await Auth.currentSession();
