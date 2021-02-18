@@ -868,7 +868,7 @@ const CreateAccount = (props) => {
               defaultValue={state.passwordConfirm.value}
               onChange={(e) => {
                 handleChange(e);
-                //checkConfirmPassword(e.target.value, false);
+                checkConfirmPassword(e.target.value, false);
               }}
               error={
                 state.accountPassword.status || state.passwordConfirm.status
