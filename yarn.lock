@@ -2486,10 +2486,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blend-ui/core@1.1.54-alpha.0":
-  version "1.1.54-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.54-alpha.0.tgz#48d08d13e777d73d2af171e1ef6af68bcb3b084d"
-  integrity sha512-XUTaCFlsqgK4r4siREzhVHKjtAZxUR9nuZOjH6QFuBDC1U+S/xfwDc3G1f6K0HZK8kufGjpWOBfs9eDPgkdwig==
+"@blend-ui/core@1.1.55-alpha.0":
+  version "1.1.55-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.55-alpha.0.tgz#c48e4d1caaead41f66ca16ba9ebe52664480f2e6"
+  integrity sha512-6t3TBfGKfvDFuGAQtJQarg7NQGr78eLeqcEujWDNemr1ZUrMqutK0GxLG2OZereqgxzGjd4fh7jEyqfxGISJIg==
   dependencies:
     "@blend-ui/icons" "^1.1.6-alpha.0"
     "@popperjs/core" "^2.5.3"
@@ -2507,10 +2507,10 @@
     styled-css-grid "^1.2.1"
     styled-system "^5.1.5"
 
-"@blend-ui/floating-user-menu@0.0.13-alpha.0":
-  version "0.0.13-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/floating-user-menu/-/floating-user-menu-0.0.13-alpha.0.tgz#34083678820d88bdf670e2b299645b80cec96ec5"
-  integrity sha512-0NIAjA0EXqxoKWko98MWymdtEqI4JZjfUq1Asw6Qe4jgxMjAYEVsDmLqIJTaFL+VJm5SOu3TN8/AwUxYPctmSA==
+"@blend-ui/floating-user-menu@0.0.14-alpha.0":
+  version "0.0.14-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/floating-user-menu/-/floating-user-menu-0.0.14-alpha.0.tgz#5a62ab04fceb9fd3489ab4955b4496a348afbedf"
+  integrity sha512-lIuapUxv36p6dQteGGSIkfbmtgSS6gKa6FoSarlAfPIupK1m0QKqzzUa08GWiutnAQPJJDJe7dqQh6s5OOms0w==
   dependencies:
     "@reach/auto-id" "^0.12.1"
 

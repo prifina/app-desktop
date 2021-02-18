@@ -20,7 +20,7 @@ import {
   hasNonChars,
   digitChars,
 } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+import { useFocus } from "../lib/componentUtils";
 import i18n from "../lib/i18n";
 import config from "../config";
 
@@ -56,8 +56,8 @@ const Login = ({ onAction, ...props }) => {
     status: false,
     msg: "Error message",
   });
-  const [inputUsername, setInputUsernameFocus] = UseFocus();
-  const [inputPassword, setInputPasswordFocus] = UseFocus();
+  const [inputUsername, setInputUsernameFocus] = useFocus();
+  const [inputPassword, setInputPasswordFocus] = useFocus();
 
   const [invalidLogin, setInvalidLogin] = useState(0);
   const [confirmCode, setConfirmCode] = useState(false);

@@ -8,7 +8,7 @@ import { BlendIcon } from "@blend-ui/icons";
 import styled from "styled-components";
 import { space } from "styled-system";
 import { useId } from "@reach/auto-id";
-//import { UseFocus } from "../lib/componentUtils";
+//import { useFocus } from "../lib/componentUtils";
 
 const StyledBox = styled(Box)`
   ${space}

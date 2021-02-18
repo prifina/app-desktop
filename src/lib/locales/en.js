@@ -11,6 +11,7 @@ const strings = {
     confirmButton: "Confirm",
     loginButton: "Login",
     logoutButton: "Logout",
+    registerButton: "Register",
     loginLink: "Login",
     /* Create account */
     invalidEntry: "Value is required",

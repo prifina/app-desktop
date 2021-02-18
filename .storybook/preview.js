@@ -5,7 +5,7 @@ import { addDecorator, addParameters } from "@storybook/react";
 import { ThemeProvider } from "@blend-ui/core";
 
 const themeProviderDecorator = (story) => (
-  <ThemeProvider>
+  <ThemeProvider mobileApp={true}>
     <React.Fragment>{story()}</React.Fragment>
   </ThemeProvider>
 );

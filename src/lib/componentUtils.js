@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 
 // Gneral Focus Hook
-export const UseFocus = () => {
+export const useFocus = () => {
   const htmlElRef = useRef(null);
   const setFocus = () => {
     htmlElRef.current && htmlElRef.current.focus();

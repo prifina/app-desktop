@@ -24,7 +24,7 @@ import {
   isValidNumber,
   countryList,
 } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+import { useFocus } from "../lib/componentUtils";
 import config from "../config";
 import { checkUsernameQuery } from "../graphql/api";
 import Amplify, { API } from "aws-amplify";
@@ -118,13 +118,13 @@ const CreateAccount = ({ onAction, ...props }) => {
     }
   );
 
-  const [inputSelect, setSelectFocus] = UseFocus();
-  const [inputUsername, setInputUsernameFocus] = UseFocus();
-  const [inputEmail, setInputEmailFocus] = UseFocus();
-  const [inputPhone, setInputPhoneFocus] = UseFocus();
-  const [inputPassword, setInputPasswordFocus] = UseFocus();
-  const [inputFirstname, setInputFirstnameFocus] = UseFocus();
-  const [inputLastname, setInputLastnameFocus] = UseFocus();
+  const [inputSelect, setSelectFocus] = useFocus();
+  const [inputUsername, setInputUsernameFocus] = useFocus();
+  const [inputEmail, setInputEmailFocus] = useFocus();
+  const [inputPhone, setInputPhoneFocus] = useFocus();
+  const [inputPassword, setInputPasswordFocus] = useFocus();
+  const [inputFirstname, setInputFirstnameFocus] = useFocus();
+  const [inputLastname, setInputLastnameFocus] = useFocus();
 
   const [addPopper, setAddPopper] = useState(false);
   const onPopper = (e, status) => {

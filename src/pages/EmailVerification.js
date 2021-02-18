@@ -8,7 +8,8 @@ import ProgressContainer from "../components/ProgressContainer";
 import { useFormFields } from "../lib/formFields";
 
 import { onlyDigitChars } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+
+import { useFocus } from "../lib/componentUtils";
 import Amplify, { API } from "aws-amplify";
 import { useAppContext } from "../lib/contextLib";
 import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
@@ -31,7 +32,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
   const [verificationFields, handleChange] = useFormFields({
     verificationCode: "",
   });
-  const [inputCode, setInputCodeFocus] = UseFocus();
+  const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
   // const [toastSuccess, setToastSuccess] = useState({ status: false, msg: "" });
   // const [toastError, setToastError] = useState({ status: false, msg: "" });

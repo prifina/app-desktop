@@ -20,7 +20,8 @@ import {
   hasNonChars,
   digitChars,
 } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+
+import { useFocus } from "../lib/componentUtils";
 import i18n from "../lib/i18n";
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
@@ -67,8 +68,8 @@ const Login = ({ onAction, ...props }) => {
     status: false,
     msg: "Error message",
   });
-  const [inputUsername, setInputUsernameFocus] = UseFocus();
-  const [inputPassword, setInputPasswordFocus] = UseFocus();
+  const [inputUsername, setInputUsernameFocus] = useFocus();
+  const [inputPassword, setInputPasswordFocus] = useFocus();
 
   const [invalidLogin, setInvalidLogin] = useState(0);
   const [confirmCode, setConfirmCode] = useState(false);
@@ -147,14 +148,14 @@ CODE_DELIVERY_DESTINATION: "+********7102"
     }
     return userMsg;
   };
-  const checkPassword = (password) => {
+  const checkPassword = (password, onBlur = false) => {
     //const userState = validUsername(username, config.usernameLength);
     //config.passwordLength
     let checkResult = false;
     //const password = e.target.value;
 
-    if (password.length < config.passwordLength) {
-      checkResult = false;
+    if (password.length < config.passwordLength && !onBlur) {
+      checkResult = true;
     } else if (!(lowerCaseChars(password) && upperCaseChars(password))) {
       checkResult = true;
     } else if (
@@ -329,7 +330,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                 }}
                 onBlur={(e) => {
-                  const passwordError = checkPassword(e.target.value);
+                  const passwordError = checkPassword(e.target.value, true);
                   if (passwordError) {
                     const errorMsg = i18n.__("passwordQuality");
                     if (

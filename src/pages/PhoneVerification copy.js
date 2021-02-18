@@ -8,7 +8,7 @@ import ProgressContainer from "../components/ProgressContainer";
 import { useFormFields } from "../lib/formFields";
 
 import { onlyDigitChars } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+import { useFocus } from "../lib/componentUtils";
 import Amplify, { API } from "aws-amplify";
 import { useAppContext } from "../lib/contextLib";
 //import { verifyCodeMutation } from "../graphql/api";
@@ -34,7 +34,7 @@ const PhoneVerification = ({
   const [verificationFields, _handleChange] = useFormFields({
     verificationCode: "",
   });
-  const [inputCode, setInputCodeFocus] = UseFocus();
+  const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
   const checkInput = (code) => {

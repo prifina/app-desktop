@@ -8,7 +8,8 @@ import ProgressContainer from "../components/ProgressContainer";
 import { useFormFields } from "../lib/formFields";
 
 import { onlyDigitChars } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+
+import { useFocus } from "../lib/componentUtils";
 import { useHistory } from "react-router-dom";
 import { useToast } from "@blend-ui/toast";
 import i18n from "../lib/i18n";
@@ -26,7 +27,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
   const [confirmationFields, handleChange] = useFormFields({
     confirmationCode: "",
   });
-  const [inputCode, setInputCodeFocus] = UseFocus();
+  const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
   const checkInput = (code) => {

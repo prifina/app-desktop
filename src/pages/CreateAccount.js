@@ -27,7 +27,8 @@ import {
   lowerCaseChars,
   addRegionCode,
 } from "../lib/utils";
-import { UseFocus } from "../lib/componentUtils";
+
+import { useFocus } from "../lib/componentUtils";
 import config from "../config";
 import {
   checkUsernameQuery,
@@ -165,13 +166,13 @@ const CreateAccount = (props) => {
     }
   );
 
-  const [inputSelect, setSelectFocus] = UseFocus();
-  const [inputUsername, setInputUsernameFocus] = UseFocus();
-  const [inputEmail, setInputEmailFocus] = UseFocus();
-  const [inputPhone, setInputPhoneFocus] = UseFocus();
-  const [inputPassword, setInputPasswordFocus] = UseFocus();
-  const [inputFirstname, setInputFirstnameFocus] = UseFocus();
-  const [inputLastname, setInputLastnameFocus] = UseFocus();
+  const [inputSelect, setSelectFocus] = useFocus();
+  const [inputUsername, setInputUsernameFocus] = useFocus();
+  const [inputEmail, setInputEmailFocus] = useFocus();
+  const [inputPhone, setInputPhoneFocus] = useFocus();
+  const [inputPassword, setInputPasswordFocus] = useFocus();
+  const [inputFirstname, setInputFirstnameFocus] = useFocus();
+  const [inputLastname, setInputLastnameFocus] = useFocus();
 
   const [addPopper, setAddPopper] = useState(false);
   const onPopper = (e, status) => {
@@ -356,8 +357,10 @@ const CreateAccount = (props) => {
     } else if (state.lastName.status) {
       setInputLastnameFocus();
     } else if (state.phoneNumber.status) {
+      //console.log("PHONE NUM FAILED...");
       setInputPhoneFocus();
     } else {
+      //console.log("ALL GOOD...");
       return true;
     }
     if (!alerts.check().some((alert) => alert.message === errorMsg))
@@ -475,6 +478,7 @@ const CreateAccount = (props) => {
         if (["firstName", "lastName"].indexOf(id) > -1) {
           fld.status = event.target.value.length === 0;
         }
+        /*
         if (id === "passwordConfirm") {
           const cPassword = event.target.value;
           const confirmStatus = state.accountPassword.value === cPassword;
@@ -493,6 +497,7 @@ const CreateAccount = (props) => {
             setNextDisabled(false);
           }
         }
+        */
         console.log("CHANGE ID ", id, fld);
         setState({
           [id]: fld,
@@ -613,6 +618,20 @@ const CreateAccount = (props) => {
 */
   };
 
+  const passwordCheck = (password) => {
+    const passwordCheckResult = checkInputPassword(password);
+    const passwordError = checkPasswordQuality(passwordCheckResult);
+    if (passwordError) {
+      const errorMsg = i18n.__("passwordQuality");
+      if (!alerts.check().some((alert) => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      //e.preventDefault();
+      return false;
+    } else {
+      //setAddPopper(false);
+      return true;
+    }
+  };
   const accountContext = { nextStepAction, currentUser, state };
   return (
     <AccountContext.Provider value={accountContext}>
@@ -670,6 +689,11 @@ const CreateAccount = (props) => {
                 error={state.username.status}
                 ref={inputUsername}
                 defaultValue={state.username.value}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    checkUsername(e.target.value, true);
+                  }
+                }}
               />
             </IconField>
           </Box>
@@ -690,6 +714,11 @@ const CreateAccount = (props) => {
                 ref={inputEmail}
                 onBlur={(e) => checkEmail(e.target.value, true)}
                 defaultValue={state.email.value}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    checkEmail(e.target.value, true);
+                  }
+                }}
               />
             </IconField>
           </Box>
@@ -748,6 +777,11 @@ const CreateAccount = (props) => {
                     checkPhone(state.regionCode, e.target.value, true);
                   }
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    checkPhone(state.regionCode, e.target.value, true);
+                  }
+                }}
                 //onBlur={(e) => checkInputField("phone", e)}
 
                 /* disabled={regionCode === "000"} */
@@ -776,6 +810,7 @@ const CreateAccount = (props) => {
                 handleChange(e);
                 /* check password popup */
                 checkInputPassword(e.target.value);
+                /*
                 console.log(
                   "PASSWORD CHANGE ",
                   state,
@@ -786,6 +821,7 @@ const CreateAccount = (props) => {
                   e.target.id,
                   document.activeElement.id
                 );
+                */
                 if (
                   state.phoneNumber.value !==
                   document.getElementById("phoneNumber").value
@@ -799,19 +835,22 @@ const CreateAccount = (props) => {
               defaultValue={state.accountPassword.value}
               error={state.accountPassword.status}
               onBlur={(e) => {
-                const passwordCheckResult = checkInputPassword(e.target.value);
-                const passwordError = checkPasswordQuality(passwordCheckResult);
-                if (passwordError) {
-                  const errorMsg = i18n.__("passwordQuality");
-                  if (
-                    !alerts.check().some((alert) => alert.message === errorMsg)
-                  )
-                    alerts.error(errorMsg, {});
-                  e.preventDefault();
-                } else {
+                if (passwordCheck(e.target.value)) {
                   setAddPopper(false);
+                } else {
+                  console.log("PREVENT BLUR:....");
+                  setInputPasswordFocus();
+                  e.preventDefault();
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (passwordCheck(e.target.value)) {
+                    setAddPopper(false);
+                  }
+                }
+              }}
+              autoComplete="new-password"
             />
           </Box>
           <Box mt={28}>
@@ -834,6 +873,30 @@ const CreateAccount = (props) => {
               error={
                 state.accountPassword.status || state.passwordConfirm.status
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const cPassword = e.target.value;
+                  const confirmStatus =
+                    state.accountPassword.value === cPassword;
+                  if (
+                    (!confirmStatus &&
+                      cPassword.length >= config.passwordLength) ||
+                    (!confirmStatus && !nextDisabled)
+                  ) {
+                    const errorMsg = i18n.__("invalidPassword");
+                    setNextDisabled(true);
+
+                    if (
+                      !alerts
+                        .check()
+                        .some((alert) => alert.message === errorMsg)
+                    )
+                      alerts.error(errorMsg, {});
+                  } else {
+                    setNextDisabled(false);
+                  }
+                }
+              }}
               autoComplete="new-password"
             />
           </Box>
@@ -845,6 +908,7 @@ const CreateAccount = (props) => {
                 Promise.all(nextButtonClick()).then((res) => {
                   console.log("PROMISE ", res);
                   let checkResult = true;
+
                   if (
                     typeof res[1].data !== "undefined" &&
                     res[1].data.checkUsername
@@ -876,6 +940,10 @@ const CreateAccount = (props) => {
                       phoneNumber: { ...state.phoneNumber, status: false },
                     });
                   }
+                  // next check failed, possible password condition reason...
+                  if (checkResult && !res[0]) {
+                    checkResult = false;
+                  }
 
                   if (checkResult) {
                     console.log("NEXT....", currentUser);
@@ -905,6 +973,7 @@ const CreateAccount = (props) => {
                     setCurrentUser(_currentUser);
 
                     if (!state.termsAccepted) {
+                      //console.log("STEP 1");
                       setRegisterStep(1);
                     } else {
                       if (
@@ -912,18 +981,21 @@ const CreateAccount = (props) => {
                         !emailVerified
                       ) {
                         setRegisterStep(2);
+                        //console.log("STEP 2");
                       }
                       if (
                         state.phoneVerified !== _currentUser.phone_number ||
                         !phoneVerified
                       ) {
                         setRegisterStep(3);
+                        //console.log("STEP 3");
                       }
                       if (
                         state.emailVerified !== "" &&
                         state.phoneVerified !== ""
                       ) {
                         setRegisterStep(4);
+                        //console.log("STEP 4");
                       }
                     }
                   }
