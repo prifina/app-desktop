@@ -1,6 +1,6 @@
 {
   "name": "app-desktop",
-  "version": "0.1.19-alpha.0",
+  "version": "0.1.20-alpha.0",
   "private": true,
   "dependencies": {
     "@blend-ui/core": "1.1.57-alpha.0",
