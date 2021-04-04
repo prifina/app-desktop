@@ -1,9 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
 
 const NotFoundPage = () => (
   <div>
-    404 - <Link to="/">Home</Link>
+    404 - <a href={"/"}>Home</a>
   </div>
 );
 

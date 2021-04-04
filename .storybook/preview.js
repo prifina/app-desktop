@@ -4,14 +4,17 @@ import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
 import { addDecorator, addParameters } from "@storybook/react";
 import { ThemeProvider } from "@blend-ui/core";
 
-const themeProviderDecorator = (story) => (
-  <ThemeProvider mobileApp={true}>
-    <React.Fragment>{story()}</React.Fragment>
-  </ThemeProvider>
-);
+//import { PrifinaProvider } from "@prifina/hooks";
 
+const themeProviderDecorator = (story) => (
+  <ThemeProvider mobileApp={false}>{story()}</ThemeProvider>
+);
+//<React.Fragment>{story()}</React.Fragment>
 addDecorator(themeProviderDecorator);
 /*
+<ThemeProvider mobileApp={false}>
+    <PrifinaProvider>{story()}</PrifinaProvider>
+  </ThemeProvider>
 const customViewports = {
   iPhoneX: {
     name: "iPhone X",

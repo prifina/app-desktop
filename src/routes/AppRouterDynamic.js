@@ -5,18 +5,18 @@ import NotFoundPage from "../components/NotFoundPage";
 
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
-import AppliedRoute from "./AppliedRoute";
+//import AppliedRoute from "./AppliedRoute";
 
 //const Dashboard = React.lazy(() => import("../components/Dashboard"));
 //const Login = React.lazy(() => import("../components/Login"));
 const Home = React.lazy(() => import("../pages/Home"));
 
-const Settings = React.lazy(() => import("../pages/Settings"));
+//const Settings = React.lazy(() => import("../pages/Settings"));
 const Logout = React.lazy(() => import("../pages/Logout"));
-
+import { CoreApps } from "../components/CoreApps";
 import Landing from "../pages/Landing";
 
-export default () => (
+export default props => (
   <React.Suspense fallback={"Loading routing..."}>
     <Switch>
       {/* 
@@ -27,12 +27,17 @@ export default () => (
         <Home />
       </AppliedRoute>
       */}
+      <AuthenticatedRoute path="/core/:app" exact>
+        <CoreApps {...props} />
+      </AuthenticatedRoute>
       <AuthenticatedRoute path="/home" exact>
         <Home />
       </AuthenticatedRoute>
+      {/* 
       <AuthenticatedRoute path="/settings" exact>
         <Settings />
       </AuthenticatedRoute>
+      */}
       <AuthenticatedRoute path="/" exact>
         <Home />
       </AuthenticatedRoute>

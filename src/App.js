@@ -65,8 +65,8 @@ function App() {
     typeof window.navigator === "undefined" ? "" : navigator.userAgent;
   const mobile = Boolean(
     userAgent.match(
-      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
-    )
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i,
+    ),
   );
 
   console.log("USER AGENT MOBILE", mobile);
@@ -86,7 +86,7 @@ function App() {
       isAuthenticating: true,
       currentUser: {},
       isAuthenticated: false,
-    }
+    },
   );
 
   useEffect(() => {
@@ -113,8 +113,10 @@ function App() {
             organization: token["custom:organization"] || "",
             given_name: token["given_name"],
             client: token["aud"],
+            prifinaID: token["custom:prifina"],
           };
         }
+        //const prifinaID = session.idToken.payload["custom:prifina"];
         setState({
           isAuthenticating: false,
           currentUser: _currentUser,
@@ -136,7 +138,7 @@ function App() {
     onLoad();
   }, [state.isAuthenticated]);
 
-  const userAuth = (auth) => {
+  const userAuth = auth => {
     setState({ isAuthenticated: auth });
   };
 

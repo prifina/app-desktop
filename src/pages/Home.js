@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState, useRef } from "react";
 //import { useTheme } from "@blend-ui/core";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
@@ -20,7 +20,7 @@ import {
 //import AppIcon from "../components/AppIcon";
 //import ImportComponent from "../components/ImportComponent";
 import { useIsMountedRef } from "../lib/componentUtils";
-import { getInstalledAppsQuery } from "../graphql/api";
+import { getInstalledAppsQuery, getPrifinaAppsQuery } from "../graphql/api";
 import { useAppContext } from "../lib/contextLib";
 import Amplify, { API, Auth } from "aws-amplify";
 import { useHistory } from "react-router-dom";
@@ -43,9 +43,9 @@ const array_chunks = (array, chunk_size) =>
   Array(Math.ceil(array.length / chunk_size))
     .fill()
     .map((_, index) => index * chunk_size)
-    .map((begin) => array.slice(begin, begin + chunk_size));
+    .map(begin => array.slice(begin, begin + chunk_size));
 
-const Content = (props) => {
+const Content = props => {
   const history = useHistory();
   const userMenu = useUserMenu();
   //const theme = useTheme();
@@ -57,9 +57,10 @@ const Content = (props) => {
   const isMountedRef = useIsMountedRef();
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
-    { appIcons: [], loadingStatus: true }
+    { appIcons: [], loadingStatus: true },
   );
 
+  const prifinaApps = useRef({});
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
   const [installedApps, setInstalledApps] = useState([]);
 
@@ -83,15 +84,35 @@ const Content = (props) => {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await getInstalledAppsQuery(API, currentUser.username);
       if (isMountedRef.current) {
+        const prifinaAppsData = await getPrifinaAppsQuery(API, "APPS");
+        console.log(prifinaApps);
+        const prifinaAppsJSON = JSON.parse(
+          prifinaAppsData.data.getPrifinaApp.apps,
+        );
+        /*
+        {
+          "data": {
+            "getPrifinaApp": {
+              "apps": "{\"SmartSearch\":{\"route\":\"\"},\"DisplayApp\":{\"route\":\"core/display-app\"},\"ProfileCards\":{\"route\":\"\"},\"AppMarket\":{\"route\":\"\"},\"DataConsole\":{\"route\":\"\"},\"Settings\":{\"route\":\"core/settings\"},\"DevConsole\":{\"route\":\"\"}}"
+            }
+          }
+        }
+*/
+        const res = await getInstalledAppsQuery(API, currentUser.prifinaID);
         console.log("INSTALLED APPS  ", res.data.getPrifinaUser);
-        setInstalledApps(JSON.parse(res.data.getPrifinaUser.installedApps));
+        const installedAppsJSON = JSON.parse(
+          res.data.getPrifinaUser.installedApps,
+        );
+        installedAppsJSON.forEach(app => {
+          prifinaApps.current[app] = prifinaAppsJSON[app];
+        });
+        setInstalledApps(installedAppsJSON);
       }
     }
 
     fetchData();
-  }, [isMountedRef, currentUser.username]);
+  }, [isMountedRef, currentUser.prifinaID]);
 
   useEffect(() => {
     userMenu.show({
@@ -165,25 +186,29 @@ const Content = (props) => {
 
   //const Component = ImportComponent("./SettingsIcon");
   useEffect(() => {
-    const appImports = installedApps.map((app) => {
-      return import(`../components/${app}Icon`);
-    });
-
-    Promise.all(appImports).then((components) => {
-      console.log("COMPONENT ", components);
-      const appComponents = components.map((Component, i) => {
-        console.log(Component.default.displayName);
-        return (
-          <div key={"app-" + i}>
-            <Component.default />
-          </div>
-        );
+    if (installedApps.length > 0) {
+      const appImports = installedApps.map(app => {
+        return import(`../components/${app}Icon`);
       });
-      //console.log(appComponents);
-      console.log("IMPORT APP ICONS...", appComponents);
-      setState({ loadingStatus: false, appIcons: appComponents });
-    });
 
+      Promise.all(appImports).then(components => {
+        console.log("COMPONENT ", components);
+        const appComponents = components.map((Component, i) => {
+          console.log("COMPONENT NAME ", Component.default.displayName);
+          return {
+            component: (
+              <div key={"app-" + i}>
+                <Component.default />
+              </div>
+            ),
+            name: Component.default.displayName,
+          };
+        });
+        //console.log(appComponents);
+        console.log("IMPORT APP ICONS...", appComponents);
+        setState({ loadingStatus: false, appIcons: appComponents });
+      });
+    }
     // Spread operator, wrapper function (recommended)
     // setSearches(searches => [...searches, query])
     // Using .concat(), wrapper function (recommended)
@@ -194,7 +219,7 @@ const Content = (props) => {
   console.log("APP ICONS ", appIcons, appIcons.length * 100);
   // window.innerHeight-130  (130 is from top)
   const iconCols = Math.ceil(
-    (appIcons.length * 115) / (window.innerHeight - 130)
+    (appIcons.length * 115) / (window.innerHeight - 130),
   );
 
   let gridCols = "1fr";
@@ -214,9 +239,10 @@ const Content = (props) => {
       return v * 115 > window.innerHeight - 130;
     })[0];
   console.log("maxColHeight... ", maxColHeight - 1);
+  console.log("CHECK ", appIcons.length > 0, installedAppIcons.length === 0);
   if (isNaN(maxColHeight)) maxColHeight = appIcons.length;
   if (appIcons.length > 0 && installedAppIcons.length === 0) {
-    console.log("UPDATE THIS ");
+    //console.log("UPDATE THIS ", appIcons);
     setInstalledAppIcons(array_chunks(appIcons, maxColHeight - 1));
     //console.log(installedAppIcons);
   }
@@ -225,6 +251,7 @@ const Content = (props) => {
       console.log(v, i);
     });
   }
+  console.log("APPS ", prifinaApps.current);
   return (
     <React.Fragment>
       <StyledBox>
@@ -242,6 +269,7 @@ const Content = (props) => {
                 {installedAppIcons.length > 0 &&
                   installedAppIcons.map((icons, colIndex) => {
                     return icons.map((appIcon, pos) => {
+                      //console.log("RENDER ", appIcon);
                       return (
                         <CssCell
                           key={"cell-" + colIndex + "-" + pos}
@@ -249,11 +277,16 @@ const Content = (props) => {
                           top={icons.length - pos}
                           style={{ cursor: "pointer" }}
                           onClick={() => {
-                            console.log("APP CLICK ");
-                            history.replace("/settings");
+                            console.log(
+                              "APP CLICK ",
+                              prifinaApps.current[appIcon.name].route,
+                            );
+                            history.replace(
+                              "/" + prifinaApps.current[appIcon.name].route,
+                            );
                           }}
                         >
-                          {appIcon}
+                          {appIcon.component}
                         </CssCell>
                       );
                     });
@@ -267,7 +300,7 @@ const Content = (props) => {
   );
 };
 
-const Home = (props) => {
+const Home = props => {
   const history = useHistory();
   const { userAuth } = useAppContext();
   const [logout, setLogout] = useState(false);

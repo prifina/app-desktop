@@ -1,3 +1,22 @@
+export const getPrifinaUser = `query prifinaUser($id:String!){
+        getPrifinaUser(id: $id) {
+          installedApps
+          installedWidgets
+        }
+      }`;
+
+export const getPrifinaWidgets = `query prifinaWidgets {
+        getPrifinaApp(id: "WIDGETS") {
+          widgets
+        }
+      }`;
+
+export const getPrifinaApps = `query prifinaApps {
+  getPrifinaApp(id: "APPS") {
+    apps
+  }
+}`;
+
 export const getInstalledApps = `query getPrifinaUser($id: String!) {
   getPrifinaUser(id: $id) {
     installedApps
@@ -23,6 +42,17 @@ export const getVerification = `query getVerification($user_code: String!) {
 
 export const getCountryCode = `query getCountryCode {
   getCountryCode
+}
+`;
+export const getHeader = `query getHeader {
+  getHeader {
+    country
+    desktop
+    language
+    smarttv
+    mobile
+    tablet
+  }
 }
 `;
 

@@ -37,10 +37,9 @@ i18n.init();
 const StyledBox = styled(Box)`
   /* border-radius: 20px; */
   border: 1px solid #f5f8f7;
-  background-color: ${(props) =>
+  background-color: ${props =>
     props.colors ? props.colors.baseWhite : "#F5F8F7"};
 `;
-
 const StyledBackground = styled(Box)`
   background-image: url(${Background});
   background-repeat: no-repeat;
@@ -62,7 +61,7 @@ const StyledPlate = styled(Box)`
   border-left: 1px solid rgba(255, 255, 255, 0); // chrome bug of showing border on transparent image
 `;
 
-const Landing = (props) => {
+const Landing = props => {
   console.log("LANDING ", props);
   const history = useHistory();
   const { isAuthenticated, mobileApp } = useAppContext();
@@ -103,7 +102,7 @@ const Landing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initStep]);
 
-  const finalStep = (currentUser) => {
+  const finalStep = currentUser => {
     setAccountFields(currentUser);
     setStepCounter(7);
   };

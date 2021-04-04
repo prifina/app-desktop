@@ -4,6 +4,9 @@ import {
   getCountryCode,
   checkCognitoAttribute,
   getInstalledApps,
+  getPrifinaApps,
+  getPrifinaWidgets,
+  getPrifinaUser,
 } from "./queries";
 import { verifyCode, sendVerification } from "./mutations";
 
@@ -33,13 +36,18 @@ export const getVerificationQuery = (API, userCode) => {
   });
 };
 
-export const getCountryCodeQuery = (API) => {
+export const getCountryCodeQuery = API => {
   return API.graphql({
     query: getCountryCode,
     authMode: "AWS_IAM",
   });
 };
-
+export const getHeaderQuery = API => {
+  return API.graphql({
+    query: getHeader,
+    authMode: "AWS_IAM",
+  });
+};
 export const checkUsernameQuery = (API, userName) => {
   return API.graphql({
     query: checkUsername,
@@ -52,7 +60,7 @@ export const checkCognitoAttributeQuery = (
   API,
   attrName,
   attrValue,
-  poolID
+  poolID,
 ) => {
   return API.graphql({
     query: checkCognitoAttribute,
@@ -65,6 +73,30 @@ export const getInstalledAppsQuery = (API, userName) => {
   return API.graphql({
     query: getInstalledApps,
     variables: { id: userName },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const getPrifinaAppsQuery = (API, id) => {
+  return API.graphql({
+    query: getPrifinaApps,
+    variables: { id: id },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const getPrifinaWidgetsQuery = (API, id) => {
+  return API.graphql({
+    query: getPrifinaWidgets,
+    variables: { id: id },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const getPrifinaUserQuery = (API, id) => {
+  return API.graphql({
+    query: getPrifinaUser,
+    variables: { id: id },
     authMode: "AWS_IAM",
   });
 };
