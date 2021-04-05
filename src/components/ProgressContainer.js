@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from "react";
 //import { withTheme } from "styled-components";
 import { Box, Divider, Text, useTheme } from "@blend-ui/core";
@@ -76,6 +77,6 @@ ProgressContainer.propTypes = {
   mobileApp: PropTypes.bool,
   progress: PropTypes.number.isRequired,
 
-  children: PropTypes.elementType.isRequired,
+  children: PropTypes.array.isRequired,
 };
 export default ProgressContainer;

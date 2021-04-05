@@ -3,15 +3,22 @@
 //const PNT = require('google-libphonenumber').PhoneNumberType;
 
 import { pwList } from "./passwords";
+/*
 import {
   PhoneNumberUtil,
   PhoneNumberFormat,
   PhoneNumberType,
 } from "google-libphonenumber";
+*/
 
 //import countries from "../countries";
 
-import { getCountries, getCountryCallingCode } from "libphonenumber-js";
+import {
+  getCountries,
+  getCountryCallingCode,
+  isValid,
+  parsePhoneNumber,
+} from "libphonenumber-js";
 const countries = require("i18n-iso-countries");
 
 // eslint-disable-next-line
@@ -147,12 +154,10 @@ export function addRegionCode(region, phone) {
 }
 
 export function isValidNumber(phoneNumber) {
-  /*  return new Promise(function (resolve, reject) {
-
-    });*/
-  let isValid = false;
+  //let isValid = false;
   let result = {};
   try {
+    /*
     const phoneUtil = PhoneNumberUtil.getInstance();
     const number = phoneUtil.parseAndKeepRawInput(phoneNumber);
     console.log("PhoneUtil ", number);
@@ -172,6 +177,7 @@ export function isValidNumber(phoneNumber) {
         }
       }
     }
+    */
     /*
     console.log(phoneUtil.format(number, PNF.INTERNATIONAL));
     // => +1 202-456-1414
@@ -188,6 +194,17 @@ export function isValidNumber(phoneNumber) {
     PhoneNumberType.UAN
     PhoneNumberType.VOICEMAIL
     PhoneNumberType.UNKNOWN;*/
+
+    const parsedPhoneNumber = parsePhoneNumber(phoneNumber);
+    console.log("PHONE CHECK ", phoneNumber);
+    console.log("PHONE CHECK 2 ", parsedPhoneNumber);
+    if (parsedPhoneNumber.hasOwnProperty("country")) {
+      result = {
+        countryCode: parsedPhoneNumber.country,
+        regionCode: parsedPhoneNumber.countryCallingCode,
+        number: parsedPhoneNumber.number,
+      };
+    }
   } catch (e) {
     console.log("ERR", e);
     return {};

@@ -137,7 +137,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
 PhoneNumberField.propTypes = {
   id: PropTypes.string,
   disabled: PropTypes.bool,
-  children: PropTypes.elementType.isRequired,
+  children: PropTypes.array,
 };
 const SelectField = forwardRef(
   (
@@ -212,7 +212,7 @@ const InputField = forwardRef(
 InputField.propTypes = {
   errorMsg: PropTypes.string,
   promptMsg: PropTypes.string,
-  children: PropTypes.elementType.isRequired,
+  children: PropTypes.array,
 };
 const LeftIcon = styled(props => {
   const { disabled, inputError } = useInputContext();

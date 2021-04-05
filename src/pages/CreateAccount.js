@@ -206,7 +206,7 @@ const CreateAccount = props => {
     setState({ phoneNumber: { ...state.phoneNumber, status: !phoneState } });
   };
 
-  const checkPhone = async (region, phone, onBlur = false) => {
+  const checkPhone = async (region, phone, check = false) => {
     //console.log("FIELDS ", fields);
     console.log(phone, region);
     const errorMsg = i18n.__("invalidPhoneNumber");
@@ -219,7 +219,7 @@ const CreateAccount = props => {
     let phoneState = Object.keys(checkResult).length > 0;
     console.log("PHONE ", checkResult);
 
-    if (phoneState && onBlur) {
+    if (phoneState && check) {
       console.log("CHECKING PHONE NUMBER");
 
       //let phoneNumber = addRegionCode(region, phone);
@@ -275,14 +275,14 @@ const CreateAccount = props => {
     setState({ email: { ...state.email, status: !emailState } });
   };
 
-  const checkEmail = (email, onBlur = false) => {
+  const checkEmail = (email, check = false) => {
     //console.log("FIELDS ", fields);
     let emailState = validEmail(email);
     console.log("EMAIL ", emailState);
 
     const errorMsg = i18n.__("invalidEmail");
 
-    if (emailState && onBlur) {
+    if (emailState && check) {
       console.log("CHECKING EMAIL");
       checkEmailAttr(email).then(res => {
         console.log("EMAIL ATTR CHECK ", res);
@@ -296,7 +296,7 @@ const CreateAccount = props => {
       emailAlert(errorMsg, emailState);
     }
 
-    return onBlur ? emailState : !emailState;
+    return check ? emailState : !emailState;
   };
 
   const userNameAlert = (userError, userMsg) => {
@@ -305,7 +305,7 @@ const CreateAccount = props => {
 
     setState({ username: { ...state.username, status: userError } });
   };
-  const checkUsername = (username, onBlur = false) => {
+  const checkUsername = (username, check = false) => {
     //console.log("FIELDS2 ", fields);
     //console.log(await checkUsernameQuery(API, "tero-test"));
     const userState = validUsername(username, config.usernameLength);
@@ -319,7 +319,7 @@ const CreateAccount = props => {
       userMsg = i18n.__("usernameError2");
     }
     console.log("USER ", username, userError);
-    if (!userError && onBlur) {
+    if (!userError && check) {
       console.log("CHECKING USER");
       checkUsernameQuery(API, username).then(res => {
         if (typeof res.data !== "undefined" && res.data.checkUsername) {
@@ -338,30 +338,39 @@ const CreateAccount = props => {
   const isPasswordPossible = () => {
     const errorMsg = i18n.__("invalidEntry");
     if (state.firstName.value.length === 0) {
+      console.log("check 1");
       setState({ firstName: { ...state.firstName, status: true } });
       setInputFirstnameFocus();
     } else if (state.lastName.value.length === 0) {
+      console.log("check 2");
       setState({ lastName: { ...state.lastName, status: true } });
       setInputLastnameFocus();
     } else if (state.username.value.length === 0) {
+      console.log("check 3");
       setState({ username: { ...state.username, status: true } });
       setInputUsernameFocus();
     } else if (state.email.value.length === 0) {
+      console.log("check 4");
       setState({ email: { ...state.email, status: true } });
       setInputEmailFocus();
     } else if (state.username.status) {
+      console.log("check 5");
       setInputUsernameFocus();
     } else if (state.email.status) {
+      console.log("check 6");
       setInputEmailFocus();
     } else if (state.firstName.status) {
+      console.log("check 7");
       setInputFirstnameFocus();
     } else if (state.lastName.status) {
+      console.log("check 8");
       setInputLastnameFocus();
     } else if (state.phoneNumber.status) {
+      console.log("check 8");
       //console.log("PHONE NUM FAILED...");
       setInputPhoneFocus();
     } else {
-      //console.log("ALL GOOD...");
+      console.log("ALL GOOD...");
       return true;
     }
     if (!alerts.check().some(alert => alert.message === errorMsg))
@@ -548,8 +557,11 @@ const CreateAccount = props => {
     let usernameChecked = false;
 
     if (!isPasswordPossible()) {
+      console.log("CONTROL 1");
       valuesChecked = false;
     } else if (checkConfirmPassword(state.passwordConfirm.value, false)) {
+      console.log("CONTROL 2");
+
       valuesChecked = false;
     } else {
       console.log("PASSWORD CHECKS ");
@@ -567,21 +579,27 @@ const CreateAccount = props => {
     }
 
     if (valuesChecked) {
-      if (!checkUsername(state.username.value)) {
+      if (!checkUsername(state.username.value, false)) {
         usernameChecked = true;
       } else {
+        console.log("CONTROL 3");
+
         valuesChecked = false;
       }
 
-      if (!checkEmail(state.email.value)) {
+      if (!checkEmail(state.email.value, false)) {
         emailChecked = true;
       } else {
+        console.log("CONTROL 4");
+
         valuesChecked = false;
       }
 
-      if (checkPhone(state.regionCode, state.phoneNumber.value)) {
+      if (checkPhone(state.regionCode, state.phoneNumber.value, true)) {
         phoneChecked = true;
       } else {
+        console.log("CONTROL 5");
+
         valuesChecked = false;
       }
     }
@@ -686,7 +704,7 @@ const CreateAccount = props => {
                 id={"username"}
                 name={"username"}
                 onChange={handleChange}
-                onBlur={e => checkUsername(e.target.value, true)}
+                onBlur={e => checkUsername(e.target.value)}
                 error={state.username.status}
                 ref={inputUsername}
                 defaultValue={state.username.value}
@@ -713,7 +731,7 @@ const CreateAccount = props => {
                 promptMsg={state.email.valid ? i18n.__("emailPrompt") : ""}
                 error={state.email.status}
                 ref={inputEmail}
-                onBlur={e => checkEmail(e.target.value, true)}
+                onBlur={e => checkEmail(e.target.value)}
                 defaultValue={state.email.value}
                 onKeyDown={e => {
                   if (e.key === "Enter") {
@@ -775,7 +793,7 @@ const CreateAccount = props => {
                         document.activeElement.id === "passwordConfirm")
                     )
                   ) {
-                    checkPhone(state.regionCode, e.target.value, true);
+                    checkPhone(state.regionCode, e.target.value);
                   }
                 }}
                 onKeyDown={e => {
@@ -795,11 +813,15 @@ const CreateAccount = props => {
               onFocus={e => {
                 //console.log("PASSWORD FOCUES ", state);
                 //console.log("PASS ", e.target.id, document.activeElement.id);
-                if (
-                  isPasswordPossible() &&
-                  (!state.accountPassword.valid ||
-                    state.accountPassword.value.length === 0)
+                const passwordCheckStatus = isPasswordPossible();
+                if (!passwordCheckStatus) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                } else if (
+                  !state.accountPassword.valid ||
+                  state.accountPassword.value.length === 0
                 ) {
+                  console.log("OPEN POPUP ");
                   setAddPopper(true);
                 }
               }}
@@ -836,17 +858,24 @@ const CreateAccount = props => {
               defaultValue={state.accountPassword.value}
               error={state.accountPassword.status}
               onBlur={e => {
-                if (passwordCheck(e.target.value)) {
-                  setAddPopper(false);
+                if (e.target.value.length > 0) {
+                  if (passwordCheck(e.target.value)) {
+                    setAddPopper(false);
+                  } else {
+                    console.log("PREVENT BLUR:....");
+                    setInputPasswordFocus();
+                    e.preventDefault();
+                  }
                 } else {
-                  console.log("PREVENT BLUR:....");
-                  setInputPasswordFocus();
-                  e.preventDefault();
+                  setAddPopper(false);
                 }
               }}
               onKeyDown={e => {
                 if (e.key === "Enter") {
-                  if (passwordCheck(e.target.value)) {
+                  console.log("CHECKING PASSWORD ", e.target.value);
+                  const checkStatus = passwordCheck(e.target.value);
+                  console.log("CHECK STATUS ", checkStatus);
+                  if (checkStatus) {
                     setAddPopper(false);
                   }
                 }
@@ -869,7 +898,7 @@ const CreateAccount = props => {
               defaultValue={state.passwordConfirm.value}
               onChange={e => {
                 handleChange(e);
-                checkConfirmPassword(e.target.value, false);
+                //checkConfirmPassword(e.target.value, false);
               }}
               error={
                 state.accountPassword.status || state.passwordConfirm.status
