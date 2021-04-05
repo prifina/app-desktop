@@ -1,2 +1,7 @@
 
 https://hackernoon.com/how-to-take-screenshots-in-the-browser-using-javascript-l92k3xq7
+
+
+
+// how to add Intl for Safari....
+https://www.npmjs.com/package/intl

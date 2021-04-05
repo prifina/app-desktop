@@ -19,6 +19,7 @@ import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
 import { useToast } from "@blend-ui/toast";
 import { useAccountContext } from "../lib/contextLib";
 
+import PropTypes from "prop-types";
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -35,13 +36,13 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
-  const checkInput = (code) => {
+  const checkInput = code => {
     const checkResult = onlyDigitChars(code);
     //console.log(checkResult);
     let validCode = true;
     if (!checkResult) {
       const errorMsg = i18n.__("codeDigitsError");
-      if (!alerts.check().some((alert) => alert.message === errorMsg))
+      if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
 
       setInputError({ status: true });
@@ -50,7 +51,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
 
     if (code.length > 1 && code.length !== 6) {
       const errorMsg = i18n.__("codeLengthError");
-      if (!alerts.check().some((alert) => alert.message === errorMsg))
+      if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
       setInputError({ status: true });
 
@@ -60,7 +61,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
       setInputError({ status: false, msg: "" });
     }
   };
-  const verifyClick = async (e) => {
+  const verifyClick = async e => {
     try {
       /*
       const result = await verifyCodeMutation(
@@ -95,7 +96,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
       nextStepAction(4);
     }
   };
-  const resendClick = async (e) => {
+  const resendClick = async e => {
     try {
       await sendVerificationMutation(
         API,
@@ -105,7 +106,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
           clientId: currentUser.client,
           phone_number: currentUser.phone_number,
           given_name: currentUser.given_name,
-        })
+        }),
       );
       alerts.info(i18n.__("phoneVerificatioSent"), {});
       /*
@@ -129,17 +130,17 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         clientId: currentUser.client,
         phone_number: currentUser.phone_number,
         given_name: currentUser.given_name,
-      })
+      }),
     )
-      .then((result) => {
+      .then(result => {
         console.log("PHONE SMS RESULT ", result);
         alerts.info(i18n.__("phoneVerificatioSent"), { duration: 10000 });
       })
-      .catch((e) => {
+      .catch(e => {
         console.log("ERR", e);
       });
   }, [currentUser]);
-  const backClickAction = (e) => {
+  const backClickAction = e => {
     nextStepAction(0);
   };
   return (
@@ -170,7 +171,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
                   id={"verificationCode"}
                   name={"verificationCode"}
                   onChange={handleChange}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === "Enter") {
                       checkInput(verificationFields.verificationCode);
                     }
@@ -252,4 +253,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   );
 };
 
+PhoneVerification.propTypes = {
+  invalidLink: PropTypes.string.isRequired,
+};
 export default PhoneVerification;

@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/display-name */
 
@@ -22,6 +23,8 @@ import useFetch from "../../lib/hooks/useFetch";
 import { API_KEY, GOOGLE_URL, SEARCH_ENGINE } from "../../config";
 
 import i18n from "../../lib/i18n";
+
+import PropTypes from "prop-types";
 
 i18n.init();
 
@@ -115,6 +118,11 @@ export const WidgetList = React.memo(({ widgetList, widgetData }) => {
   );
 });
 
+WidgetList.propTypes = {
+  widgetList: PropTypes.array.isRequired,
+  widgetData: PropTypes.array.isRequired,
+};
+
 export const SettingsDialog = ({ widgetSetting, onUpdate, ...props }) => {
   //const currentSettings = widgetSettings[widget];
   console.log("SETTINGS ", widgetSetting);
@@ -161,6 +169,11 @@ export const SettingsDialog = ({ widgetSetting, onUpdate, ...props }) => {
       </Box>
     </Box>
   );
+};
+
+SettingsDialog.propTypes = {
+  widgetSetting: PropTypes.object.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export const SearchBox = forwardRef(
@@ -212,6 +225,12 @@ export const SearchBox = forwardRef(
     );
   },
 );
+SearchBox.propTypes = {
+  showHistory: PropTypes.func.isRequired,
+  chevronOpen: PropTypes.bool.isRequired,
+  searchKey: PropTypes.func.isRequired,
+  searchOpen: PropTypes.bool,
+};
 
 export const SearchResults = props => {
   const { searchBox, searchKey, roleKey } = props;
@@ -263,6 +282,11 @@ export const SearchResults = props => {
     </>
   );
 };
+SearchResults.propTypes = {
+  searchBox: PropTypes.object.isRequired,
+  searchKey: PropTypes.string,
+  roleKey: PropTypes.string,
+};
 
 export const SearchHistory = props => {
   const { searchBox } = props;
@@ -300,4 +324,8 @@ export const SearchHistory = props => {
       </SearchContainer>
     </>
   );
+};
+
+SearchHistory.propTypes = {
+  searchBox: PropTypes.object.isRequired,
 };

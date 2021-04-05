@@ -2,6 +2,8 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { useAppContext } from "../lib/contextLib";
 
+import PropTypes from "prop-types";
+
 function querystring(name, url = window.location.href) {
   name = name.replace(/[[]]/g, "\\$&");
 
@@ -37,3 +39,7 @@ export default function UnauthenticatedRoute({ children, ...rest }) {
     </Route>
   );
 }
+
+UnauthenticatedRoute.propTypes = {
+  children: PropTypes.elementType.isRequired,
+};

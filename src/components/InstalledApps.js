@@ -1,17 +1,20 @@
+/* eslint-disable react/forbid-prop-types */
 import React from "react";
 
-const importComponent = (name) => {
+import PropTypes from "prop-types";
+
+const importComponent = name => {
   console.log("IMPORT ", name);
   return React.lazy(() =>
-    import(`${name}`).catch((err) => {
+    import(`${name}`).catch(err => {
       console.log("ERR ", err);
-    })
+    }),
   );
 };
 
 export const InstalledApps = ({ apps, ...props }) => {
   //const recentApps = ["./AppMarketIcon", "./NewsMuzzlerIcon"];
-  const appIcons = apps.map((app) => {
+  const appIcons = apps.map(app => {
     return importComponent(app);
   });
 
@@ -24,4 +27,8 @@ export const InstalledApps = ({ apps, ...props }) => {
       })}
     </React.Suspense>
   );
+};
+
+InstalledApps.propTypes = {
+  apps: PropTypes.array.isRequired,
 };

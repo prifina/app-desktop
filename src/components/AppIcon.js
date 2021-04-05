@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Text } from "@blend-ui/core";
+import PropTypes from "prop-types";
 
 const AppIcon = ({ title, icon, ...props }) => {
   const Component = icon;
@@ -16,4 +17,8 @@ const AppIcon = ({ title, icon, ...props }) => {
   );
 };
 
+AppIcon.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+};
 export default AppIcon;

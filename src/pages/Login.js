@@ -26,6 +26,7 @@ import i18n from "../lib/i18n";
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
 
+import PropTypes from "prop-types";
 i18n.init();
 /*
 function useIsMountedRef() {
@@ -139,7 +140,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
       }
     }
     if (userMsg !== "") {
-      if (!alerts.check().some((alert) => alert.message === userMsg))
+      if (!alerts.check().some(alert => alert.message === userMsg))
         alerts.error(userMsg, {});
 
       setUsernameError({ status: true });
@@ -179,11 +180,11 @@ CODE_DELIVERY_DESTINATION: "+********7102"
     }
   }, [isMountedRef]);
 */
-  const createAccountClick = (e) => {
+  const createAccountClick = e => {
     history.replace("/register");
     e.preventDefault();
   };
-  const backButtonClick = (e) => {
+  const backButtonClick = e => {
     setConfirmCode(false);
     e.preventDefault();
   };
@@ -215,22 +216,24 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   placeholder={i18n.__("usernamePlaceholder")}
                   id={"username"}
                   name={"username"}
-                  onChange={(e) => {
+                  onChange={e => {
                     //console.log("USER ", e.target.value);
                     handleChange(e);
                   }}
                   ref={inputUsername}
                   error={usernameError.status}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === "Enter") {
                       const userError = checkUsername(e.target.value, true);
                     }
                   }}
-                  onBlur={(e) => {
-                    const userError = checkUsername(e.target.value);
-                    if (userError !== "") {
-                      setInputUsernameFocus();
-                      e.preventDefault();
+                  onBlur={e => {
+                    if (e.target.value.length > 0) {
+                      const userError = checkUsername(e.target.value);
+                      if (userError !== "") {
+                        setInputUsernameFocus();
+                        e.preventDefault();
+                      }
                     }
                   }}
                 />
@@ -261,7 +264,14 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 placeholder={i18n.__("passwordPlaceholder")}
                 id={"password"}
                 name={"password"}
-                onChange={(e) => {
+                onFocus={e => {
+                  if (loginFields.username.length === 0) {
+                    checkUsername("");
+                    setInputUsernameFocus();
+                    e.preventDefault();
+                  }
+                }}
+                onChange={e => {
                   //console.log("PASS ", e.target.value);
                   handleChange(e);
                   /*
@@ -300,7 +310,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                   */
                 }}
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     let errorMsg = "";
                     if (e.target.value.length === 0) {
@@ -315,7 +325,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                       if (
                         !alerts
                           .check()
-                          .some((alert) => alert.message === errorMsg)
+                          .some(alert => alert.message === errorMsg)
                       )
                         alerts.error(errorMsg, {});
                       setPasswordError({
@@ -329,14 +339,12 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                     }
                   }
                 }}
-                onBlur={(e) => {
+                onBlur={e => {
                   const passwordError = checkPassword(e.target.value, true);
                   if (passwordError) {
                     const errorMsg = i18n.__("passwordQuality");
                     if (
-                      !alerts
-                        .check()
-                        .some((alert) => alert.message === errorMsg)
+                      !alerts.check().some(alert => alert.message === errorMsg)
                     )
                       alerts.error(errorMsg, {});
                     setPasswordError({
@@ -400,4 +408,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
   );
 };
 
+Login.propTypes = {
+  onAction: PropTypes.func.isRequired,
+};
 export default Login;

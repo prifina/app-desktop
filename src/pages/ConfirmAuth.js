@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { useState } from "react";
 import { Box, Flex, Button, Text, IconField } from "@blend-ui/core";
 
@@ -13,6 +14,9 @@ import { useFocus } from "../lib/componentUtils";
 import { useHistory } from "react-router-dom";
 import { useToast } from "@blend-ui/toast";
 import i18n from "../lib/i18n";
+
+import PropTypes from "prop-types";
+
 i18n.init();
 
 const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
@@ -30,7 +34,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
-  const checkInput = (code) => {
+  const checkInput = code => {
     const checkResult = onlyDigitChars(code);
     //console.log(checkResult);
     let validCode = true;
@@ -38,7 +42,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       setInputError({ status: true, msg: i18n.__("codeDigitsError") });
       //alerts.error(i18n.__("codeDigitsError"), {});
       const errorMsg = i18n.__("codeDigitsError");
-      if (!alerts.check().some((alert) => alert.message === errorMsg))
+      if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
       validCode = false;
     }
@@ -46,7 +50,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       setInputError({ status: true, msg: i18n.__("codeLengthError") });
       //alerts.error(i18n.__("codeLengthError"), {});
       const errorMsg = i18n.__("codeLengthError");
-      if (!alerts.check().some((alert) => alert.message === errorMsg))
+      if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
       validCode = false;
     }
@@ -54,12 +58,12 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
       setInputError({ status: false, msg: "" });
     }
   };
-  const confirmClick = async (e) => {
+  const confirmClick = async e => {
     try {
       const loggedUser = await authOptions.Auth.confirmSignIn(
         authOptions.user,
         confirmationFields.confirmationCode,
-        "SMS_MFA"
+        "SMS_MFA",
       );
 
       console.log("CONFIRM ", loggedUser);
@@ -76,7 +80,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
         setInputError({ status: true, msg: i18n.__("invalidCode") });
         //alerts.error(i18n.__("invalidCode"), {});
         const errorMsg = i18n.__("invalidCode");
-        if (!alerts.check().some((alert) => alert.message === errorMsg))
+        if (!alerts.check().some(alert => alert.message === errorMsg))
           alerts.error(errorMsg, {});
       }
 
@@ -116,7 +120,7 @@ name: "CodeMismatchException"
                   id={"confirmationCode"}
                   name={"confirmationCode"}
                   onChange={handleChange}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === "Enter") {
                       checkInput(confirmationFields.confirmationCode);
                     }
@@ -153,4 +157,8 @@ name: "CodeMismatchException"
   );
 };
 
+ConfirmAuth.propTypes = {
+  backButton: PropTypes.func.isRequired,
+  authOptions: PropTypes.object.isRequired,
+};
 export default ConfirmAuth;

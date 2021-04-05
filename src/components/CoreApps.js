@@ -21,6 +21,7 @@ import {
 import LogoutDialog from "./LogoutDialog";
 import { useAppContext } from "../lib/contextLib";
 
+import PropTypes from "prop-types";
 //import DisplayApp from "../pages/DisplayApp";
 
 //const DisplayApp = React.lazy(() => import("../pages/DisplayApp"));
@@ -75,6 +76,9 @@ const Content = ({ Component, ...props }) => {
   return <Component {...props} />;
 };
 
+Content.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+};
 export const CoreApps = props => {
   console.log("CORE COMPONENT --->", props);
   const { pathname, search } = useLocation();

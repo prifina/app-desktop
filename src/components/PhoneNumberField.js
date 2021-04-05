@@ -1,3 +1,5 @@
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/no-multi-comp */
 import React, { createRef, forwardRef, createContext, useContext } from "react";
 import { Input, Text, Box, useTheme, SearchSelect } from "@blend-ui/core";
 
@@ -8,27 +10,29 @@ import { BlendIcon } from "@blend-ui/icons";
 import styled from "styled-components";
 import { space } from "styled-system";
 import { useId } from "@reach/auto-id";
+
+import PropTypes from "prop-types";
 //import { useFocus } from "../lib/componentUtils";
 
 const StyledBox = styled(Box)`
   ${space}
   display: flex;
-  height: ${(props) =>
+  height: ${props =>
     props.height
       ? props.height
       : props.theme.componentStyles.input.base.height};
-  background-color: ${(props) =>
+  background-color: ${props =>
     props.disabled
       ? props.theme.colors.text.muted
       : props.theme.componentStyles.input.base.backgroundColor ||
         "transparent"};
-  border: ${(props) =>
+  border: ${props =>
     typeof props.borders !== "undefined"
       ? props.borders
       : props.errorinput
       ? props.theme.borders.input.error
       : props.theme.componentStyles.input.base.border};
-  border-radius: ${(props) =>
+  border-radius: ${props =>
     typeof props.borderRadius !== "undefined"
       ? props.borderRadius
       : props.theme.componentStyles.input.base.borderRadius};
@@ -38,12 +42,12 @@ const StyledBox = styled(Box)`
     outline: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    border: ${(props) => props.theme.borders.input.active};
+    border: ${props => props.theme.borders.input.active};
   }
   /*
   &:disabled {
-    background: ${(props) => props.theme.colors.text.muted};
-    border: ${(props) => props.theme.borders.input.disabled};
+    background: ${props => props.theme.colors.text.muted};
+    border: ${props => props.theme.borders.input.disabled};
     pointer-events: none;
   }
   
@@ -61,13 +65,13 @@ const useInputContext = () => useContext(InputContext);
 
 const PhoneNumberField = ({ children, disabled, id, ...props }) => {
   //console.log("ICON FIELD ", props);
-  const isIcon = (item) => item.type.isIcon || item.type.isIconButton;
+  const isIcon = item => item.type.isIcon || item.type.isIconButton;
   const { colors } = useTheme();
 
   const uuid = useId();
   const _id = id || uuid;
   //console.log("ID ", uuid, _id);
-  const formatIds = (id) => ({
+  const formatIds = id => ({
     select: `search-${id}-select`,
     input: `search-${id}-input`,
   });
@@ -130,6 +134,11 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
   );
 };
 
+PhoneNumberField.propTypes = {
+  id: PropTypes.string,
+  disabled: PropTypes.bool,
+  children: PropTypes.elementType.isRequired,
+};
 const SelectField = forwardRef(
   (
     {
@@ -140,7 +149,7 @@ const SelectField = forwardRef(
       selectOption = "key",
       ...props
     },
-    ref
+    ref,
   ) => {
     const { selectId, boxRef } = useInputContext();
 
@@ -164,9 +173,16 @@ const SelectField = forwardRef(
         {...props}
       />
     );
-  }
+  },
 );
 
+SelectField.propTypes = {
+  options: PropTypes.array,
+  defaultValue: PropTypes.string,
+  searchLength: PropTypes.number,
+  showList: PropTypes.bool,
+  selectOption: PropTypes.string,
+};
 const InputField = forwardRef(
   ({ children, errorMsg, promptMsg, ...props }, ref) => {
     const { disabled, inputId } = useInputContext();
@@ -190,10 +206,15 @@ const InputField = forwardRef(
         paddingRight={theme.sizeOptions[10]}
       />
     );
-  }
+  },
 );
 
-const LeftIcon = styled((props) => {
+InputField.propTypes = {
+  errorMsg: PropTypes.string,
+  promptMsg: PropTypes.string,
+  children: PropTypes.elementType.isRequired,
+};
+const LeftIcon = styled(props => {
   const { disabled, inputError } = useInputContext();
   const theme = useTheme();
   //const { color, ...rest } = props;

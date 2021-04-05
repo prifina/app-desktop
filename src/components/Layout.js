@@ -1,6 +1,10 @@
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/no-multi-comp */
 import React from "react";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 import { useTheme } from "@blend-ui/core";
+
+import PropTypes from "prop-types";
 // eslint-disable-next-line
 const defaultLayout = {
   backgroundColor: "#FFFFFF",
@@ -16,7 +20,7 @@ const defaultLayout = {
   },
 };
 
-const Sidebar = (props) => {
+const Sidebar = props => {
   const { position = "left", children, theme, ...rest } = props;
   //  console.log('SIDEBAR ',props)
   // this is only for left boxShadow={"6px 0px 18px rgba(0, 0, 0, 0.06)"}
@@ -30,7 +34,13 @@ const Sidebar = (props) => {
   );
 };
 
-const Header = (props) => {
+Sidebar.propTypes = {
+  position: PropTypes.string,
+  theme: PropTypes.object,
+  children: PropTypes.elementType.isRequired,
+};
+
+const Header = props => {
   const { children, theme, ...rest } = props;
   //console.log('HEADER ',props);
   return (
@@ -39,12 +49,22 @@ const Header = (props) => {
     </CssCell>
   );
 };
+
+Header.propTypes = {
+  theme: PropTypes.object,
+  children: PropTypes.elementType.isRequired,
+};
 const Footer = ({ children, theme, ...props }) => (
   <CssCell area="footer" {...props}>
     {children}
   </CssCell>
 );
-const Content = (props) => {
+
+Footer.propTypes = {
+  theme: PropTypes.object,
+  children: PropTypes.elementType.isRequired,
+};
+const Content = props => {
   const { children, theme, ...rest } = props;
   //console.log('CONTENT ',props)
   return (
@@ -52,6 +72,11 @@ const Content = (props) => {
       {children}
     </CssCell>
   );
+};
+
+Content.propTypes = {
+  theme: PropTypes.object,
+  children: PropTypes.elementType.isRequired,
 };
 Footer.displayName = "LayoutFooter";
 Header.displayName = "LayoutHeader";
@@ -107,7 +132,7 @@ const Layout = ({ children, theme: layoutTheme, ...props }) => {
     ["", "", ""],
     ["", "", ""],
   ];
-  dashboardCols.forEach((col) => {
+  dashboardCols.forEach(col => {
     if (col === "CONTENT") {
       gridColumns[1] = "1fr";
       gridAreas[1][1] = "content";
@@ -121,7 +146,7 @@ const Layout = ({ children, theme: layoutTheme, ...props }) => {
       gridAreas[1][2] = "right";
     }
   });
-  dashboardRows.forEach((row) => {
+  dashboardRows.forEach(row => {
     if (row === "CONTENT") {
       gridRows[1] = "1fr";
     }
@@ -220,17 +245,9 @@ Layout.Footer = Footer;
 Layout.Sidebar = Sidebar;
 Layout.Content = Content;
 
+Layout.propTypes = {
+  theme: PropTypes.object,
+  children: PropTypes.elementType.isRequired,
+};
+
 export default Layout;
-
-/*
-import { CssGrid as Grid, CssCell as Cell } from "../src";
-
-const MyGrid = () => (
-  <Grid columns={2} gap="2px">
-    <Cell>foo</Cell>
-    <Cell height={2}>bar</Cell>
-    <Cell width={2}>baz</Cell>
-  </Grid>
-);
-
-*/

@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { useState, useEffect } from "react";
 
 import styled from "styled-components";
@@ -11,6 +12,9 @@ import { useHistory } from "react-router-dom";
 import i18n from "../lib/i18n";
 import { useToast } from "@blend-ui/toast";
 import { DotLoader } from "@blend-ui/progress";
+
+import PropTypes from "prop-types";
+
 i18n.init();
 
 const StyledBox = styled(Box)`
@@ -97,4 +101,7 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
   );
 };
 
+FinalizingAccount.propTypes = {
+  currentUser: PropTypes.object.isRequired,
+};
 export default FinalizingAccount;

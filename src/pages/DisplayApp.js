@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/display-name */
 /* eslint-disable react/no-multi-comp */
 
@@ -22,6 +23,7 @@ import config from "../config";
 
 import * as C from "./display-app/components";
 
+import PropTypes from "prop-types";
 i18n.init();
 
 const APIConfig = {
@@ -49,12 +51,7 @@ const S3Config = {
 
 const fn = animations => index => animations[index];
 
-const DisplayApp = ({
-  widgetConfigData,
-  appSyncClient,
-  prifinaID,
-  ...props
-}) => {
+const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
   console.log("PROPS ", widgetConfigData, Object.keys(widgetConfigData));
   console.log("DISPLAY APP ", prifinaID);
   const {
@@ -589,4 +586,14 @@ const DisplayApp = ({
   );
 };
 
+DisplayApp.propTypes = {
+  widgetConfigData: PropTypes.array.isRequired,
+  appSyncClient: PropTypes.object.isRequired,
+  prifinaID: PropTypes.string.isRequired,
+  open: PropTypes.bool,
+  width: PropTypes.string,
+  height: PropTypes.string,
+  visibility: PropTypes.string,
+  transform: PropTypes.string,
+};
 export default DisplayApp;

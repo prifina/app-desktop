@@ -17,6 +17,7 @@ import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
 import { useToast } from "@blend-ui/toast";
 import { useAccountContext } from "../lib/contextLib";
 
+import PropTypes from "prop-types";
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -37,13 +38,13 @@ const EmailVerification = ({ invalidLink, ...props }) => {
   // const [toastSuccess, setToastSuccess] = useState({ status: false, msg: "" });
   // const [toastError, setToastError] = useState({ status: false, msg: "" });
 
-  const checkInput = (code) => {
+  const checkInput = code => {
     const checkResult = onlyDigitChars(code);
     //console.log(checkResult);
     let validCode = true;
     if (!checkResult && code.length > 0) {
       const errorMsg = i18n.__("codeDigitsError");
-      if (!alerts.check().some((alert) => alert.message === errorMsg))
+      if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
       setInputError({ status: true });
       validCode = false;
@@ -51,7 +52,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
     //if (code.length > 1 && code.length !== 6) {
     if (code.length > 1 && code.length !== 6) {
       const errorMsg = i18n.__("codeLengthError");
-      if (!alerts.check().some((alert) => alert.message === errorMsg))
+      if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
       setInputError({ status: true });
       validCode = false;
@@ -72,9 +73,9 @@ const EmailVerification = ({ invalidLink, ...props }) => {
         clientId: currentUser.client,
         email: currentUser.email,
         given_name: currentUser.given_name,
-      })
+      }),
     )
-      .then((result) => {
+      .then(result => {
         console.log("EMAIL RESULT ", result);
         alerts.info(i18n.__("emailVerificatioSent"), { duration: 10000 });
         /*
@@ -84,7 +85,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
         });
         */
       })
-      .catch((e) => {
+      .catch(e => {
         console.log("ERR", e);
       });
 
@@ -94,7 +95,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
     //history.replace("/verify-phone");
   }, [currentUser]);
 
-  const resendClick = async (e) => {
+  const resendClick = async e => {
     try {
       await sendVerificationMutation(
         API,
@@ -104,7 +105,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
           clientId: currentUser.client,
           email: currentUser.email,
           given_name: currentUser.given_name,
-        })
+        }),
       );
       alerts.info(i18n.__("emailVerificatioSent"), {});
       /*
@@ -117,7 +118,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       console.log("ERR", e);
     }
   };
-  const verifyClick = async (e) => {
+  const verifyClick = async e => {
     try {
       /*
       const result = await verifyCodeMutation(
@@ -178,7 +179,7 @@ path: ["verifyCode"]
     }
     //e.preventDefault();
   };
-  const backClickAction = (e) => {
+  const backClickAction = e => {
     nextStepAction(0);
   };
   return (
@@ -216,7 +217,7 @@ path: ["verifyCode"]
                     id={"verificationCode"}
                     name={"verificationCode"}
                     onChange={handleChange}
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === "Enter") {
                         checkInput(verificationFields.verificationCode);
                       }
@@ -287,4 +288,7 @@ path: ["verifyCode"]
   );
 };
 
+EmailVerification.propTypes = {
+  invalidLink: PropTypes.string.isRequired,
+};
 export default EmailVerification;

@@ -9,6 +9,7 @@ import {
 } from "@blend-ui/modal";
 import { Box, Button, Text, useTheme } from "@blend-ui/core";
 
+import PropTypes from "prop-types";
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -57,7 +58,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
               <Button
                 variation={"outline"}
                 colorStyle={"error"}
-                onClick={(e) => {
+                onClick={e => {
                   setDialogOpen(false);
                   onButtonClick(e, "cancel");
                   e.preventDefault();
@@ -67,7 +68,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
               </Button>
               <Button
                 ml={20}
-                onClick={(e) => {
+                onClick={e => {
                   setDialogOpen(false);
                   onButtonClick(e, "logout");
                   e.preventDefault();
@@ -83,4 +84,8 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
   );
 };
 
+LogoutDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onButtonClick: PropTypes.func.isRequired,
+};
 export default LogoutDialog;

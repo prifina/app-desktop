@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { useState, forwardRef } from "react";
 import { IconField, Text, Box, useTheme } from "@blend-ui/core";
 
@@ -8,6 +9,7 @@ import bxHide from "@iconify/icons-bx/bx-hide";
 import { usePopper } from "react-popper";
 import styled from "styled-components";
 
+import PropTypes from "prop-types";
 import config from "../config";
 
 const UnorderedList = styled.ul`
@@ -25,7 +27,7 @@ const ListItem = styled.li`
   /* */
   ::before {
     content: "•";
-    color: ${(props) =>
+    color: ${props =>
       props.verified
         ? props.theme.colors.baseSecondary
         : props.theme.colors.baseMuted}; // from theme
@@ -43,10 +45,10 @@ const ListItem = styled.li`
 const PopperContainer = styled.div`
   padding: 15px;
   padding-bottom:24px;
-  box-shadow: ${(props) =>
+  box-shadow: ${props =>
     props.theme.boxShadows[5]}; //0px 4px 8px rgba(91, 92, 91, 0.2); from theme
   border-radius: 5px; // from theme
-  background-color: ${(props) =>
+  background-color: ${props =>
     props.theme.colors.baseWhite}; // #f5f8f7;  from theme
 
   width: 371px;
@@ -63,8 +65,7 @@ const PopperContainer = styled.div`
       transform: rotate(45deg);
       width: 20px;
       height: 20px;
-      background-color: ${(props) =>
-        props.theme.colors.baseWhite}; // from theme
+      background-color: ${props => props.theme.colors.baseWhite}; // from theme
       box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
     }
   }
@@ -80,7 +81,7 @@ const mergeRefs = (...refs) => {
   const filteredRefs = refs.filter(Boolean);
   if (!filteredRefs.length) return null;
   if (filteredRefs.length === 0) return filteredRefs[0];
-  return (inst) => {
+  return inst => {
     for (const ref of filteredRefs) {
       if (typeof ref === "function") {
         ref(inst);
@@ -120,7 +121,7 @@ const PasswordField = forwardRef(
     setAddPopper(!addPopper);
   };
   */
-    const onHide = (e) => {
+    const onHide = e => {
       //console.log("HIDE PASSWORD ", hidePassword);
       e.preventDefault();
       setHidePassword(!hidePassword);
@@ -198,8 +199,15 @@ const PasswordField = forwardRef(
         </IconField>
       </React.Fragment>
     );
-  }
+  },
 );
+
+PasswordField.propTypes = {
+  placeholder: PropTypes.string,
+  addPopper: PropTypes.bool,
+  verifications: PropTypes.array,
+};
+
 //onClick={onHide}
 //ref={mergeRefs(local, ref)}
 //ref={setReferenceElement}

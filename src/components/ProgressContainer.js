@@ -3,6 +3,7 @@ import React from "react";
 import { Box, Divider, Text, useTheme } from "@blend-ui/core";
 import { CircularProgress, CircularProgressLabel } from "@blend-ui/progress";
 import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
+import PropTypes from "prop-types";
 
 const ProgressContainer = ({
   title,
@@ -70,4 +71,11 @@ const ProgressContainer = ({
   );
 };
 
+ProgressContainer.propTypes = {
+  title: PropTypes.string.isRequired,
+  mobileApp: PropTypes.bool,
+  progress: PropTypes.number.isRequired,
+
+  children: PropTypes.elementType.isRequired,
+};
 export default ProgressContainer;

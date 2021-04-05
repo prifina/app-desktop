@@ -2,6 +2,8 @@ import React from "react";
 import { Route, Redirect, useLocation } from "react-router-dom";
 import { useAppContext } from "../lib/contextLib";
 
+import PropTypes from "prop-types";
+
 export default function AuthenticatedRoute({ children, ...rest }) {
   const { pathname, search } = useLocation();
   const { isAuthenticated, currentUser } = useAppContext();
@@ -17,3 +19,7 @@ export default function AuthenticatedRoute({ children, ...rest }) {
     </Route>
   );
 }
+
+AuthenticatedRoute.propTypes = {
+  children: PropTypes.elementType.isRequired,
+};

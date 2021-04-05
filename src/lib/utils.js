@@ -9,7 +9,10 @@ import {
   PhoneNumberType,
 } from "google-libphonenumber";
 
-import countries from "../countries";
+//import countries from "../countries";
+
+import { getCountries, getCountryCallingCode } from "libphonenumber-js";
+const countries = require("i18n-iso-countries");
 
 // eslint-disable-next-line
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -43,7 +46,7 @@ export function hasNonChars(str) {
 }
 
 export function checkPwList(str) {
-  return pwList.some((c) => {
+  return pwList.some(c => {
     return String(str).indexOf(c) > -1;
   });
 }
@@ -76,7 +79,7 @@ export function checkPassword(password, requiredLength, checkList) {
     digitChars(password) && hasNonChars(password) && !hasSpaces(password);
 
   // Does not contain your name or email address
-  const listResult = checkList.some((c) => {
+  const listResult = checkList.some(c => {
     return String(password).indexOf(c) > -1;
   });
   console.log(listResult, checkList, password);
@@ -99,6 +102,7 @@ export function countryList() {
     type: "region",
   });
 
+
   //console.log("COUNTRY CODES ", countryCodes);
   let countries = [];
   countryCodes.forEach((code) => {
@@ -115,9 +119,22 @@ export function countryList() {
     }
   });
   */
-  const staticCountryList = countries;
 
-  return staticCountryList;
+  const countryList = getCountries();
+  //console.log(countryList);
+
+  //const staticCountryList = countries;
+
+  //return staticCountryList;
+  const supportedCountries = countryList.map(c => {
+    return {
+      countryCode: getCountryCallingCode(c),
+      regionCode: c,
+      regionName: countries.getName(c, "en", { select: "official" }),
+    };
+  });
+
+  return supportedCountries;
 }
 
 export function addRegionCode(region, phone) {
