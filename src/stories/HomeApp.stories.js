@@ -176,7 +176,7 @@ export const homeApp = () => {
       setSettingsReady(true);
     } catch (e) {
       if (typeof e === "string" && e === "No current user") {
-        //const user = await Auth.signIn("tahola", "xxxx");
+        //const user = await Auth.signIn("tahola", "Huuhaa12!#");
         //console.log("AUTH ", user);
         //console.log("APP DEBUG ", appCode);
       }
@@ -190,7 +190,9 @@ export const homeApp = () => {
   };
   const mobileApp = false;
   const isAuthenticated = true;
-  const currentUser = { username: prifinaID.current };
+  const currentUser = { prifinaID: prifinaID.current };
+
+  //const animProps = useSpring({ opacity: settingsReady ? 1 : 0 });
 
   return (
     <>

@@ -8,10 +8,43 @@ import {
   getPrifinaWidgets,
   getPrifinaUser,
 } from "./queries";
-import { verifyCode, sendVerification } from "./mutations";
+import {
+  verifyCode,
+  sendVerification,
+  addSearchResult,
+  addSearchKey,
+} from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
 
+/*
+input SearchKeyInput {
+	owner: String!
+	searchKey: String
+	role: String
+}
+
+input SearchResultInput {
+	owner: String!
+	searchKey: String!
+	selectedResult: AWSJSON
+}
+*/
+
+export const addSearchResultMutation = (API, input) => {
+  return API.graphql({
+    query: addSearchResult,
+    variables: { input: input },
+    authMode: "AWS_IAM",
+  });
+};
+export const addSearchKeyMutation = (API, input) => {
+  return API.graphql({
+    query: addSearchKey,
+    variables: { input: input },
+    authMode: "AWS_IAM",
+  });
+};
 export const sendVerificationMutation = (API, subject, message) => {
   return API.graphql({
     query: sendVerification,

@@ -61,11 +61,12 @@ const importApp = appName => {
   );
 };
 
-const Content = ({ Component, ...props }) => {
+const Content = ({ Component, initials, ...props }) => {
   const userMenu = useUserMenu();
+  console.log("INITIALS ", props);
   useEffect(() => {
     userMenu.show({
-      initials: "TA",
+      initials: initials,
       effect: { hover: { width: 42 } },
       notifications: 0,
       RecentApps: [],
@@ -78,24 +79,32 @@ const Content = ({ Component, ...props }) => {
 
 Content.propTypes = {
   Component: PropTypes.elementType.isRequired,
+  initials: PropTypes.string,
 };
 export const CoreApps = props => {
-  console.log("CORE COMPONENT --->", props);
-  const { pathname, search } = useLocation();
+  console.log("CORE COMPONENT --->", props, props.hasOwnProperty("app"));
   const history = useHistory();
   const { userAuth } = useAppContext();
-
-  const app = appPaths[pathname.split("/").pop()];
-
+  const { app } = props;
+  let coreApp = "";
+  if (app) {
+    coreApp = app;
+  } else {
+    const { pathname, search } = useLocation();
+    coreApp = appPaths[pathname.split("/").pop()];
+  }
   //console.log("CORE ", path.pop());
   //console.log("CORE ", pathname, search);
   //console.log("CORE ", search);
-  const AppComponent = importApp(app);
+  const AppComponent = importApp(coreApp);
 
   const [appReady, setAppReady] = useState(false);
   const [logout, setLogout] = useState(false);
 
   const componentProps = useRef({});
+  //const data = useRef([]);
+  const activeUser = useRef({});
+  const [settingsReady, setSettingsReady] = useState(false);
 
   Auth.configure(AUTHConfig);
   Amplify.configure(APIConfig);
@@ -131,9 +140,9 @@ export const CoreApps = props => {
         disableOffline: true,
       });
 
-      console.log("APP NAME ", app);
+      console.log("APP NAME ", coreApp);
       // app component props
-      if (app === "DisplayApp") {
+      if (coreApp === "DisplayApp") {
         const prifinaWidgets = await getPrifinaWidgetsQuery(GRAPHQL, "WIDGETS");
         console.log(
           "CURRENT CONFIG ",
@@ -149,10 +158,21 @@ export const CoreApps = props => {
         );
 
         console.log("CURRENT USER ", currentPrifinaUser);
+        const appProfile = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.appProfile,
+        );
+        console.log("CURRENT USER ", appProfile, appProfile.initials);
+
+        const initials = appProfile.inititals;
+        activeUser.current = {
+          name: appProfile.name,
+          uuid: prifinaID,
+        };
+
         const installedWidgets = JSON.parse(
           currentPrifinaUser.data.getPrifinaUser.installedWidgets,
         );
-
+        /*
         const data = Object.keys(installedWidgets).map(w => {
           let defaultValues = {};
           if (widgetData[w].settings) {
@@ -170,7 +190,55 @@ export const CoreApps = props => {
               });
             }
           }
+          */
+        let widgetCounts = {};
+        const data = installedWidgets.map(w => {
+          if (widgetCounts.hasOwnProperty(w.name)) {
+            widgetCounts[w.name]++;
+          } else {
+            widgetCounts[w.name] = 0;
+          }
+          let defaultValues = {};
+          if (widgetData[w.name].settings) {
+            widgetData[w.name].settings.forEach(v => {
+              // if type=text...
+              defaultValues[v.value] = "";
+            });
+
+            if (w.hasOwnProperty("settings") && w.settings.length > 0) {
+              console.log("SETTINGS FOUND ", w);
+              w.settings.forEach(k => {
+                if (defaultValues.hasOwnProperty(k.field)) {
+                  defaultValues[k.field] = k.value;
+                }
+              });
+            }
+            /*
+              if (installedWidgets[w].length > 0) {
+                //console.log("SEETINGS FOUND ", w.widget.appID);
+                installedWidgets[w].forEach(i => {
+                  if (defaultValues.hasOwnProperty(i.field)) {
+                    defaultValues[i.field] = i.value;
+                  }
+                });
+              }
+              */
+          }
+
           return {
+            url: widgetData[w.name].url,
+            settings: widgetData[w.name].settings.length > 0,
+            currentSetting: defaultValues,
+            widget: {
+              settings: widgetData[w.name].settings,
+              installCount: widgetCounts[w.name],
+              appID: w.name,
+              name: widgetData[w.name].name,
+              title: widgetData[w.name].title,
+            },
+          };
+          /*
+          {
             url: widgetData[w].url,
             settings: widgetData[w].settings.length > 0,
             currentSetting: defaultValues,
@@ -180,16 +248,18 @@ export const CoreApps = props => {
               name: widgetData[w].name,
               title: widgetData[w].title,
             },
-          };
+          };*/
         });
 
-        console.log("CURRENT SETTINGS 2", data);
+        console.log("CURRENT SETTINGS 2", data, appProfile);
         componentProps.current.appSyncClient = client;
         componentProps.current.widgetConfigData = data;
         componentProps.current.prifinaID = prifinaID;
+        componentProps.current.initials = appProfile.initials;
       }
 
-      setAppReady(true);
+      //setAppReady(false);
+      setSettingsReady(true);
     } catch (e) {
       if (typeof e === "string" && e === "No current user") {
         //const user = await Auth.signIn("tahola", "xxxx");
@@ -201,6 +271,12 @@ export const CoreApps = props => {
     }
   }, []);
 
+  useEffect(() => {
+    if (settingsReady) {
+      console.log("SETTINGS ", activeUser, componentProps);
+      setAppReady(true);
+    }
+  }, [settingsReady]);
   const onDialogClose = (e, action) => {
     //console.log("CLOSE ", e, action);
     setLogout(false);
@@ -231,11 +307,15 @@ export const CoreApps = props => {
     //console.log("LOGOUT...");
     setLogout(true);
   };
-
+  console.log("ACTIVE USER ", activeUser.current);
   return (
     <>
       {appReady && (
-        <PrifinaProvider stage={"alpha"} Context={PrifinaContext}>
+        <PrifinaProvider
+          stage={"alpha"}
+          Context={PrifinaContext}
+          activeUser={activeUser.current}
+        >
           <UserMenuContextProvider onExit={logOut} onHome={onHomeClick}>
             {logout && (
               <LogoutDialog
@@ -247,10 +327,13 @@ export const CoreApps = props => {
               <Content Component={AppComponent} {...componentProps.current} />
             </React.Suspense>
           </UserMenuContextProvider>
-          );
         </PrifinaProvider>
       )}
       {!appReady && <div />}
     </>
   );
+};
+
+CoreApps.propTypes = {
+  app: PropTypes.string,
 };

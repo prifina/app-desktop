@@ -42,7 +42,7 @@ export default { title: "DisplayApp" };
 
 export const displayApp = () => {
   console.log("COMPONENT --->");
-
+  console.log("CONFIG ", config);
   const [settingsReady, setSettingsReady] = useState(false);
 
   const data = useRef([]);
@@ -129,15 +129,29 @@ export const displayApp = () => {
       const installedWidgets = JSON.parse(
         currentPrifinaUser.data.getPrifinaUser.installedWidgets,
       );
-
-      data.current = Object.keys(installedWidgets).map(w => {
+      let widgetCounts = {};
+      data.current = installedWidgets.map(w => {
+        if (widgetCounts.hasOwnProperty(w.name)) {
+          widgetCounts[w.name]++;
+        } else {
+          widgetCounts[w.name] = 0;
+        }
         let defaultValues = {};
-        if (widgetData[w].settings) {
-          widgetData[w].settings.forEach(v => {
+        if (widgetData[w.name].settings) {
+          widgetData[w.name].settings.forEach(v => {
             // if type=text...
             defaultValues[v.value] = "";
           });
 
+          if (w.hasOwnProperty("settings") && w.settings.length > 0) {
+            console.log("SETTINGS FOUND ", w);
+            w.settings.forEach(k => {
+              if (defaultValues.hasOwnProperty(k.field)) {
+                defaultValues[k.field] = k.value;
+              }
+            });
+          }
+          /*
           if (installedWidgets[w].length > 0) {
             //console.log("SEETINGS FOUND ", w.widget.appID);
             installedWidgets[w].forEach(i => {
@@ -146,16 +160,18 @@ export const displayApp = () => {
               }
             });
           }
+          */
         }
         return {
-          url: widgetData[w].url,
-          settings: widgetData[w].settings.length > 0,
+          url: widgetData[w.name].url,
+          settings: widgetData[w.name].settings.length > 0,
           currentSetting: defaultValues,
           widget: {
-            settings: widgetData[w].settings,
-            appID: w,
-            name: widgetData[w].name,
-            title: widgetData[w].title,
+            settings: widgetData[w.name].settings,
+            installCount: widgetCounts[w.name],
+            appID: w.name,
+            name: widgetData[w.name].name,
+            title: widgetData[w.name].title,
           },
         };
       });
@@ -296,7 +312,14 @@ displayApp.story = {
     Story => {
       //console.log("PROVIDER ", PrifinaProvider);
       return (
-        <PrifinaProvider stage={"alpha"} Context={PrifinaContext}>
+        <PrifinaProvider
+          stage={"alpha"}
+          Context={PrifinaContext}
+          activeUser={{
+            name: "Active user tero",
+            uuid: "13625638c207ed2fcd5a7b7cfb2364a04661",
+          }}
+        >
           <Story />
         </PrifinaProvider>
       );

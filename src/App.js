@@ -111,7 +111,7 @@ function App() {
           _currentUser = {
             username: token["cognito:username"],
             organization: token["custom:organization"] || "",
-            given_name: token["given_name"],
+            /* given_name: token["given_name"],*/
             client: token["aud"],
             prifinaID: token["custom:prifina"],
           };

@@ -20,7 +20,11 @@ import {
 //import AppIcon from "../components/AppIcon";
 //import ImportComponent from "../components/ImportComponent";
 import { useIsMountedRef } from "../lib/componentUtils";
-import { getInstalledAppsQuery, getPrifinaAppsQuery } from "../graphql/api";
+import {
+  getInstalledAppsQuery,
+  getPrifinaAppsQuery,
+  getPrifinaUserQuery,
+} from "../graphql/api";
 import { useAppContext } from "../lib/contextLib";
 import Amplify, { API, Auth } from "aws-amplify";
 import { useHistory } from "react-router-dom";
@@ -29,6 +33,7 @@ import LogoutDialog from "../components/LogoutDialog";
 import { StyledBox, StyledBackground } from "../components/DefaultBackground";
 import { PrifinaLogo } from "../components/PrifinaLogo";
 
+import { useSpring, animated } from "react-spring";
 /*
 const importComponent = (name) => {
   console.log("IMPORT ", name);
@@ -99,7 +104,8 @@ const Content = props => {
           }
         }
 */
-        const res = await getInstalledAppsQuery(API, currentUser.prifinaID);
+
+        const res = await getPrifinaUserQuery(API, currentUser.prifinaID);
         console.log("INSTALLED APPS  ", res.data.getPrifinaUser);
         const installedAppsJSON = JSON.parse(
           res.data.getPrifinaUser.installedApps,
@@ -107,6 +113,15 @@ const Content = props => {
         installedAppsJSON.forEach(app => {
           prifinaApps.current[app] = prifinaAppsJSON[app];
         });
+        const appProfile = JSON.parse(res.data.getPrifinaUser.appProfile);
+
+        userMenu.show({
+          initials: appProfile.initials,
+          effect: { hover: { width: 42 } },
+          notifications: 0,
+          RecentApps: [],
+        });
+
         setInstalledApps(installedAppsJSON);
       }
     }
@@ -114,6 +129,7 @@ const Content = props => {
     fetchData();
   }, [isMountedRef, currentUser.prifinaID]);
 
+  /*
   useEffect(() => {
     userMenu.show({
       initials: "TA",
@@ -123,6 +139,7 @@ const Content = props => {
     });
     //console.log(RecentApps);
   }, []);
+  */
   /*
   useEffect(() => {
     if (!isClient) {
@@ -252,6 +269,15 @@ const Content = props => {
     });
   }
   console.log("APPS ", prifinaApps.current);
+  const { opacity } = useSpring({
+    opacity: 1,
+    from: { opacity: 0 },
+    config: { duration: 3000 },
+  });
+  // opacity.interpolate(o => (o > 0.7 ? 1 : o)),
+  //visibility: props.opacity.interpolate(o => o === 0 ? 'hidden' : 'visible')
+  // <a.div class="c front" style={{ opacity, transform: transform.interpolate(t => `${t} rotateX(180deg)`) }} />
+  //style={{ opacity: opacity.interpolate(o => (o > 0.5 ? 1 : o)) }}
   return (
     <React.Fragment>
       <StyledBox>
@@ -259,40 +285,44 @@ const Content = props => {
         <StyledBackground>
           {loadingStatus && <div>This may require loading indicator...</div>}
           {!loadingStatus && (
-            <Box m={8} mt={77} style={{ zIndex: 3 }}>
-              <CssGrid columns={gridCols} flow="column">
-                {/* 
+            <animated.div
+              style={{ opacity: opacity.interpolate(o => (o > 0.6 ? 1 : o)) }}
+            >
+              <Box m={8} mt={77} style={{ zIndex: 3 }}>
+                <CssGrid columns={gridCols} flow="column">
+                  {/* 
                 <CssCell left={3} top={1}>
                   {appIcons}
                 </CssCell>
                 */}
-                {installedAppIcons.length > 0 &&
-                  installedAppIcons.map((icons, colIndex) => {
-                    return icons.map((appIcon, pos) => {
-                      //console.log("RENDER ", appIcon);
-                      return (
-                        <CssCell
-                          key={"cell-" + colIndex + "-" + pos}
-                          left={installedAppIcons.length - colIndex + 1}
-                          top={icons.length - pos}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            console.log(
-                              "APP CLICK ",
-                              prifinaApps.current[appIcon.name].route,
-                            );
-                            history.replace(
-                              "/" + prifinaApps.current[appIcon.name].route,
-                            );
-                          }}
-                        >
-                          {appIcon.component}
-                        </CssCell>
-                      );
-                    });
-                  })}
-              </CssGrid>
-            </Box>
+                  {installedAppIcons.length > 0 &&
+                    installedAppIcons.map((icons, colIndex) => {
+                      return icons.map((appIcon, pos) => {
+                        //console.log("RENDER ", appIcon);
+                        return (
+                          <CssCell
+                            key={"cell-" + colIndex + "-" + pos}
+                            left={installedAppIcons.length - colIndex + 1}
+                            top={icons.length - pos}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              console.log(
+                                "APP CLICK ",
+                                prifinaApps.current[appIcon.name].route,
+                              );
+                              history.replace(
+                                "/" + prifinaApps.current[appIcon.name].route,
+                              );
+                            }}
+                          >
+                            {appIcon.component}
+                          </CssCell>
+                        );
+                      });
+                    })}
+                </CssGrid>
+              </Box>
+            </animated.div>
           )}
         </StyledBackground>
       </StyledBox>

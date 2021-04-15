@@ -18,11 +18,14 @@ import i18n from "../lib/i18n";
 //import widgetData from "./widgetData";
 //import installedWidgets from "./installedWidgets";
 
-import { API as GRAPHQL } from "aws-amplify";
+import Amplify, { API as GRAPHQL, Storage } from "aws-amplify";
 import config from "../config";
 
 import * as C from "./display-app/components";
 
+import { addSearchResultMutation, addSearchKeyMutation } from "../graphql/api";
+
+const short = require("short-uuid");
 import PropTypes from "prop-types";
 i18n.init();
 
@@ -64,9 +67,13 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
     registerClient,
     API,
     Prifina,
+    activeRole,
   } = usePrifina();
+
+  console.log("DISPLAY APP ", currentUser);
   const WidgetHooks = new Prifina({ appId: "WIDGETS" });
   //console.log(check());
+  Amplify.configure(S3Config);
 
   const [widgetList, setWidgetList] = useState([]);
   const [widgetConfig, setWidgetConfig] = useState(widgetConfigData);
@@ -105,6 +112,7 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
         settings: w.widget.settings || [],
         title: w.widget.title,
         appId: w.widget.appID,
+        installCount: w.widget.installCount,
         currentSetting: w.currentSetting,
       };
     }),
@@ -283,7 +291,7 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
   }, [open]);
 
   useEffect(() => {
-    registerClient([appSyncClient, GRAPHQL]);
+    registerClient([appSyncClient, GRAPHQL, Storage]);
     /*
     let data = installedWidgets.map(w => {
       return {
@@ -394,19 +402,21 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
           console.log("W ", props);
           return (
             <React.Fragment>
-              {widget.settings && (
-                <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
-                  <BlendIcon iconify={bxCog} />
-                </C.IconDiv>
-              )}
-              <C.WidgetWrapper
-                className={"prifina-widget"}
-                data-widget-index={i}
-                key={"widget-wrapper-" + i}
-                ref={ref}
-              >
-                <RemoteComponent url={widget.url} {...props} />
-              </C.WidgetWrapper>
+              <div>
+                {widget.settings && (
+                  <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
+                    <BlendIcon iconify={bxCog} />
+                  </C.IconDiv>
+                )}
+                <C.WidgetWrapper
+                  className={"prifina-widget"}
+                  data-widget-index={i}
+                  key={"widget-wrapper-" + i}
+                  ref={ref}
+                >
+                  <RemoteComponent url={widget.url} {...props} />
+                </C.WidgetWrapper>
+              </div>
             </React.Fragment>
           );
         });
@@ -427,8 +437,8 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
   const onUpdate = data => {
     console.log("Update settings ", data);
     console.log("HOOK ", WidgetHooks);
-    console.log(getCallbacks());
-    console.log(settings.current);
+    //console.log(getCallbacks());
+    console.log(settings.current, widgetSettings);
     let newSettings = [];
     Object.keys(data).forEach(k => {
       widgetSettings.current[settings.current.widget].currentSetting[k] =
@@ -443,12 +453,29 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
       value: String!
     }
 */
-    console.log("NEW SETTINGS ", newSettings);
+    console.log("NEW SETTINGS ", newSettings, currentAppId);
     // useCallback((appID, uuid, settings = [{}])
-    setSettings(currentAppId, prifinaID, newSettings);
+    setSettings(currentAppId, prifinaID, {
+      type: "WIDGET",
+      index: settings.current.widget,
+      settings: newSettings,
+    });
     const c = getCallbacks();
-    if (typeof c[currentAppId] === "function") {
-      c[currentAppId](data);
+    console.log("CALLBACKS ", c);
+    const widgetInstallCount =
+      widgetSettings.current[settings.current.widget].installCount;
+    console.log(
+      " CALLBACK ",
+      c.hasOwnProperty(currentAppId),
+      widgetInstallCount,
+    );
+    console.log(" CALLBACK ", typeof c[currentAppId][widgetInstallCount]);
+    if (
+      c.hasOwnProperty(currentAppId) &&
+      typeof c[currentAppId][widgetInstallCount] === "function"
+    ) {
+      console.log("FOUND CALLBACK ");
+      c[currentAppId][widgetInstallCount]({ settings: data });
     }
     //setWidgetData([data]);
     //setOpen(false);
@@ -467,6 +494,66 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
     setOpen(false);
   };
 
+  const saveSearchKey = searchKey => {
+    if (searchKey.length > 0)
+      addSearchKeyMutation(GRAPHQL, {
+        owner: currentUser.uuid,
+        searchKey: searchKey,
+        role: activeTab === 0 ? "" : roleKey[activeTab],
+      });
+    /*
+input SearchKeyInput {
+	owner: String!
+	searchKey: String
+	role: String
+}
+*/
+  };
+  const saveSearchResult = (searchKey, searchResult) => {
+    if (searchKey.length > 0) {
+      const searchBuckeyKey = "search-results/" + short.generate() + ".json";
+
+      addSearchResultMutation(GRAPHQL, {
+        owner: currentUser.uuid,
+        searchKey: searchKey,
+        role: activeTab === 0 ? "" : roleKey[activeTab],
+        selectedResult: searchBuckeyKey,
+      });
+      Storage.put(searchBuckeyKey, JSON.stringify(searchResult), {
+        level: "public",
+        contentType: "application/json",
+
+        metadata: {
+          owner: currentUser.uuid,
+          searchKey: searchKey,
+          created: new Date().toISOString(),
+        },
+      });
+    }
+
+    /*
+
+input SearchResultInput {
+	owner: String!
+	searchKey: String!
+	selectedResult: AWSJSON
+}
+
+*/
+  };
+  /*
+  useEffect(() => {
+    if (widgetList.length > 0) {
+      const widgets = document.querySelectorAll(
+        ".prifina-widget >*:first-child",
+      );
+      console.log(widgets);
+      widgets.forEach((w, i) => {
+        console.log(w.getBoundingClientRect());
+      });
+    }
+  }, [widgetList]);
+*/
   return (
     <>
       {open && (
@@ -533,6 +620,7 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
                       flipped={flipped}
                       open={open}
                       onUpdate={onUpdate}
+                      widgetIndex={settings.current.widget}
                       widgetSetting={
                         widgetSettings.current[settings.current.widget]
                       }
@@ -544,44 +632,72 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
           })}
         </C.ModalBackground>
       )}
-      <Tabs activeTab={activeTab} onClick={tabClick}>
-        <TabList>
-          <Tab>{currentUser.name}</Tab>
-          <Tab>Work</Tab>
-          <Tab>Family</Tab>
-          <Tab>Hobbies</Tab>
-        </TabList>
-        <TabPanelList>
-          <TabPanel>
-            <C.SearchBox
-              ref={searchBox}
-              showHistory={setSearchHistory}
-              chevronOpen={searchHistory}
-              searchKey={setSearchKey}
-              searchOpen={searchKey.length > 0}
-            />
-            {searchKey.length > 0 && !searchHistory && (
-              <C.SearchResults
-                searchBox={searchBox}
-                searchKey={searchKey}
-                roleKey={roleKeys[activeTab]}
-              />
-            )}
-            {searchHistory && <C.SearchHistory searchBox={searchBox} />}
-            <C.WidgetContainer>
-              {widgetList.length > 0 && (
-                <C.WidgetList
-                  widgetList={widgetList}
-                  widgetData={widgetConfig}
+      <div style={{ overflow: "hidden" }}>
+        <Tabs
+          activeTab={activeTab}
+          onClick={tabClick}
+          style={{ height: "100%" }}
+        >
+          <TabList>
+            <Tab>{currentUser.name}</Tab>
+            <Tab>Work</Tab>
+            <Tab>Family</Tab>
+            <Tab>Hobbies</Tab>
+          </TabList>
+          <TabPanelList>
+            <TabPanel
+              style={{
+                height: "100vh",
+                paddingBottom: "50px",
+                overflow: "auto",
+              }}
+            >
+              <div style={{ overflow: "hidden" }}>
+                <C.SearchBox
+                  ref={searchBox}
+                  showHistory={setSearchHistory}
+                  chevronOpen={searchHistory}
+                  searchKey={setSearchKey}
+                  searchOpen={searchKey.length > 0}
+                  saveSearchKey={saveSearchKey}
                 />
-              )}
-            </C.WidgetContainer>
-          </TabPanel>
-          <TabPanel>Work panel</TabPanel>
-          <TabPanel>Family panel</TabPanel>
-          <TabPanel>Hobbies panel</TabPanel>
-        </TabPanelList>
-      </Tabs>
+                {searchKey.length > 0 && !searchHistory && (
+                  <C.SearchResults
+                    searchBox={searchBox}
+                    searchKey={searchKey}
+                    roleKey={roleKeys[activeTab]}
+                    saveSearchResult={saveSearchResult}
+                  />
+                )}
+                {searchHistory && <C.SearchHistory searchBox={searchBox} />}
+              </div>
+              <div style={{ overflow: "auto" }}>
+                <C.WidgetContainer className={"prifina-widget-container"}>
+                  {widgetList.length > 0 && (
+                    <C.WidgetList
+                      widgetList={widgetList}
+                      widgetData={widgetConfig}
+                    />
+                  )}
+                </C.WidgetContainer>
+              </div>
+            </TabPanel>
+            <TabPanel>Work panel</TabPanel>
+            <TabPanel>Family panel</TabPanel>
+            <TabPanel>Hobbies panel</TabPanel>
+          </TabPanelList>
+        </Tabs>
+      </div>
+      <div style={{ width: "200px" }}>
+        <button
+          onClick={() => {
+            activeRole("New Role");
+            console.log(check());
+          }}
+        >
+          Checking...
+        </button>
+      </div>
     </>
   );
 };

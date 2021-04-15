@@ -420,7 +420,7 @@ const CreateAccount = props => {
       state.firstName.value,
       state.lastName.value,
       state.username.value,
-      state.email.value,
+      /* state.email.value, */
     ]);
     console.log("PASS CHECK ", checkResult);
     setPasswordVerification(checkResult);

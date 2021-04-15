@@ -8,3 +8,11 @@ export const sendVerification = `mutation sendVerification($subject: String!,$me
     sendVerification(subject: $subject,message: $message)
   }
   `;
+
+export const addSearchResult = `mutation searchResult($input:SearchResultInput) {
+  addSearchResult(input: $input)
+}`;
+
+export const addSearchKey = `mutation searchKey($input:SearchKeyInput) {
+  addSearchKey(input: $input)
+}`;

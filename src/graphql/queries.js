@@ -2,6 +2,7 @@ export const getPrifinaUser = `query prifinaUser($id:String!){
         getPrifinaUser(id: $id) {
           installedApps
           installedWidgets
+          appProfile
         }
       }`;
 
