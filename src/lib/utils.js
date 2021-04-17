@@ -20,6 +20,7 @@ import {
   parsePhoneNumber,
 } from "libphonenumber-js";
 const countries = require("i18n-iso-countries");
+countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
 
 // eslint-disable-next-line
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -133,14 +134,24 @@ export function countryList() {
   //const staticCountryList = countries;
 
   //return staticCountryList;
-  const supportedCountries = countryList.map(c => {
-    return {
-      countryCode: getCountryCallingCode(c),
-      regionCode: c,
-      regionName: countries.getName(c, "en", { select: "official" }),
-    };
-  });
+  let unSupportedRegionCodes = [];
 
+  let supportedCountries = [];
+  countryList.forEach(c => {
+    //console.log(c, countries.getName(c, "en", { select: "official" }));
+    const cName = countries.getName(c, "en", { select: "official" });
+    if (typeof cName !== "undefined") {
+      supportedCountries.push({
+        countryCode: getCountryCallingCode(c),
+        regionCode: c,
+        regionName: cName,
+      });
+    } else {
+      unSupportedRegionCodes.push(c);
+    }
+  });
+  console.log("COUNTRIES ", supportedCountries);
+  console.log("UNSUPPORTED COUNTRIES ", unSupportedRegionCodes);
   return supportedCountries;
 }
 
@@ -203,6 +214,7 @@ export function isValidNumber(phoneNumber) {
         countryCode: parsedPhoneNumber.country,
         regionCode: parsedPhoneNumber.countryCallingCode,
         number: parsedPhoneNumber.number,
+        nationalNumber: parsedPhoneNumber.nationalNumber,
       };
     }
   } catch (e) {

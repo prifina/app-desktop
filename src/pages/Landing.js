@@ -116,7 +116,7 @@ const Landing = props => {
         {!mobileApp && stepCounter !== 6 && (
           <StyledBox
             minWidth={"1440px"}
-            maxHeight={"792px"}
+            /* maxHeight={"792px"} */
             minHeight={"792px"}
           >
             <Box display={"inline-flex"} width={"100%"}>

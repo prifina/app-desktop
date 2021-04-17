@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useReducer, useEffect, useRef } from "react";
 import {
   IconField,
   Button,
@@ -75,22 +75,7 @@ const CreateAccount = props => {
 
   //console.log(i18n.__("testMessage"));
   const { colors } = useTheme();
-  const selectOptions = countryList().map(cc => {
-    return {
-      key: "+" + cc.countryCode,
-      value: cc.regionName,
-      regionCode: cc.regionCode,
-      searchValue: cc.regionName + " +" + cc.countryCode,
-      component: (
-        <React.Fragment>
-          <Text as="span">{cc.regionName}</Text>
-          <Text as="span" color={colors.textMuted} fontSize={"xs"} pl={4}>
-            (+{cc.countryCode})
-          </Text>
-        </React.Fragment>
-      ),
-    };
-  });
+  const selectOptions = useRef([]);
   //console.log(selectOptions);
 
   const initUser = {
@@ -182,12 +167,15 @@ const CreateAccount = props => {
     setAddPopper(status);
   };
 
-  const checkPhoneAttr = (region, phone) => {
-    //console.log("DEBUG ", appDebug);
+  const checkPhoneAttr = (region, phone, phoneOpts = {}) => {
+    console.log("CHECK PHONE APP-DEBUG ", appDebug);
     if (appDebug) {
       return Promise.resolve({});
     } else {
       let phoneNumber = addRegionCode(region, phone);
+      if (phoneOpts.hasOwnProperty("region")) {
+        phoneNumber = phoneOpts.region + phoneOpts.phoneNumber;
+      }
       return checkCognitoAttributeQuery(
         API,
         "phone_number",
@@ -196,45 +184,87 @@ const CreateAccount = props => {
       );
     }
   };
-  const phoneAlert = (errorMsg, phoneState) => {
+  const phoneAlert = (errorMsg, phoneState, phoneOpts = {}) => {
     if (
       !phoneState &&
       !alerts.check().some(alert => alert.message === errorMsg)
     )
       alerts.error(errorMsg, {});
-
-    setState({ phoneNumber: { ...state.phoneNumber, status: !phoneState } });
+    if (phoneOpts.hasOwnProperty("region")) {
+      console.log("CHANGE NUMBER ", phoneOpts);
+      setState({
+        phoneNumber: {
+          ...state.phoneNumber,
+          status: !phoneState,
+          value: phoneOpts.phoneNumber,
+        },
+        regionCode: phoneOpts.region,
+      });
+    } else {
+      setState({ phoneNumber: { ...state.phoneNumber, status: !phoneState } });
+    }
   };
 
-  const checkPhone = async (region, phone, check = false) => {
+  const checkPhone = (region, phone, check = false, changeNumber = true) => {
     //console.log("FIELDS ", fields);
     console.log(phone, region);
+
     const errorMsg = i18n.__("invalidPhoneNumber");
 
     if (lowerCaseChars(phone.toLowerCase())) {
       phoneAlert(errorMsg, false);
       return false;
     }
-    const checkResult = isValidNumber(region + phone);
+    let checkResult = {};
+    if (phone.startsWith("+")) {
+      checkResult = isValidNumber(phone);
+    } else {
+      checkResult = isValidNumber(region + phone);
+    }
     let phoneState = Object.keys(checkResult).length > 0;
     console.log("PHONE ", checkResult);
+    let phoneOpts = {};
+    if (phone.startsWith("+") && changeNumber) {
+      phoneOpts = {
+        region: "+" + checkResult.regionCode,
+        phoneNumber: checkResult.nationalNumber,
+      };
+      inputPhone.current.value = checkResult.nationalNumber;
+      inputSelect.current.value = checkResult.regionCode;
+    }
 
     if (phoneState && check) {
-      console.log("CHECKING PHONE NUMBER");
+      //  console.log("CHECKING PHONE NUMBER");
 
       //let phoneNumber = addRegionCode(region, phone);
-      checkPhoneAttr(region, phone).then(res => {
+      checkPhoneAttr(region, phone, phoneOpts).then(res => {
         if (typeof res.data !== "undefined" && res.data.checkCognitoAttribute) {
-          phoneAlert(errorMsg, false);
+          phoneAlert(errorMsg, false, phoneOpts);
         } else {
-          setState({ phoneNumber: { ...state.phoneNumber, status: false } });
+          if (phoneOpts.hasOwnProperty("region")) {
+            console.log("CHANGE NUMBER2 ", phoneOpts);
+
+            setState({
+              phoneNumber: {
+                ...state.phoneNumber,
+                status: !phoneState,
+                value: phoneOpts.phoneNumber,
+              },
+              regionCode: phoneOpts.region,
+            });
+          } else {
+            setState({ phoneNumber: { ...state.phoneNumber, status: false } });
+          }
         }
       });
     } else {
-      phoneAlert(errorMsg, phoneState);
+      phoneAlert(errorMsg, phoneState, phoneOpts);
     }
 
-    return !phoneState;
+    //return !phoneState;
+    const returnState = check ? !phoneState : phoneState;
+    console.log("PHONE CHECK STATE ", check, phoneState, "===>", returnState);
+    return returnState;
   };
   /*
   const checkEmailAttr = async (email) => {
@@ -349,14 +379,16 @@ const CreateAccount = props => {
       console.log("check 3");
       setState({ username: { ...state.username, status: true } });
       setInputUsernameFocus();
-    } else if (state.email.value.length === 0) {
+    } /* else if (state.email.value.length === 0) {
       console.log("check 4");
       setState({ email: { ...state.email, status: true } });
       setInputEmailFocus();
-    } else if (state.username.status) {
+    } */ else if (
+      state.username.status
+    ) {
       console.log("check 5");
       setInputUsernameFocus();
-    } else if (state.email.status) {
+    } else if (state.email.status && state.email.value.length === 0) {
       console.log("check 6");
       setInputEmailFocus();
     } else if (state.firstName.status) {
@@ -365,7 +397,10 @@ const CreateAccount = props => {
     } else if (state.lastName.status) {
       console.log("check 8");
       setInputLastnameFocus();
-    } else if (state.phoneNumber.status) {
+    } else if (
+      state.phoneNumber.status &&
+      state.phoneNumber.value.length === 0
+    ) {
       console.log("check 8");
       //console.log("PHONE NUM FAILED...");
       setInputPhoneFocus();
@@ -385,6 +420,17 @@ const CreateAccount = props => {
     let checkResult = false;
 
     const errorMsg = i18n.__("invalidPassword");
+    if (!confirmStatus && !onBlur) {
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      checkResult = true;
+    } else if (confirmStatus) {
+      setState({
+        accountPassword: { ...state.accountPassword, status: false },
+        passwordConfirm: { ...state.passwordConfirm, status: false },
+      });
+    }
+    /*
     if (
       (!confirmStatus && password.length >= config.passwordLength) ||
       (!confirmStatus && !onBlur && !nextDisabled)
@@ -412,6 +458,8 @@ const CreateAccount = props => {
     if (!confirmStatus && onBlur) {
       setInputPasswordFocus();
     }
+    */
+
     return checkResult;
   };
   const checkInputPassword = (password, updateVerification = true) => {
@@ -445,16 +493,33 @@ const CreateAccount = props => {
   useEffect(() => {
     async function onLoad() {
       try {
+        selectOptions.current = countryList().map(cc => {
+          return {
+            key: "+" + cc.countryCode,
+            value: cc.regionName,
+            regionCode: cc.regionCode,
+            searchValue: cc.regionName + " +" + cc.countryCode,
+            component: (
+              <React.Fragment>
+                <Text as="span">{cc.regionName}</Text>
+                <Text as="span" color={colors.textMuted} fontSize={"xs"} pl={4}>
+                  (+{cc.countryCode})
+                </Text>
+              </React.Fragment>
+            ),
+          };
+        });
+
         const userCountry = await getCountryCodeQuery(API);
         console.log("COUNTRY ", userCountry.data.getCountryCode);
         if (userCountry.data) {
-          const cIndex = selectOptions.findIndex(
+          const cIndex = selectOptions.current.findIndex(
             c => c.regionCode === userCountry.data.getCountryCode,
           );
           console.log("INDEX ", cIndex);
           if (cIndex > -1) {
             //console.log(selectOptions[cIndex]);
-            setState({ regionCode: selectOptions[cIndex].key });
+            setState({ regionCode: selectOptions.current[cIndex].key });
           }
         }
       } catch (e) {
@@ -481,13 +546,21 @@ const CreateAccount = props => {
         //console.log("SPECIAL ", state.phoneNumber);
       } else {
         let id = event.target.id;
+
         // autofill messes up the onChange event logic...
-        let fld = Object.assign({}, state[id]);
-        fld.value = event.target.value;
-        fld.valid = false;
+        let fld = undefined;
+        if (id !== "regionCode") {
+          fld = Object.assign({}, state[id]);
+          fld.value = event.target.value;
+          fld.valid = false;
+        } else {
+          fld = event.target.value;
+        }
+
         if (["firstName", "lastName"].indexOf(id) > -1) {
           fld.status = event.target.value.length === 0;
         }
+
         /*
         if (id === "passwordConfirm") {
           const cPassword = event.target.value;
@@ -595,7 +668,14 @@ const CreateAccount = props => {
         valuesChecked = false;
       }
 
-      if (checkPhone(state.regionCode, state.phoneNumber.value, true)) {
+      const checkingPhone = checkPhone(
+        state.regionCode,
+        state.phoneNumber.value,
+        false,
+        false,
+      );
+      //console.log("PHONE CHECKING RESULT ", checkingPhone);
+      if (checkingPhone) {
         phoneChecked = true;
       } else {
         console.log("CONTROL 5");
@@ -652,6 +732,7 @@ const CreateAccount = props => {
     }
   };
   const accountContext = { nextStepAction, currentUser, state };
+  console.log("PHONE STATE ", state.phoneNumber);
   return (
     <AccountContext.Provider value={accountContext}>
       {registerStep === 3 && (
@@ -678,6 +759,7 @@ const CreateAccount = props => {
                 ref={inputFirstname}
                 error={state.firstName.status}
                 defaultValue={state.firstName.value}
+                tabIndex="0"
               />
             </Flex>
             <Flex ml={25} width={"168px"}>
@@ -689,6 +771,7 @@ const CreateAccount = props => {
                 ref={inputLastname}
                 error={state.lastName.status}
                 defaultValue={state.lastName.value}
+                tabIndex="1"
               />
             </Flex>
           </Box>
@@ -709,104 +792,15 @@ const CreateAccount = props => {
                 ref={inputUsername}
                 defaultValue={state.username.value}
                 onKeyDown={e => {
-                  if (e.key === "Enter") {
+                  if (e.key === "Enter" && e.target.value.length > 4) {
                     checkUsername(e.target.value, true);
                   }
                 }}
-              />
-            </IconField>
-          </Box>
-          <Box mt={28}>
-            <IconField>
-              <IconField.LeftIcon
-                iconify={bxEnvelope}
-                color={"componentPrimary"}
-                size={"17"}
-              />
-              <IconField.InputField
-                placeholder={i18n.__("emailPlaceholder")}
-                id={"email"}
-                name={"email"}
-                onChange={handleChange}
-                promptMsg={state.email.valid ? i18n.__("emailPrompt") : ""}
-                error={state.email.status}
-                ref={inputEmail}
-                onBlur={e => checkEmail(e.target.value)}
-                defaultValue={state.email.value}
-                onKeyDown={e => {
-                  if (e.key === "Enter") {
-                    checkEmail(e.target.value, true);
-                  }
-                }}
+                tabIndex="2"
               />
             </IconField>
           </Box>
 
-          <Box mt={28}>
-            <PhoneNumberField>
-              <PhoneNumberField.RegionField
-                key={state.regionCode}
-                defaultValue={state.regionCode}
-                options={selectOptions}
-                searchLength={2}
-                showList={false}
-                ref={inputSelect}
-                /* id="select-search" */
-                onChange={(e, code) => {
-                  //console.log("REGION", e);
-                  //console.log("REGION", code);
-                  console.log("REGION SELECT ", e, code);
-                  handleChange({
-                    target: {
-                      id: "regionCode",
-                      value: code,
-                    },
-                  });
-                }}
-              />
-              <PhoneNumberField.InputField
-                placeholder={i18n.__("phoneNumberPlaceholder")}
-                id={"phoneNumber"}
-                name={"phoneNumber"}
-                onChange={handleChange}
-                promptMsg={
-                  state.phoneNumber.valid ? i18n.__("phonePrompt") : ""
-                }
-                error={state.phoneNumber.status}
-                ref={inputPhone}
-                defaultValue={state.phoneNumber.value}
-                onBlur={e => {
-                  /*
-                    console.log(
-                      "BLUR CHANGE ",
-                      e.target.id,
-                      e.target.value,
-                      document.activeElement.id,
-                      document.activeElement.value
-                    )
-                    */
-                  // weird problem... password autofill changes phonenumber...
-                  if (
-                    !(
-                      e.target.id === "phoneNumber" &&
-                      (document.activeElement.id === "accountPassword" ||
-                        document.activeElement.id === "passwordConfirm")
-                    )
-                  ) {
-                    checkPhone(state.regionCode, e.target.value);
-                  }
-                }}
-                onKeyDown={e => {
-                  if (e.key === "Enter") {
-                    checkPhone(state.regionCode, e.target.value, true);
-                  }
-                }}
-                //onBlur={(e) => checkInputField("phone", e)}
-
-                /* disabled={regionCode === "000"} */
-              />
-            </PhoneNumberField>
-          </Box>
           <Box mt={28}>
             <PasswordField
               placeholder={i18n.__("passwordPlaceholder")}
@@ -871,7 +865,7 @@ const CreateAccount = props => {
                 }
               }}
               onKeyDown={e => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && e.target.value.length > 4) {
                   console.log("CHECKING PASSWORD ", e.target.value);
                   const checkStatus = passwordCheck(e.target.value);
                   console.log("CHECK STATUS ", checkStatus);
@@ -881,6 +875,7 @@ const CreateAccount = props => {
                 }
               }}
               autoComplete="new-password"
+              tabIndex="3"
             />
           </Box>
           <Box mt={28}>
@@ -896,18 +891,24 @@ const CreateAccount = props => {
               id={"passwordConfirm"}
               name={"passwordConfirm"}
               defaultValue={state.passwordConfirm.value}
-              onChange={e => {
-                handleChange(e);
-                //checkConfirmPassword(e.target.value, false);
-              }}
+              onChange={handleChange}
               error={
                 state.accountPassword.status || state.passwordConfirm.status
               }
+              onBlur={e => {
+                if (
+                  e.target.value.length === state.accountPassword.value.length
+                ) {
+                  checkConfirmPassword(e.target.value, false);
+                }
+              }}
               onKeyDown={e => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && e.target.value.length > 4) {
+                  checkConfirmPassword(e.target.value, false);
+                  /*
                   const cPassword = e.target.value;
                   const confirmStatus =
-                    state.accountPassword.value === cPassword;
+                    state.accountPassword.value === cPassword;  
                   if (
                     (!confirmStatus &&
                       cPassword.length >= config.passwordLength) ||
@@ -923,10 +924,119 @@ const CreateAccount = props => {
                   } else {
                     setNextDisabled(false);
                   }
+                  */
                 }
               }}
               autoComplete="new-password"
+              tabIndex="4"
             />
+          </Box>
+
+          <Box mt={28}>
+            <IconField>
+              <IconField.LeftIcon
+                iconify={bxEnvelope}
+                color={"componentPrimary"}
+                size={"17"}
+              />
+              <IconField.InputField
+                placeholder={i18n.__("emailPlaceholder")}
+                id={"email"}
+                name={"email"}
+                onChange={handleChange}
+                promptMsg={state.email.valid ? i18n.__("emailPrompt") : ""}
+                error={state.email.status}
+                ref={inputEmail}
+                onBlur={e => checkEmail(e.target.value)}
+                defaultValue={state.email.value}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    checkEmail(e.target.value, true);
+                  }
+                }}
+                tabIndex="5"
+              />
+            </IconField>
+          </Box>
+
+          <Box mt={28}>
+            <PhoneNumberField>
+              <PhoneNumberField.RegionField
+                key={state.regionCode}
+                defaultValue={state.regionCode}
+                options={selectOptions.current}
+                searchLength={2}
+                showList={false}
+                ref={inputSelect}
+                /* id="select-search" */
+                onChange={(e, code) => {
+                  //console.log("REGION", e);
+                  //console.log("REGION", code);
+                  console.log("REGION SELECT ", e, code);
+                  handleChange({
+                    target: {
+                      id: "regionCode",
+                      value: code,
+                    },
+                  });
+                }}
+              />
+              <PhoneNumberField.InputField
+                placeholder={i18n.__("phoneNumberPlaceholder")}
+                id={"phoneNumber"}
+                name={"phoneNumber"}
+                onChange={e => {
+                  handleChange(e);
+                  if (e.target.value.length > 4) {
+                    setNextDisabled(false);
+                  }
+                }}
+                promptMsg={
+                  state.phoneNumber.valid ? i18n.__("phonePrompt") : ""
+                }
+                error={state.phoneNumber.status}
+                ref={inputPhone}
+                defaultValue={state.phoneNumber.value}
+                onBlur={e => {
+                  /*
+                    console.log(
+                      "BLUR CHANGE ",
+                      e.target.id,
+                      e.target.value,
+                      document.activeElement.id,
+                      document.activeElement.value
+                    )
+                    */
+                  // weird problem... password autofill changes phonenumber...
+                  if (
+                    !(
+                      e.target.id === "phoneNumber" &&
+                      (document.activeElement.id === "accountPassword" ||
+                        document.activeElement.id === "passwordConfirm")
+                    )
+                  ) {
+                    //console.log("PHONE BLUR...");
+                    checkPhone(state.regionCode, e.target.value);
+                  }
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && e.target.value.length > 4) {
+                    const checkResult = checkPhone(
+                      state.regionCode,
+                      e.target.value,
+                      true,
+                    );
+                    if (checkResult) {
+                      setNextDisabled(false);
+                    }
+                  }
+                }}
+                //onBlur={(e) => checkInputField("phone", e)}
+
+                /* disabled={regionCode === "000"} */
+                tabIndex="6"
+              />
+            </PhoneNumberField>
           </Box>
 
           <Box mt={66} textAlign={"center"}>
@@ -957,6 +1067,7 @@ const CreateAccount = props => {
                   } else {
                     setState({ email: { ...state.email, status: false } });
                   }
+
                   if (
                     typeof res[3].data !== "undefined" &&
                     res[3].data.checkCognitoAttribute
@@ -968,6 +1079,7 @@ const CreateAccount = props => {
                       phoneNumber: { ...state.phoneNumber, status: false },
                     });
                   }
+
                   // next check failed, possible password condition reason...
                   if (checkResult && !res[0]) {
                     checkResult = false;

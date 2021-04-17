@@ -57,6 +57,20 @@ export const getHeader = `query getHeader {
 }
 `;
 
+export const listNotifications = `query notificationList($filter: TableNotificationFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listNotifications(filter: $filter,sortDirection:$sortDirection,limit:$limit,nextToken:$nextToken}) {
+    items {
+      body
+      createdAt
+      notificationId
+      owner
+      status
+      type
+    }
+    nextToken
+  }
+}`;
+
 /*
 
 query MyQuery {

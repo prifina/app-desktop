@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/display-name */
 
-import React, { useRef, forwardRef } from "react";
+import React, { useRef, forwardRef, useEffect, useState } from "react";
 import styled from "styled-components";
 
 import {
@@ -29,8 +29,6 @@ import i18n from "../../lib/i18n";
 import moment from "moment";
 import "moment-timezone";
 import PropTypes from "prop-types";
-import { useEffect } from "react";
-import { useState } from "react";
 
 i18n.init();
 

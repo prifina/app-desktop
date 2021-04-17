@@ -104,6 +104,7 @@ export const CoreApps = props => {
   const componentProps = useRef({});
   //const data = useRef([]);
   const activeUser = useRef({});
+  const addressBook = useRef([]);
   const [settingsReady, setSettingsReady] = useState(false);
 
   Auth.configure(AUTHConfig);
@@ -168,6 +169,10 @@ export const CoreApps = props => {
           name: appProfile.name,
           uuid: prifinaID,
         };
+
+        addressBook.current = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.addressBook,
+        );
 
         const installedWidgets = JSON.parse(
           currentPrifinaUser.data.getPrifinaUser.installedWidgets,
@@ -300,6 +305,10 @@ export const CoreApps = props => {
     }
     e.preventDefault();
   };
+  const remoteUser = ops => {
+    console.log("REMOTE USER ", opts);
+    console.log("ADDRESS BOOK ", addressBook.current);
+  };
   const onHomeClick = () => {
     history.replace("/");
   };
@@ -315,6 +324,8 @@ export const CoreApps = props => {
           stage={"alpha"}
           Context={PrifinaContext}
           activeUser={activeUser.current}
+          activeApp={coreApp}
+          remoteUser={remoteUser}
         >
           <UserMenuContextProvider onExit={logOut} onHome={onHomeClick}>
             {logout && (

@@ -14,18 +14,21 @@ import { useId } from "@reach/auto-id";
 import PropTypes from "prop-types";
 //import { useFocus } from "../lib/componentUtils";
 
-const StyledBox = styled(Box)`
+const StyledBox = styled("div")`
   ${space}
+  /* remove flex and safari works....  */ 
   display: flex;
+  
   height: ${props =>
     props.height
       ? props.height
       : props.theme.componentStyles.input.base.height};
-  background-color: ${props =>
-    props.disabled
-      ? props.theme.colors.text.muted
-      : props.theme.componentStyles.input.base.backgroundColor ||
-        "transparent"};
+
+      background-color: ${props =>
+        props.disabled
+          ? props.theme.colors.text.muted
+          : props.theme.componentStyles.input.base.backgroundColor ||
+            "transparent"};
   border: ${props =>
     typeof props.borders !== "undefined"
       ? props.borders
@@ -44,11 +47,12 @@ const StyledBox = styled(Box)`
     box-shadow: none;
     border: ${props => props.theme.borders.input.active};
   }
+  
   /*
   &:disabled {
     background: ${props => props.theme.colors.text.muted};
     border: ${props => props.theme.borders.input.disabled};
-    pointer-events: none;
+     pointer-events: none; 
   }
   
   &:invalid {

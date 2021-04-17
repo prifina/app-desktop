@@ -26,7 +26,7 @@ import i18n from "../lib/i18n";
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
 
-import PropTypes from "prop-types";
+//import PropTypes from "prop-types";
 i18n.init();
 /*
 function useIsMountedRef() {
@@ -39,7 +39,7 @@ function useIsMountedRef() {
 }
 */
 
-const Login = ({ onAction, ...props }) => {
+const Login = () => {
   //console.log("Phone ", props);
   const history = useHistory();
   const { APIConfig, userAuth } = useAppContext();
@@ -408,7 +408,4 @@ CODE_DELIVERY_DESTINATION: "+********7102"
   );
 };
 
-Login.propTypes = {
-  onAction: PropTypes.func.isRequired,
-};
 export default Login;

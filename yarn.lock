@@ -2486,15 +2486,15 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blend-ui/core@1.1.58-alpha.0":
-  version "1.1.58-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.58-alpha.0.tgz#c9298619ad4339b0a83765ae645d1c9a6ce92876"
-  integrity sha512-hKH6DX1DSbJmSZVOSw56H91FzrtuHnPUuDMuw6rBCFPD3T4PxRjcX+JlptuIHPzd3KKJdiENX5//P751MI9tUQ==
+"@blend-ui/core@1.1.59-alpha.0":
+  version "1.1.59-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.59-alpha.0.tgz#9225b72e5318fa84855d86642e5c519cb4cbdc86"
+  integrity sha512-r1gaRsxboi9SJUIWqUSydgjnllq92qus58w7UsZlg4wAw2RSNiok54tIJCseeZMvPgbITQUV5xxBXBDEDAIZpg==
   dependencies:
     "@blend-ui/icons" "^1.1.8-alpha.0"
-    "@popperjs/core" "^2.5.3"
+    "@popperjs/core" "^2.9.2"
     "@reach/auto-id" "^0.12.1"
-    react-popper "^2.2.3"
+    react-popper "^2.2.5"
 
 "@blend-ui/css-grid@1.0.6-alpha.0":
   version "1.0.6-alpha.0"
@@ -2535,10 +2535,10 @@
   resolved "https://registry.yarnpkg.com/@blend-ui/progress/-/progress-1.0.7-alpha.0.tgz#d301b109eba8d404c3596038874218b02d0d6526"
   integrity sha512-lERPfxq/UoWb9tuI8jerrwl30SV6vLNwSc88bRem7Dv+CcKrHvBWRDPf4vfUoEBV7CvgwC4quIXf8VyqPllKqA==
 
-"@blend-ui/tabs@1.0.10-alpha.0":
-  version "1.0.10-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/tabs/-/tabs-1.0.10-alpha.0.tgz#a39c8b5d3bba6aca1a84af60bf808e0efa11a733"
-  integrity sha512-FD9k0h4iEoL2no1luLj0xRNvq442t6erS3Hb1xJbnwtY1DNqNrxnCR49kGXINwIBqRGmgE9sAIqfm1QRhgvACw==
+"@blend-ui/tabs@1.0.11-alpha.0":
+  version "1.0.11-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/tabs/-/tabs-1.0.11-alpha.0.tgz#191247eb8dabb8b6fb1ff72a873fe7a8468ae2f1"
+  integrity sha512-KPMd2xbr7dkzFQF/PCSw2qOIaWheSJ/pELXn9GWYpTld8Q1rjcjDl26Sr8PAirPToheyrUn+zscCMvKxanI+uw==
 
 "@blend-ui/toast@0.0.12-alpha.0":
   version "0.0.12-alpha.0"
@@ -3056,10 +3056,15 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.12.tgz#431ec342a7195622f86688bbda82e3166ce8cb28"
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
-"@popperjs/core@^2.4.4", "@popperjs/core@^2.5.3", "@popperjs/core@^2.5.4":
+"@popperjs/core@^2.4.4", "@popperjs/core@^2.5.4":
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.6.0.tgz#f022195afdfc942e088ee2101285a1d31c7d727f"
   integrity sha512-cPqjjzuFWNK3BSKLm0abspP0sp/IGOli4p5I5fKFAzdS8fvjdOwDCfZqAaIiXd9lPkOWi3SUUfZof3hEb7J/uw==
+
+"@popperjs/core@^2.9.2":
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
+  integrity sha512-VZMYa7+fXHdwIq1TDhSXoVmSPEGM/aa+6Aiq3nVVJ9bXr24zScr+NlKFKC3iPljA7ho/GAZr+d2jOf5GIRC30Q==
 
 "@prifina/hooks@^0.0.62":
   version "0.0.62"
@@ -13882,6 +13887,14 @@ react-popper@^2.2.3, react-popper@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-2.2.4.tgz#d2ad3d2474ac9f1abf93df3099d408e5aa6a2e22"
   integrity sha512-NacOu4zWupdQjVXq02XpTD3yFPSfg5a7fex0wa3uGKVkFK7UN6LvVxgcb+xYr56UCuWiNPMH20tntdVdJRwYew==
+  dependencies:
+    react-fast-compare "^3.0.1"
+    warning "^4.0.2"
+
+react-popper@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-2.2.5.tgz#1214ef3cec86330a171671a4fbcbeeb65ee58e96"
+  integrity sha512-kxGkS80eQGtLl18+uig1UIf9MKixFSyPxglsgLBxlYnyDf65BiY9B3nZSc6C9XUNDgStROB0fMQlTEz1KxGddw==
   dependencies:
     react-fast-compare "^3.0.1"
     warning "^4.0.2"

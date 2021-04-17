@@ -16,3 +16,26 @@ export const addSearchResult = `mutation searchResult($input:SearchResultInput) 
 export const addSearchKey = `mutation searchKey($input:SearchKeyInput) {
   addSearchKey(input: $input)
 }`;
+
+export const createNotification = `mutation newNotification($input: NotificationInput!) {
+  createNotification(input: $input) {
+    body
+    createdAt
+    notificationId
+    owner
+    status
+    type
+  }
+}`;
+
+export const updateNotificationStatus = `mutation updateStatus($notificationId: String!,$status:Int!) {
+  updateNotificationStatus(notificationId: $notificationId, status: $status) {
+    body
+    createdAt
+    notificationId
+    owner
+    status
+    type
+    updatedAt
+  }
+}`;
