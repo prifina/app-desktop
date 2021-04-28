@@ -89,6 +89,89 @@ export const homeApp = () => {
       }
       console.log("PRIFINA-ID", session.idToken.payload["custom:prifina"]);
       prifinaID.current = session.idToken.payload["custom:prifina"];
+      /*
+      const token = session.idToken.payload;
+          _currentUser = {
+            username: token["cognito:username"],
+            organization: token["custom:organization"] || "",
+            given_name: token["given_name"],
+            client: token["aud"],
+          };
+*/
+      /*
+      const s3Data = await Storage.put(
+        "widgetData.json",
+        JSON.stringify(widgetData),
+        {
+          level: "public",
+        },
+      );
+      console.log("S3 DATA ", s3Data);
+      */
+
+      const getPrifina = `query MyQuery {
+  getPrifinaApp(id: "WIDGETS") {
+    widgets
+  }
+}`;
+      const prifinaWidgets = await GRAPHQL.graphql({
+        query: getPrifina,
+        variables: { id: "WIDGETS" },
+        authMode: "AWS_IAM",
+      });
+      console.log(
+        "CURRENT CONFIG ",
+        JSON.parse(prifinaWidgets.data.getPrifinaApp.widgets),
+      );
+      const widgetData = JSON.parse(prifinaWidgets.data.getPrifinaApp.widgets);
+
+      const getUser = `query prifinaUser($id:String!){
+        getPrifinaUser(id: $id) {
+          installedApps
+          installedWidgets
+        }
+      }`;
+      const currentPrifinaUser = await GRAPHQL.graphql({
+        query: getUser,
+        variables: { id: prifinaID.current },
+        authMode: "AWS_IAM",
+      });
+      console.log("CURRENT USER ", currentPrifinaUser);
+      const installedWidgets = JSON.parse(
+        currentPrifinaUser.data.getPrifinaUser.installedWidgets,
+      );
+
+      data.current = Object.keys(installedWidgets).map(w => {
+        let defaultValues = {};
+        if (widgetData[w].settings) {
+          widgetData[w].settings.forEach(v => {
+            // if type=text...
+            defaultValues[v.value] = "";
+          });
+
+          if (installedWidgets[w].length > 0) {
+            //console.log("SEETINGS FOUND ", w.widget.appID);
+            installedWidgets[w].forEach(i => {
+              if (defaultValues.hasOwnProperty(i.field)) {
+                defaultValues[i.field] = i.value;
+              }
+            });
+          }
+        }
+        return {
+          url: widgetData[w].url,
+          settings: widgetData[w].settings.length > 0,
+          currentSetting: defaultValues,
+          widget: {
+            settings: widgetData[w].settings,
+            appID: w,
+            name: widgetData[w].name,
+            title: widgetData[w].title,
+          },
+        };
+      });
+
+      console.log("CURRENT SETTINGS 2", data);
 
       setSettingsReady(true);
     } catch (e) {

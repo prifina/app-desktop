@@ -7,8 +7,6 @@ import { useAppContext } from "../lib/contextLib";
 //import { UserMenuContextProvider } from "@blend-ui/floating-user-menu";
 import UserMenuContextProvider from "./FloatingUserMenu";
 
-import LogoutDialog from "./LogoutDialog";
-
 const withUsermenu = () => WrappedComponent => {
   const WithUsermenu = props => {
     const history = useHistory();
@@ -47,7 +45,7 @@ const withUsermenu = () => WrappedComponent => {
         onExit={logOut}
         onHome={() => {
           console.log("HOME CLICK...");
-          history.replace("/");
+          history.replace("/home");
         }}
       >
         {logout && (

@@ -2,20 +2,15 @@
 /* eslint-disable react/no-multi-comp */
 
 import React, { useRef, useState, useEffect } from "react";
-import { PrifinaProvider, PrifinaContext } from "@prifina/hooks";
-
-import i18n from "../lib/i18n";
 
 import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 import config from "../config";
 
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
-import Home from "../pages/Home";
+import { getPrifinaUserQuery } from "../graphql/api";
 
-import { AppContext } from "../lib/contextLib";
-
-i18n.init();
+import { default as DefaultApp } from "../pages/Settings";
 
 const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
@@ -40,49 +35,46 @@ const S3Config = {
   },
 };
 
-export default { title: "HomeApp" };
+export default { title: "DefaultApp" };
 
-export const homeApp = () => {
+export const defaultApp = () => {
   console.log("COMPONENT --->");
-
+  console.log("CONFIG ", config);
   const [settingsReady, setSettingsReady] = useState(false);
-
-  const data = useRef([]);
+  const clientHandler = useRef(null);
 
   const prifinaID = useRef("");
 
-  const client = new AWSAppSyncClient({
-    url: APIConfig.aws_appsync_graphqlEndpoint,
-    region: APIConfig.aws_appsync_region,
-    auth: {
-      type: AUTH_TYPE.AWS_IAM,
-      credentials: () => Auth.currentCredentials(),
-    },
-    /*
+  Auth.configure(AUTHConfig);
+  Amplify.configure(APIConfig);
+  Amplify.configure(S3Config);
+  console.log("AUTH CONFIG ", AUTHConfig);
+
+  const createClient = (endpoint, region) => {
+    const client = new AWSAppSyncClient({
+      url: endpoint,
+      region: region,
+      auth: {
+        type: AUTH_TYPE.AWS_IAM,
+        credentials: () => Auth.currentCredentials(),
+      },
+      /*
     auth: {
       type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
       jwtToken: async () =>
         (await Auth.currentSession()).getIdToken().getJwtToken(),
     },
     */
-    disableOffline: true,
-  });
-  Auth.configure(AUTHConfig);
-  Amplify.configure(APIConfig);
-  Amplify.configure(S3Config);
-  console.log("AUTH CONFIG ", AUTHConfig);
+      disableOffline: true,
+    });
+    return client;
+  };
 
   // get user auth...
   useEffect(async () => {
     try {
       const session = await Auth.currentSession();
-      /*
-      const user = await Auth.currentAuthenticatedUser();
-      console.log("USER ", user);
-      if (!user) {
-        console.log("NO CURRENT USER FOUND");
-      }
-      */
+
       console.log("SESSION ", session);
       if (!session) {
         console.log("NO CURRENT SESSION FOUND");
@@ -90,10 +82,32 @@ export const homeApp = () => {
       console.log("PRIFINA-ID", session.idToken.payload["custom:prifina"]);
       prifinaID.current = session.idToken.payload["custom:prifina"];
 
+      const currentPrifinaUser = await getPrifinaUserQuery(
+        GRAPHQL,
+        prifinaID.current,
+      );
+
+      console.log("CURRENT USER ", currentPrifinaUser);
+
+      const appProfile = JSON.parse(
+        currentPrifinaUser.data.getPrifinaUser.appProfile,
+      );
+      console.log("CURRENT USER ", appProfile, appProfile.initials);
+
+      let clientEndpoint =
+        "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
+      let clientRegion = "us-east-1";
+      if (appProfile.hasOwnProperty("endpoint")) {
+        clientEndpoint = appProfile.endpoint;
+        clientRegion = appProfile.region;
+      }
+
+      clientHandler.current = createClient(clientEndpoint, clientRegion);
+
       setSettingsReady(true);
     } catch (e) {
       if (typeof e === "string" && e === "No current user") {
-        //const user = await Auth.signIn("tahola", "Huuhaa12!#");
+        //const user = await Auth.signIn("tahola", "xxxx");
         //console.log("AUTH ", user);
         //console.log("APP DEBUG ", appCode);
       }
@@ -102,50 +116,42 @@ export const homeApp = () => {
     }
   }, []);
 
-  const userAuth = auth => {
-    //setState({ isAuthenticated: auth });
-  };
-  const mobileApp = false;
-  const isAuthenticated = true;
-  const currentUser = { prifinaID: prifinaID.current };
-
-  //const animProps = useSpring({ opacity: settingsReady ? 1 : 0 });
-
   return (
     <>
       {settingsReady && (
-        <AppContext.Provider
-          value={{
-            isAuthenticated,
-            currentUser,
-            APIConfig,
-            AUTHConfig,
-            userAuth,
-            mobileApp,
-          }}
-        >
-          <Home />
-        </AppContext.Provider>
+        <DefaultApp
+          appSyncClient={clientHandler.current}
+          prifinaID={prifinaID.current}
+        />
       )}
       {!settingsReady && <div />}
     </>
   );
 };
 
-homeApp.story = {
-  name: "Home App",
+defaultApp.story = {
+  name: "Default App",
 };
 
-homeApp.story = {
-  name: "Home APP",
+defaultApp.story = {
+  name: "Default APP",
+  /*
   decorators: [
     Story => {
       //console.log("PROVIDER ", PrifinaProvider);
       return (
-        <PrifinaProvider stage={"alpha"} Context={PrifinaContext}>
+        <PrifinaProvider
+          stage={"alpha"}
+          Context={PrifinaContext}
+          activeUser={{
+            name: "Active user tero",
+            uuid: "13625638c207ed2fcd5a7b7cfb2364a04661",
+          }}
+        >
           <Story />
         </PrifinaProvider>
       );
     },
   ],
+  */
 };

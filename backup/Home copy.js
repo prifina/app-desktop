@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
@@ -14,7 +13,9 @@ import {
   useUserMenu,
 } from "@blend-ui/floating-user-menu";
 */
-import { useUserMenu } from "../components/FloatingUserMenu";
+import UserMenuContextProvider, {
+  useUserMenu,
+} from "../components/FloatingUserMenu";
 
 //import { Background } from "../assets/background-image";
 //import Background from "../assets/background.png";
@@ -24,16 +25,6 @@ import { useUserMenu } from "../components/FloatingUserMenu";
 //import AppIcon from "../components/AppIcon";
 //import ImportComponent from "../components/ImportComponent";
 import { useIsMountedRef } from "../lib/componentUtils";
-
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-
-import gql from "graphql-tag";
-
-import { getNotificationCount } from "../graphql/queries";
-
-import { updateActivity } from "../graphql/mutations";
-
-import { newNotification } from "../graphql/subscriptions";
 import {
   getInstalledAppsQuery,
   getPrifinaAppsQuery,
@@ -43,15 +34,11 @@ import { useAppContext } from "../lib/contextLib";
 import Amplify, { API, Auth } from "aws-amplify";
 import { useHistory } from "react-router-dom";
 
+import LogoutDialog from "../components/LogoutDialog";
 import { StyledBox, StyledBackground } from "../components/DefaultBackground";
 import { PrifinaLogo } from "../components/PrifinaLogo";
 
 import { useSpring, animated } from "react-spring";
-
-import withUsermenu from "../components/UserMenu";
-
-import PropTypes from "prop-types";
-
 /*
 const importComponent = (name) => {
   console.log("IMPORT ", name);
@@ -68,11 +55,11 @@ const array_chunks = (array, chunk_size) =>
     .map((_, index) => index * chunk_size)
     .map(begin => array.slice(begin, begin + chunk_size));
 
-const Content = ({ clientHandler, currentUser, activeUser }) => {
+const Content = props => {
   const history = useHistory();
   const userMenu = useUserMenu();
   //const theme = useTheme();
-
+  const { APIConfig, currentUser } = useAppContext();
   //Amplify.configure(APIConfig);
   //console.log("AMPLIFY ", Amplify.configure(), API.configure());
   console.log("CURRENT USER ", currentUser);
@@ -86,9 +73,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   const prifinaApps = useRef({});
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
   const [installedApps, setInstalledApps] = useState([]);
-  const notificationHandler = useRef(null);
-  const subscriptionHandler = useRef(null);
-  //const activeUser = useRef({});
 
   // const [logout, setLogout] = useState(true);
   //let installedApps = [];
@@ -108,26 +92,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   }
 */
 
-  const subscribeNotification = (userClient, variables) => {
-    return userClient
-      .subscribe({ query: gql(newNotification), variables: variables })
-      .subscribe({
-        next: res => {
-          console.log("NOTIFICATION SUBS RESULTS ", res);
-          if (res.data.newNotification.owner !== "") {
-            notificationHandler.current(1);
-          }
-        },
-        error: error => {
-          console.warn(error);
-        },
-      });
-  };
-  /*
-  const updateNotification = useCallback(handler => {
-    notificationHandler.current = handler;
-  }, []);
-*/
   useEffect(() => {
     async function fetchData() {
       if (isMountedRef.current) {
@@ -136,63 +100,75 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
         const prifinaAppsJSON = JSON.parse(
           prifinaAppsData.data.getPrifinaApp.apps,
         );
+        /*
+        {
+          "data": {
+            "getPrifinaApp": {
+              "apps": "{\"SmartSearch\":{\"route\":\"\"},\"DisplayApp\":{\"route\":\"core/display-app\"},\"ProfileCards\":{\"route\":\"\"},\"AppMarket\":{\"route\":\"\"},\"DataConsole\":{\"route\":\"\"},\"Settings\":{\"route\":\"core/settings\"},\"DevConsole\":{\"route\":\"\"}}"
+            }
+          }
+        }
+*/
 
-        const installedAppsJSON = JSON.parse(currentUser.installedApps);
+        const res = await getPrifinaUserQuery(API, currentUser.prifinaID);
+        console.log("INSTALLED APPS  ", res.data.getPrifinaUser);
+        const installedAppsJSON = JSON.parse(
+          res.data.getPrifinaUser.installedApps,
+        );
         installedAppsJSON.forEach(app => {
           prifinaApps.current[app] = prifinaAppsJSON[app];
         });
-
-        const appProfile = JSON.parse(currentUser.appProfile);
-        const initials = appProfile.initials;
-
-        console.log("APP PROFILE ", appProfile);
-        /*
-        activeUser.current = {
-          name: appProfile.name,
-          uuid: currentUser.id
-        };
-*/
-
-        const notificationCountResult = await clientHandler.query({
-          query: gql(getNotificationCount),
-          variables: {
-            filter: {
-              owner: { eq: currentUser.id },
-              status: { eq: 0 },
-            },
-          },
-        });
-        console.log("COUNT ", notificationCountResult);
+        const appProfile = JSON.parse(res.data.getPrifinaUser.appProfile);
 
         userMenu.show({
-          initials: initials,
+          initials: appProfile.initials,
           effect: { hover: { width: 42 } },
-          notifications: notificationCountResult.data.getNotificationCount,
+          notifications: 0,
           RecentApps: [],
         });
 
-        userMenu.setClientHandler(clientHandler);
-        userMenu.setActiveUser(activeUser);
-
-        notificationHandler.current = userMenu.onUpdate;
-
-        subscriptionHandler.current = subscribeNotification(clientHandler, {
-          owner: currentUser.id,
-        });
-
-        await clientHandler.mutate({
-          mutation: gql(updateActivity),
-          variables: {
-            id: currentUser.id,
-            activeApp: "Home",
-          },
-        });
         setInstalledApps(installedAppsJSON);
       }
     }
 
     fetchData();
-  }, [isMountedRef, currentUser.id]);
+  }, [isMountedRef, currentUser.prifinaID]);
+
+  /*
+  useEffect(() => {
+    userMenu.show({
+      initials: "TA",
+      effect: { hover: { width: 42 } },
+      notifications: 0,
+      RecentApps: [],
+    });
+    //console.log(RecentApps);
+  }, []);
+  */
+  /*
+  useEffect(() => {
+    if (!isClient) {
+      return false;
+    }
+
+    let isMounted = true;
+
+    function handleResize() {
+      if (isMounted) {
+        setWindowSize(getSize());
+      }
+    }
+
+    window.addEventListener('resize', throttle(handleResize, 200));
+    return () => {
+      isMounted = false;
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // Empty array ensures that effect is only run on mount and unmount
+
+  return windowSize;
+}
+*/
 
   useEffect(() => {
     // timeoutId for debounce mechanism
@@ -312,7 +288,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
       <StyledBox>
         <PrifinaLogo />
         <StyledBackground>
-          {loadingStatus && <div />}
+          {loadingStatus && <div>This may require loading indicator...</div>}
           {!loadingStatus && (
             <animated.div
               style={{ opacity: opacity.interpolate(o => (o > 0.6 ? 1 : o)) }}
@@ -359,83 +335,53 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   );
 };
 
-Content.propTypes = {
-  clientHandler: PropTypes.object,
-  currentUser: PropTypes.object,
-  activeUser: PropTypes.object,
-};
-
 const Home = props => {
   const history = useHistory();
-  const { userAuth, currentUser } = useAppContext();
+  const { userAuth } = useAppContext();
+  const [logout, setLogout] = useState(false);
 
-  const clientHandler = useRef(null);
-  const userData = useRef(null);
-
-  const [initClient, setInitClient] = useState(false);
-  const activeUser = useRef({});
-  const createClient = (endpoint, region) => {
-    const client = new AWSAppSyncClient({
-      url: endpoint,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.AWS_IAM,
-        credentials: () => Auth.currentCredentials(),
-      },
-
-      disableOffline: true,
-    });
-    return client;
+  const onDialogClose = (e, action) => {
+    //console.log("CLOSE ", e, action);
+    setLogout(false);
+    e.preventDefault();
   };
+  const onDialogClick = async (e, action) => {
+    //console.log("BUTTON ", e, action);
+    setLogout(false);
+    if (action === "logout") {
+      console.log("LOGOUT...");
+      try {
+        //console.log("LOGOUT...");
+        setLogout(true);
 
-  useEffect(async () => {
-    const currentPrifinaUser = await getPrifinaUserQuery(
-      API,
-      currentUser.prifinaID,
-    );
-
-    const appProfile = JSON.parse(
-      currentPrifinaUser.data.getPrifinaUser.appProfile,
-    );
-
-    let clientEndpoint =
-      "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
-    let clientRegion = "us-east-1";
-
-    if (appProfile.hasOwnProperty("endpoint")) {
-      clientEndpoint = appProfile.endpoint;
-      clientRegion = appProfile.region;
+        await Auth.signOut({ global: true });
+        userAuth(false);
+        history.replace("/");
+      } catch (e) {
+        console.log("error signing out: ", e);
+      }
     }
-
-    const client = createClient(clientEndpoint, clientRegion);
-
-    userData.current = currentPrifinaUser.data.getPrifinaUser;
-
-    activeUser.current = {
-      name: appProfile.name,
-      uuid: currentUser.prifinaID,
-      endpoint: clientEndpoint,
-      region: clientRegion,
-    };
-
-    clientHandler.current = client;
-    setInitClient(true);
-  }, []);
-
+    e.preventDefault();
+  };
+  const logOut = () => {
+    //console.log("LOGOUT...");
+    setLogout(true);
+  };
   return (
-    <>
-      {initClient && (
-        <Content
-          clientHandler={clientHandler.current}
-          currentUser={userData.current}
-          activeUser={activeUser.current}
-        />
+    <UserMenuContextProvider
+      onExit={logOut}
+      onHome={() => {
+        console.log("HOME CLICK...");
+      }}
+    >
+      {logout && (
+        <LogoutDialog onClose={onDialogClose} onButtonClick={onDialogClick} />
       )}
-      {!initClient && <div />}
-    </>
+      <Content />
+    </UserMenuContextProvider>
   );
 };
 
 Home.displayName = "Home";
 
-export default withUsermenu()(Home);
+export default Home;

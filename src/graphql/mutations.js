@@ -28,6 +28,13 @@ export const createNotification = `mutation newNotification($input: Notification
   }
 }`;
 
+export const addNotification = `mutation addNotification($input: NotificationInput!) {
+  addNotification(input: $input) {
+    notificationId
+    owner
+  }
+}`;
+
 export const updateNotificationStatus = `mutation updateStatus($notificationId: String!,$status:Int!) {
   updateNotificationStatus(notificationId: $notificationId, status: $status) {
     body
@@ -37,5 +44,20 @@ export const updateNotificationStatus = `mutation updateStatus($notificationId: 
     status
     type
     updatedAt
+  }
+}`;
+
+export const updateActivity = `mutation updateUserActivity($id: String!,$activeApp: String!) {
+ 
+  updateActivity( id: $id,activeApp: $activeApp)
+}`;
+
+export const addWaiting = `mutation newWaiting($input: WaitingInput) {
+  waiting(input: $input) {
+    createdAt
+    endpoint
+    region
+    name
+    senderKey
   }
 }`;

@@ -13,6 +13,8 @@ import {
   sendVerification,
   addSearchResult,
   addSearchKey,
+  createNotification,
+  updateActivity,
 } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -31,6 +33,20 @@ input SearchResultInput {
 }
 */
 
+export const updateActivityMutation = (API, id, app) => {
+  return API.graphql({
+    query: updateActivity,
+    variables: { id: id, activeApp: app },
+    authMode: "AWS_IAM",
+  });
+};
+export const createNotificationMutation = (API, input) => {
+  return API.graphql({
+    query: createNotification,
+    variables: { input: input },
+    authMode: "AWS_IAM",
+  });
+};
 export const addSearchResultMutation = (API, input) => {
   return API.graphql({
     query: addSearchResult,

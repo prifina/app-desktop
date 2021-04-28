@@ -13,7 +13,7 @@ const Home = React.lazy(() => import("../pages/Home"));
 
 //const Settings = React.lazy(() => import("../pages/Settings"));
 const Logout = React.lazy(() => import("../pages/Logout"));
-import { CoreApps } from "../components/CoreApps";
+import CoreApps from "../components/CoreApps";
 import Landing from "../pages/Landing";
 
 export default props => (

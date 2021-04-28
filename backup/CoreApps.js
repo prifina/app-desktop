@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/display-name */
 /* eslint-disable react/no-multi-comp */
 
@@ -37,10 +36,7 @@ import {
 } from "@blend-ui/floating-user-menu";
 */
 
-import withUsermenu from "./UserMenu";
-
-//import UserMenuContextProvider, { useUserMenu } from "./FloatingUserMenu";
-import { useUserMenu } from "./FloatingUserMenu";
+import UserMenuContextProvider, { useUserMenu } from "./FloatingUserMenu";
 
 import LogoutDialog from "./LogoutDialog";
 import { useAppContext } from "../lib/contextLib";
@@ -76,15 +72,7 @@ const S3Config = {
 };
 */
 
-const appPaths = {
-  "display-app": "DisplayApp",
-  settings: "Settings",
-  "app-market": "AppMarket",
-  "dev-console": "DevConsole",
-  "data-console": "DataConsole",
-  "profile-cards": "ProfileCards",
-  "smart-search": "SmartSearch",
-};
+const appPaths = { "display-app": "DisplayApp", settings: "Settings" };
 
 const importApp = appName => {
   console.log("APP ", appName);
@@ -98,20 +86,10 @@ const Content = ({
   initials,
   notificationCount,
   updateNotificationHandler,
-  /*clientHandler,*/
-  appSyncClient,
-  activeUser,
   ...props
 }) => {
   const userMenu = useUserMenu();
-  console.log(
-    "USERMENU CORE APP INIT  ",
-    { ...props },
-    initials,
-    notificationCount,
-  );
-  userMenu.setClientHandler(appSyncClient);
-  userMenu.setActiveUser(activeUser);
+  console.log("USERMENU CORE APP INIT  ", props, initials, notificationCount);
   useEffect(() => {
     userMenu.show({
       initials: initials,
@@ -123,7 +101,7 @@ const Content = ({
   }, []);
 
   updateNotificationHandler(userMenu.onUpdate);
-  return <Component appSyncClient={appSyncClient} {...props} />;
+  return <Component {...props} />;
 };
 
 Content.propTypes = {
@@ -131,10 +109,8 @@ Content.propTypes = {
   initials: PropTypes.string,
   notificationCount: PropTypes.number,
   updateNotificationHandler: PropTypes.func,
-  appSyncClient: PropTypes.object,
-  activeUser: PropTypes.object,
 };
-const CoreApps = props => {
+export const CoreApps = props => {
   console.log("CORE COMPONENT --->", props, props.hasOwnProperty("app"));
   const history = useHistory();
   const { userAuth } = useAppContext();
@@ -152,6 +128,7 @@ const CoreApps = props => {
   const AppComponent = importApp(coreApp);
 
   const [appReady, setAppReady] = useState(false);
+  const [logout, setLogout] = useState(false);
 
   const componentProps = useRef({});
   //const data = useRef([]);
@@ -161,7 +138,7 @@ const CoreApps = props => {
   const notificationCount = useRef(0);
   const notificationHandler = useRef(null);
   const subscriptionHandler = useRef(null);
-  //const clientHandler = useRef(null);
+  const clientHandler = useRef(null);
   const [settingsReady, setSettingsReady] = useState(false);
 
   Auth.configure(AUTHConfig);
@@ -232,10 +209,6 @@ const CoreApps = props => {
       const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
 
       console.log("CURRENT USER ", currentPrifinaUser);
-      const appProfile = JSON.parse(
-        currentPrifinaUser.data.getPrifinaUser.appProfile,
-      );
-      console.log("CURRENT USER ", appProfile, appProfile.initials);
 
       // should get this from user ....
       /*
@@ -247,94 +220,110 @@ const CoreApps = props => {
       let clientEndpoint =
         "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
       let clientRegion = "us-east-1";
-
-      if (appProfile.hasOwnProperty("endpoint")) {
-        clientEndpoint = appProfile.endpoint;
-        clientRegion = appProfile.region;
+      if (
+        currentPrifinaUser.data.getPrifinaUser.hasOwnProperty("userAPI") &&
+        currentPrifinaUser.data.getPrifinaUser.userAPI !== null
+      ) {
+        const userAPI = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.userAPI,
+        );
+        clientEndpoint = userAPI.endpoint;
+        clientRegion = userAPI.region;
       }
 
       const client = createClient(clientEndpoint, clientRegion);
+      const appProfile = JSON.parse(
+        currentPrifinaUser.data.getPrifinaUser.appProfile,
+      );
+      console.log("CURRENT USER ", appProfile, appProfile.initials);
 
+      const initials = appProfile.inititals;
       activeUser.current = {
         name: appProfile.name,
         uuid: prifinaID,
-        endpoint: clientEndpoint,
-        region: clientRegion,
+        endpoint: appProfile.endpoint,
+        region: appProfile.region,
       };
+
+      const addressBookResult = await client.query({
+        query: gql(getAddressBook),
+        variables: {
+          id: prifinaID,
+        },
+      });
+      //console.log(addressBookResult);
+
+      if (
+        addressBookResult.data.getUserAddressBook.hasOwnProperty("addressBook")
+      ) {
+        JSON.parse(
+          addressBookResult.data.getUserAddressBook.addressBook,
+        ).forEach(user => {
+          addressBook.current[user.uuid] = {
+            name: user.name,
+            endpoint: user.endpoint,
+            region: user.region,
+          };
+        });
+      }
 
       console.log("APP NAME ", coreApp);
       // app component props
       if (coreApp === "DisplayApp") {
-        const addressBookResult = await client.query({
-          query: gql(getAddressBook),
-          variables: {
-            id: prifinaID,
-          },
-        });
-
-        //console.log(addressBookResult);
-
-        if (
-          addressBookResult.data.getUserAddressBook.hasOwnProperty(
-            "addressBook",
-          ) &&
-          addressBookResult.data.getUserAddressBook.addressBook !== null
-        ) {
-          JSON.parse(
-            addressBookResult.data.getUserAddressBook.addressBook,
-          ).forEach(user => {
-            addressBook.current[user.uuid] = {
-              name: user.name,
-              endpoint: user.endpoint,
-              region: user.region,
-            };
-          });
-        }
-
         const prifinaWidgets = await getPrifinaWidgetsQuery(GRAPHQL, "WIDGETS");
         console.log(
           "CURRENT CONFIG ",
           JSON.parse(prifinaWidgets.data.getPrifinaApp.widgets),
         );
-
         const widgetData = JSON.parse(
           prifinaWidgets.data.getPrifinaApp.widgets,
         );
 
-        let data = [];
-        if (
-          currentPrifinaUser.data.getPrifinaUser.hasOwnProperty(
-            "installedWidgets",
-          ) &&
-          currentPrifinaUser.data.getPrifinaUser.installedWidgets !== null
-        ) {
-          const installedWidgets = JSON.parse(
-            currentPrifinaUser.data.getPrifinaUser.installedWidgets,
-          );
+        const installedWidgets = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.installedWidgets,
+        );
+        /*
+        const data = Object.keys(installedWidgets).map(w => {
+          let defaultValues = {};
+          if (widgetData[w].settings) {
+            widgetData[w].settings.forEach(v => {
+              // if type=text...
+              defaultValues[v.value] = "";
+            });
 
-          let widgetCounts = {};
-          data = installedWidgets.map(w => {
-            if (widgetCounts.hasOwnProperty(w.name)) {
-              widgetCounts[w.name]++;
-            } else {
-              widgetCounts[w.name] = 0;
-            }
-            let defaultValues = {};
-            if (widgetData[w.name].settings) {
-              widgetData[w.name].settings.forEach(v => {
-                // if type=text...
-                defaultValues[v.value] = "";
+            if (installedWidgets[w].length > 0) {
+              //console.log("SEETINGS FOUND ", w.widget.appID);
+              installedWidgets[w].forEach(i => {
+                if (defaultValues.hasOwnProperty(i.field)) {
+                  defaultValues[i.field] = i.value;
+                }
               });
+            }
+          }
+          */
+        let widgetCounts = {};
+        const data = installedWidgets.map(w => {
+          if (widgetCounts.hasOwnProperty(w.name)) {
+            widgetCounts[w.name]++;
+          } else {
+            widgetCounts[w.name] = 0;
+          }
+          let defaultValues = {};
+          if (widgetData[w.name].settings) {
+            widgetData[w.name].settings.forEach(v => {
+              // if type=text...
+              defaultValues[v.value] = "";
+            });
 
-              if (w.hasOwnProperty("settings") && w.settings.length > 0) {
-                console.log("SETTINGS FOUND ", w);
-                w.settings.forEach(k => {
-                  if (defaultValues.hasOwnProperty(k.field)) {
-                    defaultValues[k.field] = k.value;
-                  }
-                });
-              }
-              /*
+            if (w.hasOwnProperty("settings") && w.settings.length > 0) {
+              console.log("SETTINGS FOUND ", w);
+              w.settings.forEach(k => {
+                if (defaultValues.hasOwnProperty(k.field)) {
+                  defaultValues[k.field] = k.value;
+                }
+              });
+            }
+            /*
               if (installedWidgets[w].length > 0) {
                 //console.log("SEETINGS FOUND ", w.widget.appID);
                 installedWidgets[w].forEach(i => {
@@ -344,21 +333,21 @@ const CoreApps = props => {
                 });
               }
               */
-            }
+          }
 
-            return {
-              url: widgetData[w.name].url,
-              settings: widgetData[w.name].settings.length > 0,
-              currentSetting: defaultValues,
-              widget: {
-                settings: widgetData[w.name].settings,
-                installCount: widgetCounts[w.name],
-                appID: w.name,
-                name: widgetData[w.name].name,
-                title: widgetData[w.name].title,
-              },
-            };
-            /*
+          return {
+            url: widgetData[w.name].url,
+            settings: widgetData[w.name].settings.length > 0,
+            currentSetting: defaultValues,
+            widget: {
+              settings: widgetData[w.name].settings,
+              installCount: widgetCounts[w.name],
+              appID: w.name,
+              name: widgetData[w.name].name,
+              title: widgetData[w.name].title,
+            },
+          };
+          /*
           {
             url: widgetData[w].url,
             settings: widgetData[w].settings.length > 0,
@@ -370,19 +359,13 @@ const CoreApps = props => {
               title: widgetData[w].title,
             },
           };*/
-          });
-        }
+        });
+
         console.log("ADDRESS BOOK ", addressBook.current);
 
         console.log("CURRENT SETTINGS 2", data, appProfile, client);
         componentProps.current.appSyncClient = client;
         componentProps.current.widgetConfigData = data;
-        componentProps.current.prifinaID = prifinaID;
-        componentProps.current.initials = appProfile.initials;
-      } else {
-        // default componentProps...
-        console.log("CURRENT SETTINGS 2", client);
-        componentProps.current.appSyncClient = client;
         componentProps.current.prifinaID = prifinaID;
         componentProps.current.initials = appProfile.initials;
       }
@@ -421,7 +404,7 @@ query MyQuery2 {
         owner: prifinaID,
       });
 
-      //clientHandler.current = client;
+      clientHandler.current = client;
 
       //setAppReady(false);
       setSettingsReady(true);
@@ -447,7 +430,30 @@ query MyQuery2 {
       setAppReady(true);
     }
   }, [settingsReady]);
+  const onDialogClose = (e, action) => {
+    //console.log("CLOSE ", e, action);
+    setLogout(false);
+    e.preventDefault();
+  };
+  const onDialogClick = async (e, action) => {
+    //console.log("BUTTON ", e, action);
+    setLogout(false);
+    if (action === "logout") {
+      console.log("LOGOUT...");
+      try {
+        //console.log("LOGOUT...");
+        setLogout(true);
 
+        // await Auth.signOut({ global: true });
+        await Auth.signOut();
+        userAuth(false);
+        history.replace("/");
+      } catch (e) {
+        console.log("error signing out: ", e);
+      }
+    }
+    e.preventDefault();
+  };
   const remoteUser = opts => {
     console.log("REMOTE USER ", opts);
     console.log("ADDRESS BOOK ", addressBook.current);
@@ -474,6 +480,83 @@ query MyQuery2 {
     return createClient(endpoint, region);
   };
 
+  /*
+
+    (async () => {
+      subscription = client.subscribe({ query: gql(onCreateTodo) }).subscribe({
+        next: data => {
+          console.log(data.data.onCreateTodo);
+        },
+        error: error => {
+          console.warn(error);
+        }
+      });
+    })();
+
+  const addSubscription = (
+    appID,
+    fnName,
+    subscription,
+    onUpdateID,
+    variables
+  ) => {
+    //setAppSubscriptions({ ...appSubscriptions, [appID]: { [fnName]: fnSub } });
+    console.log("SUBS ", appID);
+    console.log("SUBS ", fnName);
+    console.log("SUBS ", gql(subscription));
+    console.log("SUBS ", onUpdateID);
+    console.log("SUBS ", variables);
+    return new Promise(function (resolve, reject) {
+      const subHandler = CLIENT.current.user
+        .subscribe({
+          query: gql(subscription),
+          variables: variables,
+        })
+        .subscribe({
+          next: (data) => {
+            console.log("SUB DATA ", data);
+            //callbacks.current[appID][0](data[r]);
+            const appIndex = providerContext.current.init.apps[appID];
+            let callBackIndex = 0;
+            if (appIndex.length > 1) {
+              callBackIndex = appIndex.findIndex((id) => {
+                return id === onUpdateID;
+              });
+            }
+            callbacks.current[appID][callBackIndex](data);
+            //data.data.addMessage...
+          },
+          error: (err) => {
+            console.log("SUB ERROR ", err);
+            const appIndex = providerContext.current.init.apps[appID];
+            let callBackIndex = 0;
+            if (appIndex.length > 1) {
+              callBackIndex = appIndex.findIndex((id) => {
+                return id === onUpdateID;
+              });
+            }
+            callbacks.current[appID][callBackIndex]({ error: err });
+          },
+        });
+
+      if (appSubscriptions.current.hasOwnProperty(appID)) {
+        appSubscriptions.current[appID].push(subHandler);
+      } else {
+        appSubscriptions.current[appID] = [subHandler];
+      }
+      resolve(true);
+    });
+  
+  };
+*/
+  const onHomeClick = () => {
+    history.replace("/");
+  };
+  const logOut = () => {
+    //console.log("LOGOUT...");
+    setLogout(true);
+  };
+
   const updateNotification = useCallback(handler => {
     notificationHandler.current = handler;
   }, []);
@@ -489,25 +572,49 @@ query MyQuery2 {
           remoteUser={remoteUser}
           remoteClient={remoteClient}
         >
+          <UserMenuContextProvider
+            onExit={logOut}
+            onHome={onHomeClick}
+            clientHandler={clientHandler.current}
+            activeUser={activeUser.current}
+          >
+            {logout && (
+              <LogoutDialog
+                onClose={onDialogClose}
+                onButtonClick={onDialogClick}
+              />
+            )}
+            <React.Suspense fallback={"Loading ..."}>
+              <Content
+                Component={AppComponent}
+                {...componentProps.current}
+                updateNotificationHandler={updateNotification}
+              />
+            </React.Suspense>
+          </UserMenuContextProvider>
+        </PrifinaProvider>
+      )}
+      {appReady && coreApp !== "DisplayApp" && (
+        <UserMenuContextProvider
+          onExit={logOut}
+          onHome={onHomeClick}
+          clientHandler={clientHandler.current}
+          activeUser={activeUser.current}
+        >
+          {logout && (
+            <LogoutDialog
+              onClose={onDialogClose}
+              onButtonClick={onDialogClick}
+            />
+          )}
           <React.Suspense fallback={"Loading ..."}>
             <Content
               Component={AppComponent}
               {...componentProps.current}
               updateNotificationHandler={updateNotification}
-              activeUser={activeUser.current}
             />
           </React.Suspense>
-        </PrifinaProvider>
-      )}
-      {appReady && coreApp !== "DisplayApp" && (
-        <React.Suspense fallback={"Loading ..."}>
-          <Content
-            Component={AppComponent}
-            {...componentProps.current}
-            updateNotificationHandler={updateNotification}
-            activeUser={activeUser.current}
-          />
-        </React.Suspense>
+        </UserMenuContextProvider>
       )}
       {!appReady && <div />}
     </>
@@ -517,5 +624,3 @@ query MyQuery2 {
 CoreApps.propTypes = {
   app: PropTypes.string,
 };
-
-export default withUsermenu()(CoreApps);

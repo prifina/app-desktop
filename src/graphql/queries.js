@@ -3,6 +3,8 @@ export const getPrifinaUser = `query prifinaUser($id:String!){
           installedApps
           installedWidgets
           appProfile
+          id
+
         }
       }`;
 
@@ -66,6 +68,44 @@ export const listNotifications = `query notificationList($filter: TableNotificat
       owner
       status
       type
+    }
+    nextToken
+  }
+}`;
+
+export const getNotificationCount = `query notificationCount($filter:TableNotificationFilterInput){
+  getNotificationCount(filter: $filter)
+}`;
+
+export const getAddressBook = `query addressBook($id: String!) {
+  getUserAddressBook(id: $id) {
+    id
+    addressBook
+  }
+}`;
+
+export const listNotificationsByDate = `query listNotifications($owner: String!,$filter:TableNotificationByDateFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listNotificationsByDate(owner: $owner, filter: $filter,sortDirection:$sortDirection,limit:$limit,nextToken:$nextToken) {
+    items {
+      body
+      createdAt
+      notificationId
+      owner
+      status
+      type
+      updatedAt
+      sender
+    }
+  }
+}`;
+
+export const listWaiting = `query waitingList($filter:TableWaitingFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listWaiting(filter: $filter, limit: $limit, nextToken: $nextToken,sortDirection:$sortDirection) {
+    items {
+      createdAt
+      endpoint
+      name
+      senderKey
     }
     nextToken
   }

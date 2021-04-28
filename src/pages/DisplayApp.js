@@ -21,9 +21,12 @@ import i18n from "../lib/i18n";
 import Amplify, { API as GRAPHQL, Storage } from "aws-amplify";
 import config from "../config";
 
+import gql from "graphql-tag";
+
 import * as C from "./display-app/components";
 
-import { addSearchResultMutation, addSearchKeyMutation } from "../graphql/api";
+//import { addSearchResultMutation, addSearchKeyMutation } from "../graphql/api";
+import { addSearchResult, addSearchKey } from "../graphql/mutations";
 
 const short = require("short-uuid");
 import PropTypes from "prop-types";
@@ -494,13 +497,26 @@ const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
     setOpen(false);
   };
 
-  const saveSearchKey = searchKey => {
+  const saveSearchKey = async searchKey => {
     if (searchKey.length > 0)
+      await appSyncClient.mutate({
+        mutation: gql(addSearchKey),
+        variables: {
+          input: {
+            owner: currentUser.uuid,
+            searchKey: searchKey,
+            role: activeTab === 0 ? "" : roleKey[activeTab],
+          },
+        },
+      });
+
+    /*
       addSearchKeyMutation(GRAPHQL, {
         owner: currentUser.uuid,
         searchKey: searchKey,
         role: activeTab === 0 ? "" : roleKey[activeTab],
       });
+      */
     /*
 input SearchKeyInput {
 	owner: String!
@@ -509,17 +525,31 @@ input SearchKeyInput {
 }
 */
   };
-  const saveSearchResult = (searchKey, searchResult) => {
+  const saveSearchResult = async (searchKey, searchResult) => {
     if (searchKey.length > 0) {
       const searchBuckeyKey = "search-results/" + short.generate() + ".json";
 
+      await appSyncClient.mutate({
+        mutation: gql(addSearchResult),
+        variables: {
+          input: {
+            owner: currentUser.uuid,
+            searchKey: searchKey,
+            role: activeTab === 0 ? "" : roleKey[activeTab],
+            selectedResult: searchBuckeyKey,
+          },
+        },
+      });
+
+      /*
       addSearchResultMutation(GRAPHQL, {
         owner: currentUser.uuid,
         searchKey: searchKey,
         role: activeTab === 0 ? "" : roleKey[activeTab],
         selectedResult: searchBuckeyKey,
       });
-      Storage.put(searchBuckeyKey, JSON.stringify(searchResult), {
+      */
+      await Storage.put(searchBuckeyKey, JSON.stringify(searchResult), {
         level: "public",
         contentType: "application/json",
 
@@ -687,16 +717,6 @@ input SearchResultInput {
             <TabPanel>Hobbies panel</TabPanel>
           </TabPanelList>
         </Tabs>
-      </div>
-      <div style={{ width: "200px" }}>
-        <button
-          onClick={() => {
-            activeRole("New Role");
-            console.log(check());
-          }}
-        >
-          Checking...
-        </button>
       </div>
     </>
   );

@@ -18,22 +18,17 @@ const StyledBox = styled("div")`
   ${space}
   /* remove flex and safari works....  */ 
   display: flex;
-  opacity:0.999;
   
   height: ${props =>
     props.height
       ? props.height
       : props.theme.componentStyles.input.base.height};
 
-  background-color: #F5F8F7;
-
-/*
       background-color: ${props =>
         props.disabled
           ? props.theme.colors.text.muted
           : props.theme.componentStyles.input.base.backgroundColor ||
             "transparent"};
-            */
   border: ${props =>
     typeof props.borders !== "undefined"
       ? props.borders
@@ -123,7 +118,6 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
         ref={boxRef}
       >
         <LeftIcon iconify={bxPhone} color={"componentPrimary"} size={"17"} />
-
         {children}
       </StyledBox>
       {errorMsg !== "" && inputError && (
@@ -163,34 +157,25 @@ const SelectField = forwardRef(
   ) => {
     const { selectId, boxRef } = useInputContext();
 
-    // const theme = useTheme();
-    // console.log("THEME ", theme);
     //const theme = useTheme();
     //console.log("DEFAULT ", defaultValue);
 
     return (
-      <div
-        style={{
-          display: "inline-block",
-          paddingTop: "3px",
-        }}
-      >
-        <SearchSelect
-          id={selectId}
-          name={selectId}
-          defaultValue={defaultValue}
-          options={options}
-          showList={showList}
-          searchLength={searchLength}
-          size={"sm"}
-          width={"60px"}
-          selectOption={selectOption}
-          containerRef={boxRef}
-          containerOffset={"-38px"}
-          ref={ref}
-          {...props}
-        />
-      </div>
+      <SearchSelect
+        id={selectId}
+        name={selectId}
+        defaultValue={defaultValue}
+        options={options}
+        showList={showList}
+        searchLength={searchLength}
+        size={"sm"}
+        width={"60px"}
+        selectOption={selectOption}
+        containerRef={boxRef}
+        containerOffset={"-38px"}
+        ref={ref}
+        {...props}
+      />
     );
   },
 );

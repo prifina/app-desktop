@@ -165,6 +165,12 @@ export function addRegionCode(region, phone) {
 }
 
 export function isValidNumber(phoneNumber) {
+  // note phone number checking has to support both region/country calling codes and national conventions for writing tel numbers...
+  // also remember this national writing rules changes frequently...
+
+  //https://en.wikipedia.org/wiki/List_of_country_calling_codes
+  //https://en.wikipedia.org/wiki/National_conventions_for_writing_telephone_numbers
+
   //let isValid = false;
   let result = {};
   try {

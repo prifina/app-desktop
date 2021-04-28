@@ -224,7 +224,7 @@ const CreateAccount = props => {
     let phoneState = Object.keys(checkResult).length > 0;
     console.log("PHONE ", checkResult);
     let phoneOpts = {};
-    if (phone.startsWith("+") && changeNumber) {
+    if (phone.startsWith("+") && changeNumber && phoneState) {
       phoneOpts = {
         region: "+" + checkResult.regionCode,
         phoneNumber: checkResult.nationalNumber,
@@ -1016,7 +1016,9 @@ const CreateAccount = props => {
                     )
                   ) {
                     //console.log("PHONE BLUR...");
-                    checkPhone(state.regionCode, e.target.value);
+                    if (e.target.value.length > 4) {
+                      checkPhone(state.regionCode, e.target.value);
+                    }
                   }
                 }}
                 onKeyDown={e => {

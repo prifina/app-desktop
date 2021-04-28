@@ -1,5 +1,5 @@
 import React from "react";
-import { CoreApps } from "../components/CoreApps";
+import CoreApps from "../components/CoreApps";
 
 import { AppContext } from "../lib/contextLib";
 
