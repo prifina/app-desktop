@@ -339,7 +339,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
                                 "APP CLICK ",
                                 prifinaApps.current[appIcon.name].route,
                               );
-                              history.replace(
+                              history.push(
                                 "/" + prifinaApps.current[appIcon.name].route,
                               );
                             }}
