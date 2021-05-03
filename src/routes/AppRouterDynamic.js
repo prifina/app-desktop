@@ -10,7 +10,7 @@ import UnauthenticatedRoute from "./UnauthenticatedRoute";
 //const Dashboard = React.lazy(() => import("../components/Dashboard"));
 //const Login = React.lazy(() => import("../components/Login"));
 const Home = React.lazy(() => import("../pages/Home"));
-
+//import Home from "../pages/Home";
 //const Settings = React.lazy(() => import("../pages/Settings"));
 const Logout = React.lazy(() => import("../pages/Logout"));
 import CoreApps from "../components/CoreApps";

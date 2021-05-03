@@ -368,7 +368,7 @@ Content.propTypes = {
 const Home = props => {
   const history = useHistory();
   const { userAuth, currentUser } = useAppContext();
-
+  console.log("HOME ", currentUser);
   const clientHandler = useRef(null);
   const userData = useRef(null);
 
@@ -389,38 +389,40 @@ const Home = props => {
   };
 
   useEffect(async () => {
-    const currentPrifinaUser = await getPrifinaUserQuery(
-      API,
-      currentUser.prifinaID,
-    );
+    if (Object.keys(currentUser).length > 0) {
+      const currentPrifinaUser = await getPrifinaUserQuery(
+        API,
+        currentUser.prifinaID,
+      );
 
-    const appProfile = JSON.parse(
-      currentPrifinaUser.data.getPrifinaUser.appProfile,
-    );
+      const appProfile = JSON.parse(
+        currentPrifinaUser.data.getPrifinaUser.appProfile,
+      );
 
-    let clientEndpoint =
-      "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
-    let clientRegion = "us-east-1";
+      let clientEndpoint =
+        "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
+      let clientRegion = "us-east-1";
 
-    if (appProfile.hasOwnProperty("endpoint")) {
-      clientEndpoint = appProfile.endpoint;
-      clientRegion = appProfile.region;
+      if (appProfile.hasOwnProperty("endpoint")) {
+        clientEndpoint = appProfile.endpoint;
+        clientRegion = appProfile.region;
+      }
+
+      const client = createClient(clientEndpoint, clientRegion);
+
+      userData.current = currentPrifinaUser.data.getPrifinaUser;
+
+      activeUser.current = {
+        name: appProfile.name,
+        uuid: currentUser.prifinaID,
+        endpoint: clientEndpoint,
+        region: clientRegion,
+      };
+
+      clientHandler.current = client;
+      setInitClient(true);
     }
-
-    const client = createClient(clientEndpoint, clientRegion);
-
-    userData.current = currentPrifinaUser.data.getPrifinaUser;
-
-    activeUser.current = {
-      name: appProfile.name,
-      uuid: currentUser.prifinaID,
-      endpoint: clientEndpoint,
-      region: clientRegion,
-    };
-
-    clientHandler.current = client;
-    setInitClient(true);
-  }, []);
+  }, [currentUser]);
 
   return (
     <>

@@ -151,6 +151,7 @@ export const getPrifinaWidgetsQuery = (API, id) => {
 };
 
 export const getPrifinaUserQuery = (API, id) => {
+  console.log("API ", id);
   return API.graphql({
     query: getPrifinaUser,
     variables: { id: id },
