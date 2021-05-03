@@ -61,3 +61,10 @@ export const addWaiting = `mutation newWaiting($input: WaitingInput) {
     senderKey
   }
 }`;
+
+export const installWidget = `mutation addInstalledWidget($id:String!,$widget:WidgetInput) {
+  addInstalledWidgets(id: $id, widget: $widget) {
+    id
+    installedWidgets
+  }
+}`;

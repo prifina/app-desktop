@@ -15,6 +15,7 @@ import {
   addSearchKey,
   createNotification,
   updateActivity,
+  installWidget,
 } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -33,6 +34,13 @@ input SearchResultInput {
 }
 */
 
+export const installWidgetMutation = (API, id, widget) => {
+  return API.graphql({
+    query: installWidget,
+    variables: { id: id, widget: widget },
+    authMode: "AWS_IAM",
+  });
+};
 export const updateActivityMutation = (API, id, app) => {
   return API.graphql({
     query: updateActivity,

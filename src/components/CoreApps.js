@@ -382,6 +382,7 @@ const CoreApps = props => {
       } else {
         // default componentProps...
         console.log("CURRENT SETTINGS 2", client);
+        componentProps.current.GraphQLClient = GRAPHQL;
         componentProps.current.appSyncClient = client;
         componentProps.current.prifinaID = prifinaID;
         componentProps.current.initials = appProfile.initials;

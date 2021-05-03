@@ -10,7 +10,9 @@ import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
 import { getPrifinaUserQuery } from "../graphql/api";
 
-import { default as DefaultApp } from "../pages/Settings";
+import { default as DefaultApp } from "../pages/AppMarket";
+
+import { useFormFields } from "../lib/formFields";
 
 const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
@@ -37,13 +39,19 @@ const S3Config = {
 
 export default { title: "DefaultApp" };
 
-export const defaultApp = () => {
-  console.log("COMPONENT --->");
+export const defaultApp = props => {
+  console.log("COMPONENT ---> ", props);
   console.log("CONFIG ", config);
   const [settingsReady, setSettingsReady] = useState(false);
   const clientHandler = useRef(null);
 
   const prifinaID = useRef("");
+  const [login, setLogin] = useState(true);
+
+  const [loginFields, handleChange] = useFormFields({
+    username: "",
+    password: "",
+  });
 
   Auth.configure(AUTHConfig);
   Amplify.configure(APIConfig);
@@ -73,40 +81,43 @@ export const defaultApp = () => {
   // get user auth...
   useEffect(async () => {
     try {
-      const session = await Auth.currentSession();
+      if (login) {
+        const session = await Auth.currentSession();
 
-      console.log("SESSION ", session);
-      if (!session) {
-        console.log("NO CURRENT SESSION FOUND");
+        console.log("SESSION ", session);
+        if (!session) {
+          console.log("NO CURRENT SESSION FOUND");
+        }
+        console.log("PRIFINA-ID", session.idToken.payload["custom:prifina"]);
+        prifinaID.current = session.idToken.payload["custom:prifina"];
+
+        const currentPrifinaUser = await getPrifinaUserQuery(
+          GRAPHQL,
+          prifinaID.current,
+        );
+
+        console.log("CURRENT USER ", currentPrifinaUser);
+
+        const appProfile = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.appProfile,
+        );
+        console.log("CURRENT USER ", appProfile, appProfile.initials);
+
+        let clientEndpoint =
+          "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
+        let clientRegion = "us-east-1";
+        if (appProfile.hasOwnProperty("endpoint")) {
+          clientEndpoint = appProfile.endpoint;
+          clientRegion = appProfile.region;
+        }
+
+        clientHandler.current = createClient(clientEndpoint, clientRegion);
+
+        setSettingsReady(true);
       }
-      console.log("PRIFINA-ID", session.idToken.payload["custom:prifina"]);
-      prifinaID.current = session.idToken.payload["custom:prifina"];
-
-      const currentPrifinaUser = await getPrifinaUserQuery(
-        GRAPHQL,
-        prifinaID.current,
-      );
-
-      console.log("CURRENT USER ", currentPrifinaUser);
-
-      const appProfile = JSON.parse(
-        currentPrifinaUser.data.getPrifinaUser.appProfile,
-      );
-      console.log("CURRENT USER ", appProfile, appProfile.initials);
-
-      let clientEndpoint =
-        "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
-      let clientRegion = "us-east-1";
-      if (appProfile.hasOwnProperty("endpoint")) {
-        clientEndpoint = appProfile.endpoint;
-        clientRegion = appProfile.region;
-      }
-
-      clientHandler.current = createClient(clientEndpoint, clientRegion);
-
-      setSettingsReady(true);
     } catch (e) {
       if (typeof e === "string" && e === "No current user") {
+        setLogin(false);
         //const user = await Auth.signIn("tahola", "xxxx");
         //console.log("AUTH ", user);
         //console.log("APP DEBUG ", appCode);
@@ -114,14 +125,41 @@ export const defaultApp = () => {
 
       console.log("AUTH ", e);
     }
-  }, []);
+  }, [login]);
 
   return (
     <>
-      {settingsReady && (
+      {!login && (
+        <div>
+          <div>
+            Username:
+            <input id={"username"} name={"username"} onChange={handleChange} />
+          </div>
+          <div>
+            Password:
+            <input id={"password"} name={"password"} onChange={handleChange} />
+          </div>
+          <div>
+            <button
+              onClick={e => {
+                //console.log(loginFields);
+                Auth.signIn(loginFields.username, loginFields.password).then(
+                  () => {
+                    setLogin(true);
+                  },
+                );
+              }}
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      )}
+      {login && settingsReady && (
         <DefaultApp
           appSyncClient={clientHandler.current}
           prifinaID={prifinaID.current}
+          GraphQLClient={GRAPHQL}
         />
       )}
       {!settingsReady && <div />}
