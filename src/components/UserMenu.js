@@ -12,7 +12,7 @@ import LogoutDialog from "./LogoutDialog";
 const withUsermenu = () => WrappedComponent => {
   const WithUsermenu = props => {
     const history = useHistory();
-    const { userAuth } = useAppContext();
+    const { userAuth, Auth } = useAppContext();
     const [logout, setLogout] = useState(false);
 
     const onDialogClose = (e, action) => {

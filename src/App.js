@@ -153,6 +153,7 @@ function App() {
         AUTHConfig,
         userAuth,
         mobileApp,
+        Auth,
       }}
     >
       <ThemeProvider>
