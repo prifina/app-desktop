@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Box, Flex, Text, Button } from "@blend-ui/core";
 import { ReactComponent as DefaultWidget } from "../assets/third-party-app.svg";
 
@@ -68,8 +68,15 @@ const GlobalStyle = createGlobalStyle`
 }
 `;
 
-const WidgetBox = ({ title, installed, installWidget, name, ...props }) => {
-  //console.log("PROPS ", props);
+const WidgetBox = ({
+  title,
+  installed,
+  installWidget,
+  name,
+  installedWidget,
+  ...props
+}) => {
+  console.log("PROPS ", name, installed, title, installedWidget, props);
   return (
     <WidgetBase>
       <Flex width={"73px"} justifyContent={"center"}>
@@ -81,8 +88,8 @@ const WidgetBox = ({ title, installed, installWidget, name, ...props }) => {
             {title}
           </StyledText>
           <Flex width={"100%"} justifyContent={"flex-end"}>
-            {installed && <InstalledText>Installed</InstalledText>}
-            {!installed && (
+            {installedWidget > -1 && <InstalledText>Installed</InstalledText>}
+            {installedWidget === -1 && (
               <InstallButton
                 onClick={e => {
                   installWidget(e, name);
@@ -102,7 +109,10 @@ const WidgetBox = ({ title, installed, installWidget, name, ...props }) => {
 };
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   console.log("APP MARKET PROPS ", props);
-  const [widgets, setWidgets] = useState({});
+  //const [widgets, setWidgets] = useState({});
+  const widgets = useRef({});
+  const [installedWidgets, setInstalledWidgets] = useState([]);
+
   useEffect(() => {
     getPrifinaWidgetsQuery(GraphQLClient, "WIDGETS").then(res => {
       const widgetData = JSON.parse(res.data.getPrifinaApp.widgets);
@@ -118,7 +128,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         }
       });
       console.log("AVAILABLE WIDGETS ", availableWidgets);
-
+      let currentInstalled = [];
       getPrifinaUserQuery(GraphQLClient, prifinaID).then(res => {
         if (
           res.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
@@ -133,29 +143,59 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
             //availableWidgets[w].installed = true;
             if (availableWidgets.hasOwnProperty(w.name)) {
               availableWidgets[w.name].installed = true;
+              currentInstalled.push(w.name);
             }
           });
           console.log(availableWidgets);
-          setWidgets(availableWidgets);
+          widgets.current = availableWidgets;
+          setInstalledWidgets(currentInstalled);
         } else {
           // no widgets installed....
-          setWidgets(availableWidgets);
+          widgets.current = availableWidgets;
+          setInstalledWidgets(currentInstalled);
         }
       });
     });
   }, []);
-  const installWidget = useCallback((e, name) => {
+  /*
+  const installWidget = useCallback(
+    (e, name) => {
+      console.log("CLICK ", name);
+      //console.log("INSTALL ", widgets);
+
+      installWidgetMutation(GraphQLClient, prifinaID, {
+        name: name,
+        index: -1,
+      }).then(res => {
+        console.log("INSTALL ", res);
+
+        let availableWidgets = widgets;
+        availableWidgets[name].installed = true;
+        setWidgets(availableWidgets);
+        
+      });
+    },
+    [widgets],
+  );
+  */
+  const installWidget = (e, name) => {
     console.log("CLICK ", name);
+    //console.log("INSTALL ", widgets);
+
     installWidgetMutation(GraphQLClient, prifinaID, {
       name: name,
       index: -1,
     }).then(res => {
       console.log("INSTALL ", res);
-      let availableWidgets = widgets;
-      availableWidgets[name].installed = true;
-      setWidgets(availableWidgets);
+
+      //let availableWidgets = widgets.current;
+      //availableWidgets[name].installed = true;
+      widgets.current[name].installed = true;
+
+      setInstalledWidgets(...installedWidgets, name);
     });
-  }, []);
+  };
+  console.log(installedWidgets, widgets.current);
   return (
     <>
       <GlobalStyle />
@@ -164,13 +204,14 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       <Box mt={"40px"} ml={"64px"}>
         <TitleText textStyle={"h4"}>Recommended for you</TitleText>
         <Flex mt={"24px"} flexDirection={"row"} flexWrap="wrap">
-          {Object.keys(widgets).map(w => {
+          {Object.keys(widgets.current).map(w => {
             return (
               <WidgetBox
                 key={w}
                 name={w}
-                {...widgets[w]}
+                {...widgets.current[w]}
                 installWidget={installWidget}
+                installedWidget={installedWidgets.indexOf(w)}
               />
             );
           })}
