@@ -100,6 +100,12 @@ const strings = {
     logoutTitle: "Are you sure you want to sign out?",
     logoutText:
       "You are also logged out from your personal cloud and any local data apps open in this browser.",
+    /* Reset Password */
+    resetPasswordTitle: "Reset password code",
+    resetPasswordText:
+      "We have send you a code to your phone number and email address to reset your password.",
+    sentCodeText:
+      " We have send you a code to your phone number and email address to reset your password.",
   },
 };
 
