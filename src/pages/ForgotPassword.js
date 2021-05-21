@@ -1,6 +1,3 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
-
 import React, { useState, useReducer } from "react";
 
 import config from "../config";
@@ -25,9 +22,7 @@ import { useToast } from "@blend-ui/toast";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
 
-export default { title: "Forgot Password" };
-
-export const ForgotPassword = props => {
+const ForgotPassword = props => {
   const [passwordVerification, setPasswordVerification] = useState([
     false,
     false,
@@ -490,6 +485,4 @@ export const ForgotPassword = props => {
   );
 };
 
-ForgotPassword.story = {
-  name: "Forgot Password",
-};
+export default ForgotPassword;

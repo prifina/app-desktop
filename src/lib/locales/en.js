@@ -104,8 +104,15 @@ const strings = {
     resetPasswordTitle: "Reset password code",
     resetPasswordText:
       "We have send you a code to your phone number and email address to reset your password.",
+    resetPasswordText2:
+      "Please check your phone for your verification code. Your code is six digits long. Complete the fields below to reset your password.",
+    resetPasswordText3:
+      "Your password has been reset. Please login with your new password.",
     sentCodeText:
-      " We have send you a code to your phone number and email address to reset your password.",
+      "We have send you a code to your phone number and email address to reset your password.",
+    newPassword: "New password",
+    confirmNewPassword: "Confirm new password",
+    doneButton: "Done",
   },
 };
 
