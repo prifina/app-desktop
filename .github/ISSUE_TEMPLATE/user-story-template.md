@@ -1,3 +1,12 @@
+---
+name: User Story Template
+about: Use this template to create new issue for user story development
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 *User Story*
 
 **Loom walktrough URL**: [Video name](video Link)
