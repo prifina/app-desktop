@@ -12,6 +12,8 @@ import { useHistory } from "react-router-dom";
 import PasswordField from "../components/PasswordField";
 import ConfirmAuth from "./ConfirmAuth";
 
+import ForgotPassword from "./ForgotPassword";
+
 import {
   validUsername,
   lowerCaseChars,
@@ -75,6 +77,8 @@ const Login = () => {
   const [invalidLogin, setInvalidLogin] = useState(0);
   const [confirmCode, setConfirmCode] = useState(false);
   const [authOptions, setAuthOptions] = useState({});
+
+  const [step, setStep] = useState(0);
 
   const loginClick = async () => {
     setInvalidLogin(0);
@@ -189,6 +193,14 @@ CODE_DELIVERY_DESTINATION: "+********7102"
     e.preventDefault();
   };
 
+  switch (step) {
+    case 0:
+      break;
+    case 1:
+      break;
+    default:
+  }
+
   return (
     <React.Fragment>
       {confirmCode && (
@@ -196,7 +208,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
           <ConfirmAuth backButton={backButtonClick} authOptions={authOptions} />
         </Box>
       )}
-      {!confirmCode && (
+      {!confirmCode && step === 0 && (
         <Box mt={120}>
           <ProgressContainer
             title={i18n.__("loginPage")}
@@ -373,7 +385,13 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 }}
               >
                 <Flex>
-                  <Button variation={"link"} fontSize={"10px"}>
+                  <Button
+                    variation={"link"}
+                    fontSize={"10px"}
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
                     {i18n.__("forgotPassword")}
                   </Button>
                 </Flex>
@@ -404,6 +422,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
           </ProgressContainer>
         </Box>
       )}
+      {step === 1 && <ForgotPassword />}
     </React.Fragment>
   );
 };
