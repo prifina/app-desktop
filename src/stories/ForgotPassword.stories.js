@@ -88,7 +88,14 @@ export const ForgotPassword = props => {
   const [loginFields, handleChange] = useFormFields({
     username: "",
     password: "",
+    confirmationCode: "",
   });
+
+  // const [confirmationFields, handleChange] = useFormFields({
+  //   confirmationCode: "",
+  // });
+  const [inputCode, setInputCodeFocus] = useFocus();
+  const [inputError, setInputError] = useState({ status: false, msg: "" });
 
   //----------------USERNAME------------------------------
 
@@ -130,7 +137,14 @@ export const ForgotPassword = props => {
 
   const isPasswordPossible = () => {
     const errorMsg = i18n.__("invalidEntry");
-
+    if (state.username.value.length === 0) {
+      console.log("check 3");
+      setState({ username: { ...state.username, status: true } });
+      setInputUsernameFocus();
+    } else if (state.username.status) {
+    } else {
+      return true;
+    }
     return true;
   };
 
@@ -165,8 +179,6 @@ export const ForgotPassword = props => {
 
   const checkInputPassword = (password, updateVerification = true) => {
     const checkResult = checkPassword(password, config.passwordLength, [
-      state.firstName.value,
-      state.lastName.value,
       state.username.value,
     ]);
     console.log("PASS CHECK ", checkResult);
@@ -187,7 +199,34 @@ export const ForgotPassword = props => {
     }
   };
 
-  //---------------------------------------------------------------
+  //--------------------------INVITE CODE--------------------------
+
+  const checkInput = code => {
+    const checkResult = onlyDigitChars(code);
+    //console.log(checkResult);
+    let validCode = true;
+    if (!checkResult) {
+      setInputError({ status: true, msg: i18n.__("codeDigitsError") });
+      //alerts.error(i18n.__("codeDigitsError"), {});
+      const errorMsg = i18n.__("codeDigitsError");
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      validCode = false;
+    }
+    if (code.length > 1 && code.length !== 6) {
+      setInputError({ status: true, msg: i18n.__("codeLengthError") });
+      //alerts.error(i18n.__("codeLengthError"), {});
+      const errorMsg = i18n.__("codeLengthError");
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      validCode = false;
+    }
+    if (validCode) {
+      setInputError({ status: false, msg: "" });
+    }
+  };
+
+  //------------------
 
   let stepProgress = 0;
   switch (step) {
@@ -209,6 +248,7 @@ export const ForgotPassword = props => {
 
   return (
     <React.Fragment>
+      {step === 4 && <Login />}
       {step === 0 && (
         <Box mt={120}>
           <ProgressContainer
@@ -258,10 +298,21 @@ export const ForgotPassword = props => {
             </Flex>
             <Box mt={45} mb={30} display={"inline-flex"}>
               <Flex>
-                <Button variation={"outline"}>{i18n.__("Back")}</Button>
+                <Button
+                  variation={"outline"}
+                  onClick={() => {
+                    setStep(4);
+                  }}
+                >
+                  {i18n.__("Back")}
+                </Button>
               </Flex>
               <Flex ml={99}>
                 <Button
+                  disabled={
+                    usernameError.status ||
+                    loginFields.username.length < config.usernameLength
+                  }
                   onClick={() => {
                     setStep(1);
                   }}
@@ -340,11 +391,11 @@ export const ForgotPassword = props => {
                   size={"17"}
                 />
                 <IconField.InputField
-                  autoFocus={true}
+                  // autoFocus={true}
                   placeholder={i18n.__("usernamePlaceholder")}
                   id={"username"}
                   name={"username"}
-                  value={state.username.value}
+                  value={loginFields.username}
                   readOnly
                 />
               </IconField>
@@ -359,6 +410,17 @@ export const ForgotPassword = props => {
                 <IconField.InputField
                   autoFocus={true}
                   placeholder={i18n.__("codePropmt")}
+                  id={"confirmationCode"}
+                  name={"confirmationCode"}
+                  onChange={handleChange}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      checkInput(loginFields.confirmationCode);
+                    }
+                  }}
+                  //errorMsg={inputError.msg}
+                  //error={inputError.status}
+                  ref={inputCode}
                 />
               </IconField>
             </Box>
@@ -447,6 +509,14 @@ export const ForgotPassword = props => {
             </Box>
             <Box mt={45} display="flex" justifyContent="center">
               <Button
+                disabled={
+                  inputError.status ||
+                  passwordError.status ||
+                  usernameError.status ||
+                  loginFields.confirmationCode.length !== 6 ||
+                  loginFields.username.length < config.usernameLength ||
+                  loginFields.password.length < config.passwordLength
+                }
                 onClick={() => {
                   setStep(3);
                 }}
@@ -481,6 +551,7 @@ export const ForgotPassword = props => {
                 }}
               >
                 {i18n.__("loginButton")}
+                {/* Leads to first page of this flow - to be implemented... */}
               </Button>
             </Box>
           </ProgressContainer>
