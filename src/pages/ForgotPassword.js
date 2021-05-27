@@ -13,7 +13,9 @@ import { checkPassword, validUsername } from "../lib/utils";
 
 import { checkUsernameQuery } from "../graphql/api";
 
-import { ReactComponent as CheckmarkImage } from "../assets/checkmark.svg";
+import { BlendIcon } from "@blend-ui/icons";
+
+import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
 
 import i18n from "../lib/i18n";
 
@@ -539,7 +541,7 @@ const ForgotPassword = props => {
               </Text>
             </Box>
             <Box mt={50} display="flex" justifyContent="center">
-              <CheckmarkImage size={89} />
+              <BlendIcon iconify={bxCheckCircle} color="#00847A" size="89" />
             </Box>
             <Box mt={65} mb={30} display="flex" justifyContent="center">
               <Button

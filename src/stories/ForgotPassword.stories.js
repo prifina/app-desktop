@@ -16,7 +16,9 @@ import { checkPassword, validUsername } from "../lib/utils";
 
 import { checkUsernameQuery } from "../graphql/api";
 
-import { ReactComponent as CheckmarkImage } from "../assets/checkmark.svg";
+import { BlendIcon } from "@blend-ui/icons";
+
+import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
 
 import i18n from "../lib/i18n";
 
@@ -509,14 +511,14 @@ export const ForgotPassword = props => {
             </Box>
             <Box mt={45} display="flex" justifyContent="center">
               <Button
-                disabled={
-                  inputError.status ||
-                  passwordError.status ||
-                  usernameError.status ||
-                  loginFields.confirmationCode.length !== 6 ||
-                  loginFields.username.length < config.usernameLength ||
-                  loginFields.password.length < config.passwordLength
-                }
+                // disabled={
+                //   inputError.status ||
+                //   passwordError.status ||
+                //   usernameError.status ||
+                //   loginFields.confirmationCode.length !== 6 ||
+                //   loginFields.username.length < config.usernameLength ||
+                //   loginFields.password.length < config.passwordLength
+                // }
                 onClick={() => {
                   setStep(3);
                 }}
@@ -542,7 +544,12 @@ export const ForgotPassword = props => {
               </Text>
             </Box>
             <Box mt={50} display="flex" justifyContent="center">
-              <CheckmarkImage size={89} />
+              <BlendIcon
+                iconify={bxCheckCircle}
+                // color="componentPrimary"
+                color="#00847A"
+                size="89"
+              />
             </Box>
             <Box mt={65} mb={30} display="flex" justifyContent="center">
               <Button
