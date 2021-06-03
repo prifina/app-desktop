@@ -102,9 +102,9 @@ const strings = {
     logoutText:
       "You are also logged out from your personal cloud and any local data apps open in this browser.",
     /* Recover Username */
-    recoverUsernameTitle: "Recover Username",
+    recoverUsernameTitle: "Recover username",
     recoverUsernameText1:
-      "Enter your phone number. We will send you a confirmation code to recover your Username.",
+      "Enter your phone number. We will send you a confirmation code to recover your username.",
     recoverUsernameText2:
       "If a user account with that phone number exists, we have sent a username to that number.",
     useEmail: "Do you want to use your email adress?",
