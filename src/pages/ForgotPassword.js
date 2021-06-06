@@ -50,7 +50,6 @@ const ForgotPassword = props => {
         valid: false,
         value: "",
       },
-
       passwordConfirm: {
         status: false,
         msg: "",
@@ -60,8 +59,13 @@ const ForgotPassword = props => {
     },
   );
 
+  const [inputSelect, setSelectFocus] = useFocus();
   const [inputUsername, setInputUsernameFocus] = useFocus();
+  const [inputEmail, setInputEmailFocus] = useFocus();
+  const [inputPhone, setInputPhoneFocus] = useFocus();
   const [inputPassword, setInputPasswordFocus] = useFocus();
+  const [inputFirstname, setInputFirstnameFocus] = useFocus();
+  const [inputLastname, setInputLastnameFocus] = useFocus();
 
   const alerts = useToast();
 
@@ -136,14 +140,44 @@ const ForgotPassword = props => {
 
   const isPasswordPossible = () => {
     const errorMsg = i18n.__("invalidEntry");
-    if (state.username.value.length === 0) {
+    if (state.firstName.value.length === 0) {
+      console.log("check 1");
+      setState({ firstName: { ...state.firstName, status: true } });
+      setInputFirstnameFocus();
+    } else if (state.lastName.value.length === 0) {
+      console.log("check 2");
+      setState({ lastName: { ...state.lastName, status: true } });
+      setInputLastnameFocus();
+    } else if (state.username.value.length === 0) {
       console.log("check 3");
       setState({ username: { ...state.username, status: true } });
       setInputUsernameFocus();
     } else if (state.username.status) {
+      console.log("check 5");
+      setInputUsernameFocus();
+    } else if (state.email.status && state.email.value.length === 0) {
+      console.log("check 6");
+      setInputEmailFocus();
+    } else if (state.firstName.status) {
+      console.log("check 7");
+      setInputFirstnameFocus();
+    } else if (state.lastName.status) {
+      console.log("check 8");
+      setInputLastnameFocus();
+    } else if (
+      state.phoneNumber.status &&
+      state.phoneNumber.value.length === 0
+    ) {
+      console.log("check 8");
+
+      setInputPhoneFocus();
     } else {
+      console.log("ALL GOOD...");
       return true;
     }
+    if (!alerts.check().some(alert => alert.message === errorMsg))
+      alerts.error(errorMsg, {});
+    // had to set to true, couldn't check firstName, email....
     return true;
   };
 
@@ -177,8 +211,12 @@ const ForgotPassword = props => {
   };
 
   const checkInputPassword = (password, updateVerification = true) => {
+    //console.log(password);
     const checkResult = checkPassword(password, config.passwordLength, [
+      // state.firstName.value,
+
       state.username.value,
+      /* state.email.value, */
     ]);
     console.log("PASS CHECK ", checkResult);
     setPasswordVerification(checkResult);
@@ -257,11 +295,11 @@ const ForgotPassword = props => {
             progress={stepProgress}
           >
             <Box mt={20}>
-              <Text fontSize={12} textAlign={"center"}>
+              <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("resetPasswordText")}
               </Text>
             </Box>
-            <Box mt={55}>
+            <Box mt={62}>
               <IconField>
                 <IconField.LeftIcon
                   iconify={bxUser}
@@ -289,7 +327,7 @@ const ForgotPassword = props => {
             </Box>
             <Flex mt={28} justifyContent={"center"}>
               <Text textAlign={"center"} fontSize={10}>
-                {i18n.__("forgotUsername")}
+                {i18n.__("forgotUsername2")}
               </Text>
               <Button variation={"link"} size="xs" paddingLeft={5}>
                 {i18n.__("sendAgainLinkText")}
@@ -332,16 +370,16 @@ const ForgotPassword = props => {
             minHeight={406}
           >
             <Box mt={70}>
-              <Text fontSize={12} textAlign={"center"}>
+              <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("sentCodeText")}
               </Text>
             </Box>
-            <Flex mt={62} justifyContent={"center"}>
+            <Flex mt={66} justifyContent={"center"}>
               <Text textAlign={"center"} fontSize={10}>
-                {i18n.__("codeMissing")}
+                {i18n.__("codeMissing2")}
               </Text>
               <Button variation="link" size="xs" paddingLeft={5}>
-                {i18n.__("sendAgainLinkText")}
+                {i18n.__("sendAgainLinkText2")}
               </Button>
             </Flex>
             <Box mt={45} display={"inline-flex"}>
@@ -369,20 +407,20 @@ const ForgotPassword = props => {
         </Box>
       )}
       {step === 2 && (
-        <Box mt={120}>
+        <Box mt={40}>
           <ProgressContainer
             title={i18n.__("resetPasswordTitle")}
             progress={50}
             pr={19}
-            minHeight={526}
+            minHeight={580}
             progress={stepProgress}
           >
             <Box mt={20}>
-              <Text fontSize={12} textAlign={"center"}>
+              <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("resetPasswordText2")}
               </Text>
             </Box>
-            <Box mt={45}>
+            <Box mt={52}>
               <IconField>
                 <IconField.LeftIcon
                   iconify={bxUser}
@@ -417,8 +455,8 @@ const ForgotPassword = props => {
                       checkInput(loginFields.confirmationCode);
                     }
                   }}
-                  //errorMsg={inputError.msg}
-                  //error={inputError.status}
+                  // errorMsg={inputError.msg}
+                  // error={inputError.status}
                   ref={inputCode}
                 />
               </IconField>
@@ -506,7 +544,7 @@ const ForgotPassword = props => {
                 tabIndex="4"
               />
             </Box>
-            <Box mt={45} display="flex" justifyContent="center">
+            <Box mt={37} display="flex" justifyContent="center">
               <Button
                 disabled={
                   inputError.status ||
@@ -536,12 +574,17 @@ const ForgotPassword = props => {
             progress={stepProgress}
           >
             <Box mt={20}>
-              <Text fontSize={12} textAlign="center">
+              <Text fontSize={16} textAlign="center">
                 {i18n.__("resetPasswordText3")}
               </Text>
             </Box>
             <Box mt={50} display="flex" justifyContent="center">
-              <BlendIcon iconify={bxCheckCircle} color="#00847A" size="89" />
+              <BlendIcon
+                iconify={bxCheckCircle}
+                // color="componentPrimary"
+                color="#00847A"
+                size="89"
+              />
             </Box>
             <Box mt={65} mb={30} display="flex" justifyContent="center">
               <Button
