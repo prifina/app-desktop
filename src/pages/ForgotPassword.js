@@ -27,6 +27,8 @@ import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
 
 const ForgotPassword = props => {
+  const { colors } = useTheme();
+
   const [passwordVerification, setPasswordVerification] = useState([
     false,
     false,
@@ -593,8 +595,7 @@ const ForgotPassword = props => {
             <Box mt={50} display="flex" justifyContent="center">
               <BlendIcon
                 iconify={bxCheckCircle}
-                // color="componentPrimary"
-                color="#00847A"
+                color={colors.componentPrimary}
                 size="89"
               />
             </Box>
