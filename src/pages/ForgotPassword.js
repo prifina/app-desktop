@@ -31,7 +31,7 @@ const ForgotPassword = props => {
     false,
     false,
     false,
-    false,
+    true,
     false,
   ]);
 
