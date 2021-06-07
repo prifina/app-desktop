@@ -56,6 +56,18 @@ const ForgotPassword = props => {
         valid: false,
         value: "",
       },
+      lastName: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: "",
+      },
+      firstName: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: "",
+      },
     },
   );
 
