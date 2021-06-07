@@ -102,6 +102,7 @@ const Login = () => {
           //normal login...
           //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
         }
+        alerts.info(i18n.__("confirmationCodeSent"), {});
         setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
         setConfirmCode(true);
       }
@@ -278,7 +279,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 name={"password"}
                 onFocus={e => {
                   if (loginFields.username.length === 0) {
-                    checkUsername("");
+                    //checkUsername("");
                     setInputUsernameFocus();
                     e.preventDefault();
                   }
@@ -352,23 +353,29 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                 }}
                 onBlur={e => {
-                  const passwordError = checkPassword(e.target.value, true);
-                  if (passwordError) {
-                    const errorMsg = i18n.__("passwordQuality");
-                    if (
-                      !alerts.check().some(alert => alert.message === errorMsg)
-                    )
-                      alerts.error(errorMsg, {});
-                    setPasswordError({
-                      status: true,
-                    });
+                  if (loginFields.username.length > 0) {
+                    const passwordError = checkPassword(e.target.value, true);
 
-                    setInputPasswordFocus();
-                    e.preventDefault();
-                  } else {
-                    setPasswordError({
-                      status: false,
-                    });
+                    if (passwordError) {
+                      const errorMsg = i18n.__("passwordQuality");
+                      console.log("ALERTS ", alerts.check());
+                      if (
+                        !alerts
+                          .check()
+                          .some(alert => alert.message === errorMsg)
+                      )
+                        alerts.error(errorMsg, {});
+                      setPasswordError({
+                        status: true,
+                      });
+
+                      setInputPasswordFocus();
+                      e.preventDefault();
+                    } else {
+                      setPasswordError({
+                        status: false,
+                      });
+                    }
                   }
                 }}
                 ref={inputPassword}

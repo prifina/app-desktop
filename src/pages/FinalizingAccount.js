@@ -91,7 +91,7 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
     <StyledBox>
       <LoaderBox>
         <Text as={"h1"} textAlign={"center"}>
-          This process may take a few secords
+          {i18n.__("finalizeText")}
         </Text>
         <Flex justifyContent={"center"} mt={131}>
           <DotLoader />
