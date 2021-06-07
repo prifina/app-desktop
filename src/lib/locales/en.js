@@ -38,6 +38,8 @@ const strings = {
     existingAccount: "Have an account?",
     acceptTerms: "Please approve terms of use to continue.",
 
+    finalizeText: "This process may take a few seconds",
+
     /* Landing page */
     loginWelcomeMessage: "My Prifina",
     loginLandingPage: "Login to access your personal data cloud.",
@@ -97,6 +99,9 @@ const strings = {
     authConfirmTitle: "Enter authentication code",
     authConfirmationText:
       "We've sent you the authentication code. Please enter it below to login.",
+    confirmationCodeSent:
+      "Authentication code was sent to your vefified phone number.",
+
     /* Logout dialog */
     logoutTitle: "Are you sure you want to sign out?",
     logoutText:
