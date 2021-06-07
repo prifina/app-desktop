@@ -21,7 +21,7 @@ import i18n from "../lib/i18n";
 
 import Login from "./Login";
 
-import { Box, Flex, Button, Text, IconField } from "@blend-ui/core";
+import { Box, Flex, Button, Text, IconField, useTheme } from "@blend-ui/core";
 import { useToast } from "@blend-ui/toast";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
