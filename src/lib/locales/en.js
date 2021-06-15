@@ -105,6 +105,22 @@ const strings = {
     logoutTitle: "Are you sure you want to sign out?",
     logoutText:
       "You are also logged out from your personal cloud and any local data apps open in this browser.",
+    /* Reset Password */
+    resetPasswordTitle: "Reset password code",
+    resetPasswordText:
+      "Enter your username. We will send you a confirmation code to reset your password.",
+    resetPasswordText2:
+      "Please check your phone or email for your verification code. Your code is six digits long. Complete the fields below to reset your password.",
+    resetPasswordText3:
+      "Your password has been reset. Please login with your new password.",
+    sentCodeText:
+      "We have sent you a code to your phone number and email address to reset your password.",
+    newPassword: "New password",
+    confirmNewPassword: "Confirm new password",
+    doneButton: "Done",
+    codeMissing2: "Did not receive your code?",
+    sendAgainLinkText2: "Click here to resend.",
+    forgotUsername2: "Forgot your username?",
   },
 };
 
