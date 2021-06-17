@@ -191,7 +191,7 @@ const PasswordField = forwardRef(
           />
           <Box display={"inline-flex"} onClick={onHide}>
             <IconField.RightIcon
-              iconify={hidePassword ? eyeIcon : bxHide}
+              iconify={hidePassword ? bxHide : eyeIcon}
               color={"componentPrimary"}
               size={"17"}
             />
