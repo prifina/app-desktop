@@ -1,14 +1,22 @@
 // /* global localStorage */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 //import { useHistory } from "react-router-dom";
 
-import { withRouter } from "react-router-dom";
+import { withRouter, useLocation, useHistory } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
 import { AppContext } from "./lib/contextLib";
-import Amplify, { Auth } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import { ThemeProvider, baseStyles } from "@blend-ui/core";
 import { createGlobalStyle } from "styled-components";
+
+import sha512 from "crypto-js/sha512";
+import Base64 from "crypto-js/enc-base64";
+
+import {
+  addPrifinaSessionMutation,
+  getPrifinaSessionQuery,
+} from "./graphql/api";
 
 import config from "./config";
 
@@ -34,7 +42,7 @@ const AUTHConfig = {
   userPoolWebClientId: config.cognito.APP_CLIENT_ID,
   region: config.main_region,
 };
-
+/*
 async function initAuth(newAuth = false) {
   Auth.configure(AUTHConfig);
   Amplify.configure(APIConfig);
@@ -54,11 +62,15 @@ async function initAuth(newAuth = false) {
 
   return session;
 }
+*/
 
 function App() {
   //const history = useHistory();
   console.log("APP START");
-
+  Auth.configure(AUTHConfig);
+  API.configure(APIConfig);
+  const { pathname, search } = useLocation();
+  const history = useHistory();
   //console.log(JSON.stringify(countryList()));
   //window.matchMedia('(max-width: 600px)');
   const userAgent =
@@ -89,16 +101,39 @@ function App() {
     },
   );
 
+  const refreshSession = useRef(false);
+
   useEffect(() => {
     async function onLoad() {
       let _currentUser = {};
+      const tracker = Base64.stringify(sha512(window.deviceFingerPrint));
+      const lastAuthUser = localStorage.getItem(
+        "CognitoIdentityServiceProvider." +
+          config.cognito.APP_CLIENT_ID +
+          ".LastAuthUser",
+      );
+      const currentIdToken = localStorage.getItem(
+        "CognitoIdentityServiceProvider." +
+          config.cognito.APP_CLIENT_ID +
+          "." +
+          lastAuthUser +
+          ".idToken",
+      );
+      const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
 
       try {
-        //await Auth.currentSession();
-        // console.log("AUTH CHECK ", isAuthenticating);
-        // check if config exists...
-        //console.log("AMPLIFY ", Amplify.configure(), Auth.configure());
-        const _currentSession = await initAuth(false);
+        if (
+          lastIdentityPool !== null &&
+          Auth._config.identityPoolId !== lastIdentityPool
+        ) {
+          console.log("CHANGE IDPOOL");
+          let currentConfig = Auth._config;
+          currentConfig.identityPoolId = lastIdentityPool;
+          Auth.configure(currentConfig);
+        }
+        const _currentSession = await Auth.currentSession();
+
+        //const _currentSession = await initAuth(false);
         //console.log("AUTH ", Auth);
         //const _currentSession = await Auth.currentSession();
         //Auth.currentAuthenticatedUser().then((user) => console.log(user));
@@ -115,6 +150,53 @@ function App() {
             client: token["aud"],
             prifinaID: token["custom:prifina"],
           };
+
+          if (
+            refreshSession.current ||
+            currentIdToken !== _currentSession.getIdToken().jwtToken
+          ) {
+            const localStorageKeys = Object.keys(window.localStorage);
+            let tokens = {};
+            localStorageKeys.forEach(key => {
+              if (
+                key.startsWith(
+                  "CognitoIdentityServiceProvider." +
+                    config.cognito.APP_CLIENT_ID +
+                    "." +
+                    lastAuthUser,
+                )
+              ) {
+                tokens[key] = localStorage.getItem(key);
+              }
+              if (key.startsWith("CognitoIdentityId")) {
+                tokens[key] = localStorage.getItem(key);
+              }
+
+              if (
+                key.startsWith(
+                  "CognitoIdentityServiceProvider." +
+                    config.cognito.APP_CLIENT_ID +
+                    ".LastAuthUser",
+                )
+              ) {
+                tokens[key] = localStorage.getItem(key);
+              }
+            });
+
+            //CognitoIdentityId-us-east-1:27d0bb9c-b563-497b-ad0f-82b0ceb9eb0c
+            refreshSession.current = false;
+            console.log("UPDATE SESSION...");
+
+            const prifinaSession = await addPrifinaSessionMutation(API, {
+              tracker: tracker,
+              tokens: JSON.stringify(tokens),
+              expireToken: _currentSession.getIdToken().getExpiration(),
+              expire:
+                _currentSession.getIdToken().getIssuedAt() +
+                REFRESH_TOKEN_EXPIRY * 24 * 60 * 60,
+            });
+            console.log("SESSION ", prifinaSession);
+          }
         }
         //const prifinaID = session.idToken.payload["custom:prifina"];
         setState({
@@ -124,6 +206,37 @@ function App() {
         });
       } catch (e) {
         console.log("ERR ", e);
+        if (typeof e === "string" && e === "No current user") {
+          const prifinaSession = await getPrifinaSessionQuery(API, tracker);
+          console.log("AUTH SESSION ", prifinaSession);
+          if (prifinaSession.data.getSession === null) {
+            localStorage.removeItem("LastSessionIdentityPool");
+            refreshSession.current = true;
+            //setLogin(false);
+            // redirect to login page with path+query...
+            console.log("REDIRECT PATH", pathname);
+            console.log("REDIRECT SEARCH", search);
+            // ?redirect=/
+            if (search.startsWith("?redirect")) {
+              history.replace("/login" + search);
+            } else {
+              history.replace("/login?redirect=" + pathname + search);
+            }
+          } else {
+            let tokens = JSON.parse(prifinaSession.data.getSession.tokens);
+            Object.keys(tokens).forEach(key => {
+              localStorage.setItem(key, tokens[key]);
+            });
+            //CognitoIdentityId-us-east-1:27d0bb9c-b563-497b-ad0f-82b0ceb9eb0c
+            localStorage.setItem(
+              "LastSessionIdentityPool",
+              prifinaSession.data.getSession.identityPool,
+            );
+
+            console.log("AUTH OBJ ", Auth);
+            window.location.reload();
+          }
+        }
         if (e !== "No current user") {
         }
         //userHasAuthenticated(true);

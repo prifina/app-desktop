@@ -68,3 +68,7 @@ export const installWidget = `mutation addInstalledWidget($id:String!,$widget:Wi
     installedWidgets
   }
 }`;
+
+export const addPrifinaSession = `mutation addSession($input:SessionInput) {
+  addSession(input: $input)
+}`;

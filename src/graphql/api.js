@@ -7,6 +7,7 @@ import {
   getPrifinaApps,
   getPrifinaWidgets,
   getPrifinaUser,
+  getPrifinaSession,
 } from "./queries";
 import {
   verifyCode,
@@ -16,6 +17,7 @@ import {
   createNotification,
   updateActivity,
   installWidget,
+  addPrifinaSession,
 } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -155,6 +157,22 @@ export const getPrifinaUserQuery = (API, id) => {
   return API.graphql({
     query: getPrifinaUser,
     variables: { id: id },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const addPrifinaSessionMutation = (API, input) => {
+  return API.graphql({
+    query: addPrifinaSession,
+    variables: { input: input },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const getPrifinaSessionQuery = (API, tracker) => {
+  return API.graphql({
+    query: getPrifinaSession,
+    variables: { tracker: tracker },
     authMode: "AWS_IAM",
   });
 };
