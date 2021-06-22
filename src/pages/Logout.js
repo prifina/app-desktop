@@ -10,15 +10,26 @@ import { useAppContext } from "../lib/contextLib";
 import i18n from "../lib/i18n";
 i18n.init();
 
-const Logout = (props) => {
+const Logout = props => {
   const history = useHistory();
   const { userAuth } = useAppContext();
 
-  const buttonClick = async (e) => {
+  const buttonClick = async e => {
     try {
       //{ global: true });
 
       await Auth.signOut();
+      const localStorageKeys = Object.keys(window.localStorage);
+
+      localStorageKeys.forEach(key => {
+        if (key.startsWith("CognitoIdentityServiceProvider.")) {
+          localStorage.removeItem(key);
+        }
+        if (key.startsWith("CognitoIdentityId")) {
+          localStorage.removeItem(key);
+        }
+      });
+
       userAuth(false);
       history.replace("/");
       // otherwise page is not reloaded....

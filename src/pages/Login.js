@@ -266,8 +266,16 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 id={"password"}
                 name={"password"}
                 onFocus={e => {
-                  if (loginFields.username.length === 0) {
+                  if (
+                    loginFields.username.length === 0 ||
+                    document.querySelector("input#username").value.length === 0
+                  ) {
                     //checkUsername("");
+                    console.log(
+                      "PASSWORD ON FOCUS CHECK...",
+                      loginFields.username.length,
+                      document.querySelector("input#username").value.length,
+                    );
                     setInputUsernameFocus();
                     e.preventDefault();
                   }
@@ -341,7 +349,9 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                 }}
                 onBlur={e => {
-                  if (loginFields.username.length > 0) {
+                  if (
+                    document.querySelector("input#username").value.length > 0
+                  ) {
                     const passwordError = checkPassword(e.target.value, true);
 
                     if (passwordError) {

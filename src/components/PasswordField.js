@@ -189,11 +189,16 @@ const PasswordField = forwardRef(
             {...props}
             ref={mergeRefs(setReferenceElement, ref)}
           />
-          <Box display={"inline-flex"} onClick={onHide}>
+          <Box
+            display={"inline-flex"}
+            onClick={onHide}
+            className={"PasswordRightIcon"}
+          >
             <IconField.RightIcon
               iconify={hidePassword ? eyeIcon : bxHide}
               color={"componentPrimary"}
               size={"17"}
+              className={hidePassword ? "EyeIcon" : "HideIcon"}
             />
           </Box>
         </IconField>

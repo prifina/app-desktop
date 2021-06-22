@@ -19,8 +19,249 @@ import {
   isValid,
   parsePhoneNumber,
 } from "libphonenumber-js";
-const countries = require("i18n-iso-countries");
-countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
+//const countries = require("i18n-iso-countries");
+//countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
+const countries = require("countries-list").countries;
+
+const convertList = {
+  "democratic-republic-of-the-congo": "congo-kinshasa",
+  "republic-of-the-congo": "congo-brazzaville",
+  "czech-republic": "czechia",
+
+  macao: "macau-sar-china",
+  "hong-kong": "hong-kong-sar-china",
+  tonga: "tonga",
+  "saint-vincent-and-the-grenadines": "st-vincent-and-grenadines",
+  palestine: "palestinian-territories",
+  "myanmar-[burma]": "myanmar",
+  "saint-helena": "st-helena",
+  "u.s.-virgin-islands": "us-virgin-islands",
+  "saint-lucia": "st-lucia",
+  "saint-kitts-and-nevis": "st-kitts-and-nevis",
+  "north-macedonia": "macedonia",
+};
+
+const iconsList = [
+  "flag-for-andorra",
+  "flag-for-afghanistan",
+  "flag-for-albania",
+  "flag-for-algeria",
+  "flag-for-angola",
+  "flag-for-anguilla",
+  "flag-for-antigua-and-barbuda",
+  "flag-for-argentina",
+  "flag-for-armenia",
+  "flag-for-aruba",
+  "flag-for-ascension-island",
+  "flag-for-australia",
+  "flag-for-austria",
+  "flag-for-azerbaijan",
+  "flag-for-bahamas",
+  "flag-for-bahrain",
+  "flag-for-bangladesh",
+  "flag-for-barbados",
+  "flag-for-belarus",
+  "flag-for-belgium",
+  "flag-for-belize",
+  "flag-for-benin",
+  "flag-for-bermuda",
+  "flag-for-bhutan",
+  "flag-for-bolivia",
+  "flag-for-bosnia-and-herzegovina",
+  "flag-for-botswana",
+  "flag-for-brazil",
+  "flag-for-brunei",
+  "flag-for-bulgaria",
+  "flag-for-burkina-faso",
+  "flag-for-burundi",
+  "flag-for-cambodia",
+  "flag-for-cameroon",
+  "flag-for-canada",
+  "flag-for-cape-verde",
+  "flag-for-cayman-islands",
+  "flag-for-central-african-republic",
+  "flag-for-chad",
+  "flag-for-chile",
+  "flag-for-china",
+  "flag-for-colombia",
+  "flag-for-comoros",
+  "flag-for-congo-brazzaville",
+  "flag-for-congo-kinshasa",
+  "flag-for-costa-rica",
+  "flag-for-cote-divoire",
+  "flag-for-croatia",
+  "flag-for-crossed-flags",
+  "flag-for-cuba",
+  "flag-for-cyprus",
+  "flag-for-czechia",
+  "flag-for-denmark",
+  "flag-for-djibouti",
+  "flag-for-dominica",
+  "flag-for-dominican-republic",
+  "flag-for-ecuador",
+  "flag-for-egypt",
+  "flag-for-el-salvador",
+  "flag-for-equatorial-guinea",
+  "flag-for-eritrea",
+  "flag-for-estonia",
+  "flag-for-ethiopia",
+  "flag-for-falkland-islands",
+  "flag-for-faroe-islands",
+  "flag-for-fiji",
+  "flag-for-finland",
+  "flag-for-france",
+  "flag-for-french-polynesia",
+  "flag-for-gabon",
+  "flag-for-gambia",
+  "flag-for-georgia",
+  "flag-for-germany",
+  "flag-for-ghana",
+  "flag-for-gibraltar",
+  "flag-for-greece",
+  "flag-for-greenland",
+  "flag-for-grenada",
+  "flag-for-guam",
+  "flag-for-guatemala",
+  "flag-for-guinea-bissau",
+  "flag-for-guinea",
+  "flag-for-guyana",
+  "flag-for-haiti",
+  "flag-for-honduras",
+  "flag-for-hong-kong-sar-china",
+  "flag-for-hungary",
+  "flag-for-iceland",
+  "flag-for-india",
+  "flag-for-indonesia",
+  "flag-for-iran",
+  "flag-for-iraq",
+  "flag-for-ireland",
+  "flag-for-israel",
+  "flag-for-italy",
+  "flag-for-jamaica",
+  "flag-for-japan",
+  "flag-for-jersey",
+  "flag-for-jordan",
+  "flag-for-kazakhstan",
+  "flag-for-kenya",
+  "flag-for-kiribati",
+  "flag-for-kosovo",
+  "flag-for-kuwait",
+  "flag-for-kyrgyzstan",
+  "flag-for-laos",
+  "flag-for-latvia",
+  "flag-for-lebanon",
+  "flag-for-lesotho",
+  "flag-for-liberia",
+  "flag-for-libya",
+  "flag-for-liechtenstein",
+  "flag-for-lithuania",
+  "flag-for-luxembourg",
+  "flag-for-macao-sar-china",
+  "flag-for-macedonia",
+  "flag-for-madagascar",
+  "flag-for-malawi",
+  "flag-for-malaysia",
+  "flag-for-maldives",
+  "flag-for-mali",
+  "flag-for-malta",
+  "flag-for-marshall-islands",
+  "flag-for-mauritania",
+  "flag-for-mauritius",
+  "flag-for-mexico",
+  "flag-for-micronesia",
+  "flag-for-moldova",
+  "flag-for-monaco",
+  "flag-for-mongolia",
+  "flag-for-montenegro",
+  "flag-for-montserrat",
+  "flag-for-morocco",
+  "flag-for-mozambique",
+  "flag-for-myanmar",
+  "flag-for-namibia",
+  "flag-for-nauru",
+  "flag-for-nepal",
+  "flag-for-netherlands",
+  "flag-for-new-caledonia",
+  "flag-for-new-zealand",
+  "flag-for-nicaragua",
+  "flag-for-niger",
+  "flag-for-nigeria",
+  "flag-for-niue",
+  "flag-for-north-korea",
+  "flag-for-norway",
+  "flag-for-oman",
+  "flag-for-pakistan",
+  "flag-for-palau",
+  "flag-for-palestinian-territories",
+  "flag-for-panama",
+  "flag-for-papua-new-guinea",
+  "flag-for-paraguay",
+  "flag-for-peru",
+  "flag-for-philippines",
+  "flag-for-poland",
+  "flag-for-portugal",
+  "flag-for-puerto-rico",
+  "flag-for-qatar",
+  "flag-for-romania",
+  "flag-for-russia",
+  "flag-for-rwanda",
+  "flag-for-samoa",
+  "flag-for-san-marino",
+  "flag-for-sao-tome-and-principe",
+  "flag-for-saudi-arabia",
+  "flag-for-senegal",
+  "flag-for-serbia",
+  "flag-for-seychelles",
+  "flag-for-sierra-leone",
+  "flag-for-singapore",
+  "flag-for-slovakia",
+  "flag-for-slovenia",
+  "flag-for-solomon-islands",
+  "flag-for-somalia",
+  "flag-for-south-africa",
+  "flag-for-south-korea",
+  "flag-for-spain",
+
+  "flag-for-sri-lanka",
+  "flag-for-st-helena",
+  "flag-for-st-kitts-and-nevis",
+  "flag-for-st-lucia",
+  "flag-for-st-vincent-and-grenadines",
+  "flag-for-sudan",
+  "flag-for-suriname",
+  "flag-for-sweden",
+  "flag-for-switzerland",
+  "flag-for-syria",
+  "flag-for-taiwan",
+  "flag-for-tajikistan",
+  "flag-for-tanzania",
+  "flag-for-thailand",
+  "flag-for-timor-leste",
+  "flag-for-togo",
+  "flag-for-trinidad-and-tobago",
+  "flag-for-tunisia",
+  "flag-for-turkey",
+  "flag-for-turkmenistan",
+  "flag-for-tuvalu",
+  "flag-for-uganda",
+  "flag-for-ukraine",
+  "flag-for-united-arab-emirates",
+  "flag-for-united-kingdom",
+  "flag-for-united-states",
+  "flag-for-uruguay",
+  "flag-for-us-virgin-islands",
+  "flag-for-uzbekistan",
+  "flag-for-vanuatu",
+
+  "flag-for-vatican-city",
+  "flag-for-venezuela",
+  "flag-for-vietnam",
+  "flag-for-wallis-and-futuna",
+  "flag-for-western-sahara",
+  "flag-for-yemen",
+  "flag-for-zambia",
+  "flag-for-zimbabwe",
+];
 
 // eslint-disable-next-line
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -96,7 +337,7 @@ export function checkPassword(password, requiredLength, checkList) {
   return checkResult;
 }
 
-export function countryList() {
+export function countryList(continentList = {}, popularList = []) {
   // there are unsupported codes... https://en.wikipedia.org/wiki/List_of_country_calling_codes
   // like +1 671 –  Guam
   /*
@@ -129,6 +370,25 @@ export function countryList() {
   */
 
   const countryList = getCountries();
+  /*
+  "continents": {
+    "AF": "Africa",
+    "AN": "Antarctica",
+    "AS": "Asia",
+    "EU": "Europe",
+    "NA": "North America",
+    "OC": "Oceania",
+    "SA": "South America"
+  },
+*/
+  let countryNames = {};
+  Object.keys(countries).forEach(n => {
+    countryNames[n] =
+      countries[n].name === countries[n].native
+        ? countries[n].name
+        : countries[n].name + " (" + countries[n].native + ")";
+  });
+
   //console.log(countryList);
 
   //const staticCountryList = countries;
@@ -137,6 +397,54 @@ export function countryList() {
   let unSupportedRegionCodes = [];
 
   let supportedCountries = [];
+  countryList.forEach(c => {
+    const cName = countryNames[c];
+
+    if (typeof cName !== "undefined") {
+      //console.log(countries[c].name);
+      let flag = countries[c].name.toLowerCase().replace(/\s/g, "-");
+      if (iconsList.indexOf("flag-for-" + flag) === -1) {
+        if (Object.keys(convertList).indexOf(flag) === -1) {
+          //console.log("NOT FOUND ", flag);
+          flag = "";
+        } else {
+          flag = convertList[flag];
+        }
+      }
+      supportedCountries.push({
+        countryCode: getCountryCallingCode(c),
+        regionCode: c,
+        regionName: cName,
+        continent: countries[c].continent,
+        flag: flag,
+      });
+    } else {
+      unSupportedRegionCodes.push(c);
+    }
+  });
+  //console.log("COUNTRIES ", supportedCountries);
+  console.log("UNSUPPORTED COUNTRIES ", unSupportedRegionCodes);
+
+  let orderedList = new Array(Object.keys(continentList).length + 1);
+
+  Object.keys(continentList).forEach(k => {
+    orderedList[continentList[k].order] = { [k]: [] };
+  });
+
+  supportedCountries.forEach(c => {
+    if (popularList.indexOf(c.regionCode) > -1) {
+      orderedList[0]["XX"].push(c);
+    } else if (Object.keys(continentList).indexOf(c.continent) === -1) {
+      const unknownOrderIndex = continentList["ZZ"].order;
+      orderedList[unknownOrderIndex].push(c);
+    } else {
+      orderedList[continentList[c.continent].order][c.continent].push(c);
+    }
+  });
+  //console.log(orderedList);
+  return { cList: orderedList, nList: supportedCountries };
+
+  /*
   countryList.forEach(c => {
     //console.log(c, countries.getName(c, "en", { select: "official" }));
     const cName = countries.getName(c, "en", { select: "official" });
@@ -153,6 +461,7 @@ export function countryList() {
   console.log("COUNTRIES ", supportedCountries);
   console.log("UNSUPPORTED COUNTRIES ", unSupportedRegionCodes);
   return supportedCountries;
+  */
 }
 
 export function addRegionCode(region, phone) {
