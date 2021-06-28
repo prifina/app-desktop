@@ -13,6 +13,7 @@ import PasswordField from "../components/PasswordField";
 import ConfirmAuth from "./ConfirmAuth";
 
 import ForgotPassword from "./ForgotPassword";
+import RecoverUsername from "./RecoverUsername";
 
 import {
   validUsername,
@@ -263,7 +264,13 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 }}
               >
                 <Flex>
-                  <Button variation={"link"} fontSize={"10px"}>
+                  <Button
+                    variation={"link"}
+                    fontSize={"10px"}
+                    onClick={() => {
+                      setStep(2);
+                    }}
+                  >
                     {i18n.__("forgotUsername")}
                   </Button>
                 </Flex>
@@ -430,6 +437,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
         </Box>
       )}
       {step === 1 && <ForgotPassword />}
+      {step === 2 && <RecoverUsername />}
     </React.Fragment>
   );
 };
