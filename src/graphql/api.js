@@ -7,6 +7,7 @@ import {
   getPrifinaApps,
   getPrifinaWidgets,
   getPrifinaUser,
+  getPrifinaSession,
 } from "./queries";
 import {
   verifyCode,
@@ -16,6 +17,8 @@ import {
   createNotification,
   updateActivity,
   installWidget,
+  addPrifinaSession,
+  updateUserProfile,
 } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -105,10 +108,11 @@ export const getHeaderQuery = API => {
     authMode: "AWS_IAM",
   });
 };
-export const checkUsernameQuery = (API, userName) => {
+
+export const checkUsernameQuery = (API, userName, poolID) => {
   return API.graphql({
-    query: checkUsername,
-    variables: { userName: userName },
+    query: checkCognitoAttribute,
+    variables: { attrName: "username", attrValue: userName, poolID: poolID },
     authMode: "AWS_IAM",
   });
 };
@@ -155,6 +159,30 @@ export const getPrifinaUserQuery = (API, id) => {
   return API.graphql({
     query: getPrifinaUser,
     variables: { id: id },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const addPrifinaSessionMutation = (API, input) => {
+  return API.graphql({
+    query: addPrifinaSession,
+    variables: { input: input },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const getPrifinaSessionQuery = (API, tracker) => {
+  return API.graphql({
+    query: getPrifinaSession,
+    variables: { tracker: tracker },
+    authMode: "AWS_IAM",
+  });
+};
+
+export const updateUserProfileMutation = (API, id, profile = null) => {
+  return API.graphql({
+    query: updateUserProfile,
+    variables: { id: id, profile: profile },
     authMode: "AWS_IAM",
   });
 };

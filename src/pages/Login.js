@@ -6,7 +6,7 @@ import bxUser from "@iconify/icons-bx/bx-user";
 import ProgressContainer from "../components/ProgressContainer";
 import { useFormFields } from "../lib/formFields";
 
-import Amplify, { Auth } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import { useAppContext } from "../lib/contextLib";
 import { useHistory } from "react-router-dom";
 import PasswordField from "../components/PasswordField";
@@ -46,7 +46,7 @@ const Login = () => {
   //console.log("Phone ", props);
   const history = useHistory();
   const { APIConfig, userAuth } = useAppContext();
-  Amplify.configure(APIConfig);
+  API.configure(APIConfig);
   //const isMountedRef = useIsMountedRef();
   //console.log("ENV ", process.env);
   //console.log("HISTORY ", history.location.search);
@@ -265,11 +265,13 @@ CODE_DELIVERY_DESTINATION: "+********7102"
               >
                 <Flex>
                   <Button
+                    className={"ForgotUsernameButton"}
                     variation={"link"}
                     fontSize={"10px"}
                     onClick={() => {
                       setStep(2);
                     }}
+
                   >
                     {i18n.__("forgotUsername")}
                   </Button>
@@ -285,8 +287,16 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 id={"password"}
                 name={"password"}
                 onFocus={e => {
-                  if (loginFields.username.length === 0) {
+                  if (
+                    loginFields.username.length === 0 ||
+                    document.querySelector("input#username").value.length === 0
+                  ) {
                     //checkUsername("");
+                    console.log(
+                      "PASSWORD ON FOCUS CHECK...",
+                      loginFields.username.length,
+                      document.querySelector("input#username").value.length,
+                    );
                     setInputUsernameFocus();
                     e.preventDefault();
                   }
@@ -360,7 +370,9 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                 }}
                 onBlur={e => {
-                  if (loginFields.username.length > 0) {
+                  if (
+                    document.querySelector("input#username").value.length > 0
+                  ) {
                     const passwordError = checkPassword(e.target.value, true);
 
                     if (passwordError) {
@@ -400,6 +412,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
               >
                 <Flex>
                   <Button
+                    className={"ForgotPasswordButton"}
                     variation={"link"}
                     fontSize={"10px"}
                     onClick={() => {
@@ -415,12 +428,17 @@ CODE_DELIVERY_DESTINATION: "+********7102"
             <Box mt={passwordError.status ? 49 : 77} display={"inline-flex"}> */}
             <Box mt={77} display={"inline-flex"}>
               <Flex>
-                <Button variation={"outline"} onClick={createAccountClick}>
+                <Button
+                  className={"CreateAccountButton"}
+                  variation={"outline"}
+                  onClick={createAccountClick}
+                >
                   {i18n.__("createAccount")}
                 </Button>
               </Flex>
               <Flex ml={99}>
                 <Button
+                  className={"LoginButton"}
                   disabled={
                     passwordError.status ||
                     usernameError.status ||

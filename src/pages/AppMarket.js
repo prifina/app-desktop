@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Box, Flex, Text, Button } from "@blend-ui/core";
@@ -106,6 +107,14 @@ const WidgetBox = ({
       </Flex>
     </WidgetBase>
   );
+};
+
+WidgetBox.propTypes = {
+  title: PropTypes.string,
+  installed: PropTypes.bool,
+  installWidget: PropTypes.func,
+  name: PropTypes.string,
+  installedWidget: PropTypes.bool,
 };
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   console.log("APP MARKET PROPS ", props);
@@ -236,6 +245,10 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   );
 };
 
+AppMarket.propTypes = {
+  GraphQLClient: PropTypes.object,
+  prifinaID: PropTypes.string,
+};
 AppMarket.displayName = "AppMarket";
 
 export default AppMarket;

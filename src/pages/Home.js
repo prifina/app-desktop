@@ -38,6 +38,7 @@ import {
   getInstalledAppsQuery,
   getPrifinaAppsQuery,
   getPrifinaUserQuery,
+  updateUserProfileMutation,
 } from "../graphql/api";
 import { useAppContext } from "../lib/contextLib";
 import Amplify, { API, Auth } from "aws-amplify";
@@ -395,18 +396,32 @@ const Home = props => {
         currentUser.prifinaID,
       );
 
-      const appProfile = JSON.parse(
+      let appProfile = JSON.parse(
         currentPrifinaUser.data.getPrifinaUser.appProfile,
       );
 
+      let clientEndpoint = "";
+      let clientRegion = "";
+
+      /*
       let clientEndpoint =
         "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
       let clientRegion = "us-east-1";
+*/
+      //updateUserProfile(id: String!, profile: AWSJSON)
 
-      if (appProfile.hasOwnProperty("endpoint")) {
-        clientEndpoint = appProfile.endpoint;
-        clientRegion = appProfile.region;
+      if (!appProfile.hasOwnProperty("endpoint")) {
+        const defaultProfileUpdate = await updateUserProfileMutation(
+          API,
+          currentUser.prifinaID,
+        );
+        console.log("PROFILE UPDATE ", defaultProfileUpdate);
+        appProfile = JSON.parse(
+          defaultProfileUpdate.data.updateUserProfile.appProfile,
+        );
       }
+      clientEndpoint = appProfile.endpoint;
+      clientRegion = appProfile.region;
 
       const client = createClient(clientEndpoint, clientRegion);
 

@@ -429,6 +429,7 @@ const UserMenuContextProvider = ({
                     onClick={() => {
                       setIsOpen(prev => !prev);
                     }}
+                    className={"UserMenuAvatar"}
                   />
                   {notificationCount > 0 && (
                     <Badge isOpen={false}>

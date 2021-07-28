@@ -1,6 +1,7 @@
 export const API_KEY = process.env.REACT_APP_API_KEY;
 export const SEARCH_ENGINE = process.env.REACT_APP_SEARCH_ENGINE;
 export const GOOGLE_URL = "https://customsearch.googleapis.com/customsearch/v1";
+export const REFRESH_TOKEN_EXPIRY = process.env.REACT_APP_REFRESH_TOKEN_EXPIRY;
 
 const prod = {
   invalidVerificationLink:

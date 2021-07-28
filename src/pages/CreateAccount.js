@@ -7,6 +7,7 @@ import {
   Flex,
   Text,
   useTheme,
+  Divider,
 } from "@blend-ui/core";
 
 import { useAppContext } from "../lib/contextLib";
@@ -35,7 +36,7 @@ import {
   getCountryCodeQuery,
   checkCognitoAttributeQuery,
 } from "../graphql/api";
-import Amplify, { API, Auth } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -51,14 +52,29 @@ import { useToast } from "@blend-ui/toast";
 
 import { AccountContext } from "../lib/contextLib";
 
+import useFlags from "../hooks/UseFlags";
+
 import PropTypes from "prop-types";
 i18n.init();
+
+const continents = {
+  XX: { name: "", order: 0 }, //popular...
+  AF: { name: "Africa", order: 5 },
+  AN: { name: "Antarctica", order: 7 },
+  AS: { name: "Asia", order: 3 },
+  EU: { name: "Europe", order: 2 },
+  NA: { name: "North America", order: 1 },
+  OC: { name: "Oceania", order: 6 },
+  SA: { name: "South America", order: 4 },
+  ZZ: { name: "", order: 8 }, //unknowns...
+};
+const popularList = ["US", "GB", "FI"];
 
 const CreateAccount = props => {
   const history = useHistory();
   const alerts = useToast();
   const { APIConfig, AUTHConfig } = useAppContext();
-  Amplify.configure(APIConfig);
+  API.configure(APIConfig);
   Auth.configure(AUTHConfig);
 
   const uuid = uuidv4();
@@ -75,6 +91,10 @@ const CreateAccount = props => {
 
   //console.log(i18n.__("testMessage"));
   const { colors } = useTheme();
+  const { cList, nList } = countryList(continents, popularList);
+  const { icons, isLoading } = useFlags(nList);
+  const [flags, setFlags] = useState(false);
+
   const selectOptions = useRef([]);
   //console.log(selectOptions);
 
@@ -351,13 +371,18 @@ const CreateAccount = props => {
     console.log("USER ", username, userError);
     if (!userError && check) {
       console.log("CHECKING USER");
-      checkUsernameQuery(API, username).then(res => {
-        if (typeof res.data !== "undefined" && res.data.checkUsername) {
-          userNameAlert(true, i18n.__("usernameExists"));
-        } else {
-          setState({ username: { ...state.username, status: false } });
-        }
-      });
+      checkUsernameQuery(API, username, config.cognito.USER_POOL_ID).then(
+        res => {
+          if (
+            typeof res.data !== "undefined" &&
+            res.data.checkCognitoAttribute
+          ) {
+            userNameAlert(true, i18n.__("usernameExists"));
+          } else {
+            setState({ username: { ...state.username, status: false } });
+          }
+        },
+      );
     } else {
       userNameAlert(userError, userMsg);
     }
@@ -491,8 +516,75 @@ const CreateAccount = props => {
   };
 
   useEffect(() => {
+    if (!icons && isLoading) selectOptions.current = [];
+    if (!icons && !isLoading) selectOptions.current = [];
+    if (isLoading && icons) {
+      //console.log("ITEMS ", icons);
+      let items = [];
+      cList.forEach(item => {
+        //console.log(item);
+        const l = Object.keys(item)[0];
+        if (item[l].length > 0) {
+          //console.log(l, item[l].length);
+          if (l !== "XX") {
+            items.push({
+              key: "XX",
+              value: "XX",
+              regionCode: "000",
+              component: (
+                <React.Fragment>
+                  <Text mt={18}>{continents[l].name}</Text>
+                  <Divider mb={10} />
+                </React.Fragment>
+              ),
+            });
+          }
+          item[l].forEach(cc => {
+            const flag = icons[cc.regionCode] || null;
+            items.push({
+              key: "+" + cc.countryCode,
+              value: cc.regionName,
+              regionCode: cc.regionCode,
+              searchValue: cc.regionName + " +" + cc.countryCode,
+              component: (
+                <React.Fragment>
+                  <Flex mb={6} alignContent={"center"}>
+                    {flag}
+                    <Text
+                      ml={flag === null ? 22 : 6}
+                      as="span"
+                      fontSize={"xs"}
+                      lineHeight={"16px"}
+                    >
+                      {cc.regionName}
+                    </Text>
+                    <Text
+                      as="span"
+                      color={colors.textMuted}
+                      fontSize={"xs"}
+                      pl={4}
+                      lineHeight={"16px"}
+                    >
+                      +{cc.countryCode}
+                    </Text>
+                  </Flex>
+                </React.Fragment>
+              ),
+            });
+          });
+        }
+      });
+      console.log(items);
+      selectOptions.current = items;
+
+      setFlags(true);
+    }
+  }, [isLoading, icons]);
+
+  useEffect(() => {
     async function onLoad() {
       try {
+        /*
         selectOptions.current = countryList().map(cc => {
           return {
             key: "+" + cc.countryCode,
@@ -509,17 +601,19 @@ const CreateAccount = props => {
             ),
           };
         });
-
-        const userCountry = await getCountryCodeQuery(API);
-        console.log("COUNTRY ", userCountry.data.getCountryCode);
-        if (userCountry.data) {
-          const cIndex = selectOptions.current.findIndex(
-            c => c.regionCode === userCountry.data.getCountryCode,
-          );
-          console.log("INDEX ", cIndex);
-          if (cIndex > -1) {
-            //console.log(selectOptions[cIndex]);
-            setState({ regionCode: selectOptions.current[cIndex].key });
+        */
+        if (flags) {
+          const userCountry = await getCountryCodeQuery(API);
+          console.log("COUNTRY ", userCountry.data.getCountryCode);
+          if (userCountry.data) {
+            const cIndex = selectOptions.current.findIndex(
+              c => c.regionCode === userCountry.data.getCountryCode,
+            );
+            //console.log("INDEX ", cIndex);
+            if (cIndex > -1) {
+              //console.log(selectOptions[cIndex]);
+              setState({ regionCode: selectOptions.current[cIndex].key });
+            }
           }
         }
       } catch (e) {
@@ -527,7 +621,8 @@ const CreateAccount = props => {
       }
     }
     onLoad();
-  }, []);
+  }, [flags]);
+
   const handleChange = event => {
     console.log(event.target.id, document.activeElement.id);
     if (event.target) {
@@ -688,7 +783,13 @@ const CreateAccount = props => {
     promises[0] = Promise.resolve(valuesChecked);
 
     if (usernameChecked) {
-      promises.push(checkUsernameQuery(API, state.username.value));
+      promises.push(
+        checkUsernameQuery(
+          API,
+          state.username.value,
+          config.cognito.USER_POOL_ID,
+        ),
+      );
     } else {
       promises.push(Promise.resolve({}));
     }
@@ -964,9 +1065,10 @@ const CreateAccount = props => {
               <PhoneNumberField.RegionField
                 key={state.regionCode}
                 defaultValue={state.regionCode}
-                options={selectOptions.current}
+                options={flags ? selectOptions.current : []}
                 searchLength={2}
-                showList={false}
+                showList={true}
+                maxHeight={"200px"}
                 ref={inputSelect}
                 /* id="select-search" */
                 onChange={(e, code) => {
@@ -1051,7 +1153,7 @@ const CreateAccount = props => {
 
                   if (
                     typeof res[1].data !== "undefined" &&
-                    res[1].data.checkUsername
+                    res[1].data.checkCognitoAttribute
                   ) {
                     userNameAlert(true, i18n.__("usernameExists"));
                     checkResult = false;
@@ -1153,6 +1255,7 @@ const CreateAccount = props => {
                     {i18n.__("existingAccount")}
                   </Text>
                   <Button
+                    className={"LoginLinkButton"}
                     variation={"link"}
                     fontSize={"10px"}
                     lineHeight={"normal"}

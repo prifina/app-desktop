@@ -136,13 +136,18 @@ const ForgotPassword = props => {
     console.log("USER ", username, userError);
     if (!userError && check) {
       console.log("CHECKING USER");
-      checkUsernameQuery(API, username).then(res => {
-        if (typeof res.data !== "undefined" && res.data.checkUsername) {
-          userNameAlert(true, i18n.__("usernameExists"));
-        } else {
-          setState({ username: { ...state.username, status: false } });
-        }
-      });
+      checkUsernameQuery(API, username, config.cognito.USER_POOL_ID).then(
+        res => {
+          if (
+            typeof res.data !== "undefined" &&
+            res.data.checkCognitoAttribute
+          ) {
+            userNameAlert(true, i18n.__("usernameExists"));
+          } else {
+            setState({ username: { ...state.username, status: false } });
+          }
+        },
+      );
     } else {
       userNameAlert(userError, userMsg);
     }
@@ -326,7 +331,15 @@ const ForgotPassword = props => {
                   id={"username"}
                   name={"username"}
                   onChange={handleChange}
-                  onBlur={e => checkUsername(e.target.value)}
+                  onBlur={e => {
+                    if (e.target.value.length > 0) {
+                      const userError = checkUsername(e.target.value);
+                      if (userError !== "") {
+                        setInputUsernameFocus();
+                        e.preventDefault();
+                      }
+                    }
+                  }}
                   error={state.username.status}
                   ref={inputUsername}
                   defaultValue={state.username.value}
@@ -350,6 +363,7 @@ const ForgotPassword = props => {
             <Box mt={45} mb={30} display={"inline-flex"}>
               <Flex>
                 <Button
+                  className="BackButton"
                   variation={"outline"}
                   onClick={() => {
                     setStep(4);

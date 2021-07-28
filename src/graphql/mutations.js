@@ -68,3 +68,14 @@ export const installWidget = `mutation addInstalledWidget($id:String!,$widget:Wi
     installedWidgets
   }
 }`;
+
+export const addPrifinaSession = `mutation addSession($input:SessionInput) {
+  addSession(input: $input)
+}`;
+
+export const updateUserProfile = `mutation updateUserProfile($id:String!, $profile:AWSJSON) {
+  updateUserProfile(id:$id,profile:$profile) {
+    appProfile
+    id
+  }
+}`;

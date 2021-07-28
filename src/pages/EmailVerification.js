@@ -156,7 +156,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       console.log("ERR", e);
       alerts.error(i18n.__("invalidCode"), {});
       setInputError({ status: true });
-      nextStepAction(3);
+      nextStepAction(2);
       /*
       setToastError({
         status: true,

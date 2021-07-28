@@ -111,6 +111,14 @@ export const listWaiting = `query waitingList($filter:TableWaitingFilterInput,$s
   }
 }`;
 
+export const getPrifinaSession = `query getSession($tracker: String!) {
+  getSession(tracker: $tracker) {
+    tokens
+    expire
+    identityPool
+  }
+}`;
+
 /*
 
 query MyQuery {
