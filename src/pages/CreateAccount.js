@@ -371,13 +371,18 @@ const CreateAccount = props => {
     console.log("USER ", username, userError);
     if (!userError && check) {
       console.log("CHECKING USER");
-      checkUsernameQuery(API, username).then(res => {
-        if (typeof res.data !== "undefined" && res.data.checkUsername) {
-          userNameAlert(true, i18n.__("usernameExists"));
-        } else {
-          setState({ username: { ...state.username, status: false } });
-        }
-      });
+      checkUsernameQuery(API, username, config.cognito.USER_POOL_ID).then(
+        res => {
+          if (
+            typeof res.data !== "undefined" &&
+            res.data.checkCognitoAttribute
+          ) {
+            userNameAlert(true, i18n.__("usernameExists"));
+          } else {
+            setState({ username: { ...state.username, status: false } });
+          }
+        },
+      );
     } else {
       userNameAlert(userError, userMsg);
     }
@@ -778,7 +783,13 @@ const CreateAccount = props => {
     promises[0] = Promise.resolve(valuesChecked);
 
     if (usernameChecked) {
-      promises.push(checkUsernameQuery(API, state.username.value));
+      promises.push(
+        checkUsernameQuery(
+          API,
+          state.username.value,
+          config.cognito.USER_POOL_ID,
+        ),
+      );
     } else {
       promises.push(Promise.resolve({}));
     }
@@ -1142,7 +1153,7 @@ const CreateAccount = props => {
 
                   if (
                     typeof res[1].data !== "undefined" &&
-                    res[1].data.checkUsername
+                    res[1].data.checkCognitoAttribute
                   ) {
                     userNameAlert(true, i18n.__("usernameExists"));
                     checkResult = false;
@@ -1244,6 +1255,7 @@ const CreateAccount = props => {
                     {i18n.__("existingAccount")}
                   </Text>
                   <Button
+                    className={"LoginLinkButton"}
                     variation={"link"}
                     fontSize={"10px"}
                     lineHeight={"normal"}

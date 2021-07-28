@@ -18,7 +18,7 @@ import {
   getPrifinaSessionQuery,
 } from "./graphql/api";
 
-import config from "./config";
+import config, { REFRESH_TOKEN_EXPIRY } from "./config";
 
 //import { countryList } from "./lib/utils";
 
@@ -67,6 +67,7 @@ async function initAuth(newAuth = false) {
 function App() {
   //const history = useHistory();
   console.log("APP START");
+  console.log("CONFIG ", config);
   Auth.configure(AUTHConfig);
   API.configure(APIConfig);
   const { pathname, search } = useLocation();
@@ -185,7 +186,18 @@ function App() {
 
             //CognitoIdentityId-us-east-1:27d0bb9c-b563-497b-ad0f-82b0ceb9eb0c
             refreshSession.current = false;
-            console.log("UPDATE SESSION...");
+            console.log(
+              "UPDATE SESSION...",
+              {
+                tracker: tracker,
+                tokens: JSON.stringify(tokens),
+                expireToken: _currentSession.getIdToken().getExpiration(),
+                expire:
+                  _currentSession.getIdToken().getIssuedAt() +
+                  REFRESH_TOKEN_EXPIRY * 24 * 60 * 60,
+              },
+              _currentSession.getIdToken().getIssuedAt(),
+            );
 
             const prifinaSession = await addPrifinaSessionMutation(API, {
               tracker: tracker,
