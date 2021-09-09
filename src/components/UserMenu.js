@@ -29,9 +29,9 @@ const withUsermenu = () => WrappedComponent => {
           //console.log("LOGOUT...");
           setLogout(true);
 
-          await Auth.signOut();
+          //await Auth.signOut();
           userAuth(false);
-          history.replace("/");
+          //history.replace("/");
         } catch (e) {
           console.log("error signing out: ", e);
         }

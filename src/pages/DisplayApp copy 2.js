@@ -7,8 +7,8 @@ import { usePrifina } from "@prifina/hooks";
 import { BlendIcon } from "@blend-ui/icons";
 import bxCog from "@iconify/icons-bx/bx-cog";
 
-//import html2canvas from "html2canvas";
-//import ReactDOM from "react-dom";
+import html2canvas from "html2canvas";
+import ReactDOM from "react-dom";
 import {
   useSpring,
   useSprings,
@@ -64,12 +64,7 @@ const S3Config = {
 
 const fn = animations => index => animations[index];
 
-const DisplayApp = ({
-  widgetConfigData,
-  appSyncClient,
-  prifinaID,
-  dataSources,
-}) => {
+const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
   console.log("PROPS ", widgetConfigData, Object.keys(widgetConfigData));
   console.log("DISPLAY APP ", prifinaID);
   const {
@@ -86,7 +81,6 @@ const DisplayApp = ({
   } = usePrifina();
 
   console.log("DISPLAY APP ", currentUser);
-  console.log("DISPLAY APP DATASOURCES", dataSources);
   const WidgetHooks = new Prifina({ appId: "WIDGETS" });
   //console.log(check());
   Amplify.configure(S3Config);
@@ -143,13 +137,13 @@ const DisplayApp = ({
       from: {
         transform: items[index].transform,
         opacity: 1,
-        width: "300px",
-        height: "300px",
+        width: "200px",
+        height: "200px",
       },
       config: {
         mass: 5,
-        tension: 400,
-        friction: 150,
+        tension: 500,
+        friction: 220,
       },
     };
   });
@@ -185,7 +179,6 @@ const DisplayApp = ({
         installCount: w.widget.installCount,
         currentSettings: w.currentSettings,
         image: w.widget.image,
-        dataConnectors: w.dataConnectors,
       };
     }),
   );
@@ -309,22 +302,19 @@ const DisplayApp = ({
         if (index === 0) {
           return {
             //transform: `perspective(1000px) rotateY(180deg)`, right-toleft
-
-            transform: `perspective(1000px) rotateY(150deg)`,
+            transform: `perspective(1000px) rotateY(100deg)`,
             onRest: () => {
               setFlipped(true);
-              setFinish(true);
             },
           };
         }
 
         return {
           transform: null,
-
           opacity: 0,
           from: {
-            width: "300px",
-            height: "300px",
+            width: "100px",
+            height: "100px",
           },
           to: {
             width: "400px",
@@ -332,7 +322,7 @@ const DisplayApp = ({
           },
           config: { ...SpringConfig.molasses, duration: 3500 },
           onRest: () => {
-            //setFinish(true);
+            setFinish(true);
           },
         };
       });
@@ -406,8 +396,8 @@ const DisplayApp = ({
               from: {
                 transform: items[index].transform,
                 opacity: 1,
-                width: "300px",
-                height: "300px",
+                width: "200px",
+                height: "200px",
               },
               config: {
                 mass: 5,
@@ -531,42 +521,33 @@ const DisplayApp = ({
   useEffect(() => {
     if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
-      const widgets = widgetConfig.map((w, i) => {
-        console.log("WIDGET COMPONENT ", w);
+      const widgets = widgetConfig.map((widget, i) => {
+        console.log("WIDGET COMPONENT ", widget);
         //React.forwardRef((props, ref) =>
 
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
           return (
             <React.Fragment>
-              <div
-                style={{
-                  width: w.widget.size.width + "px",
-                  height: w.widget.size.height + "px",
-                  margin: "10px",
-                }}
-              >
+              <div>
                 {/* 
                   <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
                     <BlendIcon iconify={bxCog} />
                   </C.IconDiv>
                   */}
-                {w.settings && (
+                {widget.settings && (
                   <C.IconDiv
                     open={props.open}
                     onClick={() => openSettings(i)}
-                    widgetTheme={w.widget.theme}
                   />
                 )}
-                {!w.settings && <C.EmptyDiv />}
-
                 <C.WidgetWrapper
                   className={"prifina-widget"}
                   data-widget-index={i}
                   key={"widget-wrapper-" + i}
                   ref={ref}
                 >
-                  <RemoteComponent url={w.url} {...props} />
+                  <RemoteComponent url={widget.url} {...props} />
                 </C.WidgetWrapper>
               </div>
             </React.Fragment>
@@ -667,8 +648,8 @@ const DisplayApp = ({
         from: {
           transform: items[index].transform,
           opacity: 1,
-          width: "300px",
-          height: "300px",
+          width: "200px",
+          height: "200px",
         },
         config: {
           mass: 5,
@@ -805,22 +786,14 @@ input SearchResultInput {
 
                   position: "absolute",
 
-                  /*border: i === 0 ? "2px outset" : null,*/
+                  border: i === 0 ? "2px outset" : null,
                   borderRadius: i === 0 ? "8px" : null,
                   visibility: open ? "visible" : "hidden",
-                  /*
-                  visible: props.transform.interpolate(
-                    [0, 150],
-                    ["visible", "hidden"],
-                  ),
-                  */
-                  zIndex: 50,
+                  zIndex: 2,
                   backgroundSize: "cover",
-                  /*backgroundColor: flipped ? "white" : null,*/
+                  backgroundColor: flipped ? "white" : null,
                   backgroundImage:
                     i > 0
-                      ? null
-                      : flipped
                       ? null
                       : `url(${imageCache.current[settings.current.widget]})`,
                 }}
@@ -908,7 +881,6 @@ input SearchResultInput {
                         widgetList={widgetList}
                         widgetData={widgetConfig}
                         currentUser={currentUser}
-                        dataSources={dataSources}
                       />
                     )}
                   </C.WidgetContainer>

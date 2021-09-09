@@ -8,6 +8,8 @@ import {
   getPrifinaWidgets,
   getPrifinaUser,
   getPrifinaSession,
+  listAppMarket,
+  listDataSources,
 } from "./queries";
 import {
   verifyCode,
@@ -19,6 +21,7 @@ import {
   installWidget,
   addPrifinaSession,
   updateUserProfile,
+  deletePrifinaSession,
 } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -41,21 +44,21 @@ export const installWidgetMutation = (API, id, widget) => {
   return API.graphql({
     query: installWidget,
     variables: { id: id, widget: widget },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 export const updateActivityMutation = (API, id, app) => {
   return API.graphql({
     query: updateActivity,
     variables: { id: id, activeApp: app },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 export const createNotificationMutation = (API, input) => {
   return API.graphql({
     query: createNotification,
     variables: { input: input },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 export const addSearchResultMutation = (API, input) => {
@@ -76,7 +79,7 @@ export const sendVerificationMutation = (API, subject, message) => {
   return API.graphql({
     query: sendVerification,
     variables: { subject: subject, message: message },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 
@@ -134,7 +137,7 @@ export const getInstalledAppsQuery = (API, userName) => {
   return API.graphql({
     query: getInstalledApps,
     variables: { id: userName },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 
@@ -142,7 +145,7 @@ export const getPrifinaAppsQuery = (API, id) => {
   return API.graphql({
     query: getPrifinaApps,
     variables: { id: id },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 
@@ -150,16 +153,16 @@ export const getPrifinaWidgetsQuery = (API, id) => {
   return API.graphql({
     query: getPrifinaWidgets,
     variables: { id: id },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 
 export const getPrifinaUserQuery = (API, id) => {
-  console.log("API ", id);
+  //console.log("API ", id);
   return API.graphql({
     query: getPrifinaUser,
     variables: { id: id },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 
@@ -167,7 +170,7 @@ export const addPrifinaSessionMutation = (API, input) => {
   return API.graphql({
     query: addPrifinaSession,
     variables: { input: input },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
 
@@ -183,6 +186,42 @@ export const updateUserProfileMutation = (API, id, profile = null) => {
   return API.graphql({
     query: updateUserProfile,
     variables: { id: id, profile: profile },
-    authMode: "AWS_IAM",
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
+export const listAppMarketQuery = (API, opts) => {
+  // AMAZON_COGNITO_USER_POOLS
+  return API.graphql({
+    query: listAppMarket,
+    variables: {
+      filter: opts.filter || {},
+      limit: opts.limit || 100,
+      sortDirection: opts.sortDirection || "DESC",
+      nextToken: opts.nextToken || null,
+    },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
+export const deletePrifinaSessionMutation = (API, tracker) => {
+  return API.graphql({
+    query: deletePrifinaSession,
+    variables: { tracker: tracker },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
+export const listDataSourcesQuery = (API, opts) => {
+  // AMAZON_COGNITO_USER_POOLS
+  return API.graphql({
+    query: listDataSources,
+    variables: {
+      filter: opts.filter || {},
+      limit: opts.limit || 100,
+      sortDirection: opts.sortDirection || "DESC",
+      nextToken: opts.nextToken || null,
+    },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };

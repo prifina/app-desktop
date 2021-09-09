@@ -1,5 +1,6 @@
 export const getPrifinaUser = `query prifinaUser($id:String!){
         getPrifinaUser(id: $id) {
+          dataSources
           installedApps
           installedWidgets
           appProfile
@@ -116,6 +117,43 @@ export const getPrifinaSession = `query getSession($tracker: String!) {
     tokens
     expire
     identityPool
+  }
+}`;
+
+export const listAppMarket = `query appMarketList($filter:TableAppMarketFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listAppMarket(filter: $filter, limit: $limit, nextToken: $nextToken,sortDirection:$sortDirection) {
+    items {
+      id
+      name
+      title
+      modifiedAt
+      createdAt
+      appType
+      version
+      manifest
+      route
+      dataSources
+      settings {
+        value
+        field
+        label
+        type
+      }
+    }
+    nextToken
+  }
+}`;
+
+export const listDataSources = `query listDataSources($filter:TableDataSourceFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listDataSources(filter: $filter, limit: $limit, nextToken: $nextToken,sortDirection:$sortDirection) {
+    items {
+      module
+      sourceType
+      name
+      route
+      description
+    }
+    nextToken
   }
 }`;
 

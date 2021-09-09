@@ -10,6 +10,7 @@ import {
   getPrifinaWidgetsQuery,
   getPrifinaUserQuery,
   installWidgetMutation,
+  listAppMarketQuery,
 } from "../graphql/api";
 
 import PropTypes from "prop-types";
@@ -34,6 +35,7 @@ const WidgetBase = styled.div`
 `;
 
 const StyledText = styled(Text)`
+  width: 190px;
   font-weight: ${props =>
     props.hasOwnProperty("fontWeight")
       ? Object.keys(props.theme.fontWeights).indexOf(props.fontWeight) > -1
@@ -73,11 +75,13 @@ const WidgetBox = ({
   title,
   installed,
   installWidget,
-  name,
+  id,
+  shortDescription,
   installedWidget,
+  settings,
   ...props
 }) => {
-  console.log("PROPS ", name, installed, title, installedWidget, props);
+  console.log("PROPS ", id, installed, title, installedWidget, props);
   return (
     <WidgetBase>
       <Flex width={"73px"} justifyContent={"center"}>
@@ -93,7 +97,7 @@ const WidgetBox = ({
             {installedWidget === -1 && (
               <InstallButton
                 onClick={e => {
-                  installWidget(e, name);
+                  installWidget(e, id, settings);
                 }}
               >
                 Install
@@ -102,7 +106,7 @@ const WidgetBox = ({
           </Flex>
         </Flex>
         <StyledDescription textStyle={"caption"} mt={"16px"}>
-          Description text here...
+          {shortDescription}
         </StyledDescription>
       </Flex>
     </WidgetBase>
@@ -113,8 +117,9 @@ WidgetBox.propTypes = {
   title: PropTypes.string,
   installed: PropTypes.bool,
   installWidget: PropTypes.func,
-  name: PropTypes.string,
-  installedWidget: PropTypes.bool,
+  id: PropTypes.string,
+  shortDescription: PropTypes.string,
+  installedWidget: PropTypes.number,
 };
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   console.log("APP MARKET PROPS ", props);
@@ -123,10 +128,15 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   const [installedWidgets, setInstalledWidgets] = useState([]);
 
   useEffect(() => {
-    getPrifinaWidgetsQuery(GraphQLClient, "WIDGETS").then(res => {
-      const widgetData = JSON.parse(res.data.getPrifinaApp.widgets);
-      //console.log(widgetData);
-      let availableWidgets = {};
+    listAppMarketQuery(GraphQLClient, { filter: { appType: { lt: 3 } } }).then(
+      res => {
+        //getPrifinaWidgetsQuery(GraphQLClient, "WIDGETS").then(res => {
+        //const widgetData = JSON.parse(res.data.getPrifinaApp.widgets);
+        const widgetData = res.data.listAppMarket.items;
+
+        //console.log(widgetData);
+        let availableWidgets = {};
+        /*
       Object.keys(widgetData).forEach(w => {
         if (!widgetData[w].hasOwnProperty("restricted")) {
           availableWidgets[widgetData[w].name] = {
@@ -136,72 +146,65 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
           };
         }
       });
-      console.log("AVAILABLE WIDGETS ", availableWidgets);
-      let currentInstalled = [];
-      getPrifinaUserQuery(GraphQLClient, prifinaID).then(res => {
-        if (
-          res.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
-          res.data.getPrifinaUser.installedWidgets !== null
-        ) {
-          const installedWidgets = JSON.parse(
-            res.data.getPrifinaUser.installedWidgets,
-          );
-          installedWidgets.forEach(w => {
-            //console.log(w, typeof availableWidgets[w.name]);
-            //console.log(availableWidgets[w.name]);
-            //availableWidgets[w].installed = true;
-            if (availableWidgets.hasOwnProperty(w.name)) {
-              availableWidgets[w.name].installed = true;
-              currentInstalled.push(w.name);
-            }
-          });
-          console.log(availableWidgets);
-          widgets.current = availableWidgets;
-          setInstalledWidgets(currentInstalled);
-        } else {
-          // no widgets installed....
-          widgets.current = availableWidgets;
-          setInstalledWidgets(currentInstalled);
-        }
-      });
-    });
+      */
+        widgetData.forEach(item => {
+          const manifest = JSON.parse(item.manifest);
+          availableWidgets[item.id] = {
+            title: item.title,
+            installed: false,
+            shortDescription: manifest.shortDescription,
+            settings: item.settings,
+          };
+        });
+
+        console.log("AVAILABLE WIDGETS ", availableWidgets);
+        let currentInstalled = [];
+        getPrifinaUserQuery(GraphQLClient, prifinaID).then(res => {
+          if (
+            res.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
+            res.data.getPrifinaUser.installedWidgets !== null
+          ) {
+            const installedWidgets = JSON.parse(
+              res.data.getPrifinaUser.installedWidgets,
+            );
+            installedWidgets.forEach(w => {
+              //console.log(w, typeof availableWidgets[w.name]);
+              //console.log(availableWidgets[w.name]);
+              //availableWidgets[w].installed = true;
+              if (availableWidgets.hasOwnProperty(w.id)) {
+                availableWidgets[w.id].installed = true;
+                currentInstalled.push(w.id);
+              }
+            });
+            console.log(availableWidgets);
+            widgets.current = availableWidgets;
+            setInstalledWidgets(currentInstalled);
+          } else {
+            // no widgets installed....
+            widgets.current = availableWidgets;
+            setInstalledWidgets(currentInstalled);
+          }
+        });
+      },
+    );
   }, []);
-  /*
-  const installWidget = useCallback(
-    (e, name) => {
-      console.log("CLICK ", name);
-      //console.log("INSTALL ", widgets);
 
-      installWidgetMutation(GraphQLClient, prifinaID, {
-        name: name,
-        index: -1,
-      }).then(res => {
-        console.log("INSTALL ", res);
-
-        let availableWidgets = widgets;
-        availableWidgets[name].installed = true;
-        setWidgets(availableWidgets);
-        
-      });
-    },
-    [widgets],
-  );
-  */
-  const installWidget = (e, name) => {
-    console.log("CLICK ", name);
+  const installWidget = (e, id, settings) => {
+    console.log("CLICK ", id);
     //console.log("INSTALL ", widgets);
 
     installWidgetMutation(GraphQLClient, prifinaID, {
-      name: name,
+      id: id,
+      settings: settings,
       index: -1,
     }).then(res => {
       console.log("INSTALL ", res);
 
       //let availableWidgets = widgets.current;
       //availableWidgets[name].installed = true;
-      widgets.current[name].installed = true;
+      widgets.current[id].installed = true;
 
-      setInstalledWidgets(...installedWidgets, name);
+      setInstalledWidgets(...installedWidgets, id);
     });
   };
   console.log(installedWidgets, widgets.current);
@@ -217,7 +220,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
             return (
               <WidgetBox
                 key={w}
-                name={w}
+                id={w}
                 {...widgets.current[w]}
                 installWidget={installWidget}
                 installedWidget={installedWidgets.indexOf(w)}

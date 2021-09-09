@@ -1,9 +1,16 @@
 import React from "react";
-import { Box } from "@blend-ui/core";
+import { Flex, Text } from "@blend-ui/core";
 
 import { ReactComponent as PrifinaLogoImage } from "../assets/prifina.svg";
-export const PrifinaLogo = props => (
-  <Box mt={16}>
+
+import PropTypes from "prop-types";
+export const PrifinaLogo = ({ title = null, ...props }) => (
+  <Flex mt={16}>
     <PrifinaLogoImage width={"69px"} height={"27px"} {...props} />
-  </Box>
+    {title && <Text textStyle={"h5"}>{title}</Text>}
+  </Flex>
 );
+
+PrifinaLogo.propTypes = {
+  title: PropTypes.string,
+};

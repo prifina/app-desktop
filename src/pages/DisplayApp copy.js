@@ -7,14 +7,9 @@ import { usePrifina } from "@prifina/hooks";
 import { BlendIcon } from "@blend-ui/icons";
 import bxCog from "@iconify/icons-bx/bx-cog";
 
-//import html2canvas from "html2canvas";
-//import ReactDOM from "react-dom";
-import {
-  useSpring,
-  useSprings,
-  animated,
-  config as SpringConfig,
-} from "@react-spring/web";
+import html2canvas from "html2canvas";
+import ReactDOM from "react-dom";
+import { useSprings, animated } from "@react-spring/web";
 
 import { RemoteComponent } from "../RemoteComponent";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
@@ -33,10 +28,8 @@ import * as C from "./display-app/components";
 //import { addSearchResultMutation, addSearchKeyMutation } from "../graphql/api";
 import { addSearchResult, addSearchKey } from "../graphql/mutations";
 
-import { PrifinaLogo } from "../components/PrifinaLogo";
-import PropTypes from "prop-types";
-
 const short = require("short-uuid");
+import PropTypes from "prop-types";
 i18n.init();
 
 const APIConfig = {
@@ -64,12 +57,7 @@ const S3Config = {
 
 const fn = animations => index => animations[index];
 
-const DisplayApp = ({
-  widgetConfigData,
-  appSyncClient,
-  prifinaID,
-  dataSources,
-}) => {
+const DisplayApp = ({ widgetConfigData, appSyncClient, prifinaID }) => {
   console.log("PROPS ", widgetConfigData, Object.keys(widgetConfigData));
   console.log("DISPLAY APP ", prifinaID);
   const {
@@ -86,7 +74,6 @@ const DisplayApp = ({
   } = usePrifina();
 
   console.log("DISPLAY APP ", currentUser);
-  console.log("DISPLAY APP DATASOURCES", dataSources);
   const WidgetHooks = new Prifina({ appId: "WIDGETS" });
   //console.log(check());
   Amplify.configure(S3Config);
@@ -102,10 +89,7 @@ const DisplayApp = ({
 
   const [open, setOpen] = useState(false);
   const [flipped, setFlipped] = useState(false);
-  const [finish, setFinish] = useState(false);
-  //const [imagesReady, setImagesReady] = useState(false);
-  //const widgetImage = useRef();
-  const imageCache = useRef([]);
+  const widgetImage = useRef();
 
   const settings = useRef({
     left: "0px",
@@ -115,65 +99,31 @@ const DisplayApp = ({
     widget: -1,
   });
 
-  /*
-  const images = [
-    "https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/Clock.png",
-    "https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/Sunny.png",
-  ];
-*/
   //const items = [{}, {}];
   const items = [
     {
-      //transform: `perspective(1000px) rotateY(360deg)`,  // right-to-left
-      transform: `perspective(1000px) rotateY(0deg)`,
-      backgroundColor: `currentColor`,
-      background: null,
-      /* "https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/Sunny.png", */
-    },
-    {
-      transform: null,
-      background: "",
-      backgroundColor: `white`,
+      opacity: 1,
+      transform: `perspective(1000px) rotateY(${open ? 180 : 0}deg)`,
+      /*transform: `perspective(1000px) rotateY(180deg)`,*/
+      height: "200px",
+      width: "200px",
+      visibility: "visible",
+      /*reset: true,*/
+      config: {
+        mass: 5,
+        tension: 500,
+        friction: 220,
+      },
     },
   ];
   const animationItems = useRef(items.map((_, index) => index));
   console.log("ITEMS ", animationItems);
-  const [springs, setSprings] = useSprings(items.length, index => {
-    return {
-      from: {
-        transform: items[index].transform,
-        opacity: 1,
-        width: "300px",
-        height: "300px",
-      },
-      config: {
-        mass: 5,
-        tension: 400,
-        friction: 150,
-      },
-    };
-  });
 
-  /*
-  const [springs, setSprings] = useSprings(items.length, index => ({
-    from: {
-      transform: items[index].transform,
-      opacity: 1,
-    },
-    config: {
-      mass: 5,
-      tension: 500,
-      friction: 220,
-    },
-  }));
-  */
-  /*
-  const { transform } = useSpring({
-    transform: `perspective(600px) rotateX(${open ? 180 : 0}deg)`,
-    config: { mass: 5, tension: 500, friction: 180 },
-  });
-*/
-  console.log("SPRINGS ", springs);
+  const [springs, setSprings] = useSprings(
+    items.length,
+    fn(animationItems.current),
+  );
+
   const refs = useRef([]);
   const settingsRef = useRef([]);
   const widgetSettings = useRef(
@@ -184,8 +134,6 @@ const DisplayApp = ({
         appId: w.widget.appID,
         installCount: w.widget.installCount,
         currentSettings: w.currentSettings,
-        image: w.widget.image,
-        dataConnectors: w.dataConnectors,
       };
     }),
   );
@@ -196,24 +144,6 @@ const DisplayApp = ({
     console.log("TAB", tab);
     setActiveTab(tab);
   };
-
-  useEffect(() => {
-    // browser cache images....
-    const promises = widgetConfigData.map(src => {
-      return new Promise(function (resolve, reject) {
-        const img = new Image();
-        img.src = src.widget.image;
-        img.onload = resolve(img);
-        img.onerror = reject();
-        imageCache.current.push(src.widget.image);
-      });
-    });
-    Promise.all(promises).then(cachedImages => {
-      console.log("Images loaded....", cachedImages);
-      //imageCache.current = cachedImages;
-      //setImagesReady(true);
-    });
-  }, []);
 
   const takeSnapshot = async w => {
     const DEFAULT_PNG = {
@@ -239,8 +169,8 @@ const DisplayApp = ({
       console.log("NEW SNAPSHOT TAKEN...");
       */
       //widgetImage.current = f;
-      //widgetImage.current = "https://via.placeholder.com/400";
-      //setOpen(true);
+      widgetImage.current = "https://via.placeholder.com/400";
+      setOpen(true);
       //setWidgetImage(f);
     }
   };
@@ -265,23 +195,23 @@ const DisplayApp = ({
         width: ww.width + "px",
         widget: w,
       };
-      /*
+
       animationItems.current = [
         {
           opacity: 1,
-          transform: `perspective(1000px) rotateX(${open ? 180 : 0}deg)`,
-          //transform: `perspective(1000px) rotateY(180deg)`,
+          transform: `perspective(1000px) rotateY(${open ? 180 : 0}deg)`,
+          /*transform: `perspective(1000px) rotateY(180deg)`,*/
           height: ww.height + "px",
           width: ww.width + "px",
           visibility: "visible",
-          //reset: true,
+          /*reset: true,*/
           config: {
             mass: 5,
             tension: 500,
             friction: 220,
           },
         },
-        
+        /*
         {
           delay: 500,
           reset: true,
@@ -298,57 +228,23 @@ const DisplayApp = ({
             visibility: "hidden",
           },
         },
-        
+        */
       ];
-*/
+
       //setSprings(fn(animationItems.current));
 
-      //takeSnapshot(w);
-
-      setSprings(index => {
-        if (index === 0) {
-          return {
-            //transform: `perspective(1000px) rotateY(180deg)`, right-toleft
-
-            transform: `perspective(1000px) rotateY(150deg)`,
-            onRest: () => {
-              setFlipped(true);
-              setFinish(true);
-            },
-          };
-        }
-
-        return {
-          transform: null,
-
-          opacity: 0,
-          from: {
-            width: "300px",
-            height: "300px",
-          },
-          to: {
-            width: "400px",
-            height: "400px",
-          },
-          config: { ...SpringConfig.molasses, duration: 3500 },
-          onRest: () => {
-            //setFinish(true);
-          },
-        };
-      });
-
-      setOpen(true);
+      takeSnapshot(w);
+      //setOpen(true);
     }
   };
 
   useEffect(() => {
-    let ignore = false;
     console.log("OPEN CHANGE ", open);
     if (false) {
       //if (open) {
       //console.log("REFS....", document.querySelectorAll(".prifina-widget[data-widget-index='0']"));
       //console.log("REFS....", document.querySelectorAll(".prifina-widget"));
-      /*
+
       animationItems.current = [
         {
           opacity: 1,
@@ -393,38 +289,24 @@ const DisplayApp = ({
           },
         },
       ];
-*/
-      //setSprings(fn(animationItems.current));
+
+      setSprings(fn(animationItems.current));
     } else {
       if (settings.current.widget != -1) {
         console.log("INIT SPRINGS....");
-
+        animationItems.current = [{}, {}];
+        //setSprings(fn(animationItems.current));
+        //setFlipped(false);
         settingsRef.current = [];
-        if (flipped && finish) {
-          setSprings(index => {
-            return {
-              from: {
-                transform: items[index].transform,
-                opacity: 1,
-                width: "300px",
-                height: "300px",
-              },
-              config: {
-                mass: 5,
-                tension: 500,
-                friction: 220,
-              },
-            };
-          });
-        }
-
-        setFlipped(false);
-        setFinish(false);
+        settings.current = {
+          left: "0px",
+          top: "0px",
+          height: "0px",
+          width: "0px",
+          widget: -1,
+        };
       }
     }
-    return () => {
-      ignore = true;
-    };
   }, [open]);
 
   useEffect(() => {
@@ -531,42 +413,27 @@ const DisplayApp = ({
   useEffect(() => {
     if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
-      const widgets = widgetConfig.map((w, i) => {
-        console.log("WIDGET COMPONENT ", w);
+      const widgets = widgetConfig.map((widget, i) => {
+        console.log("WIDGET COMPONENT ", widget);
         //React.forwardRef((props, ref) =>
 
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
           return (
             <React.Fragment>
-              <div
-                style={{
-                  width: w.widget.size.width + "px",
-                  height: w.widget.size.height + "px",
-                  margin: "10px",
-                }}
-              >
-                {/* 
+              <div>
+                {widget.settings && (
                   <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
                     <BlendIcon iconify={bxCog} />
                   </C.IconDiv>
-                  */}
-                {w.settings && (
-                  <C.IconDiv
-                    open={props.open}
-                    onClick={() => openSettings(i)}
-                    widgetTheme={w.widget.theme}
-                  />
                 )}
-                {!w.settings && <C.EmptyDiv />}
-
                 <C.WidgetWrapper
                   className={"prifina-widget"}
                   data-widget-index={i}
                   key={"widget-wrapper-" + i}
                   ref={ref}
                 >
-                  <RemoteComponent url={w.url} {...props} />
+                  <RemoteComponent url={widget.url} {...props} />
                 </C.WidgetWrapper>
               </div>
             </React.Fragment>
@@ -662,25 +529,7 @@ const DisplayApp = ({
       setOpen(false);
     }
     */
-    setSprings(index => {
-      return {
-        from: {
-          transform: items[index].transform,
-          opacity: 1,
-          width: "300px",
-          height: "300px",
-        },
-        config: {
-          mass: 5,
-          tension: 500,
-          friction: 220,
-        },
-      };
-    });
-
     setOpen(false);
-    setFlipped(false);
-    setFinish(false);
   };
 
   const saveSearchKey = async searchKey => {
@@ -772,65 +621,53 @@ input SearchResultInput {
 */
   return (
     <>
-      {open && (
-        <C.ModalBackground
-          className={"widget-modal"}
-          onClick={e => {
-            console.log("TARGET ", e);
-            console.log("WIDGET SETTINGS ", refs.current, settings);
-            console.log("MODAL ", e.target.className);
+      {springs.map((props, i) => {
+        console.log("PROPS ", i, props);
+        console.log("IMAGE ", widgetImage);
+        // widget settings...
+        console.log(settings.current);
+        console.log(widgetSettings);
+        /*
+            const title = widgetSettings.current[settings.current.widget].title;
+            const settingsFields =
+              widgetSettings.current[settings.current.widget].settings;
+            const currentSetting =
+              widgetSettings.current[settings.current.widget].currentSetting;
+*/
+        return (
+          <animated.div
+            style={{
+              transform: props.transform,
 
-            if (e.target.className.indexOf("widget-modal") > -1) {
-              setOpen(false);
-            }
-          }}
-        >
-          {springs.map((props, i) => {
-            console.log("PROPS ", i, props);
-            console.log("IMAGE ", imageCache.current);
-            // widget settings...
-            console.log(settings.current);
-            console.log(widgetSettings);
-
-            return (
-              <animated.div
-                style={{
-                  transform: props.transform,
-                  /*opacity: props.opacity, */
-                  left: settings.current.left,
-                  top: settings.current.top,
-
-                  width: props.width,
-                  height: props.height,
-
-                  position: "absolute",
-
-                  /*border: i === 0 ? "2px outset" : null,*/
-                  borderRadius: i === 0 ? "8px" : null,
-                  visibility: open ? "visible" : "hidden",
-                  /*
-                  visible: props.transform.interpolate(
-                    [0, 150],
-                    ["visible", "hidden"],
-                  ),
-                  */
-                  zIndex: 50,
-                  backgroundSize: "cover",
-                  /*backgroundColor: flipped ? "white" : null,*/
-                  backgroundImage:
-                    i > 0
-                      ? null
-                      : flipped
-                      ? null
-                      : `url(${imageCache.current[settings.current.widget]})`,
-                }}
-                ref={ref => {
-                  if (ref !== null) settingsRef.current.push(ref);
-                }}
-                key={"animated-" + i}
-              >
-                {finish && i === 1 && (
-                  <C.SettingsDiv>
+              left: settings.current.left,
+              top: settings.current.top,
+              width: props.width,
+              height: props.height,
+              position: "absolute",
+              visibility: props.visibility,
+              zIndex: 2,
+              backgroundSize: "cover",
+              backgroundImage:
+                "url(https://images.unsplash.com/photo-1544511916-0148ccdeb877?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1901&q=80i&auto=format&fit=crop)",
+            }}
+            ref={ref => {
+              if (ref !== null) settingsRef.current.push(ref);
+            }}
+            key={"animated-" + i}
+          >
+            {/* 
+                <C.SettingsDiv>
+                  {i === 0 && (
+                    <img
+                      src={widgetImage.current}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        display: `${flipped ? "none" : "block"}`,
+                      }}
+                    />
+                  )}
+                  {flipped && i === 1 && (
                     <C.SettingsDialog
                       spring={i}
                       flipped={flipped}
@@ -841,46 +678,52 @@ input SearchResultInput {
                         widgetSettings.current[settings.current.widget]
                       }
                     />
-                  </C.SettingsDiv>
-                )}
-              </animated.div>
-            );
-          })}
+                  )}
+                </C.SettingsDiv>
+                */}
+          </animated.div>
+        );
+      })}
+      {/* 
+      {open && (
+        <C.ModalBackground
+          className={"widget-modal"}
+          onClick={e => {
+            console.log("TARGET ", e);
+            console.log("WIDGET SETTINGS ", refs.current, settings);
+            console.log("MODAL ", e.target.className);
+
+            
+            if (e.target.className.indexOf("widget-modal") > -1) {
+              setOpen(false);
+            }
+          }}
+        >
+        
         </C.ModalBackground>
       )}
-
-      <PrifinaLogo title={"Display App"} />
-      <C.PageContainer>
-        <div style={{ overflow: "hidden" }}>
-          <Tabs
-            activeTab={activeTab}
-            onClick={tabClick}
-            style={{ height: "100%" }}
-            variant={"line"}
-          >
-            <TabList>
-              <Tab>
-                <C.TabText>{currentUser.name}</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Work</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Family</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Hobbies</C.TabText>
-              </Tab>
-            </TabList>
-            <TabPanelList style={{ backgroundColor: null }}>
-              <TabPanel
-                style={{
-                  height: "100vh",
-                  paddingBottom: "50px",
-                  overflow: "auto",
-                }}
-              >
-                {/* 
+      */}
+      <div style={{ overflow: "hidden" }}>
+        <Tabs
+          activeTab={activeTab}
+          onClick={tabClick}
+          style={{ height: "100%" }}
+          variant={"line"}
+        >
+          <TabList>
+            <Tab>{currentUser.name}</Tab>
+            <Tab>Work</Tab>
+            <Tab>Family</Tab>
+            <Tab>Hobbies</Tab>
+          </TabList>
+          <TabPanelList>
+            <TabPanel
+              style={{
+                height: "100vh",
+                paddingBottom: "50px",
+                overflow: "auto",
+              }}
+            >
               <div style={{ overflow: "hidden" }}>
                 <C.SearchBox
                   ref={searchBox}
@@ -900,27 +743,24 @@ input SearchResultInput {
                 )}
                 {searchHistory && <C.SearchHistory searchBox={searchBox} />}
               </div>
-*/}
-                <div style={{ overflow: "auto" }}>
-                  <C.WidgetContainer className={"prifina-widget-container"}>
-                    {widgetList.length > 0 && (
-                      <C.WidgetList
-                        widgetList={widgetList}
-                        widgetData={widgetConfig}
-                        currentUser={currentUser}
-                        dataSources={dataSources}
-                      />
-                    )}
-                  </C.WidgetContainer>
-                </div>
-              </TabPanel>
-              <TabPanel>Work panel</TabPanel>
-              <TabPanel>Family panel</TabPanel>
-              <TabPanel>Hobbies panel</TabPanel>
-            </TabPanelList>
-          </Tabs>
-        </div>
-      </C.PageContainer>
+              <div style={{ overflow: "auto" }}>
+                <C.WidgetContainer className={"prifina-widget-container"}>
+                  {widgetList.length > 0 && (
+                    <C.WidgetList
+                      widgetList={widgetList}
+                      widgetData={widgetConfig}
+                      currentUser={currentUser}
+                    />
+                  )}
+                </C.WidgetContainer>
+              </div>
+            </TabPanel>
+            <TabPanel>Work panel</TabPanel>
+            <TabPanel>Family panel</TabPanel>
+            <TabPanel>Hobbies panel</TabPanel>
+          </TabPanelList>
+        </Tabs>
+      </div>
     </>
   );
 };

@@ -16,6 +16,7 @@ import Base64 from "crypto-js/enc-base64";
 import {
   addPrifinaSessionMutation,
   getPrifinaSessionQuery,
+  deletePrifinaSessionMutation,
 } from "./graphql/api";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
@@ -33,7 +34,7 @@ const APIConfig = {
   aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
 };
 
-const AUTHConfig = {
+let AUTHConfig = {
   // To get the aws credentials, you need to configure
   // the Auth module with your Cognito Federated Identity Pool
   mandatorySignIn: false,
@@ -68,6 +69,12 @@ function App() {
   //const history = useHistory();
   console.log("APP START");
   console.log("CONFIG ", config);
+  /*
+  const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
+  if (lastIdentityPool !== null) {
+    AUTHConfig.identityPoolId = lastIdentityPool;
+  }
+  */
   Auth.configure(AUTHConfig);
   API.configure(APIConfig);
   const { pathname, search } = useLocation();
@@ -127,7 +134,7 @@ function App() {
           lastIdentityPool !== null &&
           Auth._config.identityPoolId !== lastIdentityPool
         ) {
-          console.log("CHANGE IDPOOL");
+          console.log("CHANGE IDPOOL ", lastIdentityPool);
           let currentConfig = Auth._config;
           currentConfig.identityPoolId = lastIdentityPool;
           Auth.configure(currentConfig);
@@ -141,7 +148,7 @@ function App() {
         //Auth.currentCredentials().then((creds) => console.log(creds));
         // Auth.currentSession() does not currently support federated identities. Please store the auth0 session info manually(for example, store tokens into the local storage).Auth.currentAuthenticatedUser().then(user => console.log(user));
 
-        console.log("APP AUTH ", _currentSession);
+        console.log("APP AUTH ", _currentSession, Auth._config);
         if (_currentSession) {
           const token = _currentSession.getIdToken().payload;
           _currentUser = {
@@ -189,6 +196,7 @@ function App() {
             console.log(
               "UPDATE SESSION...",
               {
+                identityPool: Auth._config.identityPoolId,
                 tracker: tracker,
                 tokens: JSON.stringify(tokens),
                 expireToken: _currentSession.getIdToken().getExpiration(),
@@ -200,6 +208,7 @@ function App() {
             );
 
             const prifinaSession = await addPrifinaSessionMutation(API, {
+              identityPool: Auth._config.identityPoolId,
               tracker: tracker,
               tokens: JSON.stringify(tokens),
               expireToken: _currentSession.getIdToken().getExpiration(),
@@ -219,6 +228,7 @@ function App() {
       } catch (e) {
         console.log("ERR ", e);
         if (typeof e === "string" && e === "No current user") {
+          console.log("GET SESSION....");
           const prifinaSession = await getPrifinaSessionQuery(API, tracker);
           console.log("AUTH SESSION ", prifinaSession);
           if (prifinaSession.data.getSession === null) {
@@ -231,6 +241,16 @@ function App() {
             // ?redirect=/
             if (search.startsWith("?redirect")) {
               history.replace("/login" + search);
+            } else if (
+              pathname.startsWith("/login") &&
+              search.startsWith("?debug")
+            ) {
+              history.replace("/login" + search);
+            } else if (
+              pathname.startsWith("/register") &&
+              search.startsWith("?debug")
+            ) {
+              history.replace("/register" + search);
             } else {
               history.replace("/login?redirect=" + pathname + search);
             }
@@ -264,7 +284,18 @@ function App() {
   }, [state.isAuthenticated]);
 
   const userAuth = auth => {
-    setState({ isAuthenticated: auth });
+    console.log("AUTH SET ", state.isAuthenticated, auth);
+    if (state.isAuthenticated && !auth) {
+      const tracker = Base64.stringify(sha512(window.deviceFingerPrint));
+      deletePrifinaSessionMutation(API, tracker).then(() => {
+        Auth.signOut().then(() => {
+          setState({ isAuthenticated: auth });
+          history.replace("/");
+        });
+      });
+    } else {
+      setState({ isAuthenticated: auth });
+    }
   };
 
   const { currentUser, isAuthenticating, isAuthenticated } = state;

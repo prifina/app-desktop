@@ -12,6 +12,8 @@ import {
   getPrifinaWidgetsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
+  listAppMarketQuery,
+  listDataSourcesQuery,
 } from "../graphql/api";
 
 import {
@@ -278,14 +280,20 @@ const CoreApps = props => {
 
       const client = createClient(clientEndpoint, clientRegion);
 
+      //const dataConnectors = [];
+
       activeUser.current = {
         name: appProfile.name,
         uuid: prifinaID,
         endpoint: clientEndpoint,
         region: clientRegion,
+        dataConnectors: currentPrifinaUser.data.getPrifinaUser.dataSources
+          ? JSON.parse(currentPrifinaUser.data.getPrifinaUser.dataSources)
+          : {},
       };
 
       console.log("APP NAME ", coreApp);
+      console.log("ACTIVE USER ", activeUser.current);
       // app component props
       if (coreApp === "DisplayApp") {
         const addressBookResult = await client.query({
@@ -314,6 +322,17 @@ const CoreApps = props => {
           });
         }
 
+        const prifinaWidgets = await listAppMarketQuery(GRAPHQL, {
+          filter: { appType: { eq: 1 } },
+        });
+
+        const prifinaDataSources = await listDataSourcesQuery(GRAPHQL, {});
+        console.log("DATA SOURCES ", prifinaDataSources);
+        let dataSources = {};
+        prifinaDataSources.data.listDataSources.items.forEach(item => {
+          dataSources[item.module] = { sourceType: item.sourceType };
+        });
+        /*
         const prifinaWidgets = await getPrifinaWidgetsQuery(GRAPHQL, "WIDGETS");
         console.log(
           "CURRENT CONFIG ",
@@ -323,7 +342,27 @@ const CoreApps = props => {
         const widgetData = JSON.parse(
           prifinaWidgets.data.getPrifinaApp.widgets,
         );
-
+          */
+        let widgetData = {};
+        prifinaWidgets.data.listAppMarket.items.forEach(item => {
+          //console.log("APPMARKET ITEM ", item);
+          const manifest = JSON.parse(item.manifest);
+          console.log("APPMARKET MANIFEST ", manifest);
+          widgetData[item.id] = {
+            settings: item.settings,
+            name: item.name,
+            title: item.title,
+            theme: manifest.theme || "dark",
+            size: {
+              height: manifest.size ? manifest.size.height : 300,
+              width: manifest.size ? manifest.size.width : 300,
+            },
+            shortDescription: manifest.shortDescription,
+            version: item.version,
+            image: manifest.screenshots[0],
+            dataConnectors: item.dataSources || [],
+          };
+        });
         let data = [];
         if (
           currentPrifinaUser.data.getPrifinaUser.hasOwnProperty(
@@ -337,16 +376,16 @@ const CoreApps = props => {
 
           let widgetCounts = {};
           data = installedWidgets.map(w => {
-            if (widgetCounts.hasOwnProperty(w.name)) {
-              widgetCounts[w.name]++;
+            if (widgetCounts.hasOwnProperty(w.id)) {
+              widgetCounts[w.id]++;
             } else {
-              widgetCounts[w.name] = 0;
+              widgetCounts[w.id] = 0;
             }
             let defaultValues = {};
-            if (widgetData[w.name].settings) {
-              widgetData[w.name].settings.forEach(v => {
+            if (widgetData[w.id].settings) {
+              widgetData[w.id].settings.forEach(v => {
                 // if type=text...
-                defaultValues[v.value] = "";
+                defaultValues[v.field] = v.value;
               });
 
               if (w.hasOwnProperty("settings") && w.settings.length > 0) {
@@ -357,42 +396,47 @@ const CoreApps = props => {
                   }
                 });
               }
-              /*
-              if (installedWidgets[w].length > 0) {
-                //console.log("SEETINGS FOUND ", w.widget.appID);
-                installedWidgets[w].forEach(i => {
-                  if (defaultValues.hasOwnProperty(i.field)) {
-                    defaultValues[i.field] = i.value;
-                  }
-                });
-              }
-              */
             }
+            //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/back-plate.png
+            //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/0.0.1/main.bundle.js
 
+            const remoteUrl = [
+              "https:/",
+              process.env.REACT_APP_PRIFINA_APPS_BUCKET +
+                "-" +
+                process.env.REACT_APP_PRIFINA_ACCOUNT +
+                ".s3.amazonaws.com",
+              w.id,
+              widgetData[w.id].version,
+              "main.bundle.js",
+            ].join("/");
+            //console.log("WIDGET DATA ITEM ", widgetData[w.id]);
             return {
-              url: widgetData[w.name].url,
-              settings: widgetData[w.name].settings.length > 0,
-              currentSetting: defaultValues,
+              url: remoteUrl,
+              settings: widgetData[w.id].settings.length > 0,
+              currentSettings: defaultValues,
+              dataConnectors: widgetData[w.id].dataConnectors,
               widget: {
-                settings: widgetData[w.name].settings,
-                installCount: widgetCounts[w.name],
-                appID: w.name,
-                name: widgetData[w.name].name,
-                title: widgetData[w.name].title,
+                size: widgetData[w.id].size,
+                theme: widgetData[w.id].theme,
+                settings: widgetData[w.id].settings,
+                installCount: widgetCounts[w.id],
+                appID: w.id,
+                name: widgetData[w.id].name,
+                title: widgetData[w.id].title,
+                shortDescription: widgetData[w.id].shortDescription,
+                version: widgetData[w.id].version,
+                image: [
+                  "https:/",
+                  process.env.REACT_APP_PRIFINA_APPS_BUCKET +
+                    "-" +
+                    process.env.REACT_APP_PRIFINA_ACCOUNT +
+                    ".s3.amazonaws.com",
+                  w.id,
+                  widgetData[w.id].image,
+                ].join("/"),
               },
             };
-            /*
-          {
-            url: widgetData[w].url,
-            settings: widgetData[w].settings.length > 0,
-            currentSetting: defaultValues,
-            widget: {
-              settings: widgetData[w].settings,
-              appID: w,
-              name: widgetData[w].name,
-              title: widgetData[w].title,
-            },
-          };*/
           });
         }
         console.log("ADDRESS BOOK ", addressBook.current);
@@ -402,6 +446,7 @@ const CoreApps = props => {
         componentProps.current.widgetConfigData = data;
         componentProps.current.prifinaID = prifinaID;
         componentProps.current.initials = appProfile.initials;
+        componentProps.current.dataSources = dataSources;
       } else {
         // default componentProps...
         console.log("CURRENT SETTINGS 2", client);

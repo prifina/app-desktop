@@ -16,6 +16,7 @@ const prod = {
     DEV_CLIENT_ID: process.env.REACT_APP_DEV_CLIENT_ID,
     SERVICE_CLIENT_ID: process.env.REACT_APP_SERVICE_CLIENT_ID,
     IDENTITY_POOL_ID: process.env.REACT_APP_IDENTITY_POOL_ID,
+    USER_IDENTITY_POOL_ID: process.env.REACT_APP_USER_IDENTITY_POOL_ID,
   },
   appSync: {
     aws_appsync_graphqlEndpoint: process.env.REACT_APP_APPSYNC_GRAPHQL_ENDPOINT,
@@ -39,6 +40,7 @@ const dev = {
     DEV_CLIENT_ID: process.env.REACT_APP_DEV_CLIENT_ID,
     SERVICE_CLIENT_ID: process.env.REACT_APP_SERVICE_CLIENT_ID,
     IDENTITY_POOL_ID: process.env.REACT_APP_IDENTITY_POOL_ID,
+    USER_IDENTITY_POOL_ID: process.env.REACT_APP_USER_IDENTITY_POOL_ID,
   },
   appSync: {
     aws_appsync_graphqlEndpoint: process.env.REACT_APP_APPSYNC_GRAPHQL_ENDPOINT,

@@ -36,9 +36,9 @@ import { updateActivity } from "../graphql/mutations";
 import { newNotification } from "../graphql/subscriptions";
 import {
   getInstalledAppsQuery,
-  getPrifinaAppsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
+  listAppMarketQuery,
 } from "../graphql/api";
 import { useAppContext } from "../lib/contextLib";
 import Amplify, { API, Auth } from "aws-amplify";
@@ -132,11 +132,27 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   useEffect(() => {
     async function fetchData() {
       if (isMountedRef.current) {
-        const prifinaAppsData = await getPrifinaAppsQuery(API, "APPS");
-        console.log(prifinaApps);
+        //const prifinaAppsData = await getPrifinaAppsQuery(API, "APPS");
+        //console.log("APPS 1", prifinaAppsData);
+        /*
         const prifinaAppsJSON = JSON.parse(
           prifinaAppsData.data.getPrifinaApp.apps,
         );
+        */
+        const prifinaAppsData2 = await listAppMarketQuery(API, {
+          filter: { appType: { gt: 1 } }, // apps+core apps
+        });
+
+        console.log("APPS 2", prifinaAppsData2);
+        let prifinaAppsJSON = {};
+        prifinaAppsData2.data.listAppMarket.items.forEach(item => {
+          prifinaAppsJSON[item.id] = item;
+          if (item.appType === 3) {
+            prifinaAppsJSON[item.id].route = "core/" + item.route;
+          }
+        });
+
+        console.log(prifinaApps);
 
         const installedAppsJSON = JSON.parse(currentUser.installedApps);
         installedAppsJSON.forEach(app => {
@@ -426,6 +442,7 @@ const Home = props => {
       const client = createClient(clientEndpoint, clientRegion);
 
       userData.current = currentPrifinaUser.data.getPrifinaUser;
+      //const dataConnectors = [];
 
       activeUser.current = {
         name: appProfile.name,

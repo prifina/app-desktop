@@ -3,7 +3,7 @@
 /* eslint-disable react/display-name */
 
 import React, { useRef, forwardRef, useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import {
   Box,
@@ -30,15 +30,65 @@ import moment from "moment";
 import "moment-timezone";
 import PropTypes from "prop-types";
 
+import { useTheme } from "@blend-ui/core";
+
 i18n.init();
 
+/*
+position: absolute;
+width: 1309px;
+height: 716px;
+left: 64px;
+top: 182px;
+
+background: #FFFFFF;
+box-shadow: 0px -4px 8px #F5F6F6;
+*/
+export const TabText = styled(Text)`
+  padding-left: 20px;
+  padding-top: 25px;
+`;
+
+export const PageContainer = styled.div`
+  margin-left: 64px;
+  margin-right: 64px;
+  margin-top: 24px;
+
+  background: #ffffff;
+  box-shadow: 0px -4px 8px #f5f6f6;
+`;
+
 export const WidgetWrapper = styled.div`
-  margin: 10px;
+  width: 100%;
+  height: 100%;
   border: 2px outset;
   border-radius: 8px;
+  /*
+  margin: 10px;
   min-height: 200px;
   min-width: 200px;
+  */
 `;
+/*
+div {
+  width: 100px;
+  height: 100px;
+  background-image: radial-gradient(circle, black 10px, transparent 11px);
+  background-size: 100% 33.33%;
+}
+{
+    height: 20px;
+    width: 30px;
+    position: relative;
+    left: 188px;
+    top: 41px;
+    opacity: 1;
+    cursor: pointer;
+    background-image: radial-gradient(circle,black 2px,transparent 0px);
+    background-size: 100% 33.33%;
+}
+*/
+/*
 export const IconDiv = styled.div`
   height: 24px;
   position: relative;
@@ -49,6 +99,37 @@ export const IconDiv = styled.div`
   &:hover {
     opacity: ${props => (props.open ? 0 : 1)};
   }
+`;
+*/
+
+export const IconDiv = styled.div`
+  &:hover {
+    transform: scale(0.9);
+    box-shadow: 3px 2px 30px 1px rgb(0 0 0 / 24%);
+  }
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  left: 275px;
+  top: 20px;
+  opacity: 1;
+  cursor: ${props => (props.open ? "default" : "pointer")};
+  background-image: radial-gradient(
+    circle,
+    ${props => (props.widgetTheme === "dark" ? "white" : "black")} 2px,
+    transparent 0px
+  );
+  background-size: 100% 33.33%;
+  z-index: 10;
+`;
+
+export const EmptyDiv = styled.div`
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  left: 180px;
+  top: 20px;
+  opacity: 1;
 `;
 export const WidgetContainer = styled(Flex)`
   /*
@@ -68,7 +149,7 @@ display: flex;
 export const ModalBackground = styled.div`
   width: 100%;
   height: 100vh;
-  z-index: 5;
+  z-index: 40;
   background-color: rgba(30, 29, 29, 0.3);
   position: absolute;
   left: 0;
@@ -101,37 +182,299 @@ export const SearchContainer = styled.div`
 `;
 export const SettingsDiv = styled.div`
   background-color: white;
-
   width: 100%;
   height: 100%;
-  border: 2px outset;
+  /*border: 2px outset; */
   border-radius: 8px;
-  z-index: 10;
+  z-index: 50;
 `;
 
-export const WidgetList = React.memo(({ widgetList, widgetData }) => {
-  // currentUser
-  // localization
-  // settings
-  console.log("WIDGET LIST ", widgetList);
-  console.log("WIDGET DATA", widgetData);
+/*
+.bg-image {
+  
+  background-image: url("photographer.jpg");
+
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+
+  height: 100%;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+*/
+export const BlurImageDiv = styled.div`
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+
+  height: 100%;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+`;
+
+const dots = colors => keyframes`
+{
+  10% {
+   background-color: ${colors[0]}; 
+  }
+  0%, 20%,100% {
+    background-color: ${colors[1]};
+  }
+}
+`;
+
+const DotsContainer = styled.div`
+  color: ${props => (props.widgetTheme === "dark" ? "white" : "black")};
+  position: absolute;
+  top: 110px;
+  height: 69px;
+  width: 69px;
+  margin: 0 10px 0 0;
+  text-align: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid
+    ${props => (props.widgetTheme === "dark" ? "white" : "black")};
+  border-radius: 50%;
+  z-index: 20;
+  div {
+    animation: ${props =>
+        dots(
+          props.widgetTheme === "dark" ? ["white", "gray"] : ["black", "gray"],
+        )}
+      4s linear infinite;
+  }
+  div:nth-child(1) {
+    animation-delay: 1s;
+  }
+
+  div:nth-child(2) {
+    animation-delay: 2s;
+  }
+  div:nth-child(3) {
+    animation-delay: 3s;
+  }
+`;
+
+const Dot = styled.div`
+  position: relative;
+
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${props =>
+    props.widgetTheme === "dark" ? "white" : "black"}
+
+  float: left;
+  z-index: 21;
+  margin-right: 9px;
+  &:last-of-type {
+    margin-right: 0;
+  }
+`;
+const DotLoader = props => {
+  const theme = useTheme();
+  console.log(theme.colors);
   return (
-    <>
-      {widgetList.map((Widget, i) => {
-        return (
-          <Widget
-            data={{ settings: widgetData[i].currentSetting }}
-            key={"prifina-widget-" + i}
-          />
-        );
-      })}
-    </>
+    <DotsContainer theme={theme} {...props}>
+      <Dot theme={theme} {...props} />
+      <Dot theme={theme} {...props} />
+      <Dot theme={theme} {...props} />
+    </DotsContainer>
   );
-});
+};
+
+export const WidgetList = React.memo(
+  ({ widgetList, widgetData, currentUser, dataSources }) => {
+    // currentUser
+    // localization
+    // settings
+    console.log("WIDGET LIST ", widgetList);
+    console.log("WIDGET DATA", widgetData);
+    console.log("WIDGET USER", currentUser);
+    console.log("DATASOURCES", dataSources);
+    const userDataConnectors = Object.keys(currentUser.dataConnectors);
+    //const dataSources = { "@prifina/google-timeline": { sourceType: 2 } };
+    return (
+      <>
+        {widgetList.map((Widget, i) => {
+          // only first datasource is used ????
+          const widgetDataSource = widgetData[i].dataConnectors[0];
+
+          if (widgetData[i].dataConnectors.length > 0) {
+            // data source is not connected....
+            let userDataSourceStatus = 0;
+            if (
+              userDataConnectors.length > 0 &&
+              userDataConnectors.indexOf(widgetDataSource) > -1
+            ) {
+              // check dataSource status
+              userDataSourceStatus =
+                currentUser.dataConnectors[widgetDataSource].status;
+            }
+
+            const dataSourceType = dataSources[widgetDataSource].sourceType;
+            console.log("DATASOURCE TYPE", i, widgetDataSource, dataSourceType);
+            if (userDataSourceStatus < 2) {
+              return (
+                <div
+                  key={"widget-processing-" + i}
+                  style={{
+                    width: widgetData[i].widget.size.width + "px",
+                    height: widgetData[i].widget.size.height + "px",
+                    margin: "10px",
+                  }}
+                >
+                  <EmptyDiv />
+                  <WidgetWrapper key={"widget-wrapper-" + i}>
+                    <BlurImageDiv
+                      key={"prifina-widget-" + i}
+                      style={{
+                        backgroundImage: `url(${widgetData[i].widget.image})`,
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        width: widgetData[i].widget.size.width + "px",
+                        bottom: "60px",
+                        padding: "10px",
+                        position: "absolute",
+                        textAlign: "center",
+                      }}
+                    >
+                      <Text
+                        textStyle={"h6"}
+                        color={
+                          widgetData[i].widget.theme === "dark"
+                            ? "white"
+                            : "black"
+                        }
+                      >
+                        {widgetData[i].widget.title}
+                      </Text>
+                      <Text
+                        textStyle={"caption"}
+                        color={
+                          widgetData[i].widget.theme === "dark"
+                            ? "white"
+                            : "black"
+                        }
+                      >
+                        {widgetData[i].widget.shortDescription}
+                      </Text>
+                    </div>
+                    <div
+                      style={{
+                        width: widgetData[i].widget.size.width + "px",
+                        bottom: "15px",
+                        paddingLeft: "10px",
+                        position: "absolute",
+                      }}
+                    >
+                      {userDataSourceStatus === 0 && (
+                        <Button>
+                          {dataSourceType === 1 ? "Connect Data" : "Import"}
+                        </Button>
+                      )}
+                      {userDataSourceStatus === 1 && <Button>Activate</Button>}
+                    </div>
+                  </WidgetWrapper>
+                </div>
+              );
+            }
+
+            // processing
+            if (userDataSourceStatus === 2) {
+              return (
+                <div
+                  key={"widget-processing-" + i}
+                  style={{
+                    width: widgetData[i].widget.size.width + "px",
+                    height: widgetData[i].widget.size.height + "px",
+                    margin: "10px",
+                  }}
+                >
+                  <EmptyDiv />
+                  <WidgetWrapper key={"widget-wrapper-" + i}>
+                    <BlurImageDiv
+                      key={"prifina-widget-" + i}
+                      style={{
+                        backgroundImage: `url(${widgetData[i].widget.image})`,
+                      }}
+                    />
+                    <div
+                      key={"widget-dot-" + i}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        top: "0px",
+                        zIndex: 19,
+                      }}
+                    >
+                      <DotLoader widgetTheme={widgetData[i].widget.theme} />
+                      <div
+                        style={{
+                          width: widgetData[i].widget.size.width + "px",
+                          bottom: "70px",
+                          padding: "5px",
+                          position: "absolute",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Text
+                          textStyle={"h6"}
+                          color={
+                            widgetData[i].widget.theme === "dark"
+                              ? "white"
+                              : "black"
+                          }
+                        >
+                          Prosessing your data...
+                        </Text>
+                        <Text
+                          textStyle={"caption"}
+                          color={
+                            widgetData[i].widget.theme === "dark"
+                              ? "white"
+                              : "black"
+                          }
+                        >
+                          You will be notified as soon as the data becomes
+                          available in your cloud.
+                        </Text>
+                      </div>
+                    </div>
+                  </WidgetWrapper>
+                </div>
+              );
+            }
+          }
+          return (
+            <Widget
+              data={{
+                settings: widgetData[i].currentSettings,
+                currentUser: currentUser,
+              }}
+              key={"prifina-widget-" + i}
+            />
+          );
+        })}
+      </>
+    );
+  },
+);
 
 WidgetList.propTypes = {
   widgetList: PropTypes.array.isRequired,
   widgetData: PropTypes.array.isRequired,
+  currentUser: PropTypes.object,
 };
 
 //moment.tz.guess()
@@ -170,24 +513,24 @@ moment.tz.names().forEach(function (timezone) {
 
 export const SettingsDialog = ({
   widgetIndex,
-  widgetSetting,
+  widgetSettings,
   onUpdate,
   ...props
 }) => {
   //const currentSettings = widgetSettings[widget];
-  console.log("SETTINGS ", widgetIndex, widgetSetting);
+  console.log("SETTINGS ", widgetIndex, widgetSettings);
   let inputFields = useRef({});
   let timezones = useRef([]);
   const inputRef = useRef();
   const [fieldInit, setFieldInit] = useState(false);
   useEffect(() => {
-    Object.keys(widgetSetting.currentSetting).forEach(f => {
-      inputFields.current[f] = widgetSetting.currentSetting[f];
+    Object.keys(widgetSettings.currentSettings).forEach(f => {
+      inputFields.current[f] = widgetSettings.currentSettings[f];
     });
     console.log("FLDS ", inputFields);
     console.log("DIALOG ", props);
     let fieldTypeCheck = [];
-    widgetSetting.settings.forEach(s => {
+    widgetSettings.settings.forEach(s => {
       console.log(s);
       if (fieldTypeCheck.indexOf(s.type) === -1) fieldTypeCheck.push(s.type);
     });
@@ -234,12 +577,12 @@ export const SettingsDialog = ({
   return (
     <Box m={2}>
       <Text textStyle={"h3"} textAlign={"center"} mt={10}>
-        {widgetSetting.title}
+        {widgetSettings.title}
       </Text>
       <Divider />
       {fieldInit && (
         <Box mt={10} ml={5} mr={5}>
-          {widgetSetting.settings.map((setting, i) => {
+          {widgetSettings.settings.map((setting, i) => {
             return (
               <React.Fragment key={"settings-" + i}>
                 {setting.type === "text" && (
@@ -248,9 +591,9 @@ export const SettingsDialog = ({
                     key={"widget-setting-" + i}
                     placeholder={setting.label}
                     mb={2}
-                    id={setting.value}
-                    name={setting.value}
-                    defaultValue={fields[setting.value]}
+                    id={setting.field}
+                    name={setting.field}
+                    defaultValue={fields[setting.field]}
                     onChange={handleChange}
                     ref={inputRef}
                   />
@@ -264,8 +607,8 @@ export const SettingsDialog = ({
                       mb={10}
                       size={"sm"}
                       key={"widget-setting-" + i}
-                      id={setting.value}
-                      name={setting.value}
+                      id={setting.field}
+                      name={setting.field}
                       defaultValue={fields[setting.value]}
                       onChange={handleChange}
                     >
@@ -314,7 +657,7 @@ export const SettingsDialog = ({
 
 SettingsDialog.propTypes = {
   widgetIndex: PropTypes.number.isRequired,
-  widgetSetting: PropTypes.object.isRequired,
+  widgetSettings: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 

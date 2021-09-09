@@ -87,7 +87,21 @@ const Login = () => {
       //this.setState({loading: true, disabled: true});
       let user = await Auth.signIn(loginFields.username, loginFields.password);
       console.log("LOGIN", user);
-
+      /*
+      localStorage.setItem(
+        "LastSessionIdentityPool",
+        "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3",
+      );
+      */
+      /*
+      let currentConfig = Auth._config;
+      console.log("AUTH CONFIG ", currentConfig);
+      currentConfig.identityPoolId =
+        "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3";
+      Auth.configure(currentConfig);
+      const _currentSession = await Auth.currentSession();
+      console.log("LOGIN SESSION ", _currentSession);
+      */
       //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
       //setConfirmCode(true);
       if (appDebug && user.preferredMFA === "NOMFA") {
@@ -271,7 +285,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                     onClick={() => {
                       setStep(2);
                     }}
-
                   >
                     {i18n.__("forgotUsername")}
                   </Button>

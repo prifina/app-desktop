@@ -79,3 +79,7 @@ export const updateUserProfile = `mutation updateUserProfile($id:String!, $profi
     id
   }
 }`;
+
+export const deletePrifinaSession = `mutation deleteSession($tracker: String!) {
+  deleteSession(tracker: $tracker) 
+}`;
