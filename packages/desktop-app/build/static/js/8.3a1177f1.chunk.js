@@ -1,0 +1,2 @@
+(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[8],{418:function(e,t,n){"use strict";n.r(t);n(2);var i=n(6),s=n(1),p=function(e){return console.log("DATA CONSOLE PROPS ",e),Object(s.jsx)(i.Box,{width:"100vw",height:"100vh",children:Object(s.jsx)(i.Flex,{justifyContent:"center",alignItems:"center",width:"100%",height:"100%",children:Object(s.jsx)(i.Text,{textAlign:"center",textStyle:"h3",children:"DataConsole"})})})};p.displayName="DataConsole",t.default=p}}]);
+//# sourceMappingURL=8.3a1177f1.chunk.js.map

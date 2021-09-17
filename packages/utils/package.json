@@ -1,0 +1,55 @@
+{
+  "name": "@prifina-apps/utils",
+  "version": "0.0.0-alpha.0",
+  "description": "Utils",
+  "author": "Tero <tero@prifina.com>",
+  "license": "MIT",
+  "main": "dist/esm/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "yarn build:cjs && yarn build:es && yarn build:esm",
+    "build:esm": "cross-env NODE_ENV=production BABEL_ENV=esm babel ./src --out-dir ./dist/esm",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=cjs babel ./src --out-dir ./dist/cjs",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=es babel ./src --out-dir ./dist/es",
+    "storybook": "start-storybook"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-react": "^7.14.5",
+    "@storybook/addon-actions": "^6.3.8",
+    "@storybook/addon-storyshots": "^6.3.8",
+    "@storybook/react": "^6.3.8",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^27.1.1",
+    "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "prop-types": "^15.7.2",
+    "react": ">=16.8.6",
+    "react-dom": ">=16.8.6"
+  },
+  "peerDependencies": {
+    "aws-amplify": "^4.2.9",
+    "react": ">=16.8.6",
+    "react-dom": ">=16.8.6",
+    "@blend-ui/core": "1.1.64-alpha.0",
+    "@blend-ui/icons": "1.1.8-alpha.0",
+    "@iconify/icons-bx": "^1.1.2",
+    "@styled-system/theme-get": "^5.1.2",
+    "styled-components": "^5.3.1",
+    "styled-system": "^5.1.5",
+    "graphql-tag": "^2.12.5",
+    "@reach/auto-id": "^0.16.0",
+    "react-dom": "^17.0.2"
+  },
+  "dependencies": {
+    "countries-list": "^2.6.1",
+    "libphonenumber-js": "^1.9.32"
+  }
+}

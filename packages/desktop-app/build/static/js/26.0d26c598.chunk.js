@@ -1,0 +1,2 @@
+(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[26],{1047:function(p,s,a){"use strict";a.r(s),s.default=a.p+"static/media/DisplayApp copy 2.f30f3c87.1js"}}]);
+//# sourceMappingURL=26.0d26c598.chunk.js.map
