@@ -1,0 +1,2 @@
+(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[9],{419:function(e,t,n){"use strict";n.r(t);n(2);var i=n(6),s=n(1),p=function(e){return console.log("DEV CONSOLE PROPS ",e),Object(s.jsx)(i.Box,{width:"100vw",height:"100vh",children:Object(s.jsx)(i.Flex,{justifyContent:"center",alignItems:"center",width:"100%",height:"100%",children:Object(s.jsx)(i.Text,{textAlign:"center",textStyle:"h3",children:"DevConsole"})})})};p.displayName="DevConsole",t.default=p}}]);
+//# sourceMappingURL=9.bfc009f6.chunk.js.map

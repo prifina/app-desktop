@@ -116,6 +116,14 @@ dist
 # production
 /build
 
+#/backup
+/x.storybook
+/storybook-static
+
+packages/*/dist
+packages/*/node_modules
+packages/*/.env
+
 # misc
 .DS_Store
 .env.local

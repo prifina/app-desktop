@@ -1,0 +1,2 @@
+(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[11],{420:function(e,t,i){"use strict";i.r(t);i(2);var n=i(6),s=i(1),p=function(e){return console.log("PROFILE CARDS PROPS ",e),Object(s.jsx)(n.Box,{width:"100vw",height:"100vh",children:Object(s.jsx)(n.Flex,{justifyContent:"center",alignItems:"center",width:"100%",height:"100%",children:Object(s.jsx)(n.Text,{textAlign:"center",textStyle:"h3",children:"ProfileCards"})})})};p.displayName="ProfileCards",t.default=p}}]);
+//# sourceMappingURL=11.6ccf963a.chunk.js.map
