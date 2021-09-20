@@ -158,11 +158,14 @@ function App() {
         //Auth.currentAuthenticatedUser().then((user) => console.log(user));
         //Auth.currentCredentials().then((creds) => console.log(creds));
         // Auth.currentSession() does not currently support federated identities. Please store the auth0 session info manually(for example, store tokens into the local storage).Auth.currentAuthenticatedUser().then(user => console.log(user));
+        /*
         Auth.currentCredentials().then(c => {
           console.log("USER IAM CREDENTIALS ", c);
         });
+        */
         console.log("APP AUTH ", _currentSession, Auth._config);
         if (_currentSession) {
+          const currentCredentials = await Auth.currentCredentials();
           const token = _currentSession.getIdToken().payload;
           _currentUser = {
             username: token["cognito:username"],
@@ -170,6 +173,8 @@ function App() {
             /* given_name: token["given_name"],*/
             client: token["aud"],
             prifinaID: token["custom:prifina"],
+            identity: currentCredentials.identityId,
+            identityPool: Auth._config.identityPoolId,
           };
           /*
           console.log(

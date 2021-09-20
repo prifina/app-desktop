@@ -14,7 +14,7 @@ import {
 import { useHistory } from "react-router-dom";
 
 const short = require("short-uuid");
-const appId = short.generate();
+//const appId = short.generate();
 
 const NewApp = () => {
   const { currentUser } = useAppContext();
@@ -22,7 +22,7 @@ const NewApp = () => {
   console.log("NEW APP ", currentUser);
 
   const [appFields, handleChange] = useFormFields({
-    appId: appId,
+    appId: short.generate(),
     name: "",
     title: "",
     //version: "",
@@ -35,6 +35,8 @@ const NewApp = () => {
       await newAppVersionMutation(API, appFields.appId, currentUser.prifinaID, {
         name: appFields.name,
         title: appFields.title,
+        identity: currentUser.identity,
+        identityPool: currentUser.identityPool,
         //version: appFields.version,
       });
       history.push("/");

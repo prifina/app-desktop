@@ -419,7 +419,7 @@ const Main = ({ data, currentUser }) => {
 
   const closeClick = (fileUploaded = false, version) => {
     if (fileUploaded) {
-      addAppVersionMutation(API, {
+      addAppVersionMutation(GRAPHQL, {
         id: selectedRow.current.id,
         nextVersion: version,
         status: 1, //received

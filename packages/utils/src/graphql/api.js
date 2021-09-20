@@ -262,6 +262,8 @@ export const newAppVersionMutation = (API, id, prifinaId, opts) => {
       title: opts.title || null,
       version: opts.version || null,
       appType: opts.appType || 1,
+      identity: opts.identity || null,
+      identityPool: opts.identityPool || null,
     },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
