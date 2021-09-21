@@ -380,11 +380,13 @@ const CoreApps = props => {
             settings: item.settings,
             name: item.name,
             title: item.title,
+            /*
             theme: manifest.theme || "dark",
             size: {
               height: manifest.size ? manifest.size.height : 300,
               width: manifest.size ? manifest.size.width : 300,
             },
+            */
             shortDescription: manifest.shortDescription,
             version: item.version,
             image: manifest.screenshots[0],
@@ -445,8 +447,8 @@ const CoreApps = props => {
               currentSettings: defaultValues,
               dataConnectors: widgetData[w.id].dataConnectors,
               widget: {
-                size: widgetData[w.id].size,
-                theme: widgetData[w.id].theme,
+                //size: widgetData[w.id].size,
+                //theme: widgetData[w.id].theme,
                 settings: widgetData[w.id].settings,
                 installCount: widgetCounts[w.id],
                 appID: w.id,

@@ -38,6 +38,7 @@ import { addSearchResult, addSearchKey, i18n } from "@prifina-apps/utils";
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import PropTypes from "prop-types";
+import { system } from "styled-system";
 
 const short = require("short-uuid");
 i18n.init();
@@ -67,6 +68,27 @@ const S3Config = {
 
 const fn = animations => index => animations[index];
 
+function getSystemSettings(settings, currentSettings) {
+  console.log("getSystemSettings ", settings, currentSettings);
+  // default values.... should not be needed, if all is configured correctly.
+  let theme = "dark";
+  let size = {
+    height: 300,
+    width: 300,
+  };
+
+  if (settings && settings.length > 0) {
+    settings.forEach(s => {
+      if (s.field === "sizes") {
+        size = currentSettings[s.field] || s.value[0];
+      }
+      if (s.field === "theme") {
+        theme = currentSettings[s.field] || JSON.parse(s.value)[0].value;
+      }
+    });
+  }
+  return { theme: theme, size: size };
+}
 const DisplayApp = ({
   widgetConfigData,
   appSyncClient,
@@ -95,7 +117,22 @@ const DisplayApp = ({
   Amplify.configure(S3Config);
 
   const [widgetList, setWidgetList] = useState([]);
-  const [widgetConfig, setWidgetConfig] = useState(widgetConfigData);
+  const [widgetConfig, setWidgetConfig] = useState(
+    widgetConfigData.map((w, i) => {
+      //parse theme and sizes....
+      const { theme, size } = getSystemSettings(
+        w.widget.settings,
+        w.currentSettings,
+      );
+      return {
+        dataConnectors: w.dataConnectors,
+        currentSettings: w.currentSettings,
+        url: w.url,
+        settings: w.settings,
+        widget: { theme: theme, size: size, ...w.widget },
+      };
+    }),
+  );
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -181,7 +218,15 @@ const DisplayApp = ({
   const settingsRef = useRef([]);
   const widgetSettings = useRef(
     widgetConfigData.map((w, i) => {
+      //parse theme and sizes....
+      const { theme, size } = getSystemSettings(
+        w.widget.settings,
+        w.currentSettings,
+      );
+
       return {
+        theme: theme,
+        size: size,
         settings: w.widget.settings || [],
         title: w.widget.title,
         appId: w.widget.appID,
@@ -192,7 +237,7 @@ const DisplayApp = ({
       };
     }),
   );
-
+  console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
   const roleKeys = ["", "work", "family", "hobbies"];
   const tabClick = (e, tab) => {
     console.log("Click", e);
@@ -532,6 +577,7 @@ const DisplayApp = ({
   }, []);
 
   useEffect(() => {
+    console.log("WIDGET CONFIG, create widgets... ");
     if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
       const widgets = widgetConfig.map((w, i) => {
@@ -594,10 +640,23 @@ const DisplayApp = ({
     console.log("HOOK ", WidgetHooks);
     //console.log(getCallbacks());
     console.log(settings.current, widgetSettings);
+    // deep-copy...
     let newSettings = JSON.parse(
       JSON.stringify(widgetSettings.current[settings.current.widget].settings),
     );
+    let systemSettingsUpdated = false;
+
+    let currentWidgetConfig = JSON.parse(JSON.stringify(widgetConfig));
     Object.keys(data).forEach(k => {
+      // check system settings... and update widgetConfig
+      if (
+        ["size", "theme"].indexOf(k) > -1 &&
+        widgetSettings.current[settings.current.widget].currentSettings[k] !==
+          data[k]
+      ) {
+        systemSettingsUpdated = true;
+        currentWidgetConfig[settings.current.widget].widget[k] = data[k];
+      }
       widgetSettings.current[settings.current.widget].currentSettings[k] =
         data[k];
     });
@@ -611,6 +670,7 @@ const DisplayApp = ({
         newSettings[s].value = data[newSettings[s].field];
       }
     }
+
     /*
     Object.keys(data).forEach(k => {
       widgetSettings.current[settings.current.widget].currentSetting[k] =
@@ -628,7 +688,9 @@ const DisplayApp = ({
     }
 */
     console.log("NEW SETTINGS ", newSettings, currentAppId);
+    console.log("UPDATED SETTINGS ", widgetSettings.current, currentAppId);
     // useCallback((appID, uuid, settings = [{}])
+
     setSettings(currentAppId, prifinaID, {
       type: "WIDGET",
       index: settings.current.widget,
@@ -651,6 +713,7 @@ const DisplayApp = ({
       console.log("FOUND CALLBACK ");
       c[currentAppId][widgetInstallCount]({ settings: data });
     }
+
     //setWidgetData([data]);
     //setOpen(false);
     //console.log(check());
@@ -684,6 +747,16 @@ const DisplayApp = ({
     setOpen(false);
     setFlipped(false);
     setFinish(false);
+
+    //widgetConfig...
+    if (systemSettingsUpdated) {
+      console.log(
+        "SystemSettingsUpdated ",
+        systemSettingsUpdated,
+        currentWidgetConfig,
+      );
+      setWidgetConfig(currentWidgetConfig);
+    }
   };
 
   const saveSearchKey = async searchKey => {

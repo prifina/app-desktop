@@ -134,3 +134,7 @@ packages/*/.env
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+packages/desktop-app2
+packages/dev-console2
+packages/utils2

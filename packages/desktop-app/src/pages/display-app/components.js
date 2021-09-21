@@ -522,12 +522,18 @@ export const SettingsDialog = ({
   let inputFields = useRef({});
   let timezones = useRef([]);
   const inputRef = useRef();
+  const systemFields = useRef({});
   const [fieldInit, setFieldInit] = useState(false);
+  const settingsSystemFields = ["theme", "sizes"];
   useEffect(() => {
     Object.keys(widgetSettings.currentSettings).forEach(f => {
-      inputFields.current[f] = widgetSettings.currentSettings[f];
+      if (settingsSystemFields.indexOf(f) > -1) {
+        systemFields.current[f] = widgetSettings.currentSettings[f];
+      } else {
+        inputFields.current[f] = widgetSettings.currentSettings[f];
+      }
     });
-    console.log("FLDS ", inputFields);
+    console.log("FLDS ", inputFields, systemFields);
     console.log("DIALOG ", props);
     let fieldTypeCheck = [];
     widgetSettings.settings.forEach(s => {
@@ -550,7 +556,12 @@ export const SettingsDialog = ({
   }, []);
   //console.log(timezones);
 
-  const [fields, handleChange] = useFormFields(inputFields.current);
+  // 1== wiget settings, 2== system settings like theme,size...
+  const settingsType = 2;
+
+  const [fields, handleChange] = useFormFields(
+    settingsType === 1 ? inputFields.current : systemFields.current,
+  );
 
   console.log("RENDER FIELDS ", fields, inputFields);
 
@@ -583,50 +594,98 @@ export const SettingsDialog = ({
       {fieldInit && (
         <Box mt={10} ml={5} mr={5}>
           {widgetSettings.settings.map((setting, i) => {
-            return (
-              <React.Fragment key={"settings-" + i}>
-                {setting.type === "text" && (
-                  <Input
-                    mt={15}
-                    key={"widget-setting-" + i}
-                    placeholder={setting.label}
-                    mb={2}
-                    id={setting.field}
-                    name={setting.field}
-                    defaultValue={fields[setting.field]}
-                    onChange={handleChange}
-                    ref={inputRef}
-                  />
-                )}
-                {setting.type === "TZ" && (
-                  <>
-                    <Label key={"setting-label-" + i} mt={10}>
-                      {setting.label}
-                    </Label>
-                    <Select
-                      mb={10}
-                      size={"sm"}
+            if (
+              settingsType === 1 &&
+              Object.keys(inputFields.current).indexOf(setting.field) > -1
+            ) {
+              return (
+                <React.Fragment key={"settings-" + i}>
+                  {setting.type === "text" && (
+                    <Input
+                      mt={15}
                       key={"widget-setting-" + i}
+                      placeholder={setting.label}
+                      mb={2}
                       id={setting.field}
                       name={setting.field}
-                      defaultValue={fields[setting.value]}
+                      defaultValue={fields[setting.field]}
                       onChange={handleChange}
-                    >
-                      {timezones.current.map((t, ii) => {
-                        return (
-                          <option
-                            key={"widget-setting-" + i + "-" + ii}
-                            value={t.tz}
-                          >
-                            {t.text}
-                          </option>
-                        );
-                      })}
-                    </Select>
-                  </>
-                )}
-              </React.Fragment>
-            );
+                      ref={inputRef}
+                    />
+                  )}
+                  {setting.type === "TZ" && (
+                    <>
+                      <Label key={"setting-label-" + i} mt={10}>
+                        {setting.label}
+                      </Label>
+                      <Select
+                        mb={10}
+                        size={"sm"}
+                        key={"widget-setting-" + i}
+                        id={setting.field}
+                        name={setting.field}
+                        defaultValue={fields[setting.value]}
+                        onChange={handleChange}
+                      >
+                        {timezones.current.map((t, ii) => {
+                          return (
+                            <option
+                              key={"widget-setting-" + i + "-" + ii}
+                              value={t.tz}
+                            >
+                              {t.text}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    </>
+                  )}
+                </React.Fragment>
+              );
+            }
+            if (
+              settingsType === 2 &&
+              Object.keys(systemFields.current).indexOf(setting.field) > -1
+            ) {
+              let defaultValue = "";
+              let selectOptions = [];
+              if (setting.type === "select") {
+                selectOptions = JSON.parse(setting.value);
+                selectOptions.push({ option: "Dark", value: "dark" });
+                defaultValue = systemFields.current[setting.field];
+              }
+              return (
+                <React.Fragment key={"settings-" + i}>
+                  {setting.type === "select" && (
+                    <>
+                      <Label key={"setting-label-" + i} mt={10}>
+                        {setting.label}
+                      </Label>
+                      <Select
+                        mb={10}
+                        size={"sm"}
+                        key={"widget-setting-" + i}
+                        id={setting.field}
+                        name={setting.field}
+                        defaultValue={defaultValue}
+                        onChange={handleChange}
+                      >
+                        {selectOptions.map((t, ii) => {
+                          return (
+                            <option
+                              key={"widget-setting-" + i + "-" + ii}
+                              value={t.value}
+                            >
+                              {t.option}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    </>
+                  )}
+                </React.Fragment>
+              );
+            }
           })}
           <Box mt={10}>
             <Button
@@ -634,6 +693,7 @@ export const SettingsDialog = ({
               onClick={e => {
                 console.log("UPDATE BUTTON ", fields);
                 //console.log(fields);
+
                 if (timezones.length > 0 && fields.hasOwnProperty("tz")) {
                   onUpdate({
                     tz: fields.tz,
@@ -642,6 +702,7 @@ export const SettingsDialog = ({
                 } else {
                   onUpdate(fields);
                 }
+
                 //console.log("UPDATE CLICK ", e.target.className);
                 //onUpdate(fields);
               }}
