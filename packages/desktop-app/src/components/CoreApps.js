@@ -415,7 +415,11 @@ const CoreApps = props => {
             if (widgetData[w.id].settings) {
               widgetData[w.id].settings.forEach(v => {
                 // if type=text...
-                defaultValues[v.field] = v.value;
+                if (v.field === "sizes") {
+                  defaultValues["size"] = JSON.parse(v.value)[0].value;
+                } else {
+                  defaultValues[v.field] = v.value;
+                }
               });
 
               if (w.hasOwnProperty("settings") && w.settings.length > 0) {

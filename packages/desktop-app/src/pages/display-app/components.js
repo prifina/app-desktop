@@ -304,6 +304,7 @@ export const WidgetList = React.memo(
         {widgetList.map((Widget, i) => {
           // only first datasource is used ????
           const widgetDataSource = widgetData[i].dataConnectors[0];
+          const size = widgetData[i].widget.size.split("x");
 
           if (widgetData[i].dataConnectors.length > 0) {
             // data source is not connected....
@@ -324,8 +325,8 @@ export const WidgetList = React.memo(
                 <div
                   key={"widget-processing-" + i}
                   style={{
-                    width: widgetData[i].widget.size.width + "px",
-                    height: widgetData[i].widget.size.height + "px",
+                    width: size[0] + "px",
+                    height: size[1] + "px",
                     margin: "10px",
                   }}
                 >
@@ -340,7 +341,7 @@ export const WidgetList = React.memo(
 
                     <div
                       style={{
-                        width: widgetData[i].widget.size.width + "px",
+                        width: size[0] + "px",
                         bottom: "60px",
                         padding: "10px",
                         position: "absolute",
@@ -370,7 +371,7 @@ export const WidgetList = React.memo(
                     </div>
                     <div
                       style={{
-                        width: widgetData[i].widget.size.width + "px",
+                        width: size[0] + "px",
                         bottom: "15px",
                         paddingLeft: "10px",
                         position: "absolute",
@@ -394,8 +395,8 @@ export const WidgetList = React.memo(
                 <div
                   key={"widget-processing-" + i}
                   style={{
-                    width: widgetData[i].widget.size.width + "px",
-                    height: widgetData[i].widget.size.height + "px",
+                    width: size[0] + "px",
+                    height: size[1] + "px",
                     margin: "10px",
                   }}
                 >
@@ -421,7 +422,7 @@ export const WidgetList = React.memo(
                       <DotLoader widgetTheme={widgetData[i].widget.theme} />
                       <div
                         style={{
-                          width: widgetData[i].widget.size.width + "px",
+                          width: size[0] + "px",
                           bottom: "70px",
                           padding: "5px",
                           position: "absolute",
@@ -524,11 +525,16 @@ export const SettingsDialog = ({
   const inputRef = useRef();
   const systemFields = useRef({});
   const [fieldInit, setFieldInit] = useState(false);
-  const settingsSystemFields = ["theme", "sizes"];
+  // note size.... not sizes
+  const settingsSystemFields = ["theme", "size"];
   useEffect(() => {
     Object.keys(widgetSettings.currentSettings).forEach(f => {
       if (settingsSystemFields.indexOf(f) > -1) {
-        systemFields.current[f] = widgetSettings.currentSettings[f];
+        if (f === "size") {
+          systemFields.current["sizes"] = widgetSettings.currentSettings[f];
+        } else {
+          systemFields.current[f] = widgetSettings.currentSettings[f];
+        }
       } else {
         inputFields.current[f] = widgetSettings.currentSettings[f];
       }
@@ -556,8 +562,8 @@ export const SettingsDialog = ({
   }, []);
   //console.log(timezones);
 
-  // 1== wiget settings, 2== system settings like theme,size...
-  const settingsType = 2;
+  // 1== widget settings, 2== system settings like theme,size...
+  const settingsType = 1;
 
   const [fields, handleChange] = useFormFields(
     settingsType === 1 ? inputFields.current : systemFields.current,
@@ -649,13 +655,35 @@ export const SettingsDialog = ({
             ) {
               let defaultValue = "";
               let selectOptions = [];
-              if (setting.type === "select") {
+              let currentField = setting.field;
+
+              if (setting.type === "select" && setting.field === "theme") {
                 selectOptions = JSON.parse(setting.value);
-                selectOptions.push({ option: "Dark", value: "dark" });
-                defaultValue = systemFields.current[setting.field];
+                //selectOptions.push({ option: "Dark", value: "dark" });
+                defaultValue = systemFields.current[currentField];
+              }
+
+              if (setting.type === "select" && setting.field === "sizes") {
+                selectOptions = JSON.parse(setting.value);
+                selectOptions.push({ option: "600x600", value: "600x600" });
+                //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
+                defaultValue = systemFields.current[currentField];
               }
               return (
                 <React.Fragment key={"settings-" + i}>
+                  {setting.type === "text" && (
+                    <Input
+                      mt={15}
+                      key={"widget-setting-" + i}
+                      placeholder={setting.label}
+                      mb={2}
+                      id={currentField}
+                      name={currentField}
+                      defaultValue={fields[currentField]}
+                      onChange={handleChange}
+                      ref={inputRef}
+                    />
+                  )}
                   {setting.type === "select" && (
                     <>
                       <Label key={"setting-label-" + i} mt={10}>
@@ -665,8 +693,8 @@ export const SettingsDialog = ({
                         mb={10}
                         size={"sm"}
                         key={"widget-setting-" + i}
-                        id={setting.field}
-                        name={setting.field}
+                        id={currentField}
+                        name={currentField}
                         defaultValue={defaultValue}
                         onChange={handleChange}
                       >

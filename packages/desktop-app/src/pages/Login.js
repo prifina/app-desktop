@@ -128,6 +128,7 @@ const Login = () => {
       data:
 getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
 */
+
       // USER_IDENTITY_POOL_ID
       let userIdPool = config.cognito.USER_IDENTITY_POOL_ID;
       if (prifinaUserIdPool.data.getLoginUserIdentityPool !== "") {
