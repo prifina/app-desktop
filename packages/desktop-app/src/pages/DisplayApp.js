@@ -72,15 +72,13 @@ function getSystemSettings(settings, currentSettings) {
   console.log("getSystemSettings ", settings, currentSettings);
   // default values.... should not be needed, if all is configured correctly.
   let theme = "dark";
-  let size = {
-    height: 300,
-    width: 300,
-  };
+  let size = "300x300";
 
   if (settings && settings.length > 0) {
     settings.forEach(s => {
       if (s.field === "sizes") {
-        size = currentSettings[s.field] || s.value[0];
+        size = currentSettings[s.field] || JSON.parse(s.value)[0].value;
+        //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
       }
       if (s.field === "theme") {
         theme = currentSettings[s.field] || JSON.parse(s.value)[0].value;
@@ -586,12 +584,13 @@ const DisplayApp = ({
 
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
+          const size = w.widget.size.split("x");
           return (
             <React.Fragment>
               <div
                 style={{
-                  width: w.widget.size.width + "px",
-                  height: w.widget.size.height + "px",
+                  width: size[0] + "px",
+                  height: size[1] + "px",
                   margin: "10px",
                 }}
               >
@@ -648,17 +647,34 @@ const DisplayApp = ({
 
     let currentWidgetConfig = JSON.parse(JSON.stringify(widgetConfig));
     Object.keys(data).forEach(k => {
+      let dataField = k;
       // check system settings... and update widgetConfig
       if (
-        ["size", "theme"].indexOf(k) > -1 &&
-        widgetSettings.current[settings.current.widget].currentSettings[k] !==
-          data[k]
+        ["theme"].indexOf(dataField) > -1 &&
+        widgetSettings.current[settings.current.widget].currentSettings[
+          dataField
+        ] !== data[dataField]
       ) {
         systemSettingsUpdated = true;
-        currentWidgetConfig[settings.current.widget].widget[k] = data[k];
+        currentWidgetConfig[settings.current.widget].widget[dataField] =
+          data[dataField];
       }
-      widgetSettings.current[settings.current.widget].currentSettings[k] =
-        data[k];
+
+      if (
+        ["sizes"].indexOf(dataField) > -1 &&
+        widgetSettings.current[settings.current.widget].currentSettings[
+          "size"
+        ] !== data[k]
+      ) {
+        dataField = "size";
+        systemSettingsUpdated = true;
+        currentWidgetConfig[settings.current.widget].widget["size"] = data[k];
+      }
+
+      // note the dataField is not used with data object...
+      widgetSettings.current[settings.current.widget].currentSettings[
+        dataField
+      ] = data[k];
     });
     // update settings...
     for (let s = 0; s < newSettings.length; s++) {
@@ -668,6 +684,10 @@ const DisplayApp = ({
 
       if (data.hasOwnProperty(newSettings[s].field)) {
         newSettings[s].value = data[newSettings[s].field];
+      }
+
+      if (data.hasOwnProperty("sizes") && newSettings[s.field] === "size") {
+        newSettings[s].value = data["sizes"];
       }
     }
 
