@@ -562,8 +562,8 @@ export const SettingsDialog = ({
   }, []);
   //console.log(timezones);
 
-  // 1== wiget settings, 2== system settings like theme,size...
-  const settingsType = 2;
+  // 1== widget settings, 2== system settings like theme,size...
+  const settingsType = 1;
 
   const [fields, handleChange] = useFormFields(
     settingsType === 1 ? inputFields.current : systemFields.current,
