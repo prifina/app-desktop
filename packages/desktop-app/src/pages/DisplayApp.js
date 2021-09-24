@@ -640,9 +640,12 @@ const DisplayApp = ({
     //console.log(getCallbacks());
     console.log(settings.current, widgetSettings);
     // deep-copy...
-    let newSettings = JSON.parse(
-      JSON.stringify(widgetSettings.current[settings.current.widget].settings),
+    const currentSettings = JSON.parse(
+      JSON.stringify(
+        widgetSettings.current[settings.current.widget].currentSettings,
+      ),
     );
+    //console.log("CURRENT SETTINGS COPY", currentSettings);
     let systemSettingsUpdated = false;
 
     let currentWidgetConfig = JSON.parse(JSON.stringify(widgetConfig));
@@ -651,9 +654,7 @@ const DisplayApp = ({
       // check system settings... and update widgetConfig
       if (
         ["theme"].indexOf(dataField) > -1 &&
-        widgetSettings.current[settings.current.widget].currentSettings[
-          dataField
-        ] !== data[dataField]
+        currentSettings[dataField] !== data[dataField]
       ) {
         systemSettingsUpdated = true;
         currentWidgetConfig[settings.current.widget].widget[dataField] =
@@ -662,9 +663,7 @@ const DisplayApp = ({
 
       if (
         ["sizes"].indexOf(dataField) > -1 &&
-        widgetSettings.current[settings.current.widget].currentSettings[
-          "size"
-        ] !== data[k]
+        currentSettings["size"] !== data[k]
       ) {
         dataField = "size";
         systemSettingsUpdated = true;
@@ -677,19 +676,29 @@ const DisplayApp = ({
       ] = data[k];
     });
     // update settings...
+    let newSettings = [];
+    Object.keys(currentSettings).forEach(k => {
+      if (k === "size" && data.hasOwnProperty("sizes")) {
+        newSettings.push({ field: k, value: data["sizes"] });
+      } else if (data.hasOwnProperty(k)) {
+        newSettings.push({ field: k, value: data[k] });
+      } else {
+        newSettings.push({ field: k, value: currentSettings[k] });
+      }
+    });
+    /*
     for (let s = 0; s < newSettings.length; s++) {
       // only keep field+values
       delete newSettings[s].label;
       delete newSettings[s].type;
-
-      if (data.hasOwnProperty(newSettings[s].field)) {
+      console.log("NEW SETTING LOOP ", newSettings[s]);
+      if (newSettings[s].field === "size" && data.hasOwnProperty("sizes")) {
+        newSettings[s].value = data["sizes"];
+      } else if (data.hasOwnProperty(newSettings[s].field)) {
         newSettings[s].value = data[newSettings[s].field];
       }
-
-      if (data.hasOwnProperty("sizes") && newSettings[s.field] === "size") {
-        newSettings[s].value = data["sizes"];
-      }
     }
+    */
 
     /*
     Object.keys(data).forEach(k => {

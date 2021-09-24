@@ -158,11 +158,37 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       */
         widgetData.forEach(item => {
           const manifest = JSON.parse(item.manifest);
+          let theme = "dark";
+          let size = "300x300";
+          let defaultSettings = [
+            { field: "size", size },
+            { field: "theme", theme },
+          ];
+
+          if (item.settings && item.settings.length > 0) {
+            item.settings.forEach(s => {
+              if (s.field === "sizes") {
+                defaultSettings[0] = {
+                  field: "size",
+                  value: JSON.parse(s.value)[0].value,
+                };
+                //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
+              } else if (s.field === "theme") {
+                defaultSettings[1] = {
+                  field: "theme",
+                  value: JSON.parse(s.value)[0].value,
+                };
+              } else {
+                defaultSettings.push({ field: s.field, value: s.value });
+              }
+            });
+          }
+
           availableWidgets[item.id] = {
             title: item.title,
             installed: false,
             shortDescription: manifest.shortDescription,
-            settings: item.settings,
+            settings: defaultSettings,
           };
         });
 
