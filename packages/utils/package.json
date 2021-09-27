@@ -35,7 +35,7 @@
     "react-dom": ">=16.8.6"
   },
   "peerDependencies": {
-    "aws-amplify": "^4.2.9",
+    "aws-amplify": "^4.3.0",
     "react": ">=16.8.6",
     "react-dom": ">=16.8.6",
     "@blend-ui/core": "1.1.64-alpha.0",
@@ -45,8 +45,7 @@
     "styled-components": "^5.3.1",
     "styled-system": "^5.1.5",
     "graphql-tag": "^2.12.5",
-    "@reach/auto-id": "^0.16.0",
-    "react-dom": "^17.0.2"
+    "@reach/auto-id": "^0.16.0"
   },
   "dependencies": {
     "countries-list": "^2.6.1",

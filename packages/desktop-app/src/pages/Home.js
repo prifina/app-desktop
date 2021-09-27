@@ -79,6 +79,16 @@ import { useSpring, animated } from "react-spring";
 //import withUsermenu from "../components/UserMenu";
 
 import PropTypes from "prop-types";
+
+const newWaiting = `subscription addWaiting($key:String!) {
+  Waiting(key: $key) {
+    createdAt
+    endpoint
+    name
+    senderKey
+  }
+}`;
+
 /*
 // HACK since this PR {@link https://github.com/awslabs/aws-mobile-appsync-sdk-js/pull/633/files} has not been accepted
 // after several months, we go ahead and modify the method to drop the graphql_headers that are causing subscription problems.
@@ -268,13 +278,11 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 
         notificationHandler.current = userMenu.onUpdate;
         /*
-        subscriptionHandler.current = await subscribeNotification(
-          clientHandler,
-          {
-            owner: currentUser.id,
-          },
-        );
-*/
+        subscriptionHandler.current = subscribeNotification(clientHandler, {
+          owner: currentUser.id,
+        });
+        */
+
         await clientHandler.mutate({
           mutation: gql(updateActivity),
           variables: {
@@ -290,9 +298,11 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 
     return () => {
       // unsubscribe...
+      /*
       if (subscriptionHandler.current) {
         subscriptionHandler.unsubscribe();
       }
+      */
     };
   }, [isMountedRef, currentUser.id]);
 
@@ -421,7 +431,114 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
       >
         SUBS...
       </button>
-      */}
+*/}
+      <button
+        onClick={() => {
+          /*
+          export const installWidgetMutation = (API, id, widget) => {
+            return API.graphql({
+              query: installWidget,
+              variables: { id: id, widget: widget },
+              authMode: "AMAZON_COGNITO_USER_POOLS",
+            });
+          };
+          {
+    type: AUTH_TYPE.API_KEY,
+    apiKey: awsconfig.aws_appsync_apiKey,
+  },
+          */
+
+          const testClient = new AWSAppSyncClient({
+            url:
+              "https://reub4v4cszb53criwlma7wm7we.appsync-api.us-east-1.amazonaws.com/graphql",
+            region: "us-east-1",
+            auth: {
+              /*
+              type: AUTH_TYPE.AWS_IAM,
+              credentials: () => Auth.currentCredentials(),
+              */
+              type: AUTH_TYPE.API_KEY,
+              apiKey: "da2-i7iu4pka5zbbjk4jgmgbagetr4",
+            },
+
+            disableOffline: true,
+          });
+
+          const subscriptionTest = testClient
+            .subscribe({ query: gql(newWaiting), variables: { key: "TEST" } })
+            .subscribe({
+              next: res => {
+                console.log("NOTIFICATION SUBS RESULTS ", res);
+                if (res.data.newNotification.owner !== "") {
+                  notificationHandler.current(1);
+                }
+              },
+              error: error => {
+                console.warn(error);
+              },
+            });
+          console.log("SUBS2....", subscriptionTest);
+
+          /*
+    return userClient
+    .subscribe({ query: gql(newNotification), variables: variables })
+    .subscribe({
+      next: res => {
+        console.log("NOTIFICATION SUBS RESULTS ", res);
+        if (res.data.newNotification.owner !== "") {
+          notificationHandler.current(1);
+        }
+      },
+      error: error => {
+        console.warn(error);
+      },
+    });
+    */
+          /*
+          const subscriptionTest = API.graphql({
+            authMode: "AWS_IAM",
+            query: gql(newWaiting),
+            variables: { key: "TEST" },
+          }).subscribe({
+            next: ({ provider, value }) => console.log({ provider, value }),
+            error: error => console.warn(error),
+          });
+          console.log("SUBS....", subscriptionTest);
+          */
+          /*
+          // Subscribe to creation of Todo
+          const subscriptionTest = API.graphql(
+            graphqlOperation(newWaiting, { variables: { key: "TEST" } }),
+          ).subscribe({
+            next: ({ provider, value }) => console.log({ provider, value }),
+            error: error => console.warn(error),
+          });
+*/
+          //console.log("CLIENT ", client);
+          /*
+          //realtime-subscription-handshake-link.js:326 Uncaught (in promise) 
+          TypeError: Cannot read properties of undefined (reading 'subscriptionFailedCallback')
+
+          _f = this.subscriptionObserverMap.get(subscriptionId), subscriptionFailedCallback = _f.subscriptionFailedCallback,
+           subscriptionReadyCallback = _f.subscriptionReadyCallback;
+          // This must be done before sending the message in order to be listening immediately
+          this.subscriptionObserverMap.set(subscriptionId, {
+              observer: observer,
+              subscriptionState: subscriptionState,
+              variables: variables,
+              query: query,
+              subscriptionReadyCallback: subscriptionReadyCallback,
+              subscriptionFailedCallback: subscriptionFailedCallback,
+              startAckTimeoutId: setTimeout(function () {
+                  _this._timeoutStartSubscriptionAck.call(_this, subscriptionId);
+              }, START_ACK_TIMEOUT)
+          });
+*/
+        }}
+      >
+        SUBS...
+      </button>
+
       <StyledBox>
         <PrifinaLogo />
         <StyledBackground>
