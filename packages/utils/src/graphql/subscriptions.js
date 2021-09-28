@@ -13,3 +13,10 @@ export const newWaiting = `subscription addWaiting($key:String!) {
     senderKey
   }
 }`;
+
+export const newSystemNotification = `subscription systemNotification($owner:String!) {
+  newSystemNotification(owner: $owner) {
+    notificationId
+    owner
+  }
+}`;

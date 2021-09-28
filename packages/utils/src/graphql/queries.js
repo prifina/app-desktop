@@ -179,119 +179,35 @@ export const listApps = `query appsList($filter:TableAppsFilterInput,$sortDirect
   }
 }`;
 
-/*
-
-query MyQuery {
-  getCountryCode
-}
-
-query MyQuery {
-  getVerification(user_code: "55186bcc-4728-4512-aab1-a8f5f8db9b21##email#177143") {
-    user_code
-  }
-}
-
-export const getSchemaTypes = `query listTypesBySchema($schemaId: ID!, $nextToken: String) {
-  listTypesBySchema(schemaId: $schemaId, nextToken: $nextToken) {
+export const listSystemNotifications = `query systemNotificationList($filter: TableNotificationFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listSystemNotifications(filter: $filter,sortDirection:$sortDirection,limit:$limit,nextToken:$nextToken}) {
     items {
-      id
-      name
-      alternateName
-      description
-      alternateDescription
+      body
+      createdAt
+      notificationId
+      owner
+      status
       type
-      lockName
-      fields
     }
     nextToken
   }
-}
-`;
+}`;
 
-export const getAllDataModels = `query listDataModels($filter:TableDataModelsFilterInput) {
-    listDataModels(filter:$filter) {
-      items {
-        uuid
-        name
-        description
-        creator
-        owner
-        created
-        modified
-        status
-        versions
-        imported
-      }
-    }
-  }
-  `;
+export const getSystemNotificationCount = `query systemNotificationCount($filter:TableNotificationFilterInput){
+  getSystemNotificationCount(filter: $filter)
+}`;
 
-export const getDataModel = `query getDataModels($uuid: String!) {
-    getDataModels(uuid: $uuid) {
-        uuid
-        name
-        description
-        creator
-        owner
-        created
-        modified
-        status
-        major
-        minor
-        organization
-        draftTypes
-        versions
-        imported
-    }
-  }
-  `;
-export const getDraftDataModel = `query getDataModels($uuid: String!) {
-    getDataModels(uuid: $uuid) {
-        uuid
-        draftTypes
-    }
-  }
-  `;
- */
-/*
-query getDataModels {
-  getDataModels(uuid:"unique-id") {
-      uuid
-      name
-      description
-      creator
+export const listSystemNotificationsByDate = `query listSystemNotifications($owner: String!,$filter:TableNotificationByDateFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+  listSystemNotificationsByDate(owner: $owner, filter: $filter,sortDirection:$sortDirection,limit:$limit,nextToken:$nextToken) {
+    items {
+      body
+      createdAt
+      notificationId
       owner
-      created
-      modified
       status
-      organization
-  }
-}    
-*/
-/*
-export const getAlbum = `
-  query GetAlbum($id: ID!) {
-    getAlbum(id: $id) {
-      id
-      name
-      photos {
-        items {
-          id
-          albumId
-          bucket
-          owner
-        }
-        nextToken
-      }
-      owner
+      type
+      updatedAt
+      sender
     }
   }
-`;
-*/
-/*
-const modelfilter={
-    "filter":{
-      "owner":{"eq":"TERO"}
-    }
-  }
-*/
+}`;

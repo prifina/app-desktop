@@ -28,8 +28,8 @@ import { DisplayAppIcon } from "./assets/display-app.js";
 import { NotificationHeader, NotificationCard } from "./Notifications";
 
 import gql from "graphql-tag";
-import { listNotificationsByDate } from "../graphql/queries";
-//import { listNotificationsByDate } from "@prifina-apps/utils";
+//import { listNotificationsByDate } from "../graphql/queries";
+import { listSystemNotificationsByDateQuery } from "../graphql/api";
 
 import PropTypes from "prop-types";
 /*
@@ -238,10 +238,24 @@ const UserMenuContextProvider = ({
   const [notificationCards, setNotificationCards] = useState([]);
   const activeUser = useRef({});
   const clientHandler = useRef(null);
+  const prifinaQraphQLHandler = useRef(null);
 
   //({ AppIcon, title, date, msg, footer })
 
   const notificationList = async () => {
+    const notifications = await listSystemNotificationsByDateQuery(
+      prifinaQraphQLHandler.current,
+      {
+        owner: activeUser.current.uuid,
+        filter: {
+          status: { eq: 0 },
+        },
+        sortDirection: "DESC",
+      },
+    );
+    /*
+  
+
     const notifications = await clientHandler.current.query({
       query: gql(listNotificationsByDate),
       variables: {
@@ -252,10 +266,11 @@ const UserMenuContextProvider = ({
         sortDirection: "DESC",
       },
     });
+    */
     console.log("NOTIFICATION LIST", notifications);
     //console.log("NOTIFICATION CARD", NotificationCard);
 
-    const cardList = notifications.data.listNotificationsByDate.items.map(
+    const cardList = notifications.data.listSystemNotificationsByDate.items.map(
       (c, i) => {
         return (
           <NotificationCard
@@ -364,6 +379,9 @@ const UserMenuContextProvider = ({
   const setClientHandler = useCallback(handler => {
     clientHandler.current = handler;
   }, []);
+  const setPrifinaGraphQLHandler = useCallback(handler => {
+    prifinaQraphQLHandler.current = handler;
+  }, []);
   /*
   const success = useCallback(
     (message = "", options = {}) => {
@@ -391,6 +409,7 @@ const UserMenuContextProvider = ({
 
     setClientHandler,
     setActiveUser,
+    setPrifinaGraphQLHandler,
   };
   //console.log(alertContext);
   const baseProps = {

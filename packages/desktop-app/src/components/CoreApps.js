@@ -27,14 +27,16 @@ import {
   createNotification,
   updateActivity,
   addNotification,
-  newNotification,
+  //newNotification,
   listNotifications,
-  getNotificationCount,
+  //getNotificationCount,
   getAddressBook,
   i18n,
   useAppContext,
   useUserMenu,
   withUsermenu,
+  getSystemNotificationCountQuery,
+  newSystemNotification,
 } from "@prifina-apps/utils";
 
 /*
@@ -150,6 +152,7 @@ const Content = ({
       notifications: notificationCount,
       RecentApps: [],
     });
+    userMenu.setPrifinaGraphQLHandler(GRAPHQL);
     //console.log(RecentApps);
   }, []);
 
@@ -217,30 +220,20 @@ const CoreApps = props => {
     return client;
   };
 
-  const subscribeNotification = (userClient, variables) => {
-    return userClient
-      .subscribe({ query: gql(newNotification), variables: variables })
-      .subscribe({
-        next: res => {
-          console.log("NOTIFICATION SUBS RESULTS ", res);
-          if (res.data.newNotification.owner !== "") {
-            notificationHandler.current(1);
-          }
-          /*
-        {
-          "data": {
-            "newNotification": {
-              "notificationId": "0e136c0f-6975-4f22-a68c-d1a171d4e7ce",
-              "owner": "0cc3bc47d8a60c8a0f6f35a9134c689e0a8c"
-            }
-          }
+  const subscribeNotification = variables => {
+    return GRAPHQL.graphql({
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+      query: gql(newSystemNotification),
+      variables: variables,
+    }).subscribe({
+      next: ({ provider, value }) => {
+        console.log("NOTIFICATION SUBS RESULTS ", value);
+        if (value.data.newSystemNotification.owner !== "") {
+          notificationHandler.current(1);
         }
-        */
-        },
-        error: error => {
-          console.warn(error);
-        },
-      });
+      },
+      error: error => console.warn(error),
+    });
   };
 
   /*
@@ -491,6 +484,16 @@ const CoreApps = props => {
       }
 
       // notificationCount...
+      const notificationCountResult = await getSystemNotificationCountQuery(
+        GRAPHQL,
+        {
+          filter: {
+            owner: { eq: prifinaID },
+            status: { eq: 0 },
+          },
+        },
+      );
+      /*
       const notificationCountResult = await client.query({
         query: gql(getNotificationCount),
         variables: {
@@ -500,9 +503,10 @@ const CoreApps = props => {
           },
         },
       });
+      */
       console.log("COUNT ", notificationCountResult);
       notificationCount.current =
-        notificationCountResult.data.getNotificationCount;
+        notificationCountResult.data.getSystemNotificationCount;
 
       componentProps.current.notificationCount = notificationCount.current;
 
@@ -514,11 +518,10 @@ const CoreApps = props => {
           activeApp: coreApp,
         },
       });
-      /*
-      subscriptionHandler.current = subscribeNotification(client, {
+
+      subscriptionHandler.current = await subscribeNotification({
         owner: prifinaID,
       });
-      */
 
       setSettingsReady(true);
     } catch (e) {
@@ -534,7 +537,7 @@ const CoreApps = props => {
     return () => {
       // unsubscribe...
       if (subscriptionHandler.current) {
-        subscriptionHandler.unsubscribe();
+        subscriptionHandler.current.unsubscribe();
       }
     };
   }, []);
