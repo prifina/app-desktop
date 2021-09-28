@@ -104,3 +104,38 @@ export const addAppVersion = `mutation addAppVersion($input:AppVersionInput) {
     nextVersion  
   }
 }`;
+
+export const addSystemNotification = `mutation addSystemNotification($input: NotificationInput!) {
+  addSystemNotification(input: $input) {
+    notificationId
+    owner
+  }
+}`;
+
+export const createSystemNotification = `mutation newSystemNotification($input: NotificationInput!) {
+  createSystemNotification(input: $input) {
+    body
+    createdAt
+    notificationId
+    owner
+    status
+    type
+  }
+}`;
+
+export const updateSystemNotificationStatus = `mutation updateSystemNotificationStatus($notificationId: String!,$status:Int!) {
+  updateSystemNotificationStatus(notificationId: $notificationId, status: $status) {
+    body
+    createdAt
+    notificationId
+    owner
+    status
+    type
+    updatedAt
+  }
+}`;
+
+export const updateUserActivity = `mutation updateUserActivity($id: String!,$activeApp: String!) {
+ 
+  updateUserActivity( id: $id,activeApp: $activeApp)
+}`;
