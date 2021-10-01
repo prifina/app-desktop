@@ -20,3 +20,10 @@ export const newSystemNotification = `subscription systemNotification($owner:Str
     owner
   }
 }`;
+
+export const newConnectNotification = `subscription connectStatusNotification($id:String!) {
+  connectStatusNotification(id: $id) {
+    data
+    id
+  }
+}`;

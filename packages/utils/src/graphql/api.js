@@ -15,6 +15,7 @@ import {
   listSystemNotifications,
   listSystemNotificationsByDate,
   getSystemNotificationCount,
+  getRequestToken,
 } from "./queries";
 import {
   verifyCode,
@@ -31,6 +32,7 @@ import {
   addAppVersion,
   addSystemNotification,
   createSystemNotification,
+  updatePrifinaUser,
 } from "./mutations";
 
 //import Amplify, { Auth, API } from "aws-amplify";
@@ -332,6 +334,22 @@ export const listSystemNotificationsByDateQuery = (API, opts) => {
       sortDirection: opts.sortDirection || "DESC",
       nextToken: opts.nextToken || null,
     },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
+export const updatePrifinaUserMutation = (API, input) => {
+  return API.graphql({
+    query: updatePrifinaUser,
+    variables: { input: input },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
+export const getRequestTokenQuery = (API, id, source) => {
+  return API.graphql({
+    query: getRequestToken,
+    variables: { id: id, source: source },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };

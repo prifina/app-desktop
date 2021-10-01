@@ -147,7 +147,8 @@ export const listAppMarket = `query appMarketList($filter:TableAppMarketFilterIn
 export const listDataSources = `query listDataSources($filter:TableDataSourceFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
   listDataSources(filter: $filter, limit: $limit, nextToken: $nextToken,sortDirection:$sortDirection) {
     items {
-      module
+      source
+      modules
       sourceType
       name
       route
@@ -209,5 +210,11 @@ export const listSystemNotificationsByDate = `query listSystemNotifications($own
       updatedAt
       sender
     }
+  }
+}`;
+
+export const getRequestToken = `query getRequestToken($id: String!,$source:String!) {
+  getRequestToken($id: String!,$source:String!) {
+    requestURL
   }
 }`;
