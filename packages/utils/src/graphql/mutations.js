@@ -139,3 +139,13 @@ export const updateUserActivity = `mutation updateUserActivity($id: String!,$act
  
   updateUserActivity( id: $id,activeApp: $activeApp)
 }`;
+
+export const updatePrifinaUser = `mutation updatePrifinaUser($input: UpdatePrifinaUserInput!) {
+  updatePrifinaUser(input: $input) {
+    appProfile
+    dataSources
+    id
+    installedApps
+    installedWidgets
+  }
+}`;

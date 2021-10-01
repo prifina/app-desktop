@@ -67,6 +67,7 @@ import {
   withUsermenu,
   newSystemNotification,
   getSystemNotificationCountQuery,
+  //newConnectNotification,
 } from "@prifina-apps/utils";
 
 //import { useAppContext } from "../lib/contextLib";
@@ -171,9 +172,22 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 
   const subscribeNotification = variables => {
     console.log("SUBS NOTIFICATIONS:..", variables);
+    /*
+    export const newConnectNotification = `subscription connectStatusNotification($id:String!) {
+      connectStatusNotification(id: $id) {
+        data
+        id
+      }
+    }`;
+
+    schema resolver puuttuu... connect notification
+    */
 
     return GRAPHQL.graphql({
       authMode: "AMAZON_COGNITO_USER_POOLS",
+
+      //query: gql(newConnectNotification),
+      //variables: { id: variables.owner },
       query: gql(newSystemNotification),
       variables: variables,
     }).subscribe({
