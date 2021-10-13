@@ -65,7 +65,6 @@ export const ListMenu = styled.ul`
 `;
 
 export const MarketBadge = styled.span`
-  width: 91px;
   height: 27px;
   border-radius: 100px;
   display: flex;

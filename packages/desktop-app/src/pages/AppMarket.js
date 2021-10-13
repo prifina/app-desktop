@@ -74,31 +74,27 @@ const WidgetBox = ({
         padding="24px"
       >
         {/* <Image src={icon} width="42px" /> */}
-        <C.MarketBadge style={{ backgroundColor: "#CAEBCD", marginLeft: 191 }}>
+        <C.MarketBadge
+          style={{
+            backgroundColor: "#CAEBCD",
+            position: "absolute",
+            right: 24,
+            minWidth: 91,
+          }}
+        >
           <Text fontSize="xs">{category}</Text>
         </C.MarketBadge>
         <Flex
           flexDirection="row"
-          width="100%"
+          width="100"
           alignItems="center"
           justifyContent="space-between"
+          position="absolute"
+          bottom="20px"
         >
           <Text textStyle={"h2"} fontWeight={"semiBold"}>
             {title}
           </Text>
-
-          <Flex>
-            {installedWidget > -1 && <Text>Installed</Text>}
-            {installedWidget === -1 && (
-              <Button
-                onClick={e => {
-                  installWidget(e, id, settings);
-                }}
-              >
-                Install
-              </Button>
-            )}
-          </Flex>
         </Flex>
       </Flex>
       {isShown && (
@@ -115,8 +111,7 @@ const WidgetBox = ({
             borderBottomLeftRadius: "0.625rem",
             borderBottomRightRadius: "0.625rem",
             paddingLeft: 24,
-
-            paddingRight: 15,
+            paddingRight: 24,
           }}
         >
           <Flex
@@ -127,9 +122,12 @@ const WidgetBox = ({
             <Text textStyle={"h2"} fontWeight={"semiBold"}>
               {title}
             </Text>
-
             <Flex>
-              {installedWidget > -1 && <Text>Installed</Text>}
+              {installedWidget > -1 && (
+                <Button size="xs" disabled>
+                  Installed
+                </Button>
+              )}
               {installedWidget === -1 && (
                 <Button
                   onClick={e => {
