@@ -23,13 +23,10 @@ const SidebarContainer = styled(Flex)`
   padding-right: 24px;
   padding-top: 130px;
   position: fixed;
-
   border-radius: 0 40px -40px 0;
-
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
-  content: "";
 `;
 
 export const ListMenuItem = styled.li`
@@ -46,9 +43,7 @@ export const ListMenuItem = styled.li`
       color: #9fcde3;
     }
   }
-  &:focus {
-    background: #d7eeff;
-  }
+  background-color: ${props => props.backgroundColor};
 
   font-size: 14px;
   height: 50px;
@@ -90,7 +85,13 @@ const MenuBadge = styled.span`
   align-items: center;
 `;
 
-export const ListItemIconLink = ({ children, icon, onClick, ...props }) => (
+export const ListItemIconLink = ({
+  children,
+  icon,
+  onClick,
+
+  ...props
+}) => (
   <Flex flexDirection="row" alignItems="center" height="50px">
     <BlendIcon size="18px" iconify={icon} className="icon" />
     <Text
@@ -113,6 +114,9 @@ export const AppMarketSidebar = ({
   menuItemClick,
   onClick1,
   onClick2,
+  backgroundColor1,
+  backgroundColor2,
+  backgroundColor3,
   ...props
 }) => {
   console.log("SIDEBAR ", props);
@@ -123,13 +127,19 @@ export const AppMarketSidebar = ({
         <ListMenuItem
           // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
           onClick={onClick1}
+          backgroundColor={backgroundColor1}
         >
           <ListItemIconLink icon={appMenu}>Market</ListItemIconLink>
         </ListMenuItem>
-        <ListMenuItem onClick={onClick2}>
+        <ListMenuItem onClick={onClick2} backgroundColor={backgroundColor2}>
           <ListItemIconLink icon={bxsWidget}>Widgets</ListItemIconLink>
         </ListMenuItem>
-        <ListMenuItem onClick={onClick2}>
+        <ListMenuItem
+          onClick={onClick2}
+          backgroundColor={backgroundColor3}
+          //temporary needs update
+          style={{ pointerEvents: "none" }}
+        >
           <ListItemIconLink icon={bxMinusBack}>Apps</ListItemIconLink>
           <MenuBadge style={{ background: "yellow" }}>
             <Text fontSize="xs" color="black">

@@ -33,7 +33,7 @@ import viewingData from "../assets/app-market/viewing-data.svg";
 import bxsCheckCircle from "@iconify/icons-bx/bxs-check-circle";
 import bxsXCircle from "@iconify/icons-bx/bxs-x-circle";
 import lefArrow from "@iconify/icons-bx/bxs-chevron-left";
-import { width } from "styled-system";
+import { background, width } from "styled-system";
 
 const propTest = props => {
   console.log("PROP TEST ", props);
@@ -309,12 +309,19 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const [step, setStep] = useState(0);
 
+  let menuItemColor1 = "baseWhite";
+  let menuItemColor2 = "baseWhite";
+  let menuItemColor3 = "baseWhite";
+
   switch (step) {
     case 0:
+      menuItemColor1 = "#d7eeff";
       break;
     case 1:
+      menuItemColor2 = "#d7eeff";
       break;
     case 2:
+      menuItemColor2 = "#d7eeff";
       break;
     case 3:
       break;
@@ -401,9 +408,15 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     <>
       <C.GlobalStyle />
       <C.AppMarketSidebar
-        onClick2={() => {
+        onClick1={() => {
           setStep(0);
         }}
+        // onClick2={() => {
+        //   setStep(1);
+        // }}
+        backgroundColor1={menuItemColor1}
+        backgroundColor2={menuItemColor2}
+        backgroundColor3={menuItemColor3}
       />
       {step === 0 && (
         <>
