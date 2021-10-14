@@ -11,7 +11,7 @@ import React, {
   useCallback,
 } from "react";
 
-import { Box, Flex, Text, Button } from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image } from "@blend-ui/core";
 
 import {
   useAppContext,
@@ -48,6 +48,19 @@ import gql from "graphql-tag";
 import UploadApp from "../components/UploadApp";
 
 import PropTypes from "prop-types";
+import { DevConsoleSidebar } from "../components/components";
+
+import dashboardBanner from "../assets/dashboard-banner.png";
+
+import docs from "../assets/docs.png";
+import starterResources from "../assets/starterResources.png";
+import slackResources from "../assets/slackResources.png";
+import zendeskResources from "../assets/zendeskResources.png";
+
+import * as C from "../components/components";
+import { DevConsoleLogo } from "../components/DevConsoleLogo";
+
+import CreateProjectModal from "../components/CreateProjectModal";
 
 /*
 const importApp = appName => {
@@ -219,127 +232,6 @@ Content.propTypes = {
   activeUser: PropTypes.object,
 };
 
-/*
-const Content = () => {
-  const history = useHistory();
-
-  const versionStatus = [
-    "init",
-    "received",
-    "review",
-    "review",
-    "review",
-    "published",
-  ];
-
-  const appTypes = ["Widget", "App"];
-
-  const Columns = [
-    {
-      Header: "Id",
-      accessor: "id",
-    },
-    {
-      Header: "Type",
-      accessor: "appType",
-      className: "appType",
-      Cell: cellProp => appTypes[cellProp.row.values.appType],
-    },
-    {
-      Header: "Name",
-      accessor: "name",
-    },
-    {
-      Header: "Title",
-      accessor: "title",
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      className: "status",
-      Cell: cellProp => versionStatus[cellProp.row.values.status],
-    },
-    {
-      Header: "Version",
-      accessor: "version",
-      className: "version",
-    },
-    {
-      Header: "Modified",
-      accessor: "modifiedAt",
-      className: "date",
-    },
-    {
-      Header: () => null, // No header
-      id: "sendApp", // It needs an ID
-      Cell: cellProp => {
-        //console.log("ROW ", cellProp);
-        return (
-          <Button
-            variation={"link"}
-            onClick={e => {
-              console.log(cellProp.row.values);
-              sendClick(cellProp.row.values);
-            }}
-          >
-            Send
-          </Button>
-        );
-      },
-    },
-  ];
-
-  const [upload, setUpload] = useState(false);
-  const selectedRow = useRef({});
-
-  const sendClick = row => {
-    selectedRow.current = row;
-    setUpload(true);
-  };
-
-  const closeClick = (fileUploaded = false, version) => {
-    if (fileUploaded) {
-      addAppVersionMutation(API, {
-        id: selectedRow.current.id,
-        nextVersion: version,
-        status: 1, //received
-      }).then(res => {
-        setUpload(false);
-      });
-    } else {
-      setUpload(false);
-    }
-  };
-  return (
-    <React.Fragment>
-      <StyledBox>
-        <PrifinaLogo />
-        {upload && <UploadApp row={selectedRow.current} close={closeClick} />}
-        {!upload && (
-          <>
-            <Box mt={20} pl={"1rem"}>
-              <Button
-                onClick={() => {
-                  history.push("/new-app");
-                }}
-              >
-                New App
-              </Button>
-            </Box>
-            <TableStyles>
-              <div className="tableWrap">
-                {data.length === 0 && <Text m={2}>"No apps..."</Text>}
-                {data.length > 0 && <Table columns={Columns} data={data} />}
-              </div>
-            </TableStyles>
-          </>
-        )}
-      </StyledBox>
-    </React.Fragment>
-  );
-};
-*/
-
 const Main = ({ data, currentUser }) => {
   const history = useHistory();
 
@@ -363,7 +255,7 @@ const Main = ({ data, currentUser }) => {
       Header: "Type",
       accessor: "appType",
       className: "appType",
-      Cell: cellProp => appTypes[cellProp.row.values.appType],
+      // Cell: cellProp => appTypes[cellProp.row.values.appType],
     },
     {
       Header: "Name",
@@ -430,30 +322,229 @@ const Main = ({ data, currentUser }) => {
       setUpload(false);
     }
   };
+
+  const [step, setStep] = useState(0);
+
+  switch (step) {
+    case 0:
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    case 5:
+      break;
+    default:
+  }
+
   return (
     <React.Fragment>
+      <DevConsoleSidebar />
+      <C.NavbarContainer bg="baseWhite">
+        <DevConsoleLogo className={"app-market"} title="App Market" />
+      </C.NavbarContainer>
       <StyledBox>
-        <PrifinaLogo />
-        {upload && <UploadApp row={selectedRow.current} close={closeClick} />}
-        {!upload && (
-          <>
-            <Box mt={20} pl={"1rem"}>
-              <Button
-                onClick={() => {
-                  history.push("/new-app");
-                }}
-              >
-                New App
-              </Button>
-            </Box>
-            <TableStyles>
-              <div className="tableWrap">
-                {data.length === 0 && <Text m={2}>"No apps..."</Text>}
-                {data.length > 0 && <Table columns={Columns} data={data} />}
-              </div>
-            </TableStyles>
-          </>
+        {step === 0 && (
+          <Flex
+            width="100%"
+            height="100%"
+            paddingLeft="286px"
+            bg="white"
+            flexDirection="column"
+          >
+            {/* {upload && <UploadApp row={selectedRow.current} close={closeClick} />}
+          {!upload && (
+            <>
+              <Box mt={20} pl={"1rem"}>
+                <Button
+                  onClick={() => {
+                    history.push("/new-app");
+                  }}
+                >
+                  New App
+                </Button>
+              </Box>
+              <TableStyles>
+                <div className="tableWrap">
+                  {data.length === 0 && <Text m={2}>"No apps..."</Text>}
+                  {data.length > 0 && <Table columns={Columns} data={data} />}
+                </div>
+              </TableStyles>
+            </>
+          )} */}
+            <>
+              <Flex flexDirection="column" alignItems="center" mt="42px">
+                <Image src={dashboardBanner} style={{ position: "relative" }} />
+                <Flex
+                  textAlign="center"
+                  width="506px"
+                  height="196px"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  position="absolute"
+                  top="243px"
+                >
+                  <Text color="white" fontSize={24}>
+                    Create your first project
+                  </Text>
+                  <Text color="#969595" fontSize={20}>
+                    Done with your local build and ready to plug into the power
+                    of Prifina? Create a project to get started
+                  </Text>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setStep(1);
+                      // openModal();
+                    }}
+                  >
+                    New Project
+                    {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
+                  </Button>
+                </Flex>
+              </Flex>
+              <Box paddingLeft="62px" paddingTop="100px">
+                <Text color="textPrimary" fontSize={24}>
+                  {/* {i18n.__("keyResources")} */}
+                  Key Resources
+                </Text>
+                <Text color="baseMuted" fontSize={16} paddingTop="8px">
+                  {/* {i18n.__("resourcesSubtitle")} */}
+                  Resources and utilities to help you build for Prifina
+                </Text>
+                <Flex paddingTop="35px">
+                  <Box paddingRight="42px">
+                    <C.ResourceCard
+                      src={docs}
+                      // title={i18n.__("prifinaDocs")}
+                      title="Prifina Docs"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                  <Box paddingRight="42px">
+                    <C.ResourceCard
+                      src={starterResources}
+                      // title={i18n.__("appStarter")}
+                      title="App Starter"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                  <Box paddingRight="42px">
+                    <C.ResourceCard
+                      src={zendeskResources}
+                      // title={i18n.__("zendesk")}
+                      title="Zendesk"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                  <Box>
+                    <C.ResourceCard
+                      src={slackResources}
+                      // title={i18n.__("ledSlack")}
+                      title="LED Slack"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                </Flex>
+              </Box>
+            </>
+          </Flex>
         )}
+        {step === 1 && (
+          <Flex
+            width="100%"
+            height="100%"
+            paddingLeft="286px"
+            bg="white"
+            flexDirection="column"
+          >
+            <Flex flexDirection="column" alignItems="center" mt="42px">
+              <CreateProjectModal setStep={() => setStep(2)} />
+
+              <Image src={dashboardBanner} style={{ position: "relative" }} />
+              <Flex
+                textAlign="center"
+                width="506px"
+                height="196px"
+                flexDirection="column"
+                justifyContent="space-between"
+                alignItems="center"
+                position="absolute"
+                top="243px"
+              >
+                <Text color="white" fontSize={24}>
+                  Create your first project
+                </Text>
+                <Text color="#969595" fontSize={20}>
+                  Done with your local build and ready to plug into the power of
+                  Prifina? Create a project to get started
+                </Text>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setStep(1);
+                    // openModal();
+                  }}
+                >
+                  New Project
+                  {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
+                </Button>
+              </Flex>
+            </Flex>
+            <Box paddingLeft="62px" paddingTop="100px">
+              <Text color="textPrimary" fontSize={24}>
+                {/* {i18n.__("keyResources")} */}
+                Key Resources
+              </Text>
+              <Text color="baseMuted" fontSize={16} paddingTop="8px">
+                {/* {i18n.__("resourcesSubtitle")} */}
+                Resources and utilities to help you build for Prifina
+              </Text>
+              <Flex paddingTop="35px">
+                <Box paddingRight="42px">
+                  <C.ResourceCard
+                    src={docs}
+                    // title={i18n.__("prifinaDocs")}
+                    title="Prifina Docs"
+                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                  />
+                </Box>
+                <Box paddingRight="42px">
+                  <C.ResourceCard
+                    src={starterResources}
+                    // title={i18n.__("appStarter")}
+                    title="App Starter"
+                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                  />
+                </Box>
+                <Box paddingRight="42px">
+                  <C.ResourceCard
+                    src={zendeskResources}
+                    // title={i18n.__("zendesk")}
+                    title="Zendesk"
+                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                  />
+                </Box>
+                <Box>
+                  <C.ResourceCard
+                    src={slackResources}
+                    // title={i18n.__("ledSlack")}
+                    title="LED Slack"
+                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                  />
+                </Box>
+              </Flex>
+            </Box>
+          </Flex>
+        )}
+        {/* {step === 2 && (
+
+        )} */}
       </StyledBox>
     </React.Fragment>
   );
