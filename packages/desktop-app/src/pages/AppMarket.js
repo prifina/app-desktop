@@ -58,92 +58,52 @@ const WidgetBox = ({
 
   console.log("PROPS ", id, installed, title, installedWidget, props);
   return (
-    <C.WidgetBase
-      onClick={onClick}
-      onMouseEnter={() => setIsShown(true)}
-      onMouseLeave={() => setIsShown(false)}
-      // style={{
-      //   background: `url(${bannerImage})`,
-      //   opacity: 0.7,
-      // }}
-      backgroundImage={bannerImage}
-    >
-      <Flex
-        flexDirection={"column"}
-        justifyContent="space-between"
-        padding="24px"
-      >
-        {/* <Image src={icon} width="42px" /> */}
+    <C.WidgetBase onClick={onClick} backgroundImage={bannerImage}>
+      <Flex flexDirection={"column"} justifyContent="space-between">
         <C.MarketBadge
           style={{
             backgroundColor: "#CAEBCD",
             position: "absolute",
             right: 24,
             minWidth: 91,
+            marginTop: 24,
           }}
         >
           <Text fontSize="xs">{category}</Text>
         </C.MarketBadge>
-        <Flex
-          flexDirection="row"
-          width="100"
-          alignItems="center"
-          justifyContent="space-between"
-          position="absolute"
-          bottom="20px"
-        >
-          <Text textStyle={"h2"} fontWeight={"semiBold"}>
-            {title}
-          </Text>
-        </Flex>
-      </Flex>
-      {isShown && (
-        <div
-          className="overContainer"
-          style={{
-            background: "white",
-            width: 326,
-            position: "absolute",
-            zIndex: 10,
-            bottom: "0px",
-            backgroundColor: "white",
-            height: 168,
-            borderBottomLeftRadius: "0.625rem",
-            borderBottomRightRadius: "0.625rem",
-            paddingLeft: 24,
-            paddingRight: 24,
-          }}
-        >
+        <Flex className="overContainer">
           <Flex
-            flexDirection={"row"}
-            alignItems="center"
-            justifyContent="space-between"
+            className="overContainer"
+            flexDirection="column"
+            width="100%"
+            height="75px"
+            position="absolute"
+            bottom="0px"
+            bg="red"
+            paddingLeft="24px"
+            paddingTop="10px"
+            style={{
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+              background:
+                "linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, #FFFFFF 100%)",
+            }}
           >
-            <Text textStyle={"h2"} fontWeight={"semiBold"}>
+            <Text className="title" textStyle={"h2"} fontWeight={"semiBold"}>
               {title}
             </Text>
-            <Flex>
-              {installedWidget > -1 && (
-                <Button size="xs" disabled>
-                  Installed
-                </Button>
-              )}
-              {installedWidget === -1 && (
-                <Button
-                  onClick={e => {
-                    installWidget(e, id, settings);
-                  }}
-                >
-                  Install
-                </Button>
-              )}
-            </Flex>
+            <Text fontSize="xs" mt="8px" mt="15px">
+              {shortDescription}
+            </Text>
+            <Text fontSize="xs" mt="8px">
+              Tetxt
+            </Text>
+            <Text fontSize="xs" mt="8px" mb="8px">
+              213123
+            </Text>
           </Flex>
-          <Text fontSize="xs" mt="8px">
-            {shortDescription}
-          </Text>
-        </div>
-      )}
+        </Flex>
+      </Flex>
     </C.WidgetBase>
   );
 };

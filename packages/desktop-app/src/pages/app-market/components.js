@@ -27,6 +27,35 @@ const SidebarContainer = styled(Flex)`
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
+  ::before,
+  ::after {
+    position: absolute;
+    top: 65px;
+
+    width: 30px;
+    height: 30px;
+    content: " ";
+  }
+  ::before {
+    left: -52px;
+    border-bottom-right-radius: 15px;
+    border-width: 0 1px 1px 0;
+  }
+  ::after {
+    right: -30px;
+    border-bottom-left-radius: 11px;
+    border-width: 0 1px 1px;
+  }
+  ::after,
+  ::before {
+    border: 1px solid !transparent;
+    transform: rotate(-270deg);
+  }
+  ::before {
+  }
+  ::after {
+    box-shadow: -6px 5px 0 #f6f7f9;
+  }
 `;
 
 export const ListMenuItem = styled.li`
@@ -158,24 +187,50 @@ export const WidgetBase = styled.div`
   height: 262px;
   background: ${props => `url(${props.backgroundImage})`};
   box-shadow: 0px 4px 8px #ebf0f1; // color missing,... shadow missing from theme
-  border-radius: 0.625rem; // missing from theme...
+  border-radius: 8px; // missing from theme...
   margin-right: 24px;
   margin-bottom: 24px;
-  .overContainer:hover {
-    opacity: 1;
-    animation-name: fadeInOpacity;
-    animation-iteration-count: 1;
-    animation-timing-function: ease-in;
-    animation-duration: 0.5s;
+
+  .overContainer {
+    transition: all 0.4s ease;
+    height: 75px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
   }
-  @keyframes fadeInOpacity {
-    0% {
-      opacity: 0.7;
-    }
-    100% {
-      opacity: 1;
-    }
+  :hover .overContainer {
+    height: 168px;
   }
+
+  .overContainer:hover .title {
+    height: 30px;
+  }
+
+  // .anim {
+  //   transition: 0.5s;
+  //   transform: translateY(100%);
+  // }
+
+  // .overContainer:hover .anim,
+  // .overContainer:hover .title {
+  //   transform: translateY(0);
+  // }
+  // .overContainer:hover {
+  //   opacity: 1;
+  //   animation-name: fadeInOpacity;
+  //   animation-iteration-count: 1;
+  //   animation-timing-function: fade-out;
+  //   animation-duration: 0.5s;
+  // }
+  // @keyframes fadeInOpacity {
+  //   0% {
+  //     opacity: 0.7;
+  //   }
+  //   100% {
+  //     opacity: 1;
+  //   }
+  // }
 `;
 
 export const StyledText = styled(Text)`
