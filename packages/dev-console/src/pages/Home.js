@@ -11,7 +11,9 @@ import React, {
   useCallback,
 } from "react";
 
-import { Box, Flex, Text, Button, Image } from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image, Input } from "@blend-ui/core";
+
+import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import {
   useAppContext,
@@ -62,6 +64,18 @@ import { DevConsoleLogo } from "../components/DevConsoleLogo";
 
 import CreateProjectModal from "../components/CreateProjectModal";
 
+import Table from "../components/Table";
+import { all } from "micromatch";
+import BlendIcon from "@blend-ui/icons/dist/esm/BlendIcon";
+
+import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
+import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
+import copy from "@iconify/icons-mdi/content-copy";
+import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
+import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
+import arrowTopRightBottomLeft from "@iconify/icons-mdi/arrow-top-right-bottom-left";
+import baselineWeb from "@iconify/icons-mdi/table";
+
 /*
 const importApp = appName => {
   console.log("APP ", appName);
@@ -71,116 +85,8 @@ const importApp = appName => {
 };
 */
 
-const TableStyles = styled.div`
-  /* This is required to make the table full-width */
-  display: block;
-  max-width: 100%;
-  /* This will make the table scrollable when it gets too small */
-  .tableWrap {
-    padding: 1rem;
-    display: block;
-    max-width: 100%;
-    overflow-x: scroll;
-    overflow-y: scroll;
-  }
-
-  table {
-    border-spacing: 0;
-    border: 1px solid black;
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      /* The secret sauce */
-      /* Each cell should grow equally */
-      width: 1%;
-      /* But "collapsed" cells should be as small as possible */
-      &.collapse {
-        width: 0.0000000001%;
-      }
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
-
-  table td.status,table td.date,table td.version,table td.appType {
-    text-align: center
-`;
-
 // Create a default prop getter
 const defaultPropGetter = () => ({});
-
-function Table({
-  columns,
-  data,
-  getColumnProps = defaultPropGetter,
-  getCellProps = defaultPropGetter,
-}) {
-  console.log("TABLE ", data);
-  // Use the state and functions returned from useTable to build your UI
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({
-    columns,
-    data,
-  });
-
-  return (
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, i) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map(cell => {
-                return (
-                  <td
-                    // Return an array of prop objects and react-table will merge them appropriately
-                    {...cell.getCellProps([
-                      {
-                        className: cell.column.className,
-                        style: cell.column.style,
-                      },
-                      getColumnProps(cell.column),
-                      getCellProps(cell),
-                    ])}
-                  >
-                    {cell.render("Cell")}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
-}
 
 const Content = ({
   Component,
@@ -246,10 +152,46 @@ const Main = ({ data, currentUser }) => {
 
   const appTypes = ["Widget", "App"];
 
+  const [allValues, setAllValues] = useState({
+    name: "",
+    id: "",
+  });
+
+  const onRowClick = (state, rowInfo, column, instance) => {
+    return {
+      onClick: e => {},
+    };
+  };
+
   const Columns = [
     {
-      Header: "Id",
+      Header: "Name",
+      accessor: "name",
+      Cell: props => {
+        return (
+          <Text
+            fontSize="xs"
+            onClick={() => {
+              setStep(3);
+              setAllValues({
+                ...allValues,
+                // title: widgets.current[w].title,
+                name: props.cell.value,
+                id: props.row.values.id,
+              });
+            }}
+          >
+            {props.cell.value}
+          </Text>
+        );
+      },
+    },
+    {
+      Header: "App ID",
       accessor: "id",
+      Cell: props => {
+        return <Text fontSize="xxs">{props.cell.value}</Text>;
+      },
     },
     {
       Header: "Type",
@@ -257,10 +199,7 @@ const Main = ({ data, currentUser }) => {
       className: "appType",
       // Cell: cellProp => appTypes[cellProp.row.values.appType],
     },
-    {
-      Header: "Name",
-      accessor: "name",
-    },
+
     {
       Header: "Title",
       accessor: "title",
@@ -280,6 +219,9 @@ const Main = ({ data, currentUser }) => {
       Header: "Modified",
       accessor: "modifiedAt",
       className: "date",
+      Cell: props => {
+        return <Text fontSize="xxs">{props.cell.value}</Text>;
+      },
     },
     {
       Header: () => null, // No header
@@ -323,7 +265,40 @@ const Main = ({ data, currentUser }) => {
     }
   };
 
-  const [step, setStep] = useState(0);
+  const [activeTab, setActiveTab] = useState();
+
+  const tabClick = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setActiveTab(tab);
+  };
+
+  const [activeTab2, setActiveTab2] = useState();
+
+  const tabClick2 = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setActiveTab2(tab);
+  };
+
+  const [activeTab3, setActiveTab3] = useState();
+
+  const tabClick3 = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setActiveTab3(tab);
+  };
+
+  const [apiState, setApiState] = useState(false);
+
+  const [apiInput, setApiInput] = useState();
+
+  // const handleChangeApi = e => {
+  //   const target = e.target;
+  //   setApiState(target);
+  // };
+
+  const [step, setStep] = useState(3);
 
   switch (step) {
     case 0:
@@ -348,34 +323,14 @@ const Main = ({ data, currentUser }) => {
         <DevConsoleLogo className={"app-market"} title="App Market" />
       </C.NavbarContainer>
       <StyledBox>
-        {step === 0 && (
-          <Flex
-            width="100%"
-            height="100%"
-            paddingLeft="286px"
-            bg="white"
-            flexDirection="column"
-          >
-            {/* {upload && <UploadApp row={selectedRow.current} close={closeClick} />}
-          {!upload && (
-            <>
-              <Box mt={20} pl={"1rem"}>
-                <Button
-                  onClick={() => {
-                    history.push("/new-app");
-                  }}
-                >
-                  New App
-                </Button>
-              </Box>
-              <TableStyles>
-                <div className="tableWrap">
-                  {data.length === 0 && <Text m={2}>"No apps..."</Text>}
-                  {data.length > 0 && <Table columns={Columns} data={data} />}
-                </div>
-              </TableStyles>
-            </>
-          )} */}
+        <Flex
+          width="100vw"
+          height="100vh"
+          paddingLeft="286px"
+          bg="white"
+          flexDirection="column"
+        >
+          {step === 0 && (
             <>
               <Flex flexDirection="column" alignItems="center" mt="42px">
                 <Image src={dashboardBanner} style={{ position: "relative" }} />
@@ -399,7 +354,7 @@ const Main = ({ data, currentUser }) => {
                   <Button
                     size="sm"
                     onClick={() => {
-                      setStep(1);
+                      setStep(2);
                       // openModal();
                     }}
                   >
@@ -453,98 +408,571 @@ const Main = ({ data, currentUser }) => {
                 </Flex>
               </Box>
             </>
-          </Flex>
-        )}
-        {step === 1 && (
-          <Flex
-            width="100%"
-            height="100%"
-            paddingLeft="286px"
-            bg="white"
-            flexDirection="column"
-          >
-            <Flex flexDirection="column" alignItems="center" mt="42px">
-              <CreateProjectModal setStep={() => setStep(2)} />
+          )}
+          {step === 1 && (
+            <>
+              <Flex flexDirection="column" alignItems="center" mt="42px">
+                <CreateProjectModal setStep={() => setStep(2)} />
 
-              <Image src={dashboardBanner} style={{ position: "relative" }} />
-              <Flex
-                textAlign="center"
-                width="506px"
-                height="196px"
-                flexDirection="column"
-                justifyContent="space-between"
-                alignItems="center"
-                position="absolute"
-                top="243px"
-              >
-                <Text color="white" fontSize={24}>
-                  Create your first project
+                <Image src={dashboardBanner} style={{ position: "relative" }} />
+                <Flex
+                  textAlign="center"
+                  width="506px"
+                  height="196px"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  position="absolute"
+                  top="243px"
+                >
+                  <Text color="white" fontSize={24}>
+                    Create your first project
+                  </Text>
+                  <Text color="#969595" fontSize={20}>
+                    Done with your local build and ready to plug into the power
+                    of Prifina? Create a project to get started
+                  </Text>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setStep(2);
+                      // openModal();
+                    }}
+                  >
+                    New Project
+                    {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
+                  </Button>
+                </Flex>
+              </Flex>
+              <Box paddingLeft="62px" paddingTop="100px">
+                <Text color="textPrimary" fontSize={24}>
+                  {/* {i18n.__("keyResources")} */}
+                  Key Resources
                 </Text>
-                <Text color="#969595" fontSize={20}>
-                  Done with your local build and ready to plug into the power of
-                  Prifina? Create a project to get started
+                <Text color="baseMuted" fontSize={16} paddingTop="8px">
+                  {/* {i18n.__("resourcesSubtitle")} */}
+                  Resources and utilities to help you build for Prifina
                 </Text>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setStep(1);
-                    // openModal();
+                <Flex paddingTop="35px">
+                  <Box paddingRight="42px">
+                    <C.ResourceCard
+                      src={docs}
+                      // title={i18n.__("prifinaDocs")}
+                      title="Prifina Docs"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                  <Box paddingRight="42px">
+                    <C.ResourceCard
+                      src={starterResources}
+                      // title={i18n.__("appStarter")}
+                      title="App Starter"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                  <Box paddingRight="42px">
+                    <C.ResourceCard
+                      src={zendeskResources}
+                      // title={i18n.__("zendesk")}
+                      title="Zendesk"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                  <Box>
+                    <C.ResourceCard
+                      src={slackResources}
+                      // title={i18n.__("ledSlack")}
+                      title="LED Slack"
+                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                    />
+                  </Box>
+                </Flex>
+              </Box>
+            </>
+          )}
+          {/* PROJECTS */}
+          {step === 2 && (
+            <>
+              <Flex paddingTop="48px" paddingLeft="65px">
+                <Flex
+                  bg="baseMuted"
+                  flexDirection="column"
+                  borderRadius="10px"
+                  padding="16px"
+                >
+                  {upload && (
+                    <UploadApp row={selectedRow.current} close={closeClick} />
+                  )}
+                  {!upload && (
+                    <>
+                      <Flex
+                        alignItems="center"
+                        justifyContent="space-between"
+                        marginBottom="40px"
+                      >
+                        <Text textStyle="h3">Projects</Text>
+                        <Button
+                          onClick={() => {
+                            history.push("/new-app");
+                          }}
+                        >
+                          New App
+                        </Button>
+                      </Flex>
+                      <div className="tableWrap">
+                        {data.length === 0 && <Text m={2}>"No apps..."</Text>}
+                        {data.length > 0 && (
+                          <Table columns={Columns} data={data} />
+                        )}
+                      </div>
+                    </>
+                  )}
+                </Flex>
+              </Flex>
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <Flex flexDirection="column">
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="center"
+                  paddingLeft="22px"
+                  paddingRight="24px"
+                  height="64px"
+                  bg="baseMuted"
+                >
+                  <Flex alignItems="center">
+                    <BlendIcon iconify={mdiArrowLeft} width="24px" />
+                    <Text ml="16px">{allValues.name}</Text>
+                  </Flex>
+                  <Flex alignItems="center">
+                    <Button mr="17px">Launch Sandbox</Button>
+                    <BlendIcon
+                      iconify={bxsInfoCircle}
+                      width="13px"
+                      color="#969595"
+                    />
+                  </Flex>
+                </Flex>
+                <Flex bg="brandAccent" height="95px" />
+                <div
+                  style={{
+                    overflow: "hidden",
+                    paddingTop: 38,
+                    paddingLeft: 65,
+                    paddingRight: 10,
                   }}
                 >
-                  New Project
-                  {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
-                </Button>
-              </Flex>
-            </Flex>
-            <Box paddingLeft="62px" paddingTop="100px">
-              <Text color="textPrimary" fontSize={24}>
-                {/* {i18n.__("keyResources")} */}
-                Key Resources
-              </Text>
-              <Text color="baseMuted" fontSize={16} paddingTop="8px">
-                {/* {i18n.__("resourcesSubtitle")} */}
-                Resources and utilities to help you build for Prifina
-              </Text>
-              <Flex paddingTop="35px">
-                <Box paddingRight="42px">
-                  <C.ResourceCard
-                    src={docs}
-                    // title={i18n.__("prifinaDocs")}
-                    title="Prifina Docs"
-                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                  />
-                </Box>
-                <Box paddingRight="42px">
-                  <C.ResourceCard
-                    src={starterResources}
-                    // title={i18n.__("appStarter")}
-                    title="App Starter"
-                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                  />
-                </Box>
-                <Box paddingRight="42px">
-                  <C.ResourceCard
-                    src={zendeskResources}
-                    // title={i18n.__("zendesk")}
-                    title="Zendesk"
-                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                  />
-                </Box>
-                <Box>
-                  <C.ResourceCard
-                    src={slackResources}
-                    // title={i18n.__("ledSlack")}
-                    title="LED Slack"
-                    description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                  />
-                </Box>
-              </Flex>
-            </Box>
-          </Flex>
-        )}
-        {/* {step === 2 && (
+                  <Tabs
+                    activeTab={activeTab}
+                    onClick={tabClick}
+                    variant={"rounded"}
+                    style={{
+                      background: "transparent",
+                    }}
+                  >
+                    <TabList>
+                      <Tab
+                        style={{
+                          height: 37,
+                          justifyContent: "center",
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                          margin: 8,
+                        }}
+                      >
+                        <Flex alignItems="center">
+                          <BlendIcon iconify={mdiPowerPlug} />
+                          <Text ml="8px" color="white">
+                            Sanbox Testing
+                          </Text>
+                        </Flex>
+                      </Tab>
+                      <Tab
+                        style={{
+                          height: 37,
+                          justifyContent: "center",
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                          margin: 8,
+                        }}
+                      >
+                        <Flex alignItems="center">
+                          <BlendIcon iconify={baselineWeb} />
+                          <Text ml="8px" color="white">
+                            Build Assets
+                          </Text>
+                        </Flex>
+                      </Tab>
+                      <Tab
+                        style={{
+                          height: 37,
+                          justifyContent: "center",
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                          margin: 8,
+                        }}
+                      >
+                        <Flex alignItems="center">
+                          <BlendIcon iconify={mdiZipBoxOutline} />
+                          <Text ml="8px" color="white">
+                            Uploads
+                          </Text>
+                        </Flex>
+                      </Tab>
+                    </TabList>
+                    <TabPanelList>
+                      <TabPanel>
+                        <div
+                          style={{
+                            overflow: "auto",
+                            background: "gray",
+                            borderRadius: 10,
+                          }}
+                        >
+                          <Flex
+                            ml="41px"
+                            flexDirection="column"
+                            paddingTop="30px"
+                          >
+                            <Text color="textPrimary" fontSize="24px">
+                              Sandbox testing
+                            </Text>
+                            <Box mt="21px" width="493px" mb="49px">
+                              <Text color="textPrimary">
+                                Finished your local build? See how your
+                                application will behave on our platform using
+                                our Sandbox enviroment.
+                              </Text>
+                            </Box>
+                          </Flex>
 
-        )} */}
+                          <Flex
+                            style={{
+                              border: "1px solid #3F3A4F",
+                              width: 999,
+                              borderTopRightRadius: 10,
+                              borderTopLeftRadius: 10,
+                              borderBottom: 0,
+                              marginRight: 16,
+                              marginLeft: 16,
+                              paddingLeft: 32,
+                              paddingRight: 34,
+                              position: "relative",
+                            }}
+                            flexDirection="column"
+                          >
+                            <Text color="textPrimary" mt="35px">
+                              Launch Sandbox session
+                            </Text>
+                            <Flex
+                              alt="cards"
+                              flexDirection="column"
+                              style={{
+                                position: "absolute",
+                                right: 84,
+                                top: -28,
+                              }}
+                            >
+                              <Flex
+                                width="403px"
+                                height="35px"
+                                bg="brandAccent"
+                                borderRadius="5px"
+                                alignItems="center"
+                                mb="4px"
+                              >
+                                <Text
+                                  color="white"
+                                  ml="16px"
+                                  mr="18px"
+                                  fontSize="12px"
+                                >
+                                  1
+                                </Text>
+                                <Text color="white" fontSize="12px">
+                                  Copy your app ID
+                                </Text>
+                              </Flex>
+                              <Flex
+                                width="403px"
+                                height="35px"
+                                bg="brandAccent"
+                                borderRadius="5px"
+                                alignItems="center"
+                                mb="4px"
+                              >
+                                <Text
+                                  color="white"
+                                  ml="16px"
+                                  mr="18px"
+                                  fontSize="12px"
+                                >
+                                  2
+                                </Text>
+                                <Text color="white" fontSize="12px">
+                                  Add it to your local build
+                                </Text>
+                              </Flex>
+                              <Flex
+                                width="403px"
+                                height="35px"
+                                bg="brandAccent"
+                                borderRadius="5px"
+                                alignItems="center"
+                                mb="4px"
+                              >
+                                <Text
+                                  color="white"
+                                  ml="16px"
+                                  mr="18px"
+                                  fontSize="12px"
+                                >
+                                  3
+                                </Text>
+                                <Text color="white" fontSize="12px">
+                                  Get a remote link for your repo
+                                </Text>
+                              </Flex>
+                              <Flex
+                                width="403px"
+                                height="35px"
+                                bg="brandAccent"
+                                borderRadius="5px"
+                                alignItems="center"
+                              >
+                                <Text
+                                  color="white"
+                                  ml="16px"
+                                  mr="18px"
+                                  fontSize="12px"
+                                >
+                                  4
+                                </Text>
+                                <Text color="white" fontSize="12px">
+                                  Fill out the form and launch the Sandbox
+                                </Text>
+                              </Flex>
+                              <Flex alignItems="baseline">
+                                <Text
+                                  mt="11px"
+                                  color="textPrimary"
+                                  fontSize="12px"
+                                  mr="2px"
+                                >
+                                  Read a more detailed guide in the
+                                </Text>
+                                <Button variation="link">Prifina docs</Button>
+                              </Flex>
+                            </Flex>
+                            <Flex mt="42px" alignItems="center" mb="19px">
+                              <Text
+                                color="textPrimary"
+                                fontSize="12px"
+                                mr="8px"
+                              >
+                                App ID
+                              </Text>
+                              <BlendIcon
+                                iconify={bxsInfoCircle}
+                                width="13px"
+                                color="#969595"
+                              />
+                            </Flex>
+                            <C.StyledInput value={allValues.id} disabled />
+                            <Flex
+                              justifyContent="space-between"
+                              mt="43px"
+                              width="748px"
+                            >
+                              <Flex flexDirection="column">
+                                <Text mb="16px" color="white" fontSize="12px">
+                                  Project Name
+                                </Text>
+                                <C.StyledInput placeholder="Sleep Tracker" />
+                              </Flex>
+                              <Flex flexDirection="column">
+                                <Text mb="16px" color="white" fontSize="12px">
+                                  Remote Link
+                                </Text>
+                                <C.StyledInput placeholder="Remote Link" />
+                              </Flex>
+                            </Flex>
+                            <Flex position="absolute" right="32px" bottom="0px">
+                              <Button size="sm">Launch Sanbox</Button>
+                            </Flex>
+                          </Flex>
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        {/* SECOND TABS */}
+                        <div style={{ overflow: "hidden" }}>
+                          <Tabs
+                            activeTab={activeTab2}
+                            onClick={tabClick2}
+                            style={{ height: "100%" }}
+                            variant={"line"}
+                          >
+                            <TabList>
+                              <Tab>
+                                <Text>Data Usage</Text>
+                              </Tab>
+                              <Tab>
+                                <Text>Build Files</Text>
+                              </Tab>
+                            </TabList>
+                            <TabPanelList style={{ backgroundColor: null }}>
+                              <TabPanel
+                                style={{
+                                  height: "100vh",
+                                  paddingBottom: "50px",
+                                  overflow: "auto",
+                                }}
+                              >
+                                <div style={{ overflow: "auto" }}>
+                                  <Text textStyle="h3" mb="15px">
+                                    Data Usage
+                                  </Text>
+                                  <Box width="470px">
+                                    <Text textStyle="h6" mb="15px">
+                                      Sed ut perspiciatis unde omnis iste natus
+                                      error sit voluptatem accusantium
+                                      doloremque laudantium, totam rem aperiam,
+                                      eaque ipsa quae ab illo inventore
+                                      veritatis et quasi architecto beatae vitae
+                                      dicta sunt
+                                    </Text>
+                                  </Box>
+                                  {/* THIRD TABS */}
+                                  <div
+                                    style={{
+                                      overflow: "hidden",
+                                      background: "lightGray",
+                                      paddingTop: 16,
+                                      paddingBottom: 16,
+                                      paddingLeft: 40,
+                                      paddingRight: 40,
+                                    }}
+                                  >
+                                    <Tabs
+                                      activeTab={activeTab3}
+                                      onClick={tabClick3}
+                                      style={{ height: "100%" }}
+                                      variant={"line"}
+                                    >
+                                      <TabList>
+                                        <Tab>
+                                          <Text>Public API</Text>
+                                        </Tab>
+                                        <Tab>
+                                          <Text>Prifina user-held</Text>
+                                        </Tab>
+                                        <Tab>
+                                          <Text>No Data</Text>
+                                        </Tab>
+                                      </TabList>
+                                      <TabPanelList
+                                        style={{ backgroundColor: null }}
+                                      >
+                                        <TabPanel
+                                          style={{
+                                            height: "100vh",
+                                            paddingBottom: "50px",
+                                            overflow: "auto",
+                                          }}
+                                        >
+                                          <div style={{ overflow: "auto" }}>
+                                            <Flex>
+                                              <C.StyledInput
+                                                width="834px"
+                                                onChange={handleChangeApi}
+                                                value={apiInput}
+                                              />
+                                              <Button
+                                                onClick={() => {
+                                                  if (apiState === false)
+                                                    setApiState(true);
+                                                  else setApiState(false);
+                                                }}
+                                              >
+                                                Connect
+                                              </Button>
+                                            </Flex>
+                                            <Text textStyle="h7" mt="10px">
+                                              Public API data source used in
+                                              your project
+                                            </Text>
+                                            <Text
+                                              textStyle="h6"
+                                              mt="10px"
+                                              mb="10px"
+                                            >
+                                              Data sources used in your project
+                                            </Text>
+                                            {/* Box with state change */}
+                                            <Flex
+                                              style={{
+                                                border: "1px solid black",
+                                                height: 90,
+                                                borderRadius: 10,
+                                              }}
+                                            >
+                                              {!apiState ? (
+                                                <Flex
+                                                  width="100%"
+                                                  flexDirection="column"
+                                                  justifyContent="center"
+                                                  alignItems="center"
+                                                >
+                                                  <Text textStyle="h5">
+                                                    Search and select data
+                                                    sources
+                                                  </Text>
+                                                  <Text textStyle="h5">
+                                                    Data sources you add will
+                                                    show up here
+                                                  </Text>
+                                                </Flex>
+                                              ) : (
+                                                <Flex
+                                                  width="100%"
+                                                  flexDirection="column"
+                                                  padding="10px"
+                                                >
+                                                  <Text textStyle="h5">
+                                                    Name
+                                                    {apiInput}
+                                                  </Text>
+                                                </Flex>
+                                              )}
+                                            </Flex>
+                                          </div>
+                                        </TabPanel>
+                                        <TabPanel>Work panel</TabPanel>
+                                      </TabPanelList>
+                                    </Tabs>
+                                  </div>
+                                </div>
+                              </TabPanel>
+                              <TabPanel>Work panel</TabPanel>
+                              <TabPanel>Work panel 3</TabPanel>
+                            </TabPanelList>
+                          </Tabs>
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <Text mb="16px" color="textPriamry" fontSize="12px">
+                          In progress...
+                        </Text>
+                      </TabPanel>
+                    </TabPanelList>
+                  </Tabs>
+                </div>
+              </Flex>
+            </>
+          )}
+        </Flex>
       </StyledBox>
     </React.Fragment>
   );
@@ -655,20 +1083,21 @@ const Home = props => {
         componentProps.current.activeUser = activeUser.current;
 
         // notificationCount...
-        const notificationCountResult = await client.query({
-          query: gql(getNotificationCount),
-          variables: {
-            filter: {
-              owner: { eq: currentUser.prifinaID },
-              status: { eq: 0 },
-            },
-          },
-        });
-        console.log("COUNT ", notificationCountResult);
-        notificationCount.current =
-          notificationCountResult.data.getNotificationCount;
 
-        componentProps.current.notificationCount = notificationCount.current;
+        // const notificationCountResult = await client.query({
+        //   query: gql(getNotificationCount),
+        //   variables: {
+        //     filter: {
+        //       owner: { eq: currentUser.prifinaID },
+        //       status: { eq: 0 },
+        //     },
+        //   },
+        // });
+        // console.log("COUNT ", notificationCountResult);
+        // notificationCount.current =
+        //   notificationCountResult.data.getNotificationCount;
+
+        // componentProps.current.notificationCount = notificationCount.current;
 
         console.log("COMPONENT ", componentProps);
         setInitClient(true);
