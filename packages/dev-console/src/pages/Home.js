@@ -11,7 +11,16 @@ import React, {
   useCallback,
 } from "react";
 
-import { Box, Flex, Text, Button, Image, Input } from "@blend-ui/core";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Image,
+  Input,
+  SearchSelect,
+  Select,
+} from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
@@ -75,6 +84,8 @@ import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
 import arrowTopRightBottomLeft from "@iconify/icons-mdi/arrow-top-right-bottom-left";
 import baselineWeb from "@iconify/icons-mdi/table";
+
+import { mdiConnection } from "@iconify/icons-mdi/connection";
 
 /*
 const importApp = appName => {
@@ -170,7 +181,7 @@ const Main = ({ data, currentUser }) => {
       Cell: props => {
         return (
           <Text
-            fontSize="xs"
+            // fontSize="xs"
             onClick={() => {
               setStep(3);
               setAllValues({
@@ -190,7 +201,7 @@ const Main = ({ data, currentUser }) => {
       Header: "App ID",
       accessor: "id",
       Cell: props => {
-        return <Text fontSize="xxs">{props.cell.value}</Text>;
+        return <Text>{props.cell.value}</Text>;
       },
     },
     {
@@ -220,7 +231,7 @@ const Main = ({ data, currentUser }) => {
       accessor: "modifiedAt",
       className: "date",
       Cell: props => {
-        return <Text fontSize="xxs">{props.cell.value}</Text>;
+        return <Text>{props.cell.value}</Text>;
       },
     },
     {
@@ -289,14 +300,248 @@ const Main = ({ data, currentUser }) => {
     setActiveTab3(tab);
   };
 
-  const [apiState, setApiState] = useState(false);
+  const [dataSource, setDataSource] = useState([]);
+  const [apiData, setApiData] = useState([]);
 
-  const [apiInput, setApiInput] = useState();
+  console.log("CLOUD DATA", dataSource);
+  console.log("API DATA", apiData);
 
-  // const handleChangeApi = e => {
-  //   const target = e.target;
-  //   setApiState(target);
-  // };
+  let addedDataSources = dataSource
+    .concat(apiData)
+    .filter(key => key.isAdded == true);
+  console.log("ADDED DATA", addedDataSources);
+
+  const [addedDataSources2, setAddedDataSources2] = useState([]);
+
+  ///Prifina user cloud
+
+  const addDataSource = text => {
+    const newSourceData = [...dataSource, { text }];
+    setDataSource(newSourceData);
+  };
+
+  const removeDataSource = index => {
+    const newSourceData = [...dataSource];
+    newSourceData.splice(index, 1);
+    setDataSource(newSourceData);
+  };
+
+  const completeDataSource = index => {
+    const newSourceData = [...dataSource];
+    newSourceData[index].isAdded = true;
+    setDataSource(newSourceData);
+  };
+
+  //////API
+
+  const addApiSource = text => {
+    const newSourceData = [...apiData, { text }];
+    setApiData(newSourceData);
+  };
+
+  const removeApiSource = index => {
+    const newSourceData = [...apiData];
+    newSourceData.splice(index, 1);
+    setApiData(newSourceData);
+  };
+
+  const completeApiSource = index => {
+    const newSourceData = [...apiData];
+    newSourceData[index].isAdded = true;
+    setApiData(newSourceData);
+  };
+
+  ////common data sources
+
+  const uncompleteDataSource = index => {
+    const newSourceData = [...addedDataSources];
+    newSourceData[index].isAdded = false;
+    setAddedDataSources2(newSourceData);
+  };
+
+  function AddRemoveDataSources({
+    dataSource,
+    index,
+    completeDataSource,
+    removeDataSource,
+  }) {
+    console.log("hehe", dataSource);
+    return (
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        height="72px"
+        border="1px solid black"
+        borderRadius="10px"
+        width="834px"
+        paddingLeft="15px"
+        paddingRight="15px"
+        marginTop="5px"
+      >
+        <Text>{dataSource.text}</Text>
+
+        <Flex>
+          <button
+            onClick={() => completeDataSource(index)}
+            style={{ width: 50, height: 50, marginRight: 5 }}
+          >
+            <Text textStyle="h3" color="blue">
+              +
+            </Text>
+          </button>
+          <button
+            onClick={() => removeDataSource(index)}
+            style={{ width: 50, height: 50 }}
+          >
+            <Text textStyle="h3" colorStyle="error">
+              x
+            </Text>
+          </button>
+        </Flex>
+      </Flex>
+    );
+  }
+
+  const selectOptions = [
+    {
+      key: "0",
+      value: "Prifina/Oura",
+      functions: ["Activity", "Sleep", "Readiness"],
+    },
+    {
+      key: "1",
+      value: "Prifina/FitBit",
+      functions: ["Function1", "Function2"],
+    },
+    {
+      key: "2",
+      value: "Prifina/Netflix",
+      functions: [
+        "Function1",
+        "Function2",
+        "Function3",
+        "Function4",
+        "Function5",
+        "Function6",
+      ],
+    },
+  ];
+
+  function DataSourceForm({ addDataSource }) {
+    const [value, setValue] = useState("");
+
+    const handleSubmit = e => {
+      e.preventDefault();
+      if (!value) return;
+      addDataSource(value);
+      setValue("");
+    };
+
+    const handleChange = event => {
+      const functionsByDataType = selectOptions.reduce(
+        (result, currentSelectOption) => ({
+          ...result,
+          [currentSelectOption.value]: currentSelectOption.functions,
+        }),
+        {},
+      );
+      console.log("SELECT", functionsByDataType[event.target.value]);
+      setValue(event.target.value);
+    };
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <Flex>
+          <SearchSelect
+            // id={selectId}
+            // name={selectId}
+            // key="value"
+            variation="outline"
+            // defaultValue="000"
+            options={selectOptions}
+            defaultValue
+            searchLength={1}
+            showList={true}
+            selectOption="value"
+            size="sm"
+            width="834px"
+            // containerRef={boxRef}
+            onChange={handleChange}
+          />
+          <button
+            style={{ width: 48, height: 48, marginLeft: 4 }}
+            onChange={e => {
+              console.log("CLICK ", e.target.value);
+
+              setValue(e.target.value);
+            }}
+          >
+            +
+          </button>
+        </Flex>
+      </form>
+    );
+  }
+
+  function ApiForm({ addApi }) {
+    const [value, setValue] = useState("");
+
+    const handleSubmit = e => {
+      e.preventDefault();
+      if (!value) return;
+      addApi(value);
+      setValue("");
+    };
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <Flex>
+          <C.StyledInput
+            width="834px"
+            type="text"
+            className="input"
+            value={value}
+            onChange={e => setValue(e.target.value)}
+          />
+
+          <Button onChange={e => setValue(e.currentTarget.value)}>+</Button>
+        </Flex>
+      </form>
+    );
+  }
+
+  function ControlAddedDataSources({
+    dataSource,
+    index,
+    uncompleteDataSource,
+  }) {
+    return (
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        height="72px"
+        border="1px solid black"
+        borderRadius="10px"
+        width="834px"
+        paddingLeft="15px"
+        paddingRight="15px"
+        marginTop="15px"
+      >
+        <Text>{dataSource.text}</Text>
+
+        <Flex>
+          <button
+            onClick={() => uncompleteDataSource(index)}
+            style={{ width: 50, height: 50 }}
+          >
+            <Text textStyle="h3" colorStyle="error">
+              x
+            </Text>
+          </button>
+        </Flex>
+      </Flex>
+    );
+  }
 
   const [step, setStep] = useState(3);
 
@@ -543,7 +788,13 @@ const Main = ({ data, currentUser }) => {
                   bg="baseMuted"
                 >
                   <Flex alignItems="center">
-                    <BlendIcon iconify={mdiArrowLeft} width="24px" />
+                    <BlendIcon
+                      iconify={mdiArrowLeft}
+                      width="24px"
+                      onClick={() => {
+                        setStep(2);
+                      }}
+                    />
                     <Text ml="16px">{allValues.name}</Text>
                   </Flex>
                   <Flex alignItems="center">
@@ -561,7 +812,7 @@ const Main = ({ data, currentUser }) => {
                     overflow: "hidden",
                     paddingTop: 38,
                     paddingLeft: 65,
-                    paddingRight: 10,
+                    paddingRight: 30,
                   }}
                 >
                   <Tabs
@@ -790,7 +1041,7 @@ const Main = ({ data, currentUser }) => {
                                 <Text mb="16px" color="white" fontSize="12px">
                                   Project Name
                                 </Text>
-                                <C.StyledInput placeholder="Sleep Tracker" />
+                                <C.StyledInput placeholder={allValues.name} />
                               </Flex>
                               <Flex flexDirection="column">
                                 <Text mb="16px" color="white" fontSize="12px">
@@ -853,6 +1104,7 @@ const Main = ({ data, currentUser }) => {
                                       paddingBottom: 16,
                                       paddingLeft: 40,
                                       paddingRight: 40,
+                                      borderRadius: 10,
                                     }}
                                   >
                                     <Tabs
@@ -866,7 +1118,7 @@ const Main = ({ data, currentUser }) => {
                                           <Text>Public API</Text>
                                         </Tab>
                                         <Tab>
-                                          <Text>Prifina user-held</Text>
+                                          <Text>Prifina User Cloud</Text>
                                         </Tab>
                                         <Tab>
                                           <Text>No Data</Text>
@@ -884,78 +1136,202 @@ const Main = ({ data, currentUser }) => {
                                         >
                                           <div style={{ overflow: "auto" }}>
                                             <Flex>
-                                              <C.StyledInput
-                                                width="834px"
-                                                onChange={handleChangeApi}
-                                                value={apiInput}
-                                              />
-                                              <Button
-                                                onClick={() => {
-                                                  if (apiState === false)
-                                                    setApiState(true);
-                                                  else setApiState(false);
-                                                }}
-                                              >
-                                                Connect
-                                              </Button>
+                                              <ApiForm addApi={addApiSource} />
                                             </Flex>
-                                            <Text textStyle="h7" mt="10px">
-                                              Public API data source used in
-                                              your project
-                                            </Text>
-                                            <Text
-                                              textStyle="h6"
-                                              mt="10px"
-                                              mb="10px"
-                                            >
-                                              Data sources used in your project
-                                            </Text>
+
                                             {/* Box with state change */}
-                                            <Flex
-                                              style={{
-                                                border: "1px solid black",
-                                                height: 90,
-                                                borderRadius: 10,
-                                              }}
-                                            >
-                                              {!apiState ? (
-                                                <Flex
-                                                  width="100%"
-                                                  flexDirection="column"
-                                                  justifyContent="center"
-                                                  alignItems="center"
-                                                >
-                                                  <Text textStyle="h5">
-                                                    Search and select data
-                                                    sources
-                                                  </Text>
-                                                  <Text textStyle="h5">
-                                                    Data sources you add will
-                                                    show up here
-                                                  </Text>
-                                                </Flex>
-                                              ) : (
+                                            <Flex>
+                                              {apiData.length > 0 && (
                                                 <Flex
                                                   width="100%"
                                                   flexDirection="column"
                                                   padding="10px"
+                                                  style={{
+                                                    marginTop: 15,
+                                                    borderRadius: 10,
+                                                  }}
                                                 >
-                                                  <Text textStyle="h5">
-                                                    Name
-                                                    {apiInput}
+                                                  <Text
+                                                    textStyle="h6"
+                                                    mb="10px"
+                                                  >
+                                                    Click to add you your data
+                                                    sources
                                                   </Text>
+                                                  <Flex>
+                                                    <Flex flexDirection="column">
+                                                      {apiData.map(
+                                                        (event, index) => (
+                                                          <AddRemoveDataSources
+                                                            key={index}
+                                                            index={index}
+                                                            dataSource={event}
+                                                            removeDataSource={
+                                                              removeApiSource
+                                                            }
+                                                            completeDataSource={
+                                                              completeApiSource
+                                                            }
+                                                          />
+                                                        ),
+                                                      )}
+                                                    </Flex>
+                                                  </Flex>
                                                 </Flex>
                                               )}
                                             </Flex>
                                           </div>
                                         </TabPanel>
-                                        <TabPanel>Work panel</TabPanel>
+                                        <TabPanel>
+                                          <div style={{ overflow: "auto" }}>
+                                            <Flex>
+                                              <DataSourceForm
+                                                addDataSource={addDataSource}
+                                              />
+                                            </Flex>
+                                            {/* Box with state change */}
+                                            <Flex>
+                                              {dataSource.length > 0 && (
+                                                <Flex
+                                                  width="100%"
+                                                  flexDirection="column"
+                                                  padding="10px"
+                                                  style={{
+                                                    backgroundColor:
+                                                      "lightGray",
+                                                    marginTop: 15,
+                                                    borderRadius: 10,
+                                                  }}
+                                                >
+                                                  <Text
+                                                    textStyle="h6"
+                                                    mt="10px"
+                                                    mb="10px"
+                                                  >
+                                                    Data sources used in your
+                                                    project
+                                                  </Text>
+                                                  <Flex>
+                                                    <Flex flexDirection="column">
+                                                      {dataSource.map(
+                                                        (event, index) => (
+                                                          <>
+                                                            <AddRemoveDataSources
+                                                              key={index}
+                                                              index={index}
+                                                              dataSource={event}
+                                                              removeDataSource={
+                                                                removeDataSource
+                                                              }
+                                                              completeDataSource={
+                                                                completeDataSource
+                                                              }
+                                                            />
+                                                            <div>
+                                                              {event.functions}
+                                                            </div>
+                                                          </>
+                                                        ),
+                                                      )}
+                                                    </Flex>
+                                                  </Flex>
+                                                </Flex>
+                                              )}
+                                            </Flex>
+                                          </div>
+                                        </TabPanel>
                                       </TabPanelList>
                                     </Tabs>
                                   </div>
+                                  <Flex
+                                    flexDirection="column"
+                                    width="100%"
+                                    justifyContent="center"
+                                    padding="15px"
+                                    paddingLeft="40px"
+                                    paddingRight="40px"
+                                    style={{
+                                      backgroundColor: "lightGray",
+                                      marginTop: 15,
+                                      borderRadius: 10,
+                                    }}
+                                  >
+                                    <Text textStyle="h6" mb="10px">
+                                      Data sources used in your project
+                                    </Text>
+                                    <Flex>
+                                      {addedDataSources.length > 0 ? (
+                                        <Flex
+                                          width="100%"
+                                          flexDirection="column"
+                                          style={{
+                                            backgroundColor: "lightGray",
+                                            marginTop: 15,
+                                            borderRadius: 10,
+                                          }}
+                                        >
+                                          <Flex>
+                                            <Flex
+                                              flexDirection="column"
+                                              justifyContent="center"
+                                            >
+                                              {addedDataSources.map(
+                                                (event, index) => (
+                                                  <ControlAddedDataSources
+                                                    key={index}
+                                                    index={index}
+                                                    dataSource={event}
+                                                    uncompleteDataSource={
+                                                      uncompleteDataSource
+                                                    }
+                                                  />
+                                                ),
+                                              )}
+                                            </Flex>
+                                          </Flex>
+                                        </Flex>
+                                      ) : (
+                                        <Flex
+                                          width="100%"
+                                          flexDirection="column"
+                                          alignItems="center"
+                                          justifyContent="center"
+                                          style={{
+                                            border: "1px dashed black",
+                                            marginTop: 15,
+                                            borderRadius: 10,
+                                          }}
+                                        >
+                                          <Text textStyle="h6" mt="10px">
+                                            Search and select data sources
+                                          </Text>
+                                          <Text textStyle="h6" mt="10px">
+                                            Data sources you add will show up
+                                            here
+                                          </Text>
+                                        </Flex>
+                                      )}
+                                    </Flex>
+                                  </Flex>
                                 </div>
                               </TabPanel>
-                              <TabPanel>Work panel</TabPanel>
+                              <TabPanel>
+                                <div style={{ overflow: "auto" }}>
+                                  <Text textStyle="h3" mb="15px">
+                                    Build Files
+                                  </Text>
+                                  <Box width="470px">
+                                    <Text textStyle="h6" mb="15px">
+                                      Sed ut perspiciatis unde omnis iste natus
+                                      error sit voluptatem accusantium
+                                      doloremque laudantium, totam rem aperiam,
+                                      eaque ipsa quae ab illo inventore
+                                      veritatis et quasi architecto beatae vitae
+                                      dicta sunt
+                                    </Text>
+                                  </Box>
+                                </div>
+                              </TabPanel>
                               <TabPanel>Work panel 3</TabPanel>
                             </TabPanelList>
                           </Tabs>
