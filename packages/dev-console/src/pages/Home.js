@@ -315,8 +315,8 @@ const Main = ({ data, currentUser }) => {
 
   ///Prifina user cloud
 
-  const addDataSource = text => {
-    const newSourceData = [...dataSource, { text }];
+  const addDataSource = (text, func) => {
+    const newSourceData = [...dataSource, { text, func }];
     setDataSource(newSourceData);
   };
 
@@ -381,6 +381,13 @@ const Main = ({ data, currentUser }) => {
         <Text>{dataSource.text}</Text>
 
         <Flex>
+          {dataSource.func.map(e => {
+            return (
+              <Flex flexDirection="column">
+                <button>{e}</button>
+              </Flex>
+            );
+          })}
           <button
             onClick={() => completeDataSource(index)}
             style={{ width: 50, height: 50, marginRight: 5 }}
@@ -407,11 +414,13 @@ const Main = ({ data, currentUser }) => {
       key: "0",
       value: "Prifina/Oura",
       functions: ["Activity", "Sleep", "Readiness"],
+      url: "www.oura.com",
     },
     {
       key: "1",
       value: "Prifina/FitBit",
       functions: ["Function1", "Function2"],
+      url: "www.fitbit.com",
     },
     {
       key: "2",
@@ -424,17 +433,20 @@ const Main = ({ data, currentUser }) => {
         "Function5",
         "Function6",
       ],
+      url: "www.netflix.com",
     },
   ];
 
   function DataSourceForm({ addDataSource }) {
     const [value, setValue] = useState("");
+    const [functions, setFunctions] = useState("");
 
     const handleSubmit = e => {
       e.preventDefault();
       if (!value) return;
-      addDataSource(value);
+      addDataSource(value, functions);
       setValue("");
+      setFunctions("");
     };
 
     const handleChange = event => {
@@ -442,11 +454,13 @@ const Main = ({ data, currentUser }) => {
         (result, currentSelectOption) => ({
           ...result,
           [currentSelectOption.value]: currentSelectOption.functions,
+          
         }),
         {},
       );
       console.log("SELECT", functionsByDataType[event.target.value]);
       setValue(event.target.value);
+      setFunctions(functionsByDataType[event.target.value]);
     };
 
     return (
@@ -528,6 +542,7 @@ const Main = ({ data, currentUser }) => {
         marginTop="15px"
       >
         <Text>{dataSource.text}</Text>
+        <Text>{dataSource.func}</Text>
 
         <Flex>
           <button
@@ -1187,6 +1202,7 @@ const Main = ({ data, currentUser }) => {
                                             <Flex>
                                               <DataSourceForm
                                                 addDataSource={addDataSource}
+                                                // addFunctions={addFunction}
                                               />
                                             </Flex>
                                             {/* Box with state change */}
