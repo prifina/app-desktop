@@ -146,8 +146,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   const prifinaApps = useRef({});
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
   const [installedApps, setInstalledApps] = useState([]);
-  const notificationHandler = useRef(null);
-  const subscriptionHandler = useRef(null);
 
   //const clients = useRef([]);
   //const activeUser = useRef({});
@@ -169,42 +167,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     localStorage.setItem("PrifinaInstalledApps", JSON.stringify(installedApps));
   }
 */
-
-  const subscribeNotification = variables => {
-    console.log("SUBS NOTIFICATIONS:..", variables);
-    /*
-    export const newConnectNotification = `subscription connectStatusNotification($id:String!) {
-      connectStatusNotification(id: $id) {
-        data
-        id
-      }
-    }`;
-
-    schema resolver puuttuu... connect notification
-    */
-
-    return GRAPHQL.graphql({
-      authMode: "AMAZON_COGNITO_USER_POOLS",
-
-      //query: gql(newConnectNotification),
-      //variables: { id: variables.owner },
-      query: gql(newSystemNotification),
-      variables: variables,
-    }).subscribe({
-      next: ({ provider, value }) => {
-        console.log("NOTIFICATION SUBS RESULTS ", value);
-        if (value.data.newSystemNotification.owner !== "") {
-          notificationHandler.current(1);
-        }
-      },
-      error: error => {
-        //ka is 300000 === 5min ????
-        //message: "Connection closed"
-
-        console.warn(error);
-      },
-    });
-  };
 
   /*
   const updateNotification = useCallback(handler => {
@@ -290,17 +252,14 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
           notifications:
             notificationCountResult.data.getSystemNotificationCount,
           RecentApps: [],
+
+          PrifinaGraphQLHandler: GRAPHQL,
+          prifinaID: activeUser.uuid,
         });
 
         userMenu.setClientHandler(clientHandler);
         userMenu.setActiveUser(activeUser);
-        userMenu.setPrifinaGraphQLHandler(GRAPHQL);
-
-        notificationHandler.current = userMenu.onUpdate;
-
-        subscriptionHandler.current = await subscribeNotification({
-          owner: currentUser.id,
-        });
+        //userMenu.setPrifinaGraphQLHandler(GRAPHQL);
 
         await clientHandler.mutate({
           mutation: gql(updateActivity),
@@ -314,13 +273,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     }
 
     fetchData();
-
-    return () => {
-      // unsubscribe...
-      if (subscriptionHandler.current) {
-        subscriptionHandler.current.unsubscribe();
-      }
-    };
   }, [isMountedRef, currentUser.id]);
 
   useEffect(() => {

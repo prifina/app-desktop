@@ -76,7 +76,7 @@ const TitleText = styled(Text)`
 
 const GlobalStyle = createGlobalStyle`
 .app-market path {
-  fill: #47a7d6;
+  fill: #FFA751;
 }
 `;
 
@@ -288,5 +288,6 @@ AppMarket.propTypes = {
   prifinaID: PropTypes.string,
 };
 AppMarket.displayName = "AppMarket";
+
 
 export default AppMarket;
