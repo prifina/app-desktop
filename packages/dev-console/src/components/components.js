@@ -3,7 +3,7 @@
 
 import React from "react";
 // import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button, Image, Divider } from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image, Divider, Input } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -28,6 +28,36 @@ const SidebarContainer = styled(Flex)`
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
+
+  ::before,
+  ::after {
+    position: absolute;
+    top: 65px;
+
+    width: 30px;
+    height: 30px;
+    content: " ";
+  }
+  ::before {
+    left: -52px;
+    border-bottom-right-radius: 15px;
+    border-width: 0 1px 1px 0;
+  }
+  ::after {
+    right: -30px;
+    border-bottom-left-radius: 11px;
+    border-width: 0 1px 1px;
+  }
+  ::after,
+  ::before {
+    border: 1px solid !transparent;
+    transform: rotate(-270deg);
+  }
+  ::before {
+  }
+  ::after {
+    box-shadow: -6px 5px 0 #f6f7f9;
+  }
 `;
 
 export const ListMenuItem = styled.li`
@@ -98,6 +128,12 @@ export const PublisherCard = styled(Flex)`
   position: relative;
 `;
 
+export const StyledInput = styled(Input)`
+  border: 1px solid #4b4b4b;
+  width: ${props => props.width || "361px"};
+  height: 35px;
+`;
+
 export const ListItemIconLink = ({
   children,
   icon,
@@ -125,8 +161,9 @@ export const DevConsoleSidebar = ({
   blockNav,
   activeMenuItem,
   menuItemClick,
-  onClick1,
-  onClick2,
+  stateOne,
+  stateTwo,
+  stateThree,
   backgroundColor1,
   backgroundColor2,
   backgroundColor3,
@@ -142,26 +179,28 @@ export const DevConsoleSidebar = ({
       <ListMenu {...props}>
         <ListMenuItem
           // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
-          onClick={onClick1}
+          onClick={stateOne}
           backgroundColor={backgroundColor1}
         >
           <ListItemIconLink icon={viewDashboard}>Dashboard</ListItemIconLink>
         </ListMenuItem>
-        <ListMenuItem onClick={onClick2} backgroundColor={backgroundColor2}>
+        <ListMenuItem onClick={stateTwo} backgroundColor={backgroundColor2}>
           <ListItemIconLink icon={mdiWidget}>Projects</ListItemIconLink>
         </ListMenuItem>
-        <ListMenuItem onClick={onClick2} backgroundColor={backgroundColor2}>
+        <ListMenuItem onClick={stateThree} backgroundColor={backgroundColor3}>
           <ListItemIconLink icon={mdiBookOpenVariant}>
             Resources
           </ListItemIconLink>
         </ListMenuItem>
         <ListMenuItem
-          onClick={onClick2}
-          backgroundColor={backgroundColor3}
+          // onClick={stateFour}
+          // backgroundColor={backgroundColor4}
           //temporary needs update
           style={{ pointerEvents: "none" }}
         >
-          <ListItemIconLink icon={mdiSitemap}>Data Model</ListItemIconLink>
+          <ListItemIconLink icon={mdiSitemap} color="gray">
+            Data Model
+          </ListItemIconLink>
           <MenuBadge style={{ background: "cyan" }}>
             <Text fontSize="xs" color="blue">
               Next Up

@@ -20,6 +20,8 @@ import {
   Input,
   SearchSelect,
   Select,
+  Link,
+  Divider,
 } from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
@@ -315,8 +317,8 @@ const Main = ({ data, currentUser }) => {
 
   ///Prifina user cloud
 
-  const addDataSource = (text, func) => {
-    const newSourceData = [...dataSource, { text, func }];
+  const addDataSource = (text, func, url) => {
+    const newSourceData = [...dataSource, { text, func, url }];
     setDataSource(newSourceData);
   };
 
@@ -365,11 +367,10 @@ const Main = ({ data, currentUser }) => {
     completeDataSource,
     removeDataSource,
   }) {
-    console.log("hehe", dataSource);
+    console.log("data source", dataSource);
     return (
       <Flex
         justifyContent="space-between"
-        alignItems="center"
         height="72px"
         border="1px solid black"
         borderRadius="10px"
@@ -378,33 +379,125 @@ const Main = ({ data, currentUser }) => {
         paddingRight="15px"
         marginTop="5px"
       >
-        <Text>{dataSource.text}</Text>
-
-        <Flex>
+        <Flex paddingTop="5px">
+          <Text mr="5px">{dataSource.text}</Text>
+          <Link href={dataSource.url} target="_blank">
+            Full spec here
+          </Link>
+        </Flex>
+        <Flex
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            width: "33%",
+            paddingTop: 5,
+            paddingBottom: 5,
+          }}
+        >
           {dataSource.func.map(e => {
             return (
-              <Flex flexDirection="column">
-                <button>{e}</button>
-              </Flex>
+              <button
+                style={{
+                  height: 22,
+                  margin: 2,
+                }}
+              >
+                {e}
+              </button>
             );
           })}
-          <button
-            onClick={() => completeDataSource(index)}
-            style={{ width: 50, height: 50, marginRight: 5 }}
-          >
-            <Text textStyle="h3" color="blue">
-              +
-            </Text>
-          </button>
-          <button
-            onClick={() => removeDataSource(index)}
-            style={{ width: 50, height: 50 }}
-          >
-            <Text textStyle="h3" colorStyle="error">
-              x
-            </Text>
-          </button>
         </Flex>
+        <Flex>
+          <Flex alignItems="center" justifySelf="flex-end">
+            <button
+              onClick={() => completeDataSource(index)}
+              style={{ width: 50, height: 50, marginRight: 5 }}
+            >
+              <Text textStyle="h3" color="blue">
+                +
+              </Text>
+            </button>
+            <button
+              onClick={() => removeDataSource(index)}
+              style={{ width: 50, height: 50 }}
+            >
+              <Text textStyle="h3" colorStyle="error">
+                x
+              </Text>
+            </button>
+          </Flex>
+        </Flex>
+      </Flex>
+    );
+  }
+
+  function ControlAddedDataSources({
+    dataSource,
+    index,
+    uncompleteDataSource,
+  }) {
+    const [edit, setEdit] = useState(false);
+    return (
+      
+      <Flex
+        justifyContent="space-between"
+        height="72px"
+        border="1px solid black"
+        borderRadius="10px"
+        width="834px"
+        paddingLeft="15px"
+        paddingRight="15px"
+        marginTop="5px"
+      >
+        <Flex paddingTop="5px">
+          <Text mr="5px">{dataSource.text}</Text>
+          <Link fontSize="md" href={dataSource.url} target="_blank">
+            Full Specs Here
+          </Link>
+        </Flex>
+        <Flex
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            width: "33%",
+            paddingTop: 5,
+            paddingBottom: 5,
+          }}
+        >
+          {dataSource.func.map(e => {
+            return (
+              <button
+                style={{
+                  height: 22,
+                  margin: 2,
+                }}
+              >
+                {e}
+              </button>
+            );
+          })}
+        </Flex>
+        {edit ? (
+          <Flex alignItems="center">
+            <button
+              onClick={() => uncompleteDataSource(index)}
+              style={{ width: 50, height: 50 }}
+            >
+              <Text textStyle="h3" colorStyle="error">
+                x
+              </Text>
+            </button>
+          </Flex>
+        ) : (
+          <Flex alignItems="center">
+            <button
+              onClick={() => setEdit(true)}
+              style={{ width: 50, height: 50 }}
+            >
+              <Text textStyle="h3">E</Text>
+            </button>
+          </Flex>
+        )}
       </Flex>
     );
   }
@@ -418,7 +511,7 @@ const Main = ({ data, currentUser }) => {
     },
     {
       key: "1",
-      value: "Prifina/FitBit",
+      value: "Prifina/Fitbit",
       functions: ["Function1", "Function2"],
       url: "www.fitbit.com",
     },
@@ -440,11 +533,12 @@ const Main = ({ data, currentUser }) => {
   function DataSourceForm({ addDataSource }) {
     const [value, setValue] = useState("");
     const [functions, setFunctions] = useState("");
+    const [url, setUrl] = useState("");
 
     const handleSubmit = e => {
       e.preventDefault();
       if (!value) return;
-      addDataSource(value, functions);
+      addDataSource(value, functions, url);
       setValue("");
       setFunctions("");
     };
@@ -454,13 +548,20 @@ const Main = ({ data, currentUser }) => {
         (result, currentSelectOption) => ({
           ...result,
           [currentSelectOption.value]: currentSelectOption.functions,
-          
+        }),
+        {},
+      );
+      const urlByDataType = selectOptions.reduce(
+        (result, currentSelectOption) => ({
+          ...result,
+          [currentSelectOption.value]: currentSelectOption.url,
         }),
         {},
       );
       console.log("SELECT", functionsByDataType[event.target.value]);
       setValue(event.target.value);
       setFunctions(functionsByDataType[event.target.value]);
+      setUrl(urlByDataType[event.target.value]);
     };
 
     return (
@@ -521,40 +622,6 @@ const Main = ({ data, currentUser }) => {
           <Button onChange={e => setValue(e.currentTarget.value)}>+</Button>
         </Flex>
       </form>
-    );
-  }
-
-  function ControlAddedDataSources({
-    dataSource,
-    index,
-    uncompleteDataSource,
-  }) {
-    return (
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        height="72px"
-        border="1px solid black"
-        borderRadius="10px"
-        width="834px"
-        paddingLeft="15px"
-        paddingRight="15px"
-        marginTop="15px"
-      >
-        <Text>{dataSource.text}</Text>
-        <Text>{dataSource.func}</Text>
-
-        <Flex>
-          <button
-            onClick={() => uncompleteDataSource(index)}
-            style={{ width: 50, height: 50 }}
-          >
-            <Text textStyle="h3" colorStyle="error">
-              x
-            </Text>
-          </button>
-        </Flex>
-      </Flex>
     );
   }
 
@@ -1224,9 +1291,9 @@ const Main = ({ data, currentUser }) => {
                                                     mt="10px"
                                                     mb="10px"
                                                   >
-                                                    Data sources used in your
-                                                    project
+                                                    Prifina data connectors results...
                                                   </Text>
+
                                                   <Flex>
                                                     <Flex flexDirection="column">
                                                       {dataSource.map(

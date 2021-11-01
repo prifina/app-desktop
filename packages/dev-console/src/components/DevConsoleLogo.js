@@ -3,7 +3,7 @@ import { Box } from "@blend-ui/core";
 
 import { ReactComponent as PrifinaLogoImage } from "../assets/dev-console.svg";
 export const DevConsoleLogo = props => (
-  <Box mt={16}>
+  <Box>
     <PrifinaLogoImage {...props} />
   </Box>
 );
