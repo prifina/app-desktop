@@ -363,7 +363,7 @@ const Main = ({ data, currentUser }) => {
       Header: "Type",
       accessor: "appType",
       className: "appType",
-      Cell: cellProp => appTypes[cellProp.row.values.appType],
+      // Cell: cellProp => appTypes[cellProp.row.values.appType],
     },
     {
       Header: "Name",
