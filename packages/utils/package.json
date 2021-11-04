@@ -35,7 +35,7 @@
     "react-dom": ">=16.8.6"
   },
   "peerDependencies": {
-    "aws-amplify": "^4.3.0",
+    "aws-amplify": "^4.3.3",
     "react": ">=16.8.6",
     "react-dom": ">=16.8.6",
     "@blend-ui/core": "1.1.64-alpha.0",
