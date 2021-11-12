@@ -109,8 +109,8 @@ export const IconDiv = styled.div`
   }
   height: 20px;
   width: 20px;
-  position: absolute;
-  left: 275px;
+  position: relative;
+  left: 290px;
   top: 20px;
   opacity: 1;
   cursor: ${props => (props.open ? "default" : "pointer")};
@@ -126,7 +126,7 @@ export const IconDiv = styled.div`
 export const EmptyDiv = styled.div`
   height: 20px;
   width: 20px;
-  position: absolute;
+  position: relative;
   left: 180px;
   top: 20px;
   opacity: 1;

@@ -130,7 +130,6 @@ const Content = ({
   Component,
   initials,
   notificationCount,
-  updateNotificationHandler,
   /*clientHandler,*/
   appSyncClient,
   activeUser,
@@ -151,12 +150,13 @@ const Content = ({
       effect: { hover: { width: 42 } },
       notifications: notificationCount,
       RecentApps: [],
+      PrifinaGraphQLHandler: GRAPHQL,
+      prifinaID: activeUser.uuid,
     });
-    userMenu.setPrifinaGraphQLHandler(GRAPHQL);
+    //userMenu.setPrifinaGraphQLHandler(GRAPHQL);
     //console.log(RecentApps);
   }, []);
 
-  updateNotificationHandler(userMenu.onUpdate);
   return <Component appSyncClient={appSyncClient} {...props} />;
 };
 
@@ -164,7 +164,6 @@ Content.propTypes = {
   Component: PropTypes.elementType.isRequired,
   initials: PropTypes.string,
   notificationCount: PropTypes.number,
-  updateNotificationHandler: PropTypes.func,
   appSyncClient: PropTypes.object,
   activeUser: PropTypes.object,
 };
@@ -193,8 +192,6 @@ const CoreApps = props => {
   const addressBook = useRef({});
   const lastActivity = useRef(new Date().getTime());
   const notificationCount = useRef(0);
-  const notificationHandler = useRef(null);
-  const subscriptionHandler = useRef(null);
   //const clientHandler = useRef(null);
   const [settingsReady, setSettingsReady] = useState(false);
 
@@ -218,22 +215,6 @@ const CoreApps = props => {
       disableOffline: true,
     });
     return client;
-  };
-
-  const subscribeNotification = variables => {
-    return GRAPHQL.graphql({
-      authMode: "AMAZON_COGNITO_USER_POOLS",
-      query: gql(newSystemNotification),
-      variables: variables,
-    }).subscribe({
-      next: ({ provider, value }) => {
-        console.log("NOTIFICATION SUBS RESULTS ", value);
-        if (value.data.newSystemNotification.owner !== "") {
-          notificationHandler.current(1);
-        }
-      },
-      error: error => console.warn(error),
-    });
   };
 
   /*
@@ -519,10 +500,6 @@ const CoreApps = props => {
         },
       });
 
-      subscriptionHandler.current = await subscribeNotification({
-        owner: prifinaID,
-      });
-
       setSettingsReady(true);
     } catch (e) {
       if (typeof e === "string" && e === "No current user") {
@@ -533,13 +510,6 @@ const CoreApps = props => {
 
       console.log("AUTH ", e);
     }
-
-    return () => {
-      // unsubscribe...
-      if (subscriptionHandler.current) {
-        subscriptionHandler.current.unsubscribe();
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -575,9 +545,6 @@ const CoreApps = props => {
     return createClient(endpoint, region);
   };
 
-  const updateNotification = useCallback(handler => {
-    notificationHandler.current = handler;
-  }, []);
   console.log("ACTIVE USER ", activeUser.current);
   return (
     <>
@@ -594,7 +561,6 @@ const CoreApps = props => {
             <Content
               Component={AppComponent}
               {...componentProps.current}
-              updateNotificationHandler={updateNotification}
               activeUser={activeUser.current}
             />
           </React.Suspense>
@@ -606,7 +572,6 @@ const CoreApps = props => {
           <Content
             Component={AppComponent}
             {...componentProps.current}
-            updateNotificationHandler={updateNotification}
             activeUser={activeUser.current}
           />
         </React.Suspense>

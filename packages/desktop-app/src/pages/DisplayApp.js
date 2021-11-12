@@ -34,12 +34,18 @@ import * as C from "./display-app/components";
 /*
 import { addSearchResult, addSearchKey } from "../graphql/mutations";
 */
-import { addSearchResult, addSearchKey, i18n } from "@prifina-apps/utils";
+import {
+  addSearchResult,
+  addSearchKey,
+  i18n,
+  getAthenaResults,
+} from "@prifina-apps/utils";
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import PropTypes from "prop-types";
 import { system } from "styled-system";
 
+import { Box, Flex } from "@blend-ui/core";
 const short = require("short-uuid");
 i18n.init();
 
@@ -237,13 +243,16 @@ const DisplayApp = ({
   );
   console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
   const roleKeys = ["", "work", "family", "hobbies"];
+
+  const athenaSubscription = useRef(null);
+
   const tabClick = (e, tab) => {
     console.log("Click", e);
     console.log("TAB", tab);
     setActiveTab(tab);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     // browser cache images....
     const promises = widgetConfigData.map(src => {
       return new Promise(function (resolve, reject) {
@@ -254,7 +263,7 @@ const DisplayApp = ({
         imageCache.current.push(src.widget.image);
       });
     });
-    Promise.all(promises).then(cachedImages => {
+    await Promise.all(promises).then(cachedImages => {
       console.log("Images loaded....", cachedImages);
       //imageCache.current = cachedImages;
       //setImagesReady(true);
@@ -475,6 +484,47 @@ const DisplayApp = ({
 
   useEffect(() => {
     registerClient([appSyncClient, GRAPHQL, Storage]);
+
+    athenaSubscription.current = appSyncClient
+      .subscribe({ query: gql(getAthenaResults), variables: { id: prifinaID } })
+      .subscribe({
+        next: res => {
+          console.log("ATHENA SUBS RESULTS ", res);
+          /*
+          data:
+          athenaResults:
+          appId: "866fscSq5Ae7bPgUtb6ffB"
+          content:
+          id
+          */
+          const currentAppId = res.data.athenaResults.appId;
+          console.log(currentAppId, widgetSettings.current);
+          const widgetIndex = widgetSettings.current.findIndex(
+            w => w.appId === currentAppId,
+          );
+          const widgetInstallCount =
+            widgetSettings.current[widgetIndex].installCount;
+
+          console.log(widgetIndex, widgetInstallCount);
+          const c = getCallbacks();
+          console.log("CALLBACKS ", c);
+
+          if (
+            c.hasOwnProperty(currentAppId) &&
+            typeof c[currentAppId][widgetInstallCount] === "function"
+          ) {
+            console.log("FOUND CALLBACK ");
+            c[currentAppId][widgetInstallCount]({
+              data: JSON.parse(res.data.athenaResults.data).content,
+            });
+          }
+        },
+        error: error => {
+          console.log("ATHENA SUBS ERROR ");
+          console.warn(error);
+        },
+      });
+
     /*
     let data = installedWidgets.map(w => {
       return {
@@ -572,6 +622,13 @@ const DisplayApp = ({
     console.log("WIDGET CONFIG ", data);
     setWidgetConfig(data);
     */
+    return () => {
+      // unsubscribe...
+      if (athenaSubscription.current) {
+        console.log("UNSUBS ATHENA ");
+        athenaSubscription.current.unsubscribe();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -594,28 +651,33 @@ const DisplayApp = ({
                   margin: "10px",
                 }}
               >
-                {/* 
+                <Flex flexDirection={"row"}>
+                  {/* 
                   <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
                     <BlendIcon iconify={bxCog} />
                   </C.IconDiv>
                   */}
-                {w.settings && (
-                  <C.IconDiv
-                    open={props.open}
-                    onClick={() => openSettings(i)}
-                    widgetTheme={w.widget.theme}
-                  />
-                )}
-                {!w.settings && <C.EmptyDiv />}
-
-                <C.WidgetWrapper
-                  className={"prifina-widget"}
-                  data-widget-index={i}
-                  key={"widget-wrapper-" + i}
-                  ref={ref}
-                >
-                  <RemoteComponent url={w.url} {...props} />
-                </C.WidgetWrapper>
+                  <Flex>
+                    {w.settings && (
+                      <C.IconDiv
+                        open={props.open}
+                        onClick={() => openSettings(i)}
+                        widgetTheme={w.widget.theme}
+                      />
+                    )}
+                    {!w.settings && <C.EmptyDiv />}
+                  </Flex>
+                  <Flex>
+                    <C.WidgetWrapper
+                      className={"prifina-widget"}
+                      data-widget-index={i}
+                      key={"widget-wrapper-" + i}
+                      ref={ref}
+                    >
+                      <RemoteComponent url={w.url} {...props} />
+                    </C.WidgetWrapper>
+                  </Flex>
+                </Flex>
               </div>
             </React.Fragment>
           );
