@@ -51,6 +51,7 @@ const propTest = props => {
   return null;
 };
 
+
 const WidgetBox = ({
   title,
   installed,
@@ -939,5 +940,6 @@ AppMarket.propTypes = {
   prifinaID: PropTypes.string,
 };
 AppMarket.displayName = "AppMarket";
+
 
 export default AppMarket;
