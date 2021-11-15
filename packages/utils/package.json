@@ -1,6 +1,6 @@
 {
   "name": "@prifina-apps/utils",
-  "version": "0.0.0-alpha.0",
+  "version": "0.0.1-alpha.0",
   "description": "Utils",
   "author": "Tero <tero@prifina.com>",
   "license": "MIT",
@@ -41,11 +41,11 @@
     "@blend-ui/core": "1.1.64-alpha.0",
     "@blend-ui/icons": "1.1.8-alpha.0",
     "@iconify/icons-bx": "^1.1.2",
+    "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",
-    "styled-components": "^5.3.1",
-    "styled-system": "^5.1.5",
     "graphql-tag": "^2.12.5",
-    "@reach/auto-id": "^0.16.0"
+    "styled-components": "^5.3.1",
+    "styled-system": "^5.1.5"
   },
   "dependencies": {
     "countries-list": "^2.6.1",
