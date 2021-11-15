@@ -1,0 +1,2 @@
+(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[13],{531:function(e,t,i){"use strict";i.r(t);i(4);var n=i(8),p=i(3),s=function(e){return console.log("SMART SEARCH PROPS ",e),Object(p.jsx)(n.Box,{width:"100vw",height:"100vh",children:Object(p.jsx)(n.Flex,{justifyContent:"center",alignItems:"center",width:"100%",height:"100%",children:Object(p.jsx)(n.Text,{textAlign:"center",textStyle:"h3",children:"SmartSearch"})})})};s.displayName="SmartSearch",t.default=s}}]);
+//# sourceMappingURL=13.9184abb4.chunk.js.map
