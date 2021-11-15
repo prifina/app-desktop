@@ -4,8 +4,8 @@ export const GOOGLE_URL = "https://customsearch.googleapis.com/customsearch/v1";
 export const REFRESH_TOKEN_EXPIRY = process.env.REACT_APP_REFRESH_TOKEN_EXPIRY;
 
 const prod = {
-  APP_URL: "http://localhost:3000",
-  DEV_URL: "http://localhost:3001",
+  APP_URL: process.env.REACT_APP_ALPHA_APP,
+  DEV_URL: process.env.REACT_APP_ALPHA_APP_STUDIO,
   invalidVerificationLink:
     "https://prifina.zendesk.com/hc/en-us/articles/360051754911",
   passwordLength: 10,
