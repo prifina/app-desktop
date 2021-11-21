@@ -138,3 +138,6 @@ yarn-error.log*
 packages/desktop-app2
 packages/dev-console2
 packages/utils2
+
+# package builds
+packages/*/build
