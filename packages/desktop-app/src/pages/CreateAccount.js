@@ -877,7 +877,11 @@ const CreateAccount = props => {
       )}
       {registerStep === 1 && <TermsOfUse />}
       {registerStep === 0 && (
-        <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
+        <ProgressContainer
+          id="createAccountContainer"
+          title={i18n.__("createAccountTitle")}
+          progress={33}
+        >
           <Box mt={40} display="inline-flex">
             <Flex width={"168px"}>
               <Input
@@ -1174,6 +1178,7 @@ const CreateAccount = props => {
 
           <Box mt={66} textAlign={"center"}>
             <Button
+              id="nextButton"
               disabled={nextDisabled}
               onClick={e => {
                 Promise.all(nextButtonClick()).then(res => {
@@ -1284,7 +1289,8 @@ const CreateAccount = props => {
                     {i18n.__("existingAccount")}
                   </Text>
                   <Button
-                    className={"LoginLinkButton"}
+                    className="loginLinkButton"
+                    id="loginLinkButton"
                     variation={"link"}
                     fontSize={"10px"}
                     lineHeight={"normal"}
