@@ -15,8 +15,8 @@ import UserMenuContextProvider from "./FloatingUserMenu";
 import LogoutDialog from "./LogoutDialog";
 
 const prod = {
-  APP_URL: "http://localhost:3000",
-  DEV_URL: "http://localhost:3001",
+  APP_URL: process.env.REACT_APP_ALPHA_APP,
+  DEV_URL: process.env.REACT_APP_ALPHA_APP_STUDIO,
 };
 const dev = {
   APP_URL: "http://localhost:3000",

@@ -30,6 +30,7 @@ import { NotificationHeader, NotificationCard } from "./Notifications";
 import gql from "graphql-tag";
 //import { listNotificationsByDate } from "../graphql/queries";
 import { listSystemNotificationsByDateQuery } from "../graphql/api";
+import { newSystemNotification } from "../graphql/subscriptions";
 
 import PropTypes from "prop-types";
 /*
@@ -239,6 +240,7 @@ const UserMenuContextProvider = ({
   const activeUser = useRef({});
   const clientHandler = useRef(null);
   const prifinaQraphQLHandler = useRef(null);
+  const subscriptionHandler = useRef(null);
 
   //({ AppIcon, title, date, msg, footer })
 
@@ -322,6 +324,27 @@ const UserMenuContextProvider = ({
     //MenuArea = userMenu.options.recentApps;
   };
 
+  const subscribeNotification = (GRAPHQL, variables) => {
+    //return null;
+    console.log("SYSTEM NOTIFICATION SUBS ", variables);
+    return GRAPHQL.graphql({
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+      query: gql(newSystemNotification),
+      variables: variables,
+    }).subscribe({
+      next: ({ provider, value }) => {
+        console.log("NOTIFICATION SUBS RESULTS ", value);
+        onUpdate(1);
+        /*
+        if (value.data.newSystemNotification.owner !== "") {
+          notificationHandler.current(1);
+        }
+        */
+      },
+      error: error => console.warn(error),
+    });
+  };
+
   useEffect(() => {
     // notifications is the default open button...
     if (isOpen) {
@@ -340,8 +363,25 @@ const UserMenuContextProvider = ({
 
     return () => {
       if (root.current) document.body.removeChild(root.current);
+
+      // unsubscribe...
+      if (subscriptionHandler.current) {
+        console.log("UNSUBS CORE HANDLER");
+        subscriptionHandler.current.unsubscribe();
+      }
     };
   }, []);
+  const onUpdate = cnt => {
+    console.log(
+      "UPDATE NOTIFICATION ",
+      cnt,
+      notificationCount,
+      totalNotifications.current,
+    );
+    totalNotifications.current += cnt;
+    setNotificationCount(totalNotifications.current);
+  };
+  /*
   const onUpdate = useCallback(cnt => {
     console.log(
       "UPDATE NOTIFICATION ",
@@ -352,6 +392,7 @@ const UserMenuContextProvider = ({
     totalNotifications.current += cnt;
     setNotificationCount(totalNotifications.current);
   }, []);
+  */
 
   const show = useCallback(
     (options = {}) => {
@@ -365,6 +406,14 @@ const UserMenuContextProvider = ({
         id,
         options: menuOptions,
       };
+
+      prifinaQraphQLHandler.current = menu.options.PrifinaGraphQLHandler;
+      subscriptionHandler.current = subscribeNotification(
+        menu.options.PrifinaGraphQLHandler,
+        {
+          owner: menu.options.prifinaID,
+        },
+      );
       totalNotifications.current = menu.options.notifications || 0;
       setNotificationCount(totalNotifications.current);
       setUserMenu(menu);
@@ -405,7 +454,7 @@ const UserMenuContextProvider = ({
   menuContext.current = {
     userMenu,
     show,
-    onUpdate,
+    //onUpdate,
 
     setClientHandler,
     setActiveUser,

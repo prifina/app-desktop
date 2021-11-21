@@ -1,6 +1,6 @@
 {
   "name": "@prifina-apps/dev-console",
-  "version": "0.0.0-alpha.0",
+  "version": "0.0.2-alpha.0",
   "description": "Developer Console",
   "author": "Tero <tero@prifina.com>",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "@iconify/icons-bx": "^1.1.2",
     "@iconify/react": "^3.0.1",
     "@paciolan/remote-component": "^2.11.0",
-    "@prifina-apps/utils": "^0.0.0-alpha.0",
+    "@prifina-apps/utils": "^0.0.2-alpha.0",
     "@prifina/hooks": "^0.0.62",
     "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",

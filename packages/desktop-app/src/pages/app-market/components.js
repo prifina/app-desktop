@@ -3,16 +3,11 @@
 
 import React from "react";
 // import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button, Image, Divider } from "@blend-ui/core";
+import { Box, Flex, Text, Button } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 
-import { PrifinaLogo } from "../../components/PrifinaLogo";
-import bxsCheckCircle from "@iconify/icons-bx/bxs-check-circle";
-
-import appMenu from "@iconify/icons-fe/app-menu";
-import bxsWidget from "@iconify/icons-bx/bxs-widget";
-import bxMinusBack from "@iconify/icons-bx/bx-minus-back";
+import PropTypes from "prop-types";
 
 import styled, { createGlobalStyle } from "styled-components";
 
@@ -51,8 +46,7 @@ const SidebarContainer = styled(Flex)`
     border: 1px solid !transparent;
     transform: rotate(-270deg);
   }
-  ::before {
-  }
+
   ::after {
     box-shadow: -6px 5px 0 #f6f7f9;
   }
@@ -72,9 +66,26 @@ export const ListMenuItem = styled.li`
       color: #9fcde3;
     }
   }
+  .focus {
+    background: red;
+    .icon {
+      color: #9fcde3;
+    }
+    .text {
+      color: #9fcde3;
+    }
+  }
+  .active {
+    background: red !important;
+    .icon {
+      color: #9fcde3;
+    }
+    .text {
+      color: #9fcde3;
+    }
+  }
   background-color: ${props => props.backgroundColor};
 
-  font-size: 14px;
   height: 50px;
   display: flex;
   flex-direction: row;
@@ -106,7 +117,7 @@ export const MarketBadge = styled.span`
 const MenuBadge = styled.span`
   width: 91px;
   height: 34px;
-  opacity: 0.15;
+  opacity: 0.35;
   display: flex;
   border-radius: 100px;
   justify-content: center;
@@ -117,67 +128,71 @@ export const ListItemIconLink = ({
   children,
   icon,
   onClick,
-
+  label,
+  color,
   ...props
 }) => (
   <Flex flexDirection="row" alignItems="center" height="50px">
     <BlendIcon size="18px" iconify={icon} className="icon" />
     <Text
       className="text"
+      color={color}
       ml="16px"
-      fontSize={"14px"}
-      textStyle={"h7"}
-      //   colorStyle={"textMuted"}
+      fontSize="14px"
+      textStyle="h7"
       {...props}
     >
-      {children}
+      {label}
     </Text>
+    <Flex ml="16px">{children}</Flex>
   </Flex>
 );
 
 export const AppMarketSidebar = ({
-  theme,
-  blockNav,
-  activeMenuItem,
-  menuItemClick,
-  onClick1,
-  onClick2,
-  backgroundColor1,
-  backgroundColor2,
-  backgroundColor3,
+  //theme,
+  items,
   ...props
 }) => {
   console.log("SIDEBAR ", props);
-
   return (
     <SidebarContainer bg="baseWhite">
       <ListMenu {...props}>
-        <ListMenuItem
-          // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
-          onClick={onClick1}
-          backgroundColor={backgroundColor1}
-        >
-          <ListItemIconLink icon={appMenu}>Market</ListItemIconLink>
-        </ListMenuItem>
-        <ListMenuItem onClick={onClick2} backgroundColor={backgroundColor2}>
-          <ListItemIconLink icon={bxsWidget}>Widgets</ListItemIconLink>
-        </ListMenuItem>
-        <ListMenuItem
-          onClick={onClick2}
-          backgroundColor={backgroundColor3}
-          //temporary needs update
-          style={{ pointerEvents: "none" }}
-        >
-          <ListItemIconLink icon={bxMinusBack}>Apps</ListItemIconLink>
-          <MenuBadge style={{ background: "yellow" }}>
-            <Text fontSize="xs" color="black">
-              Coming Soon
-            </Text>
-          </MenuBadge>
-        </ListMenuItem>
+        {items.map(
+          ({
+            id,
+            label,
+            onClick,
+            icon,
+            backgroundColor,
+            badge,
+            badgeColor,
+            disabled,
+            ...rest
+          }) => (
+            <ListMenuItem
+              key={label}
+              onClick={onClick}
+              backgroundColor={backgroundColor}
+              style={disabled ? { pointerEvents: "none" } : null}
+              {...rest}
+            >
+              <ListItemIconLink icon={icon} label={label}>
+                {badge ? (
+                  <MenuBadge style={{ background: badgeColor }}>
+                    <Text fontSize="xs">{badge}</Text>
+                  </MenuBadge>
+                ) : null}
+              </ListItemIconLink>
+            </ListMenuItem>
+          ),
+        )}
       </ListMenu>
     </SidebarContainer>
   );
+};
+
+AppMarketSidebar.propTypes = {
+  items: PropTypes.array,
 };
 
 export const WidgetBase = styled.div`

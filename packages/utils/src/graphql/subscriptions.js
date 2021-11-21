@@ -27,3 +27,11 @@ export const newConnectNotification = `subscription connectStatusNotification($i
     id
   }
 }`;
+
+export const getAthenaResults = `subscription AthenaResults($id: String!) {
+  athenaResults(id: $id) {
+    data
+    appId
+    id
+  }
+}`;

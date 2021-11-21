@@ -129,6 +129,35 @@ const strings = {
     codeMissing2: "Did not receive your code?",
     sendAgainLinkText2: "Click here to resend.",
     forgotUsername2: "Forgot your username?",
+    /* App Market */
+    dataOnYourSide: "Data on your side",
+    appMarketText:
+      "Free your data from its silos and utilize it in different apps and widgets. Like a key, your data can unlock valuable experiences and insights. By using your data directly, you capture the value and open a new market of apps.",
+    category: "Category",
+    categorySubText:
+      "This section features all the widgets which require user-held data",
+    widgetsDirectory: "Widgets Directory",
+    widget: "Widget",
+    reportBug: "Report bug",
+    support: "Support",
+    view: "View",
+    widgetDetails: "Widget Details",
+    dataRequirements: "Data requirements",
+    userHeld: "User Held",
+    dataTypes: "Data types",
+    deviceSupport: "Device Support",
+    languages: "Languages",
+    ageAppropriate: "Age Appropriate",
+    features: "Features",
+    userHeldText:
+      " Some products on Prifina are powered by ‘user-held’ data which they pull from your data cloud, if the data is not available in your cloud they can’t run. Select from sources below to add the data",
+    userDashHeld: "User-held",
+    userDashGenerated: "User-generated",
+    public: "Public",
+    addHealthData: "Add health data to your cloud",
+    addViewingData: "Add viewing data to your cloud",
+    selectAvailableData: "Select from available sources to add",
+    noneNeeded: "None needed",
   },
 };
 

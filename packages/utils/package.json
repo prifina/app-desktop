@@ -1,6 +1,6 @@
 {
   "name": "@prifina-apps/utils",
-  "version": "0.0.0-alpha.0",
+  "version": "0.0.2-alpha.0",
   "description": "Utils",
   "author": "Tero <tero@prifina.com>",
   "license": "MIT",
@@ -35,17 +35,17 @@
     "react-dom": ">=16.8.6"
   },
   "peerDependencies": {
-    "aws-amplify": "^4.3.3",
-    "react": ">=16.8.6",
-    "react-dom": ">=16.8.6",
     "@blend-ui/core": "1.1.64-alpha.0",
     "@blend-ui/icons": "1.1.8-alpha.0",
     "@iconify/icons-bx": "^1.1.2",
+    "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",
-    "styled-components": "^5.3.1",
-    "styled-system": "^5.1.5",
+    "aws-amplify": "^4.3.3",
     "graphql-tag": "^2.12.5",
-    "@reach/auto-id": "^0.16.0"
+    "react": ">=16.8.6",
+    "react-dom": ">=16.8.6",
+    "styled-components": "^5.3.1",
+    "styled-system": "^5.1.5"
   },
   "dependencies": {
     "countries-list": "^2.6.1",
