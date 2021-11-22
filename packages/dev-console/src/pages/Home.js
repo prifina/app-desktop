@@ -132,6 +132,8 @@ const Content = ({
       effect: { hover: { width: 42 } },
       notifications: notificationCount,
       RecentApps: [],
+      PrifinaGraphQLHandler: GRAPHQL,
+      prifinaID: activeUser.uuid,
     });
     //console.log(RecentApps);
   }, []);
