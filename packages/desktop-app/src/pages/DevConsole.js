@@ -1,14 +1,15 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect, useReducer } from "react";
-import { Box, Flex, Text, Button } from "@blend-ui/core";
+import React, { useState, useReducer } from "react";
+import { Box, Flex, Text, Button, useTheme } from "@blend-ui/core";
 
 import { i18n, AccountContext } from "@prifina-apps/utils";
+
+i18n.init();
 
 import config from "../config";
 
 import TermsOfUse from "../pages/TermsOfUse";
 
-import { PrifinaLogo } from "../components/PrifinaLogo";
 import avatarDefault from "../assets/dev-console/avatarDefault.png";
 
 import * as C from "./dev-console/components";
@@ -16,6 +17,8 @@ import * as C from "./dev-console/components";
 const DevConsole = props => {
   console.log("DEV CONSOLE PROPS ", props);
   /* checking if user is registered as developer.... */
+
+  const { colors } = useTheme();
 
   const [step, setStep] = useState(0);
 
@@ -62,7 +65,8 @@ const DevConsole = props => {
     } else if (step === 0) {
       // terms declined...
       // alerts.info(i18n.__("acceptTerms"), {});
-      setStep(0);
+      // setStep(0);
+      window.location.href = config.APP_URL; // browser-back is /home
     }
   };
 
@@ -71,54 +75,62 @@ const DevConsole = props => {
   return (
     <>
       <AccountContext.Provider value={accountContext}>
-        {step === 0 && (
-          <Box
-            width={"100vw"}
-            height={"100vh"}
-            display="flex"
-            flexDirection="row"
-          >
-            <Box alt="left-side" width="610px" bg="brandAccent" />
-            <Box alt="center" bg="brandSecondary" width="296px">
-              <Box alt="menu" alignContent="flex-start">
-                <C.MenuButton mt={157}>
-                  {/* 01 {i18n.__("accountDetails")} */}
-                  01 Account Details
-                </C.MenuButton>
-                <C.MenuButton
-                  style={{ color: "grey", border: 0 }}
-                  onClick={() => {
-                    setStep(1);
-                  }}
-                >
-                  {/* 02 {i18n.__("developerAgreement")} */}
-                  02 Developer Agreement
-                </C.MenuButton>
-              </Box>
+        <Flex width={"100vw"} height={"100vh"} flexDirection="row">
+          <Box alt="left-side" width="610px" bg="brandAccent" />
+          <Box alt="center" bg="brandSecondary" width="296px">
+            <Box alt="menu" alignContent="flex-start">
+              <C.MenuButton
+                borderColor={colors.brandAccent}
+                color={colors.textMuted}
+                mt={157}
+                onClick={() => {
+                  setStep(0);
+                }}
+              >
+                01 {i18n.__("accountDetails")}
+              </C.MenuButton>
+              <C.MenuButton
+                borderColor={colors.brandAccent}
+                color={colors.textMuted}
+                onClick={() => {
+                  setStep(1);
+                }}
+              >
+                02 {i18n.__("developerAgreement")}
+              </C.MenuButton>
             </Box>
-            <Box
+          </Box>
+          {step === 0 && (
+            <Flex
               alt="form-container"
               bg="brandPrimary"
               width="534px"
-              display="flex"
               flexDirection="column"
               alignItems="center"
+              flexGrow={1}
             >
               <Box mt={160} mb={40}>
                 <Text fontSize="xl" color="textPrimary">
-                  Welcome back Jane!
+                  {i18n.__("welcomeBack")} User!
                 </Text>
               </Box>
-              <C.DeveloperCard name="JaneDoe23" avatar={avatarDefault} />
-              <C.Card mt={42} mb={140} bg="baseMuted">
+              <C.DeveloperCard
+                currentUser="User23"
+                avatar={avatarDefault}
+                text={i18n.__("welcomeBackText")}
+              />
+              <C.Card
+                mt={42}
+                mb={140}
+                bg="baseMuted"
+                leftBorderColor={colors.brandAccent}
+              >
                 <Box ml={23} mt={13} mr={23} mb={13}>
                   <Text fontSize="md" color="textPrimary">
-                    Great News!
+                    {i18n.__("loginCardTitle")}
                   </Text>
                   <Text fontSize="xs" color="textPrimary" textStyle={"normal"}>
-                    Because you have an existing individual Prifina account, you
-                    can use it to log in, and we’ll connect it to your new
-                    developer account.
+                    {i18n.__("loginCardText")}
                   </Text>
                 </Box>
               </C.Card>
@@ -128,57 +140,30 @@ const DevConsole = props => {
                   setStep(1);
                 }}
               >
-                Continue as Jane
+                {i18n.__("continueAs")} User
               </C.StyledButton>
               <Flex alignItems="baseline">
                 <Text color="textPrimary" fontSize="xs" mr="5px">
-                  Not You?
+                  {i18n.__("notYou")}
                 </Text>
-                <Button variation="link">Logout</Button>
+                <Button variation="link"> {i18n.__("logoutButton")}</Button>
               </Flex>
-            </Box>
-          </Box>
-        )}
-        {step === 1 && (
-          <Box
-            width={"100vw"}
-            height={"100vh"}
-            display="flex"
-            flexDirection="row"
-          >
-            <Box alt="left-side" width="610px" bg="brandAccent" />
-            <Box alt="center" bg="brandSecondary" width="296px">
-              <Box alt="menu" alignContent="flex-start">
-                <C.MenuButton
-                  mt={157}
-                  style={{ color: "grey", border: 0 }}
-                  onClick={() => {
-                    setStep(0);
-                  }}
-                >
-                  {/* 01 {i18n.__("accountDetails")} */}
-                  01 Account Details
-                </C.MenuButton>
-                <C.MenuButton style={{ color: "white" }}>
-                  {/* 02 {i18n.__("developerAgreement")} */}
-                  02 Developer Agreement
-                </C.MenuButton>
-              </Box>
-            </Box>
-            <Box
+            </Flex>
+          )}
+          {step === 1 && (
+            <Flex
               alt="form-container"
               bg="brandPrimary"
-              width="534px"
-              display="flex"
               flexDirection="column"
               alignItems="center"
+              flexGrow={1}
             >
               <Box mt={160}>
                 <TermsOfUse />
               </Box>
-            </Box>
-          </Box>
-        )}
+            </Flex>
+          )}
+        </Flex>
       </AccountContext.Provider>
     </>
   );

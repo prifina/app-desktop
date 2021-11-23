@@ -65,7 +65,13 @@ const StyledBox = styled(Box)`
 // borderRadius = "5px";
 // alignItems = "center";
 
-const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
+const CreateProjectModal = ({
+  onClose,
+  onButtonClick,
+  setStep,
+  // dialogOpen,
+  ...props
+}) => {
   const { currentUser } = useAppContext();
   const history = useHistory();
   console.log("NEW APP ", currentUser);
@@ -96,7 +102,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
 
   const theme = useTheme();
 
-  const [dialogOpen, setDialogOpen] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const onCloseCheck = (e, action) => {
     console.log("MODAL CLOSE ", e, action);
@@ -134,10 +140,10 @@ const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
             <Flex display="flex" flexDirection="row" justifyContent="center">
               <Box>
                 <Text textStyle={"semiBold"} fontSize="xl" color="textPrimary">
-                  Create Project
+                  {i18n.__("createProject")}
                 </Text>
                 <Text paddingTop="36px" color="#ADADAD">
-                  Project Type
+                  {i18n.__("projectType")}
                 </Text>
                 <Flex width="268px">
                   <Radio
@@ -149,7 +155,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
                     styl
                     textStyle={{ color: "white" }}
                   >
-                    Widget
+                    {i18n.__("widget")}
                   </Radio>
                   <Radio
                     // checked
@@ -157,23 +163,23 @@ const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
                     fontSize="14px"
                     onClick={checkAction}
                   >
-                    App
+                    {i18n.__("app")}
                   </Radio>
                 </Flex>
                 <Text paddingTop="10px" paddingBottom="16px" color="#ADADAD">
-                  Project Name
+                  {i18n.__("projectName")}
                 </Text>
                 <Input
                   width="361px"
                   autoFocus={true}
-                  placeholder="Name"
+                  placeholder={i18n.__("name")}
                   id={"name"}
                   name={"name"}
                   onChange={handleChange}
                 />
                 <Box mt={10}>
                   <Input
-                    placeholder={"Title"}
+                    placeholder={i18n.__("title")}
                     id={"title"}
                     name={"title"}
                     onChange={handleChange}
@@ -189,35 +195,29 @@ const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
                         color={"#580F57"}
                         size={"20"}
                       />
-                      <Text
-                        color="white"
-                        fontSize={16}
-                        paddingBottom="5px"
-                        paddingLeft="8px"
-                      >
-                        Prifina app ID
+                      <Text fontSize="md" paddingBottom="5px" paddingLeft="8px">
+                        {i18n.__("prifinaAppId")}
                       </Text>
                     </Flex>
-                    <Text color="#ADADAD" fontSize={12}>
-                      This unique identifer is needed to connect your
-                      application to prifina.
+                    <Text color="#ADADAD" fontSize="xs">
+                      {i18n.__("prifinaAppIdText")}
                     </Text>
-                    <Text color="#ADADAD" fontSize={12} paddingTop="7px">
-                      Copy it and add it to your build.
+                    <Text color="#ADADAD" fontSize="xs" paddingTop="7px">
+                      {i18n.__("copyAndAddToYourBuild")}
                     </Text>
                   </Box>
                 </StyledBox>
                 <Text
                   color="#ADADAD"
-                  fontSize={12}
+                  fontSize="xs"
                   paddingTop="34px"
                   paddingBottom="4px"
                 >
-                  App ID
+                  {i18n.__("appId")}
                 </Text>
                 <Input
                   width="331px"
-                  placeholder="App ID"
+                  // placeholder="App ID"
                   id={"appId"}
                   name={"appId"}
                   defaultValue={appFields.appId}
@@ -231,27 +231,26 @@ const CreateProjectModal = ({ onClose, onButtonClick, setStep, ...props }) => {
               <Button
                 variation={"outline"}
                 colorStyle={"error"}
-                onClick={e => {
-                  setDialogOpen(false);
-                  {
-                    setStep;
-                  }
-                  e.preventDefault();
-                }}
+                // onClick={e => {
+                //   setDialogOpen(false);
+
+                //   e.preventDefault();
+                // }}
+                onClick={onClose}
                 marginLeft="36px"
               >
-                <Text>Cancel</Text>
+                <Text>{i18n.__("cancelButton")}</Text>
               </Button>
               <Button
                 // onClick={e => {
-                //   setDialogOpen(false);
+                //   // setDialogOpen(false);
 
                 //   e.preventDefault();
                 // }}
                 onClick={createApp}
                 marginLeft="466px"
               >
-                New Project
+                {i18n.__("newProject")}
               </Button>
             </Flex>
           </ModalFooter>

@@ -3,13 +3,7 @@
 /* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
-import React, {
-  useEffect,
-  useReducer,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import {
   Box,
@@ -17,11 +11,9 @@ import {
   Text,
   Button,
   Image,
-  Input,
   SearchSelect,
-  Select,
   Link,
-  Divider,
+  useTheme,
 } from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
@@ -33,10 +25,12 @@ import {
   addAppVersionMutation,
   getPrifinaUserQuery,
   updateUserProfileMutation,
-  getNotificationCount,
   useUserMenu,
   withUsermenu,
+  i18n,
 } from "@prifina-apps/utils";
+
+i18n.init();
 
 //import { useAppContext } from "../lib/contextLib";
 import { API as GRAPHQL, Auth } from "aws-amplify";
@@ -87,7 +81,24 @@ import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
 import arrowTopRightBottomLeft from "@iconify/icons-mdi/arrow-top-right-bottom-left";
 import baselineWeb from "@iconify/icons-mdi/table";
 
+//sidebar icons
+import viewDashboard from "@iconify/icons-mdi/view-dashboard";
+import mdiWidget from "@iconify/icons-mdi/widgets";
+import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
+import mdiSitemap from "@iconify/icons-mdi/sitemap";
+
+import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
+import bxsXCircle from "@iconify/icons-bx/bx-x-circle";
+
 import { mdiConnection } from "@iconify/icons-mdi/connection";
+
+import {
+  AddRemoveDataSources,
+  ControlAddedDataSources,
+  DataSourceForm,
+  ApiForm,
+} from "../components/helper";
+import { color } from "styled-system";
 
 /*
 const importApp = appName => {
@@ -155,6 +166,8 @@ Content.propTypes = {
 
 const Main = ({ data, currentUser }) => {
   const history = useHistory();
+
+  const { colors } = useTheme();
 
   const versionStatus = [
     "init",
@@ -245,13 +258,13 @@ const Main = ({ data, currentUser }) => {
         //console.log("ROW ", cellProp);
         return (
           <Button
-            variation={"link"}
+            size="xs"
             onClick={e => {
               console.log(cellProp.row.values);
               sendClick(cellProp.row.values);
             }}
           >
-            Send
+            {i18n.__("submit")}
           </Button>
         );
       },
@@ -280,7 +293,7 @@ const Main = ({ data, currentUser }) => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState();
+  const [activeTab, setActiveTab] = useState(0);
 
   const tabClick = (e, tab) => {
     console.log("Click", e);
@@ -288,7 +301,7 @@ const Main = ({ data, currentUser }) => {
     setActiveTab(tab);
   };
 
-  const [activeTab2, setActiveTab2] = useState();
+  const [activeTab2, setActiveTab2] = useState(0);
 
   const tabClick2 = (e, tab) => {
     console.log("Click", e);
@@ -296,7 +309,7 @@ const Main = ({ data, currentUser }) => {
     setActiveTab2(tab);
   };
 
-  const [activeTab3, setActiveTab3] = useState();
+  const [activeTab3, setActiveTab3] = useState(0);
 
   const tabClick3 = (e, tab) => {
     console.log("Click", e);
@@ -316,6 +329,8 @@ const Main = ({ data, currentUser }) => {
   console.log("ADDED DATA", addedDataSources);
 
   const [addedDataSources2, setAddedDataSources2] = useState([]);
+
+  const [editControled, setEditControled] = useState(false);
 
   ///Prifina user cloud
 
@@ -363,271 +378,9 @@ const Main = ({ data, currentUser }) => {
     setAddedDataSources2(newSourceData);
   };
 
-  function AddRemoveDataSources({
-    dataSource,
-    index,
-    completeDataSource,
-    removeDataSource,
-  }) {
-    console.log("data source", dataSource);
-    return (
-      <Flex
-        justifyContent="space-between"
-        height="72px"
-        border="1px solid black"
-        borderRadius="10px"
-        width="834px"
-        paddingLeft="15px"
-        paddingRight="15px"
-        marginTop="5px"
-      >
-        <Flex paddingTop="5px">
-          <Text mr="5px">{dataSource.text}</Text>
-          <Link href={dataSource.url} target="_blank">
-            Full spec here
-          </Link>
-        </Flex>
-        <Flex
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            width: "33%",
-            paddingTop: 5,
-            paddingBottom: 5,
-          }}
-        >
-          {dataSource.func.map(e => {
-            return (
-              <button
-                style={{
-                  height: 22,
-                  margin: 2,
-                }}
-              >
-                {e}
-              </button>
-            );
-          })}
-        </Flex>
-        <Flex>
-          <Flex alignItems="center" justifySelf="flex-end">
-            <button
-              onClick={() => completeDataSource(index)}
-              style={{ width: 50, height: 50, marginRight: 5 }}
-            >
-              <Text textStyle="h3" color="blue">
-                +
-              </Text>
-            </button>
-            <button
-              onClick={() => removeDataSource(index)}
-              style={{ width: 50, height: 50 }}
-            >
-              <Text textStyle="h3" colorStyle="error">
-                x
-              </Text>
-            </button>
-          </Flex>
-        </Flex>
-      </Flex>
-    );
-  }
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 
-  function ControlAddedDataSources({
-    dataSource,
-    index,
-    uncompleteDataSource,
-  }) {
-    const [edit, setEdit] = useState(false);
-    return (
-      
-      <Flex
-        justifyContent="space-between"
-        height="72px"
-        border="1px solid black"
-        borderRadius="10px"
-        width="834px"
-        paddingLeft="15px"
-        paddingRight="15px"
-        marginTop="5px"
-      >
-        <Flex paddingTop="5px">
-          <Text mr="5px">{dataSource.text}</Text>
-          <Link fontSize="md" href={dataSource.url} target="_blank">
-            Full Specs Here
-          </Link>
-        </Flex>
-        <Flex
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            width: "33%",
-            paddingTop: 5,
-            paddingBottom: 5,
-          }}
-        >
-          {dataSource.func.map(e => {
-            return (
-              <button
-                style={{
-                  height: 22,
-                  margin: 2,
-                }}
-              >
-                {e}
-              </button>
-            );
-          })}
-        </Flex>
-        {edit ? (
-          <Flex alignItems="center">
-            <button
-              onClick={() => uncompleteDataSource(index)}
-              style={{ width: 50, height: 50 }}
-            >
-              <Text textStyle="h3" colorStyle="error">
-                x
-              </Text>
-            </button>
-          </Flex>
-        ) : (
-          <Flex alignItems="center">
-            <button
-              onClick={() => setEdit(true)}
-              style={{ width: 50, height: 50 }}
-            >
-              <Text textStyle="h3">E</Text>
-            </button>
-          </Flex>
-        )}
-      </Flex>
-    );
-  }
-
-  const selectOptions = [
-    {
-      key: "0",
-      value: "Prifina/Oura",
-      functions: ["Activity", "Sleep", "Readiness"],
-      url: "www.oura.com",
-    },
-    {
-      key: "1",
-      value: "Prifina/Fitbit",
-      functions: ["Function1", "Function2"],
-      url: "www.fitbit.com",
-    },
-    {
-      key: "2",
-      value: "Prifina/Netflix",
-      functions: [
-        "Function1",
-        "Function2",
-        "Function3",
-        "Function4",
-        "Function5",
-        "Function6",
-      ],
-      url: "www.netflix.com",
-    },
-  ];
-
-  function DataSourceForm({ addDataSource }) {
-    const [value, setValue] = useState("");
-    const [functions, setFunctions] = useState("");
-    const [url, setUrl] = useState("");
-
-    const handleSubmit = e => {
-      e.preventDefault();
-      if (!value) return;
-      addDataSource(value, functions, url);
-      setValue("");
-      setFunctions("");
-    };
-
-    const handleChange = event => {
-      const functionsByDataType = selectOptions.reduce(
-        (result, currentSelectOption) => ({
-          ...result,
-          [currentSelectOption.value]: currentSelectOption.functions,
-        }),
-        {},
-      );
-      const urlByDataType = selectOptions.reduce(
-        (result, currentSelectOption) => ({
-          ...result,
-          [currentSelectOption.value]: currentSelectOption.url,
-        }),
-        {},
-      );
-      console.log("SELECT", functionsByDataType[event.target.value]);
-      setValue(event.target.value);
-      setFunctions(functionsByDataType[event.target.value]);
-      setUrl(urlByDataType[event.target.value]);
-    };
-
-    return (
-      <form onSubmit={handleSubmit}>
-        <Flex>
-          <SearchSelect
-            // id={selectId}
-            // name={selectId}
-            // key="value"
-            variation="outline"
-            // defaultValue="000"
-            options={selectOptions}
-            defaultValue
-            searchLength={1}
-            showList={true}
-            selectOption="value"
-            size="sm"
-            width="834px"
-            // containerRef={boxRef}
-            onChange={handleChange}
-          />
-          <button
-            style={{ width: 48, height: 48, marginLeft: 4 }}
-            onChange={e => {
-              console.log("CLICK ", e.target.value);
-
-              setValue(e.target.value);
-            }}
-          >
-            +
-          </button>
-        </Flex>
-      </form>
-    );
-  }
-
-  function ApiForm({ addApi }) {
-    const [value, setValue] = useState("");
-
-    const handleSubmit = e => {
-      e.preventDefault();
-      if (!value) return;
-      addApi(value);
-      setValue("");
-    };
-
-    return (
-      <form onSubmit={handleSubmit}>
-        <Flex>
-          <C.StyledInput
-            width="834px"
-            type="text"
-            className="input"
-            value={value}
-            onChange={e => setValue(e.target.value)}
-          />
-
-          <Button onChange={e => setValue(e.currentTarget.value)}>+</Button>
-        </Flex>
-      </form>
-    );
-  }
-
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(2);
 
   switch (step) {
     case 0:
@@ -645,11 +398,37 @@ const Main = ({ data, currentUser }) => {
     default:
   }
 
+  const onDialogClose = e => {
+    setProjectDialogOpen(false);
+    e.preventDefault();
+  };
+
+  const items = [
+    {
+      label: i18n.__("dashboard"),
+      icon: viewDashboard,
+      onClick: () => {
+        setStep(0);
+      },
+    },
+    {
+      label: i18n.__("projects"),
+      icon: mdiWidget,
+      onClick: () => {
+        setStep(2);
+      },
+    },
+    {
+      label: i18n.__("resources"),
+      icon: mdiBookOpenVariant,
+    },
+  ];
+
   return (
     <React.Fragment>
-      <DevConsoleSidebar />
+      <DevConsoleSidebar items={items} />
       <C.NavbarContainer bg="baseWhite">
-        <DevConsoleLogo className={"app-market"} title="App Market" />
+        <DevConsoleLogo className="appStudio" />
       </C.NavbarContainer>
       <StyledBox>
         <Flex
@@ -659,6 +438,10 @@ const Main = ({ data, currentUser }) => {
           bg="white"
           flexDirection="column"
         >
+          <CreateProjectModal
+            onClose={onDialogClose}
+            isOpen={projectDialogOpen}
+          />
           {step === 0 && (
             <>
               <Flex flexDirection="column" alignItems="center" mt="42px">
@@ -673,146 +456,57 @@ const Main = ({ data, currentUser }) => {
                   position="absolute"
                   top="243px"
                 >
-                  <Text color="white" fontSize={24}>
-                    Create your first project
-                  </Text>
-                  <Text color="#969595" fontSize={20}>
-                    Done with your local build and ready to plug into the power
-                    of Prifina? Create a project to get started
+                  <Text fontSize="xl">{i18n.__("createYourFirstProject")}</Text>
+                  <Text color={colors.baseMuted} fontSize={20}>
+                    {i18n.__("dashboardText")}
                   </Text>
                   <Button
                     size="sm"
                     onClick={() => {
-                      setStep(2);
+                      // setStep(2);
                       // openModal();
+                      setProjectDialogOpen(true);
                     }}
                   >
-                    New Project
+                    {i18n.__("newProject")}
                     {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
                   </Button>
                 </Flex>
               </Flex>
               <Box paddingLeft="62px" paddingTop="100px">
-                <Text color="textPrimary" fontSize={24}>
-                  {/* {i18n.__("keyResources")} */}
-                  Key Resources
+                <Text color="textPrimary" fontSize="xl">
+                  {i18n.__("keyResources")}
                 </Text>
-                <Text color="baseMuted" fontSize={16} paddingTop="8px">
-                  {/* {i18n.__("resourcesSubtitle")} */}
-                  Resources and utilities to help you build for Prifina
+                <Text color="baseMuted" fontSize="md" paddingTop="8px">
+                  {i18n.__("resourcesText")}
                 </Text>
                 <Flex paddingTop="35px">
                   <Box paddingRight="42px">
                     <C.ResourceCard
                       src={docs}
-                      // title={i18n.__("prifinaDocs")}
-                      title="Prifina Docs"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                      title={i18n.__("prifinaDocs")}
+                      description={i18n.__("cardText")}
                     />
                   </Box>
                   <Box paddingRight="42px">
                     <C.ResourceCard
                       src={starterResources}
-                      // title={i18n.__("appStarter")}
-                      title="App Starter"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                      title={i18n.__("appStarter")}
+                      description={i18n.__("cardText")}
                     />
                   </Box>
                   <Box paddingRight="42px">
                     <C.ResourceCard
                       src={zendeskResources}
-                      // title={i18n.__("zendesk")}
-                      title="Zendesk"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                      title={i18n.__("zendesk")}
+                      description={i18n.__("cardText")}
                     />
                   </Box>
                   <Box>
                     <C.ResourceCard
                       src={slackResources}
-                      // title={i18n.__("ledSlack")}
-                      title="LED Slack"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                    />
-                  </Box>
-                </Flex>
-              </Box>
-            </>
-          )}
-          {step === 1 && (
-            <>
-              <Flex flexDirection="column" alignItems="center" mt="42px">
-                <CreateProjectModal setStep={() => setStep(2)} />
-
-                <Image src={dashboardBanner} style={{ position: "relative" }} />
-                <Flex
-                  textAlign="center"
-                  width="506px"
-                  height="196px"
-                  flexDirection="column"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  position="absolute"
-                  top="243px"
-                >
-                  <Text color="white" fontSize={24}>
-                    Create your first project
-                  </Text>
-                  <Text color="#969595" fontSize={20}>
-                    Done with your local build and ready to plug into the power
-                    of Prifina? Create a project to get started
-                  </Text>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setStep(2);
-                      // openModal();
-                    }}
-                  >
-                    New Project
-                    {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
-                  </Button>
-                </Flex>
-              </Flex>
-              <Box paddingLeft="62px" paddingTop="100px">
-                <Text color="textPrimary" fontSize={24}>
-                  {/* {i18n.__("keyResources")} */}
-                  Key Resources
-                </Text>
-                <Text color="baseMuted" fontSize={16} paddingTop="8px">
-                  {/* {i18n.__("resourcesSubtitle")} */}
-                  Resources and utilities to help you build for Prifina
-                </Text>
-                <Flex paddingTop="35px">
-                  <Box paddingRight="42px">
-                    <C.ResourceCard
-                      src={docs}
-                      // title={i18n.__("prifinaDocs")}
-                      title="Prifina Docs"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                    />
-                  </Box>
-                  <Box paddingRight="42px">
-                    <C.ResourceCard
-                      src={starterResources}
-                      // title={i18n.__("appStarter")}
-                      title="App Starter"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                    />
-                  </Box>
-                  <Box paddingRight="42px">
-                    <C.ResourceCard
-                      src={zendeskResources}
-                      // title={i18n.__("zendesk")}
-                      title="Zendesk"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
-                    />
-                  </Box>
-                  <Box>
-                    <C.ResourceCard
-                      src={slackResources}
-                      // title={i18n.__("ledSlack")}
-                      title="LED Slack"
-                      description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu."
+                      title={i18n.__("ledSlack")}
+                      description={i18n.__("cardText")}
                     />
                   </Box>
                 </Flex>
@@ -839,17 +533,26 @@ const Main = ({ data, currentUser }) => {
                         justifyContent="space-between"
                         marginBottom="40px"
                       >
-                        <Text textStyle="h3">Projects</Text>
-                        <Button
+                        <Text textStyle="h3">{i18n.__("projects")}</Text>
+                        {/* <Button
                           onClick={() => {
                             history.push("/new-app");
                           }}
                         >
                           New App
+                        </Button> */}
+                        <Button
+                          onClick={() => {
+                            setProjectDialogOpen(true);
+                          }}
+                        >
+                          {i18n.__("newProject")}
                         </Button>
                       </Flex>
                       <div className="tableWrap">
-                        {data.length === 0 && <Text m={2}>"No apps..."</Text>}
+                        {data.length === 0 && (
+                          <Text m={2}>{i18n.__("noApps")}</Text>
+                        )}
                         {data.length > 0 && (
                           <Table columns={Columns} data={data} />
                         )}
@@ -882,11 +585,11 @@ const Main = ({ data, currentUser }) => {
                     <Text ml="16px">{allValues.name}</Text>
                   </Flex>
                   <Flex alignItems="center">
-                    <Button mr="17px">Launch Sandbox</Button>
+                    <Button mr="17px">{i18n.__("launchSandbox")}</Button>
                     <BlendIcon
                       iconify={bxsInfoCircle}
                       width="13px"
-                      color="#969595"
+                      color={colors.baseMuted}
                     />
                   </Flex>
                 </Flex>
@@ -902,10 +605,7 @@ const Main = ({ data, currentUser }) => {
                   <Tabs
                     activeTab={activeTab}
                     onClick={tabClick}
-                    variant={"rounded"}
-                    style={{
-                      background: "transparent",
-                    }}
+                    variant={"line"}
                   >
                     <TabList>
                       <Tab
@@ -914,14 +614,11 @@ const Main = ({ data, currentUser }) => {
                           justifyContent: "center",
                           borderTopLeftRadius: 10,
                           borderTopRightRadius: 10,
-                          margin: 8,
                         }}
                       >
                         <Flex alignItems="center">
                           <BlendIcon iconify={mdiPowerPlug} />
-                          <Text ml="8px" color="white">
-                            Sanbox Testing
-                          </Text>
+                          <Text ml="8px">{i18n.__("sandboxTesting")}</Text>
                         </Flex>
                       </Tab>
                       <Tab
@@ -930,14 +627,11 @@ const Main = ({ data, currentUser }) => {
                           justifyContent: "center",
                           borderTopLeftRadius: 10,
                           borderTopRightRadius: 10,
-                          margin: 8,
                         }}
                       >
                         <Flex alignItems="center">
                           <BlendIcon iconify={baselineWeb} />
-                          <Text ml="8px" color="white">
-                            Build Assets
-                          </Text>
+                          <Text ml="8px">{i18n.__("buildAssets")}</Text>
                         </Flex>
                       </Tab>
                       <Tab
@@ -946,14 +640,11 @@ const Main = ({ data, currentUser }) => {
                           justifyContent: "center",
                           borderTopLeftRadius: 10,
                           borderTopRightRadius: 10,
-                          margin: 8,
                         }}
                       >
                         <Flex alignItems="center">
                           <BlendIcon iconify={mdiZipBoxOutline} />
-                          <Text ml="8px" color="white">
-                            Uploads
-                          </Text>
+                          <Text ml="8px">{i18n.__("uploads")}</Text>
                         </Flex>
                       </Tab>
                     </TabList>
@@ -962,7 +653,7 @@ const Main = ({ data, currentUser }) => {
                         <div
                           style={{
                             overflow: "auto",
-                            background: "gray",
+                            background: colors.baseMuted,
                             borderRadius: 10,
                           }}
                         >
@@ -971,14 +662,12 @@ const Main = ({ data, currentUser }) => {
                             flexDirection="column"
                             paddingTop="30px"
                           >
-                            <Text color="textPrimary" fontSize="24px">
-                              Sandbox testing
+                            <Text color="textPrimary" fontSize="xl">
+                              {i18n.__("sandboxTesting")}
                             </Text>
                             <Box mt="21px" width="493px" mb="49px">
                               <Text color="textPrimary">
-                                Finished your local build? See how your
-                                application will behave on our platform using
-                                our Sandbox enviroment.
+                                {i18n.__("sandboxTestingText")}
                               </Text>
                             </Box>
                           </Flex>
@@ -999,7 +688,7 @@ const Main = ({ data, currentUser }) => {
                             flexDirection="column"
                           >
                             <Text color="textPrimary" mt="35px">
-                              Launch Sandbox session
+                              {i18n.__("launchSandboxSession")}
                             </Text>
                             <Flex
                               alt="cards"
@@ -1018,16 +707,11 @@ const Main = ({ data, currentUser }) => {
                                 alignItems="center"
                                 mb="4px"
                               >
-                                <Text
-                                  color="white"
-                                  ml="16px"
-                                  mr="18px"
-                                  fontSize="12px"
-                                >
+                                <Text ml="16px" mr="18px" fontSize="xs">
                                   1
                                 </Text>
-                                <Text color="white" fontSize="12px">
-                                  Copy your app ID
+                                <Text fontSize="xs">
+                                  {i18n.__("copyYourAppId")}
                                 </Text>
                               </Flex>
                               <Flex
@@ -1038,16 +722,11 @@ const Main = ({ data, currentUser }) => {
                                 alignItems="center"
                                 mb="4px"
                               >
-                                <Text
-                                  color="white"
-                                  ml="16px"
-                                  mr="18px"
-                                  fontSize="12px"
-                                >
+                                <Text ml="16px" mr="18px" fontSize="xs">
                                   2
                                 </Text>
-                                <Text color="white" fontSize="12px">
-                                  Add it to your local build
+                                <Text fontSize="xs">
+                                  {i18n.__("addToLocalBuild")}
                                 </Text>
                               </Flex>
                               <Flex
@@ -1058,16 +737,11 @@ const Main = ({ data, currentUser }) => {
                                 alignItems="center"
                                 mb="4px"
                               >
-                                <Text
-                                  color="white"
-                                  ml="16px"
-                                  mr="18px"
-                                  fontSize="12px"
-                                >
+                                <Text ml="16px" mr="18px" fontSize="xs">
                                   3
                                 </Text>
-                                <Text color="white" fontSize="12px">
-                                  Get a remote link for your repo
+                                <Text fontSize="xs">
+                                  {i18n.__("getRemoteLink")}
                                 </Text>
                               </Flex>
                               <Flex
@@ -1077,42 +751,35 @@ const Main = ({ data, currentUser }) => {
                                 borderRadius="5px"
                                 alignItems="center"
                               >
-                                <Text
-                                  color="white"
-                                  ml="16px"
-                                  mr="18px"
-                                  fontSize="12px"
-                                >
+                                <Text ml="16px" mr="18px" fontSize="xs">
                                   4
                                 </Text>
-                                <Text color="white" fontSize="12px">
-                                  Fill out the form and launch the Sandbox
+                                <Text fontSize="xs">
+                                  {i18n.__("fillOutForm")}
                                 </Text>
                               </Flex>
                               <Flex alignItems="baseline">
                                 <Text
                                   mt="11px"
                                   color="textPrimary"
-                                  fontSize="12px"
+                                  fontSize="xs"
                                   mr="2px"
                                 >
-                                  Read a more detailed guide in the
+                                  {i18n.__("readMoreGuide")}
                                 </Text>
-                                <Button variation="link">Prifina docs</Button>
+                                <Button variation="link">
+                                  {i18n.__("prfinaDocsButton")}
+                                </Button>
                               </Flex>
                             </Flex>
                             <Flex mt="42px" alignItems="center" mb="19px">
-                              <Text
-                                color="textPrimary"
-                                fontSize="12px"
-                                mr="8px"
-                              >
-                                App ID
+                              <Text color="textPrimary" fontSize="xs" mr="8px">
+                                {i18n.__("appId")}
                               </Text>
                               <BlendIcon
                                 iconify={bxsInfoCircle}
                                 width="13px"
-                                color="#969595"
+                                color={colors.baseMuted}
                               />
                             </Flex>
                             <C.StyledInput value={allValues.id} disabled />
@@ -1122,20 +789,24 @@ const Main = ({ data, currentUser }) => {
                               width="748px"
                             >
                               <Flex flexDirection="column">
-                                <Text mb="16px" color="white" fontSize="12px">
-                                  Project Name
+                                <Text mb="16px" fontSize="xs">
+                                  {i18n.__("projectName")}
                                 </Text>
                                 <C.StyledInput placeholder={allValues.name} />
                               </Flex>
                               <Flex flexDirection="column">
-                                <Text mb="16px" color="white" fontSize="12px">
-                                  Remote Link
+                                <Text mb="16px" fontSize="xs">
+                                  {i18n.__("remoteLink")}
                                 </Text>
-                                <C.StyledInput placeholder="Remote Link" />
+                                <C.StyledInput
+                                  placeholder={i18n.__("remoteLink")}
+                                />
                               </Flex>
                             </Flex>
                             <Flex position="absolute" right="32px" bottom="0px">
-                              <Button size="sm">Launch Sanbox</Button>
+                              <Button size="sm">
+                                {i18n.__("launchSandbox")}
+                              </Button>
                             </Flex>
                           </Flex>
                         </div>
@@ -1151,10 +822,10 @@ const Main = ({ data, currentUser }) => {
                           >
                             <TabList>
                               <Tab>
-                                <Text>Data Usage</Text>
+                                <Text>{i18n.__("dataUsage")}</Text>
                               </Tab>
                               <Tab>
-                                <Text>Build Files</Text>
+                                <Text>{i18n.__("buildFiles")}</Text>
                               </Tab>
                             </TabList>
                             <TabPanelList style={{ backgroundColor: null }}>
@@ -1167,23 +838,18 @@ const Main = ({ data, currentUser }) => {
                               >
                                 <div style={{ overflow: "auto" }}>
                                   <Text textStyle="h3" mb="15px">
-                                    Data Usage
+                                    {i18n.__("dataUsage")}
                                   </Text>
                                   <Box width="470px">
                                     <Text textStyle="h6" mb="15px">
-                                      Sed ut perspiciatis unde omnis iste natus
-                                      error sit voluptatem accusantium
-                                      doloremque laudantium, totam rem aperiam,
-                                      eaque ipsa quae ab illo inventore
-                                      veritatis et quasi architecto beatae vitae
-                                      dicta sunt
+                                      {i18n.__("dataUsageText")}
                                     </Text>
                                   </Box>
                                   {/* THIRD TABS */}
                                   <div
                                     style={{
                                       overflow: "hidden",
-                                      background: "lightGray",
+                                      background: colors.baseMuted,
                                       paddingTop: 16,
                                       paddingBottom: 16,
                                       paddingLeft: 40,
@@ -1199,13 +865,15 @@ const Main = ({ data, currentUser }) => {
                                     >
                                       <TabList>
                                         <Tab>
-                                          <Text>Public API</Text>
+                                          <Text>{i18n.__("publicApi")}</Text>
                                         </Tab>
                                         <Tab>
-                                          <Text>Prifina User Cloud</Text>
+                                          <Text>
+                                            {i18n.__("prifinaUserCloud")}
+                                          </Text>
                                         </Tab>
                                         <Tab>
-                                          <Text>No Data</Text>
+                                          <Text>{i18n.__("noData")}</Text>
                                         </Tab>
                                       </TabList>
                                       <TabPanelList
@@ -1239,8 +907,9 @@ const Main = ({ data, currentUser }) => {
                                                     textStyle="h6"
                                                     mb="10px"
                                                   >
-                                                    Click to add you your data
-                                                    sources
+                                                    {i18n.__(
+                                                      "chooseToAddSources",
+                                                    )}
                                                   </Text>
                                                   <Flex>
                                                     <Flex flexDirection="column">
@@ -1283,7 +952,7 @@ const Main = ({ data, currentUser }) => {
                                                   padding="10px"
                                                   style={{
                                                     backgroundColor:
-                                                      "lightGray",
+                                                      colors.baseMuted,
                                                     marginTop: 15,
                                                     borderRadius: 10,
                                                   }}
@@ -1293,7 +962,9 @@ const Main = ({ data, currentUser }) => {
                                                     mt="10px"
                                                     mb="10px"
                                                   >
-                                                    Prifina data connectors results...
+                                                    {i18n.__(
+                                                      "dataConectorResults",
+                                                    )}
                                                   </Text>
 
                                                   <Flex>
@@ -1325,6 +996,32 @@ const Main = ({ data, currentUser }) => {
                                             </Flex>
                                           </div>
                                         </TabPanel>
+                                        <TabPanel>
+                                          <div style={{ overflow: "auto" }}>
+                                            <Flex>
+                                              <Box
+                                                width="426px"
+                                                height="76px"
+                                                borderRadius="6px"
+                                                paddingLeft="10px"
+                                                bg={colors.baseLinkHover}
+                                                style={{
+                                                  border: `2px solid ${colors.baseLink}`,
+                                                }}
+                                              >
+                                                <Text>
+                                                  {i18n.__("noDataText")}
+                                                </Text>
+                                                <Link>
+                                                  {i18n.__("learnMoreHere")}
+                                                </Link>
+                                              </Box>
+                                              <Flex ml="10px">
+                                                {/* <CheckboxStateful /> */}
+                                              </Flex>
+                                            </Flex>
+                                          </div>
+                                        </TabPanel>
                                       </TabPanelList>
                                     </Tabs>
                                   </div>
@@ -1336,21 +1033,64 @@ const Main = ({ data, currentUser }) => {
                                     paddingLeft="40px"
                                     paddingRight="40px"
                                     style={{
-                                      backgroundColor: "lightGray",
+                                      backgroundColor: colors.baseMuted,
                                       marginTop: 15,
                                       borderRadius: 10,
                                     }}
                                   >
-                                    <Text textStyle="h6" mb="10px">
-                                      Data sources used in your project
-                                    </Text>
-                                    <Flex>
-                                      {addedDataSources.length > 0 ? (
+                                    {addedDataSources.length > 0 ? (
+                                      <>
+                                        <Flex justifyContent="space-between">
+                                          <Text textStyle="h6" mb="10px">
+                                            {i18n.__("dataSourcesUsed")}
+                                          </Text>
+                                          {!editControled ? (
+                                            <>
+                                              <button
+                                                style={{
+                                                  position: "absolute",
+                                                  right: 45,
+                                                  width: 40,
+                                                  height: 40,
+                                                  border: 0,
+                                                  background: "transparent",
+                                                }}
+                                                onClick={() => {
+                                                  setEditControled(true);
+                                                }}
+                                              >
+                                                {/* <Text textStyle="h3">E</Text> */}
+                                                <BlendIcon iconify={bxsEdit} />
+                                              </button>
+                                            </>
+                                          ) : (
+                                            <Flex>
+                                              <Button
+                                                variation="outline"
+                                                onClick={() => {
+                                                  setEditControled(false);
+                                                }}
+                                                size="xs"
+                                              >
+                                                {i18n.__("cancelButton")}
+                                              </Button>
+                                              <Button
+                                                onClick={() => {
+                                                  setEditControled(false);
+                                                }}
+                                                size="xs"
+                                                ml="5px"
+                                              >
+                                                {i18n.__("saveButton")}
+                                              </Button>
+                                            </Flex>
+                                          )}
+                                        </Flex>
                                         <Flex
                                           width="100%"
                                           flexDirection="column"
                                           style={{
-                                            backgroundColor: "lightGray",
+                                            backgroundColor: colors.baseMuted,
                                             marginTop: 15,
                                             borderRadius: 10,
                                           }}
@@ -1369,62 +1109,93 @@ const Main = ({ data, currentUser }) => {
                                                     uncompleteDataSource={
                                                       uncompleteDataSource
                                                     }
+                                                    editControled={
+                                                      editControled
+                                                    }
                                                   />
                                                 ),
                                               )}
                                             </Flex>
                                           </Flex>
+                                          <Flex
+                                            flexDirection="column"
+                                            alignSelf="flex-start"
+                                            mt="20px"
+                                          >
+                                            <Text mb="10px">
+                                              {!editControled
+                                                ? i18n.__(
+                                                    "pressEditToAddDetails",
+                                                  )
+                                                : i18n.__("addYourComment")}
+                                            </Text>
+                                            <textarea
+                                              style={{
+                                                resize: "none",
+                                                width: 750,
+                                                height: 100,
+                                              }}
+                                              disabled={
+                                                !editControled ? true : false
+                                              }
+                                            />
+                                          </Flex>
                                         </Flex>
-                                      ) : (
+                                      </>
+                                    ) : (
+                                      <Flex
+                                        flexDirection="column"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                      >
+                                        <Flex justifyContent="space-between">
+                                          <Text textStyle="h6" mb="10px">
+                                            {i18n.__("dataSourcesUsed")}
+                                          </Text>
+                                        </Flex>
                                         <Flex
                                           width="100%"
                                           flexDirection="column"
                                           alignItems="center"
                                           justifyContent="center"
                                           style={{
-                                            border: "1px dashed black",
+                                            border: "1px dashed white",
                                             marginTop: 15,
                                             borderRadius: 10,
                                           }}
                                         >
                                           <Text textStyle="h6" mt="10px">
-                                            Search and select data sources
+                                            {i18n.__("selectSources")}
                                           </Text>
                                           <Text textStyle="h6" mt="10px">
-                                            Data sources you add will show up
-                                            here
+                                            {i18n.__("dataSourcesYouAdd")}
                                           </Text>
                                         </Flex>
-                                      )}
-                                    </Flex>
+                                      </Flex>
+                                    )}
                                   </Flex>
                                 </div>
                               </TabPanel>
                               <TabPanel>
                                 <div style={{ overflow: "auto" }}>
                                   <Text textStyle="h3" mb="15px">
-                                    Build Files
+                                    {i18n.__("buildFiles")}
                                   </Text>
                                   <Box width="470px">
                                     <Text textStyle="h6" mb="15px">
-                                      Sed ut perspiciatis unde omnis iste natus
-                                      error sit voluptatem accusantium
-                                      doloremque laudantium, totam rem aperiam,
-                                      eaque ipsa quae ab illo inventore
-                                      veritatis et quasi architecto beatae vitae
-                                      dicta sunt
+                                      {i18n.__("buildFilesText")}
                                     </Text>
                                   </Box>
                                 </div>
                               </TabPanel>
-                              <TabPanel>Work panel 3</TabPanel>
+                              <TabPanel>{/* Work panel 3 */}</TabPanel>
                             </TabPanelList>
                           </Tabs>
                         </div>
                       </TabPanel>
                       <TabPanel>
-                        <Text mb="16px" color="textPriamry" fontSize="12px">
-                          In progress...
+                        <Text mb="16px" color="textPriamry" fontSize="xs">
+                          {/* In progress...*/}
                         </Text>
                       </TabPanel>
                     </TabPanelList>

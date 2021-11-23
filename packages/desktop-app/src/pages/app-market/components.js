@@ -57,17 +57,17 @@ export const ListMenuItem = styled.li`
   color: #969595;
   list-style: none;
   width: 100%;
-  &:hover {
-    background: #d7eeff;
-    .icon {
-      color: #9fcde3;
-    }
-    .text {
-      color: #9fcde3;
-    }
-  }
-  .focus {
-    background: red;
+  // &:hover {
+  //   background: red;
+  //   .icon {
+  //     color: #9fcde3;
+  //   }
+  //   .text {
+  //     color: #9fcde3;
+  //   }
+  // }
+  &:focus {
+    background: red !important;
     .icon {
       color: #9fcde3;
     }
@@ -102,6 +102,11 @@ export const ListMenu = styled.ul`
   align-items: center;
   margin-block-start: 0px;
   padding: 0;
+  li .h {
+    display: block;
+    background: yellow !important;
+    text-decoration: none;
+  }
 `;
 
 export const MarketBadge = styled.span`
@@ -170,6 +175,7 @@ export const AppMarketSidebar = ({
             ...rest
           }) => (
             <ListMenuItem
+              className="menuItem"
               key={label}
               onClick={onClick}
               backgroundColor={backgroundColor}

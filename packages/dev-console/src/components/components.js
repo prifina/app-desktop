@@ -138,35 +138,29 @@ export const ListItemIconLink = ({
   children,
   icon,
   onClick,
-
+  label,
+  color,
   ...props
 }) => (
   <Flex flexDirection="row" alignItems="center" height="50px">
     <BlendIcon size="18px" iconify={icon} className="icon" />
     <Text
       className="text"
+      color={color}
       ml="16px"
-      fontSize={"14px"}
-      textStyle={"h7"}
-      //   colorStyle={"textMuted"}
+      fontSize="14px"
+      textStyle="h7"
       {...props}
     >
-      {children}
+      {label}
     </Text>
+    <Flex ml="16px">{children}</Flex>
   </Flex>
 );
 
 export const DevConsoleSidebar = ({
-  theme,
-  blockNav,
-  activeMenuItem,
-  menuItemClick,
-  stateOne,
-  stateTwo,
-  stateThree,
-  backgroundColor1,
-  backgroundColor2,
-  backgroundColor3,
+  // theme,
+  items,
   ...props
 }) => {
   console.log("SIDEBAR ", props);
@@ -177,7 +171,28 @@ export const DevConsoleSidebar = ({
         Developer Account
       </Text>
       <ListMenu {...props}>
-        <ListMenuItem
+        {items.map(
+          ({
+            id,
+            label,
+            onClick,
+            icon,
+            backgroundColor,
+            badge,
+            badgeColor,
+            disabled,
+            ...rest
+          }) => (
+            <ListMenuItem
+              // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
+              onClick={onClick}
+              backgroundColor={backgroundColor}
+            >
+              <ListItemIconLink icon={icon}>{label}</ListItemIconLink>
+            </ListMenuItem>
+          ),
+        )}
+        {/* <ListMenuItem
           // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
           onClick={stateOne}
           backgroundColor={backgroundColor1}
@@ -191,7 +206,7 @@ export const DevConsoleSidebar = ({
           <ListItemIconLink icon={mdiBookOpenVariant}>
             Resources
           </ListItemIconLink>
-        </ListMenuItem>
+        </ListMenuItem> */}
         <ListMenuItem
           // onClick={stateFour}
           // backgroundColor={backgroundColor4}
@@ -230,7 +245,7 @@ export const DevConsoleSidebar = ({
 export const NavbarContainer = styled(Flex)`
   height: 65px;
   width: 100%;
-  padding-left: 20px;
+  padding-left: 64px;
   position: sticky;
   top: 0;
   z-index: 1;

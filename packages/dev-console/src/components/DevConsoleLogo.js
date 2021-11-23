@@ -1,9 +1,9 @@
 import React from "react";
-import { Box } from "@blend-ui/core";
+import { Flex } from "@blend-ui/core";
 
-import { ReactComponent as PrifinaLogoImage } from "../assets/dev-console.svg";
+import { ReactComponent as PrifinaLogoImage } from "../assets/app-studio.svg";
 export const DevConsoleLogo = props => (
-  <Box>
+  <Flex alignItems="center">
     <PrifinaLogoImage {...props} />
-  </Box>
+  </Flex>
 );

@@ -12,12 +12,16 @@ import {
   ThemeProvider,
 } from "@blend-ui/core";
 
+import { i18n } from "@prifina-apps/utils";
+
 import { BlendIcon } from "@blend-ui/icons";
 
 import feDropRight from "@iconify/icons-fe/drop-right";
 import feDropLeft from "@iconify/icons-fe/drop-left";
 import feArrowRight from "@iconify/icons-fe/arrow-right";
 import feArrowLeft from "@iconify/icons-fe/arrow-left";
+
+i18n.init();
 
 const Styles = styled(Box)`
 /* This is required to make the table full-width */
@@ -52,10 +56,11 @@ table {
     padding-left: 16px;
     padding-right: 16px;
     text-align: left;
-    height: 48px;
+    height: 55px;
     border-bottom: 1px solid #4b4b4b;
   },
   td {
+    height:40px;
     margin: 0;
     //   padding: 0.5rem;
     border-bottom: 1px solid #4b4b4b;
@@ -159,12 +164,14 @@ function Table({ columns, data }) {
             }}
           >
             <Text fontSize="xs">
-              Showing{" "}
+              {i18n.__("showing")}
               <strong>
                 {pageIndex + 1} - {pageOptions.length}
               </strong>
             </Text>
-            <Text fontSize="xs">{data.length} items total</Text>
+            <Text fontSize="xs">
+              {data.length} {i18n.__("itemsTotal")}
+            </Text>
           </div>
           <div>
             <BlendIcon
