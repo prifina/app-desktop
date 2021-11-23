@@ -57,15 +57,15 @@ export const ListMenuItem = styled.li`
   color: #969595;
   list-style: none;
   width: 100%;
-  // &:hover {
-  //   background: red;
-  //   .icon {
-  //     color: #9fcde3;
-  //   }
-  //   .text {
-  //     color: #9fcde3;
-  //   }
-  // }
+  &:hover {
+    background: #e8f3fb;
+    .icon {
+      color: #9fcde3;
+    }
+    .text {
+      color: #9fcde3;
+    }
+  }
   &:focus {
     background: red !important;
     .icon {
@@ -102,11 +102,6 @@ export const ListMenu = styled.ul`
   align-items: center;
   margin-block-start: 0px;
   padding: 0;
-  li .h {
-    display: block;
-    background: yellow !important;
-    text-decoration: none;
-  }
 `;
 
 export const MarketBadge = styled.span`
