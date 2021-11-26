@@ -158,6 +158,15 @@ const strings = {
     addViewingData: "Add viewing data to your cloud",
     selectAvailableData: "Select from available sources to add",
     noneNeeded: "None needed",
+    connect: "Connect",
+    dataSourceModalText1:
+      "When and how often we can request your data from third party services depends on how they are set up internally.",
+    dataSourceModalText2:
+      "Prifina will find the optimal way to connect on your behalf to provide you with the best possible experience.",
+    dataSourceModalAlertText:
+      "Your data never leaves your cloud. Prifina never shares your data",
+      
+
     /* App Studio */
     accountDetails: "Account Details",
     developerAgreement: "Developer Agreement",
@@ -259,5 +268,3 @@ const strings = {
 };
 
 export default { ...strings };
-
-
