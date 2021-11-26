@@ -39,6 +39,7 @@ const strings = {
     acceptTerms: "Please approve terms of use to continue.",
 
     finalizeText: "This process may take a few seconds",
+    noThanks: "No thanks",
 
     /* Landing page */
     loginWelcomeMessage: "My Prifina",
@@ -165,7 +166,6 @@ const strings = {
       "Prifina will find the optimal way to connect on your behalf to provide you with the best possible experience.",
     dataSourceModalAlertText:
       "Your data never leaves your cloud. Prifina never shares your data",
-      
 
     /* App Studio */
     accountDetails: "Account Details",
@@ -264,6 +264,13 @@ const strings = {
     publicApiAdress: "Public API address",
     listDataAttributesUsed: "List data attributes used in your project",
     title: "Title",
+    /* Developer account creation page */
+    createAppStudioAccount: "Create App Studio account",
+    redirectNecessary: "Redirect necessary",
+    accountCreationText:
+      "To get access to Prifina’s Developer Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
+    appStudioDisclaimer:
+      "Disclaimer message or T&C’s if required Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
   },
 };
 

@@ -551,7 +551,14 @@ const Main = ({ data, currentUser }) => {
                       </Flex>
                       <div className="tableWrap">
                         {data.length === 0 && (
-                          <Text m={2}>{i18n.__("noApps")}</Text>
+                          <div
+                            style={{
+                              //same as table
+                              width: 1000,
+                            }}
+                          >
+                            <Text m={2}>{i18n.__("noApps")}</Text>
+                          </div>
                         )}
                         {data.length > 0 && (
                           <Table columns={Columns} data={data} />

@@ -1,6 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState, useReducer } from "react";
-import { Box, Flex, Text, Button, useTheme } from "@blend-ui/core";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Image,
+  Divider,
+  useTheme,
+} from "@blend-ui/core";
 
 import { i18n, AccountContext } from "@prifina-apps/utils";
 
@@ -8,11 +16,9 @@ i18n.init();
 
 import config from "../config";
 
-import TermsOfUse from "../pages/TermsOfUse";
-
-import avatarDefault from "../assets/dev-console/avatarDefault.png";
-
-import * as C from "./dev-console/components";
+import prifinaIcon from "../assets/prifina-icon.svg";
+import infinityIcon from "../assets/infinity-icon.svg";
+import dataCloudIcon from "../assets/data-console.svg";
 
 const DevConsole = props => {
   console.log("DEV CONSOLE PROPS ", props);
@@ -21,22 +27,6 @@ const DevConsole = props => {
   const { colors } = useTheme();
 
   const [step, setStep] = useState(0);
-
-  const [state, setState] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    {
-      username: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-
-      termsAccepted: false,
-      emailVerified: "",
-      phoneVerified: "",
-    },
-  );
 
   switch (step) {
     case 0:
@@ -70,101 +60,104 @@ const DevConsole = props => {
     }
   };
 
-  const accountContext = { nextStepAction, state };
-
   return (
     <>
-      <AccountContext.Provider value={accountContext}>
-        <Flex width={"100vw"} height={"100vh"} flexDirection="row">
-          <Box alt="left-side" width="610px" bg="brandAccent" />
-          <Box alt="center" bg="brandSecondary" width="296px">
-            <Box alt="menu" alignContent="flex-start">
-              <C.MenuButton
-                borderColor={colors.brandAccent}
-                color={colors.textMuted}
-                mt={157}
-                onClick={() => {
-                  setStep(0);
-                }}
-              >
-                01 {i18n.__("accountDetails")}
-              </C.MenuButton>
-              <C.MenuButton
-                borderColor={colors.brandAccent}
-                color={colors.textMuted}
-                onClick={() => {
-                  setStep(1);
-                }}
-              >
-                02 {i18n.__("developerAgreement")}
-              </C.MenuButton>
-            </Box>
-          </Box>
-          {step === 0 && (
-            <Flex
-              alt="form-container"
-              bg="brandPrimary"
-              width="534px"
-              flexDirection="column"
-              alignItems="center"
-              flexGrow={1}
+      <Flex
+        width={"100vw"}
+        height={"100vh"}
+        flexDirection="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Flex
+          style={{
+            width: 506,
+            height: 680,
+            flexDirection: "column",
+            borderRadius: 20,
+            boxShadow: "0px 2px 8px rgba(91, 92, 91, 0.2)",
+            paddingTop: 86,
+            paddingRight: 33,
+            paddingLeft: 33,
+          }}
+        >
+          <Divider mt={-4}>
+            <Text textStyle={"h4"}>{i18n.__("createAppStudioAccount")}</Text>
+          </Divider>
+          <Flex
+            style={{
+              height: 158,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image src={prifinaIcon} />
+            <Image src={infinityIcon} />
+            <Image src={dataCloudIcon} />
+          </Flex>
+          <Flex
+            bg={colors.baseTertiary}
+            style={{
+              height: 211,
+              justifyContent: "center",
+              flexDirection: "column",
+              paddingRight: 16,
+              paddingLeft: 16,
+            }}
+          >
+            <Text
+              mb={16}
+              // textStyle={"h5"}
+              fontSize="lg"
+              fontWeight="semiBold"
+              color={colors.brandAccent}
             >
-              <Box mt={160} mb={40}>
-                <Text fontSize="xl" color="textPrimary">
-                  {i18n.__("welcomeBack")} User!
-                </Text>
-              </Box>
-              <C.DeveloperCard
-                currentUser="User23"
-                avatar={avatarDefault}
-                text={i18n.__("welcomeBackText")}
-              />
-              <C.Card
-                mt={42}
-                mb={140}
-                bg="baseMuted"
-                leftBorderColor={colors.brandAccent}
-              >
-                <Box ml={23} mt={13} mr={23} mb={13}>
-                  <Text fontSize="md" color="textPrimary">
-                    {i18n.__("loginCardTitle")}
-                  </Text>
-                  <Text fontSize="xs" color="textPrimary" textStyle={"normal"}>
-                    {i18n.__("loginCardText")}
-                  </Text>
-                </Box>
-              </C.Card>
-              <C.StyledButton
-                mb={8}
-                onClick={() => {
-                  setStep(1);
-                }}
-              >
-                {i18n.__("continueAs")} User
-              </C.StyledButton>
-              <Flex alignItems="baseline">
-                <Text color="textPrimary" fontSize="xs" mr="5px">
-                  {i18n.__("notYou")}
-                </Text>
-                <Button variation="link"> {i18n.__("logoutButton")}</Button>
-              </Flex>
-            </Flex>
-          )}
-          {step === 1 && (
-            <Flex
-              alt="form-container"
-              bg="brandPrimary"
-              flexDirection="column"
-              alignItems="center"
-              flexGrow={1}
+              {i18n.__("redirectNecessary")}
+            </Text>
+            <Text
+              textStyle="normal"
+              fontWeight="regular"
+              color={colors.brandAccent}
             >
-              <Box mt={160}>
-                <TermsOfUse />
-              </Box>
-            </Flex>
-          )}
+              {i18n.__("accountCreationText")}
+            </Text>
+          </Flex>
+          <Flex
+            style={{
+              height: 102,
+              paddingRight: 16,
+              paddingLeft: 16,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text fontSize="xxs">{i18n.__("appStudioDisclaimer")}</Text>
+          </Flex>
+          <Flex
+            mt={24}
+            style={{
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Button
+              variation="outline"
+              onClick={() => {
+                window.location.href = config.APP_URL;
+              }}
+            >
+              {i18n.__("noThanks")}
+            </Button>
+            <Button
+              onClick={() => {
+                window.location.href = config.DEV_URL;
+              }}
+            >
+              {i18n.__("createAccount")}
+            </Button>
+          </Flex>
         </Flex>
-      </AccountContext.Provider>
+      </Flex>
     </>
   );
 };
