@@ -40,7 +40,7 @@
     "@iconify/icons-bx": "^1.1.2",
     "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",
-    "aws-amplify": "^4.3.0",
+    "aws-amplify": "^4.3.3",
     "graphql-tag": "^2.12.5",
     "react": ">=16.8.6",
     "react-dom": ">=16.8.6",

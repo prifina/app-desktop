@@ -1,42 +1,164 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect } from "react";
-import { Box, Flex, Text, Button } from "@blend-ui/core";
+import React, { useState, useReducer } from "react";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Image,
+  Divider,
+  useTheme,
+} from "@blend-ui/core";
 
-import { PrifinaLogo } from "../components/PrifinaLogo";
+import { i18n, AccountContext } from "@prifina-apps/utils";
+
+i18n.init();
+
 import config from "../config";
+
+import prifinaIcon from "../assets/prifina-icon.svg";
+import infinityIcon from "../assets/infinity-icon.svg";
+import dataCloudIcon from "../assets/data-console.svg";
 
 const DevConsole = props => {
   console.log("DEV CONSOLE PROPS ", props);
-
   /* checking if user is registered as developer.... */
+
+  const { colors } = useTheme();
+
+  const [step, setStep] = useState(0);
+
+  switch (step) {
+    case 0:
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    default:
+  }
+
+  const nextStepAction = step => {
+    console.log("ACTION STEP ", step);
+    if (step === 3) {
+      //await Auth.signOut();
+      //history.replace("/");
+      //setState({ phoneVerified: currentUser.phone_number });
+      //setRegisterStep(step);
+      _currentUser.termsAccepted = true;
+    } else if (step === 2) {
+      setState({ termsAccepted: true });
+      // setRegisterStep(step);
+      window.location.href = config.DEV_URL; // browser-back is /core/dev-console
+    } else if (step === 0) {
+      // terms declined...
+      // alerts.info(i18n.__("acceptTerms"), {});
+      // setStep(0);
+      window.location.href = config.APP_URL; // browser-back is /home
+    }
+  };
+
   return (
-    <Box width={"100vw"} height={"100vh"}>
-      <PrifinaLogo title={"Dev Console"} />
+    <>
       <Flex
-        justifyContent={"center"}
-        alignItems={"center"}
-        width={"100%"}
-        height={"100%"}
+        width={"100vw"}
+        height={"100vh"}
+        flexDirection="row"
+        justifyContent="center"
+        alignItems="center"
       >
-        <Box>
-          <Text textAlign={"center"} textStyle={"h3"}>
-            DevConsole
-          </Text>
-          <Box mt={20}>
+        <Flex
+          style={{
+            width: 506,
+            height: 680,
+            flexDirection: "column",
+            borderRadius: 20,
+            boxShadow: "0px 2px 8px rgba(91, 92, 91, 0.2)",
+            paddingTop: 86,
+            paddingRight: 33,
+            paddingLeft: 33,
+          }}
+        >
+          <Divider mt={-4}>
+            <Text textStyle={"h4"}>{i18n.__("createAppStudioAccount")}</Text>
+          </Divider>
+          <Flex
+            style={{
+              height: 158,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image src={prifinaIcon} />
+            <Image src={infinityIcon} />
+            <Image src={dataCloudIcon} />
+          </Flex>
+          <Flex
+            bg={colors.baseTertiary}
+            style={{
+              height: 211,
+              justifyContent: "center",
+              flexDirection: "column",
+              paddingRight: 16,
+              paddingLeft: 16,
+            }}
+          >
+            <Text
+              mb={16}
+              // textStyle={"h5"}
+              fontSize="lg"
+              fontWeight="semiBold"
+              color={colors.brandAccent}
+            >
+              {i18n.__("redirectNecessary")}
+            </Text>
+            <Text
+              textStyle="normal"
+              fontWeight="regular"
+              color={colors.brandAccent}
+            >
+              {i18n.__("accountCreationText")}
+            </Text>
+          </Flex>
+          <Flex
+            style={{
+              height: 102,
+              paddingRight: 16,
+              paddingLeft: 16,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text fontSize="xxs">{i18n.__("appStudioDisclaimer")}</Text>
+          </Flex>
+          <Flex
+            mt={24}
+            style={{
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <Button
+              variation="outline"
               onClick={() => {
-                //console.log("DEV CONSOLE...", config.DEV_URL);
-                // redirect....
-                window.location.href = config.DEV_URL; // browser-back is /core/dev-console
-                // window.location.replace(config.DEV_URL); // browser-back is / (home)
+                window.location.href = config.APP_URL;
               }}
             >
-              Continue
+              {i18n.__("noThanks")}
             </Button>
-          </Box>
-        </Box>
+            <Button
+              onClick={() => {
+                window.location.href = config.DEV_URL;
+              }}
+            >
+              {i18n.__("createAccount")}
+            </Button>
+          </Flex>
+        </Flex>
       </Flex>
-    </Box>
+    </>
   );
 };
 
