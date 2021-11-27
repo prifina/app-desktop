@@ -58,7 +58,7 @@ export const ListMenuItem = styled.li`
   list-style: none;
   width: 100%;
   &:hover {
-    background: #d7eeff;
+    background: #e8f3fb;
     .icon {
       color: #9fcde3;
     }
@@ -66,8 +66,8 @@ export const ListMenuItem = styled.li`
       color: #9fcde3;
     }
   }
-  .focus {
-    background: red;
+  &:focus {
+    background: red !important;
     .icon {
       color: #9fcde3;
     }
@@ -170,6 +170,7 @@ export const AppMarketSidebar = ({
             ...rest
           }) => (
             <ListMenuItem
+              className="menuItem"
               key={label}
               onClick={onClick}
               backgroundColor={backgroundColor}
@@ -370,5 +371,19 @@ export const UnderlineButton = styled(Button)`
     border-bottom: 2px solid #4295e1 !important;
     background: white !important;
     color: #4295e1 !important;
+  }
+`;
+
+export const DataSourceButton = styled.button`
+  background-image: ${props => `url(${props.backgroundImage})`};
+  background-position: "center";
+  background-size: "cover";
+  background-repeat: "no-repeat";
+  width: 44px;
+  height: 44px;
+  border-radius: 8.80208px;
+  border: 0;
+  &:active {
+    opacity: 0.5;
   }
 `;
