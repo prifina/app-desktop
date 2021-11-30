@@ -268,11 +268,39 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       //let availableWidgets = widgets.current;
       //availableWidgets[name].installed = true;
       widgets.current[id].installed = true;
+      // widgets.current[id].installed = true;
 
       setInstalledWidgets(...installedWidgets, id);
+      setAllValues({
+        ...allValues,
+        installed: true,
+      });
     });
   };
-  console.log(installedWidgets, widgets.current);
+
+  const uninstallWidget = (e, id, settings) => {
+    console.log("CLICK ", id);
+    //console.log("INSTALL ", widgets);
+
+    installWidgetMutation(GraphQLClient, prifinaID, {
+      id: id,
+      settings: settings,
+      index: -1,
+    }).then(res => {
+      console.log("INSTALL ", res);
+
+      //let availableWidgets = widgets.current;
+      //availableWidgets[name].installed = true;
+      widgets.current[id].installed = false;
+      // widgets.current[id].installed = true;
+
+      setInstalledWidgets(...installedWidgets, id);
+      setAllValues({
+        ...allValues,
+        installed: false,
+      });
+    });
+  };
 
   const [allValues, setAllValues] = useState({});
 
@@ -422,6 +450,8 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     e.preventDefault();
   };
 
+  console.log("install", allValues.installed);
+
   return (
     <>
       <C.GlobalStyle />
@@ -472,8 +502,8 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   console.log("WIDGETS CURRENT", widgets.current);
                   return (
                     <WidgetBox
-                      key={w}
-                      id={w}
+                      key={allValues.id}
+                      id={[w]}
                       {...widgets.current[w]}
                       installWidget={installWidget}
                       installedWidget={installedWidgets.indexOf(w)}
@@ -499,6 +529,8 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                           userGenerated: widgets.current[w].userGenerated,
                           public: widgets.current[w].public,
                           id: widgets.current[w].id,
+                          installed: widgets.current[w].installed,
+                          settings: widgets.current[w].settings,
                         });
                       }}
                     />
@@ -602,12 +634,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   <C.OutlineButton variation="outline" marginLeft="16px">
                     {i18n.__("support")}
                   </C.OutlineButton>
-                  <Button
-                    marginLeft="16px"
-                    // onClick={() => history.push("/core/display-app")}
-                  >
-                    {i18n.__("view")}
-                  </Button>
+                  {allValues.installed === false ? (
+                    <Button
+                      marginLeft="16px"
+                      onClick={e => {
+                        installWidget(e, allValues.id, allValues.settings);
+                      }}
+                    >
+                      {i18n.__("install")}
+                    </Button>
+                  ) : (
+                    <Button
+                      marginLeft="16px"
+                      // onClick={() => history.push("/core/display-app")}
+                    >
+                      {i18n.__("view")}
+                    </Button>
+                  )}
                 </Flex>
               </Flex>
               <Flex alt="buttons" marginBottom="40px">
@@ -830,12 +873,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   <C.OutlineButton variation="outline" marginLeft="16px">
                     {i18n.__("support")}
                   </C.OutlineButton>
-                  <Button
-                    marginLeft="16px"
-                    // onClick={() => history.push("/core/display-app")}
-                  >
-                    {i18n.__("view")}
-                  </Button>
+                  {allValues.installed === false ? (
+                    <Button
+                      marginLeft="16px"
+                      onClick={e => {
+                        installWidget(e, allValues.id, allValues.settings);
+                      }}
+                    >
+                      {i18n.__("install")}
+                    </Button>
+                  ) : (
+                    <Button
+                      marginLeft="16px"
+                      // onClick={() => history.push("/core/display-app")}
+                    >
+                      {i18n.__("view")}
+                    </Button>
+                  )}
                 </Flex>
               </Flex>
               <Flex alt="buttons" marginBottom="38px">

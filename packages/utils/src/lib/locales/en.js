@@ -166,6 +166,7 @@ const strings = {
       "Prifina will find the optimal way to connect on your behalf to provide you with the best possible experience.",
     dataSourceModalAlertText:
       "Your data never leaves your cloud. Prifina never shares your data",
+    install: "Install",
 
     /* App Studio */
     accountDetails: "Account Details",
