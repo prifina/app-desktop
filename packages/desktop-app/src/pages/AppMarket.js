@@ -502,7 +502,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   console.log("WIDGETS CURRENT", widgets.current);
                   return (
                     <WidgetBox
-                      key={allValues.id}
+                      key={[w].id}
                       id={[w]}
                       {...widgets.current[w]}
                       installWidget={installWidget}
