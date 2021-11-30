@@ -443,7 +443,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     setAddingDataSource(false);
     e.preventDefault();
   };
-  const onDialogClick = async (e, action) => {
+  const onDialogClick = async e => {
     ///...further logic on adding data source data
     setAddingDataSource(false);
 

@@ -378,8 +378,6 @@ const Main = ({ data, currentUser }) => {
     setAddedDataSources2(newSourceData);
   };
 
-  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
-
   const [step, setStep] = useState(2);
 
   switch (step) {
@@ -398,8 +396,19 @@ const Main = ({ data, currentUser }) => {
     default:
   }
 
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
+
+  console.log("projectdialog", projectDialogOpen);
+
   const onDialogClose = e => {
     setProjectDialogOpen(false);
+    e.preventDefault();
+  };
+
+  const onDialogClick = async e => {
+    ///...further logic on adding data source data
+    setProjectDialogOpen(false);
+
     e.preventDefault();
   };
 
@@ -438,12 +447,15 @@ const Main = ({ data, currentUser }) => {
           bg="white"
           flexDirection="column"
         >
-          <CreateProjectModal
-            onClose={onDialogClose}
-            isOpen={projectDialogOpen}
-          />
           {step === 0 && (
             <>
+              {projectDialogOpen && (
+                <CreateProjectModal
+                  onClose={onDialogClose}
+                  onButtonClick={onDialogClick}
+                  // isOpen={projectDialogOpen}
+                />
+              )}
               <Flex flexDirection="column" alignItems="center" mt="42px">
                 <Image src={dashboardBanner} style={{ position: "relative" }} />
                 <Flex
@@ -463,8 +475,6 @@ const Main = ({ data, currentUser }) => {
                   <Button
                     size="sm"
                     onClick={() => {
-                      // setStep(2);
-                      // openModal();
                       setProjectDialogOpen(true);
                     }}
                   >
@@ -516,6 +526,13 @@ const Main = ({ data, currentUser }) => {
           {/* PROJECTS */}
           {step === 2 && (
             <>
+              {projectDialogOpen && (
+                <CreateProjectModal
+                  onClose={onDialogClose}
+                  onButtonClick={onDialogClick}
+                  // isOpen={projectDialogOpen}
+                />
+              )}
               <Flex paddingTop="48px" paddingLeft="65px">
                 <Flex
                   bg="baseMuted"
