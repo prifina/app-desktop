@@ -326,9 +326,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userHeldData() {
-    const newData = allValues.userHeld.map(item => {
+    const newData = allValues.userHeld.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -355,9 +355,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userGeneratedData() {
-    const newData = allValues.userGenerated.map(item => {
+    const newData = allValues.userGenerated.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -383,9 +383,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     }
   }
   function publicData() {
-    const newData = allValues.public.map(item => {
+    const newData = allValues.public.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -502,8 +502,8 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   console.log("WIDGETS CURRENT", widgets.current);
                   return (
                     <WidgetBox
-                      key={[w].id}
-                      id={[w]}
+                      key={w}
+                      id={w}
                       {...widgets.current[w]}
                       installWidget={installWidget}
                       installedWidget={installedWidgets.indexOf(w)}
@@ -744,9 +744,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                       {i18n.__("features")}
                     </Text>
                     <C.OrderedList>
-                      {allValues.keyFeatures.map(item => {
+                      {allValues.keyFeatures.map((item, index) => {
                         return (
-                          <C.ListItem fontSize="sm" color={colors.textMuted}>
+                          <C.ListItem
+                            key={index}
+                            fontSize="sm"
+                            color={colors.textMuted}
+                          >
                             {item}
                           </C.ListItem>
                         );
@@ -755,13 +759,15 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   </Flex>
                 </Flex>
                 <Flex alt="rightSide" flexDirection="column">
-                  {allValues.screenshots.map((item, index) => {
+                  {allValues.screenshots.map((item, i) => {
                     return (
-                      <Box width="284px" height="213px" marginBottom="16px">
-                        <Image
-                          key={index}
-                          src={`${s3path}/${allValues.id}/${item}`}
-                        />
+                      <Box
+                        key={i}
+                        width="284px"
+                        height="213px"
+                        marginBottom="16px"
+                      >
+                        <Image src={`${s3path}/${allValues.id}/${item}`} />
                       </Box>
                     );
                   })}
