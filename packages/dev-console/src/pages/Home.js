@@ -414,6 +414,7 @@ const Main = ({ data, currentUser }) => {
 
   const items = [
     {
+      id: 0,
       label: i18n.__("dashboard"),
       icon: viewDashboard,
       onClick: () => {
@@ -421,6 +422,7 @@ const Main = ({ data, currentUser }) => {
       },
     },
     {
+      id: 1,
       label: i18n.__("projects"),
       icon: mdiWidget,
       onClick: () => {
@@ -428,6 +430,7 @@ const Main = ({ data, currentUser }) => {
       },
     },
     {
+      id: 2,
       label: i18n.__("resources"),
       icon: mdiBookOpenVariant,
     },

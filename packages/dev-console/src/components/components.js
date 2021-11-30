@@ -184,6 +184,7 @@ export const DevConsoleSidebar = ({
             ...rest
           }) => (
             <ListMenuItem
+              key={id}
               // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
               onClick={onClick}
               backgroundColor={backgroundColor}

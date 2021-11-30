@@ -142,6 +142,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                 <Flex width="268px">
                   <Radio
                     // checked
+                    onChange={() => {}}
                     value="TABLE"
                     fontSize="14px"
                     color="#AA1370"
@@ -152,6 +153,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   </Radio>
                   <Radio
                     disabled
+                    onChange={() => {}}
                     checked
                     value="TABLE"
                     color="#AA1370"
