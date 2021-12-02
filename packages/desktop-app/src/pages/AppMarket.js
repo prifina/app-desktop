@@ -268,11 +268,39 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       //let availableWidgets = widgets.current;
       //availableWidgets[name].installed = true;
       widgets.current[id].installed = true;
+      // widgets.current[id].installed = true;
 
       setInstalledWidgets(...installedWidgets, id);
+      setAllValues({
+        ...allValues,
+        installed: true,
+      });
     });
   };
-  console.log(installedWidgets, widgets.current);
+
+  const uninstallWidget = (e, id, settings) => {
+    console.log("CLICK ", id);
+    //console.log("INSTALL ", widgets);
+
+    installWidgetMutation(GraphQLClient, prifinaID, {
+      id: id,
+      settings: settings,
+      index: -1,
+    }).then(res => {
+      console.log("INSTALL ", res);
+
+      //let availableWidgets = widgets.current;
+      //availableWidgets[name].installed = true;
+      widgets.current[id].installed = false;
+      // widgets.current[id].installed = true;
+
+      setInstalledWidgets(...installedWidgets, id);
+      setAllValues({
+        ...allValues,
+        installed: false,
+      });
+    });
+  };
 
   const [allValues, setAllValues] = useState({});
 
@@ -298,9 +326,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userHeldData() {
-    const newData = allValues.userHeld.map(item => {
+    const newData = allValues.userHeld.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -327,9 +355,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userGeneratedData() {
-    const newData = allValues.userGenerated.map(item => {
+    const newData = allValues.userGenerated.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -355,9 +383,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     }
   }
   function publicData() {
-    const newData = allValues.public.map(item => {
+    const newData = allValues.public.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -415,12 +443,14 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     setAddingDataSource(false);
     e.preventDefault();
   };
-  const onDialogClick = async (e, action) => {
+  const onDialogClick = async e => {
     ///...further logic on adding data source data
     setAddingDataSource(false);
 
     e.preventDefault();
   };
+
+  console.log("install", allValues.installed);
 
   return (
     <>
@@ -499,6 +529,8 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                           userGenerated: widgets.current[w].userGenerated,
                           public: widgets.current[w].public,
                           id: widgets.current[w].id,
+                          installed: widgets.current[w].installed,
+                          settings: widgets.current[w].settings,
                         });
                       }}
                     />
@@ -602,12 +634,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   <C.OutlineButton variation="outline" marginLeft="16px">
                     {i18n.__("support")}
                   </C.OutlineButton>
-                  <Button
-                    marginLeft="16px"
-                    // onClick={() => history.push("/core/display-app")}
-                  >
-                    {i18n.__("view")}
-                  </Button>
+                  {allValues.installed === false ? (
+                    <Button
+                      marginLeft="16px"
+                      onClick={e => {
+                        installWidget(e, allValues.id, allValues.settings);
+                      }}
+                    >
+                      {i18n.__("install")}
+                    </Button>
+                  ) : (
+                    <Button
+                      marginLeft="16px"
+                      // onClick={() => history.push("/core/display-app")}
+                    >
+                      {i18n.__("view")}
+                    </Button>
+                  )}
                 </Flex>
               </Flex>
               <Flex alt="buttons" marginBottom="40px">
@@ -701,9 +744,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                       {i18n.__("features")}
                     </Text>
                     <C.OrderedList>
-                      {allValues.keyFeatures.map(item => {
+                      {allValues.keyFeatures.map((item, index) => {
                         return (
-                          <C.ListItem fontSize="sm" color={colors.textMuted}>
+                          <C.ListItem
+                            key={index}
+                            fontSize="sm"
+                            color={colors.textMuted}
+                          >
                             {item}
                           </C.ListItem>
                         );
@@ -712,13 +759,15 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   </Flex>
                 </Flex>
                 <Flex alt="rightSide" flexDirection="column">
-                  {allValues.screenshots.map((item, index) => {
+                  {allValues.screenshots.map((item, i) => {
                     return (
-                      <Box width="284px" height="213px" marginBottom="16px">
-                        <Image
-                          key={index}
-                          src={`${s3path}/${allValues.id}/${item}`}
-                        />
+                      <Box
+                        key={i}
+                        width="284px"
+                        height="213px"
+                        marginBottom="16px"
+                      >
+                        <Image src={`${s3path}/${allValues.id}/${item}`} />
                       </Box>
                     );
                   })}
@@ -830,12 +879,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   <C.OutlineButton variation="outline" marginLeft="16px">
                     {i18n.__("support")}
                   </C.OutlineButton>
-                  <Button
-                    marginLeft="16px"
-                    // onClick={() => history.push("/core/display-app")}
-                  >
-                    {i18n.__("view")}
-                  </Button>
+                  {allValues.installed === false ? (
+                    <Button
+                      marginLeft="16px"
+                      onClick={e => {
+                        installWidget(e, allValues.id, allValues.settings);
+                      }}
+                    >
+                      {i18n.__("install")}
+                    </Button>
+                  ) : (
+                    <Button
+                      marginLeft="16px"
+                      // onClick={() => history.push("/core/display-app")}
+                    >
+                      {i18n.__("view")}
+                    </Button>
+                  )}
                 </Flex>
               </Flex>
               <Flex alt="buttons" marginBottom="38px">
