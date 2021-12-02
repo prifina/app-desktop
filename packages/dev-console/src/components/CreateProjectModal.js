@@ -19,7 +19,7 @@ import {
 
 import styled from "styled-components";
 
-import { Radio, checkAction } from "@blend-ui/core";
+import { Radio } from "@blend-ui/core";
 import { BlendIcon } from "@blend-ui/icons";
 
 import cardPrifinaLogo from "../assets/cardPrifinaLogo.svg";
@@ -65,13 +65,7 @@ const StyledBox = styled(Box)`
 // borderRadius = "5px";
 // alignItems = "center";
 
-const CreateProjectModal = ({
-  onClose,
-  onButtonClick,
-  setStep,
-  // dialogOpen,
-  ...props
-}) => {
+const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
   const { currentUser } = useAppContext();
   const history = useHistory();
   console.log("NEW APP ", currentUser);
@@ -102,7 +96,7 @@ const CreateProjectModal = ({
 
   const theme = useTheme();
 
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(true);
 
   const onCloseCheck = (e, action) => {
     console.log("MODAL CLOSE ", e, action);
@@ -148,9 +142,9 @@ const CreateProjectModal = ({
                 <Flex width="268px">
                   <Radio
                     // checked
+                    onChange={() => {}}
                     value="TABLE"
                     fontSize="14px"
-                    onClick={checkAction}
                     color="#AA1370"
                     styl
                     textStyle={{ color: "white" }}
@@ -158,10 +152,12 @@ const CreateProjectModal = ({
                     {i18n.__("widget")}
                   </Radio>
                   <Radio
-                    // checked
+                    disabled
+                    onChange={() => {}}
+                    checked
                     value="TABLE"
+                    color="#AA1370"
                     fontSize="14px"
-                    onClick={checkAction}
                   >
                     {i18n.__("app")}
                   </Radio>
@@ -231,23 +227,22 @@ const CreateProjectModal = ({
               <Button
                 variation={"outline"}
                 colorStyle={"error"}
-                // onClick={e => {
-                //   setDialogOpen(false);
-
-                //   e.preventDefault();
-                // }}
-                onClick={onClose}
+                onClick={e => {
+                  setDialogOpen(false);
+                  onButtonClick(e, "cancel");
+                  e.preventDefault();
+                }}
                 marginLeft="36px"
               >
                 <Text>{i18n.__("cancelButton")}</Text>
               </Button>
               <Button
-                // onClick={e => {
-                //   // setDialogOpen(false);
-
-                //   e.preventDefault();
-                // }}
-                onClick={createApp}
+                onClick={e => {
+                  setDialogOpen(false);
+                  onButtonClick(e);
+                  createApp();
+                  e.preventDefault();
+                }}
                 marginLeft="466px"
               >
                 {i18n.__("newProject")}
