@@ -72,6 +72,7 @@ typings/
 .env
 .env.test
 .env.copy
+.env.current
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -138,3 +139,6 @@ yarn-error.log*
 packages/desktop-app2
 packages/dev-console2
 packages/utils2
+
+# package builds
+packages/*/build

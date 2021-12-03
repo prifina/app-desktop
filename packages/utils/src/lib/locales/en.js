@@ -39,6 +39,7 @@ const strings = {
     acceptTerms: "Please approve terms of use to continue.",
 
     finalizeText: "This process may take a few seconds",
+    noThanks: "No thanks",
 
     /* Landing page */
     loginWelcomeMessage: "My Prifina",
@@ -158,6 +159,119 @@ const strings = {
     addViewingData: "Add viewing data to your cloud",
     selectAvailableData: "Select from available sources to add",
     noneNeeded: "None needed",
+    connect: "Connect",
+    dataSourceModalText1:
+      "When and how often we can request your data from third party services depends on how they are set up internally.",
+    dataSourceModalText2:
+      "Prifina will find the optimal way to connect on your behalf to provide you with the best possible experience.",
+    dataSourceModalAlertText:
+      "Your data never leaves your cloud. Prifina never shares your data",
+    install: "Install",
+
+    /* App Studio */
+    accountDetails: "Account Details",
+    developerAgreement: "Developer Agreement",
+    welcomeBack: "Welcome back",
+    welcomeBackText: "We noticed you are currently logged into Prifina as",
+    loginCardTitle: "Great News!",
+    loginCardText:
+      "Because you have an existing individual Prifina account, you can use it to log in, and  we’ll connect it to your new developer account.",
+    continueAs: "Continue as",
+    notYou: "Not you?",
+    developerAccount: "Developer Account",
+    publisherAccounts: "Publisher Accounts",
+    publisherAccountsText:
+      "Lore issue dolor sit met, ConnectEDU advising elite, used do also tempe incident UT",
+    applyToPublishApps: "Apply to publish apps",
+    dashboard: "Dashboard",
+    projects: "Projects",
+    resources: "Resources",
+    dataModel: "Data Model",
+    soon: "Soon",
+    createYourFirstProject: "Create your first project",
+    dashboardText:
+      "Done with your local build and ready to plug into the power of Prifina? Create a project to get started",
+    newProject: "New Project",
+    createProject: "Create Project",
+    projectType: "Project Type",
+    widget: "Widget",
+    application: "Application",
+    app: "App",
+    prifinaAppId: "Prifina app ID",
+    prifinaAppIdText:
+      "This unique identifer is needed to connect your application to  prifina.",
+    copyAndAddToYourBuild: "Copy it and add it to your build.",
+    projectName: "Project Name",
+    appId: "App ID",
+    name: "Name",
+    type: "Type",
+    progress: "Progress",
+    actions: "Actions",
+    publishing: "Publishing",
+    submit: "Submit",
+    showing: "Showing",
+    itemsTotal: "items total",
+    keyResources: "Key resources",
+    resourcesText: "Resources and utilities to help you build for Prifina",
+    prifinaDocs: "Prifina Docs",
+    prfinaDocsButton: "Prifina docs",
+    appStarter: "App Starter",
+    zendesk: "Zendesk",
+    ledSlack: "LED Slack",
+    //temporary for all cards
+    cardText:
+      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu.",
+    sandboxTesting: "Sandbox testing",
+    buildAssets: "Build assets",
+    noApps: "No apps...",
+    launchSandbox: "Launch Sandbox",
+    buildAssets: "Build Assets",
+    uploads: "Uploads",
+    sandboxTestingText:
+      "Finished your local build? See how your application will behave on our platform using our Sandbox enviroment.",
+    launchSandboxSession: "Launch Sandbox session",
+    copyYourAppId: "Copy your app ID",
+    addToLocalBuild: "Add it to your local build",
+    getRemoteLink: "Get a remote link for your repo",
+    fillOutForm: "Fill out the form and launch the Sandbox",
+    readMoreGuide: "Read a more detailed guide in the",
+    remoteLink: "Remote Link",
+    dataUsage: "Data Usage",
+    buildFiles: "Build Files",
+    dataUsageText:
+      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt",
+    publicApi: "Public API",
+    prifinaUserCloud: "Prifina User Cloud",
+    noData: "No Data",
+    chooseToAddSources: "Choose to add you your data sources",
+    dataConectorResults: "Prifina data connectors results...",
+    noDataText: "A no data project does not pull any data from any source.",
+    learnMoreHere: "Learn more here.",
+    dataSourcesUsed: "Data sources used in your project",
+    saveButton: "Save",
+    pressEditToAddDetails: "Press edit to add more details about data usage",
+    addYourComment: "Add your comment...",
+    selectSources: "Search and select data sources",
+    dataSourcesYouAdd: "Data sources you add will show up here",
+    buildFilesText:
+      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt",
+
+    fullSpecHere: "Full spec here",
+    dataConnector: "Data connector",
+    dataConnectorContains: "This Data connector contains",
+    functions: "functions.",
+    prfinaDataConnector: "Prifina Data Connector",
+    tellUsWhatDataYourAppUses: "Tell us what data your app uses from",
+    publicApiAdress: "Public API address",
+    listDataAttributesUsed: "List data attributes used in your project",
+    title: "Title",
+    /* Developer account creation page */
+    createAppStudioAccount: "Create App Studio account",
+    redirectNecessary: "Redirect necessary",
+    accountCreationText:
+      "To get access to Prifina’s Developer Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
+    appStudioDisclaimer:
+      "Disclaimer message or T&C’s if required Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
   },
 };
 

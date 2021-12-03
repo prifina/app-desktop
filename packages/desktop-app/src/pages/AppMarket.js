@@ -28,6 +28,7 @@ import PropTypes from "prop-types";
 i18n.init();
 
 import * as C from "./app-market/components";
+import DataSourceModal from "./app-market/DataSourceModal";
 
 import config from "../config";
 
@@ -37,6 +38,10 @@ import appMarketBanner from "../assets/app-market/app-market-banner.svg";
 import apiDataImg from "../assets/app-market/api-data.svg";
 import healthData from "../assets/app-market/health-data.svg";
 import viewingData from "../assets/app-market/viewing-data.svg";
+import useHeldDataImage from "../assets/app-market/user-held-data.svg";
+//dataSource icons
+import ouraIcon from "../assets/app-market/oura-icon.svg";
+import dataSourceIcon from "../assets/app-market/data-source-icon.svg";
 //icons
 import bxsCheckCircle from "@iconify/icons-bx/bxs-check-circle";
 import bxsXCircle from "@iconify/icons-bx/bxs-x-circle";
@@ -50,7 +55,6 @@ const propTest = props => {
   console.log("PROP TEST ", props);
   return null;
 };
-
 
 const WidgetBox = ({
   title,
@@ -127,6 +131,7 @@ WidgetBox.propTypes = {
   installedWidget: PropTypes.number,
   onClick: PropTypes.func,
 };
+
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   console.log("APP MARKET PROPS ", props);
   //const [widgets, setWidgets] = useState({});
@@ -263,11 +268,39 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       //let availableWidgets = widgets.current;
       //availableWidgets[name].installed = true;
       widgets.current[id].installed = true;
+      // widgets.current[id].installed = true;
 
       setInstalledWidgets(...installedWidgets, id);
+      setAllValues({
+        ...allValues,
+        installed: true,
+      });
     });
   };
-  console.log(installedWidgets, widgets.current);
+
+  const uninstallWidget = (e, id, settings) => {
+    console.log("CLICK ", id);
+    //console.log("INSTALL ", widgets);
+
+    installWidgetMutation(GraphQLClient, prifinaID, {
+      id: id,
+      settings: settings,
+      index: -1,
+    }).then(res => {
+      console.log("INSTALL ", res);
+
+      //let availableWidgets = widgets.current;
+      //availableWidgets[name].installed = true;
+      widgets.current[id].installed = false;
+      // widgets.current[id].installed = true;
+
+      setInstalledWidgets(...installedWidgets, id);
+      setAllValues({
+        ...allValues,
+        installed: false,
+      });
+    });
+  };
 
   const [allValues, setAllValues] = useState({});
 
@@ -293,9 +326,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userHeldData() {
-    const newData = allValues.userHeld.map(item => {
+    const newData = allValues.userHeld.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -322,9 +355,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userGeneratedData() {
-    const newData = allValues.userGenerated.map(item => {
+    const newData = allValues.userGenerated.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -350,9 +383,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     }
   }
   function publicData() {
-    const newData = allValues.public.map(item => {
+    const newData = allValues.public.map((item, index) => {
       return (
-        <Flex alignItems="center">
+        <Flex alignItems="center" key={index}>
           <BlendIcon
             iconify={bxsCheckCircle}
             color={colors.textLink}
@@ -395,6 +428,29 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       disabled: true,
     },
   ];
+
+  const dataSourceItems = [
+    {
+      id: 1,
+      title: "Oura",
+      icon: ouraIcon,
+    },
+  ];
+
+  const [addingDataSource, setAddingDataSource] = useState(false);
+
+  const onDialogClose = e => {
+    setAddingDataSource(false);
+    e.preventDefault();
+  };
+  const onDialogClick = async e => {
+    ///...further logic on adding data source data
+    setAddingDataSource(false);
+
+    e.preventDefault();
+  };
+
+  console.log("install", allValues.installed);
 
   return (
     <>
@@ -473,6 +529,8 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                           userGenerated: widgets.current[w].userGenerated,
                           public: widgets.current[w].public,
                           id: widgets.current[w].id,
+                          installed: widgets.current[w].installed,
+                          settings: widgets.current[w].settings,
                         });
                       }}
                     />
@@ -576,12 +634,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   <C.OutlineButton variation="outline" marginLeft="16px">
                     {i18n.__("support")}
                   </C.OutlineButton>
-                  <Button
-                    marginLeft="16px"
-                    onClick={() => history.push("/core/display-app")}
-                  >
-                    {i18n.__("view")}
-                  </Button>
+                  {allValues.installed === false ? (
+                    <Button
+                      marginLeft="16px"
+                      onClick={e => {
+                        installWidget(e, allValues.id, allValues.settings);
+                      }}
+                    >
+                      {i18n.__("install")}
+                    </Button>
+                  ) : (
+                    <Button
+                      marginLeft="16px"
+                      // onClick={() => history.push("/core/display-app")}
+                    >
+                      {i18n.__("view")}
+                    </Button>
+                  )}
                 </Flex>
               </Flex>
               <Flex alt="buttons" marginBottom="40px">
@@ -675,9 +744,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                       {i18n.__("features")}
                     </Text>
                     <C.OrderedList>
-                      {allValues.keyFeatures.map(item => {
+                      {allValues.keyFeatures.map((item, index) => {
                         return (
-                          <C.ListItem fontSize="sm" color={colors.textMuted}>
+                          <C.ListItem
+                            key={index}
+                            fontSize="sm"
+                            color={colors.textMuted}
+                          >
                             {item}
                           </C.ListItem>
                         );
@@ -686,13 +759,15 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   </Flex>
                 </Flex>
                 <Flex alt="rightSide" flexDirection="column">
-                  {allValues.screenshots.map((item, index) => {
+                  {allValues.screenshots.map((item, i) => {
                     return (
-                      <Box width="284px" height="213px" marginBottom="16px">
-                        <Image
-                          key={index}
-                          src={`${s3path}/${allValues.id}/${item}`}
-                        />
+                      <Box
+                        key={i}
+                        width="284px"
+                        height="213px"
+                        marginBottom="16px"
+                      >
+                        <Image src={`${s3path}/${allValues.id}/${item}`} />
                       </Box>
                     );
                   })}
@@ -704,6 +779,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       )}
       {step === 2 && (
         <>
+          {addingDataSource && (
+            <DataSourceModal
+              onClose={onDialogClose}
+              onButtonClick={onDialogClick}
+              dataSourceItems={dataSourceItems}
+            />
+          )}
           <C.NavbarContainer bg="baseWhite">
             <PrifinaLogo className={"app-market"} title="App Market" />
           </C.NavbarContainer>
@@ -797,12 +879,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                   <C.OutlineButton variation="outline" marginLeft="16px">
                     {i18n.__("support")}
                   </C.OutlineButton>
-                  <Button
-                    marginLeft="16px"
-                    onClick={() => history.push("/core/display-app")}
-                  >
-                    {i18n.__("view")}
-                  </Button>
+                  {allValues.installed === false ? (
+                    <Button
+                      marginLeft="16px"
+                      onClick={e => {
+                        installWidget(e, allValues.id, allValues.settings);
+                      }}
+                    >
+                      {i18n.__("install")}
+                    </Button>
+                  ) : (
+                    <Button
+                      marginLeft="16px"
+                      // onClick={() => history.push("/core/display-app")}
+                    >
+                      {i18n.__("view")}
+                    </Button>
+                  )}
                 </Flex>
               </Flex>
               <Flex alt="buttons" marginBottom="38px">
@@ -881,7 +974,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                 <Flex alt="rightSide">
                   <Image
                     //this needs further imporvement
-                    src={apiDataImg}
+                    src={useHeldDataImage}
                     style={{
                       width: "284px",
                       height: "213px",
@@ -901,12 +994,23 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                     {i18n.__("selectAvailableData")}
                   </Text>
                   <Flex paddingTop="31px">
-                    <Box
+                    {/* <Box
                       height="44px"
                       width="44px"
                       borderRadius="8.8px"
                       bg="grey"
-                    />
+                    /> */}
+                    {dataSourceItems.map((item, index) => {
+                      return (
+                        <C.DataSourceButton
+                          key={index}
+                          backgroundImage={item.icon}
+                          onClick={() => {
+                            setAddingDataSource(true);
+                          }}
+                        />
+                      );
+                    })}
                   </Flex>
                 </Flex>
                 <Flex flexDirection="column">
@@ -940,6 +1044,5 @@ AppMarket.propTypes = {
   prifinaID: PropTypes.string,
 };
 AppMarket.displayName = "AppMarket";
-
 
 export default AppMarket;
