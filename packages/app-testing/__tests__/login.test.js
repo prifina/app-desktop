@@ -3,15 +3,13 @@ const puppeteer = require("puppeteer");
 const i18nTranslate = require("../getI18n");
 i18nTranslate.init();
 
-const NODE_ENV = "";
-
 const isDebugging = () => {
   let debugging_mode = {
     headless: false,
     slowMo: 50,
     devtools: true,
   };
-  return NODE_ENV === "debug" ? debugging_mode : {};
+  return process.env.NODE_ENV === "debug" ? debugging_mode : {};
 };
 
 const checkThis = async (page, selector, text, timeout = 0) => {
@@ -72,17 +70,18 @@ beforeAll(async () => {
 });
 
 describe("Test Login page ", () => {
-  test("Login page loads correctly", async done => {
+  test("Login page loads correctly", async () => {
     let text = i18nTranslate.__("loginWelcomeMessage");
     console.log("I18n", i18nTranslate.__("loginWelcomeMessage"));
 
     const found = await checkThis(page, "body", text, 10000);
 
     expect(found).toBe(true);
-    done();
-  }, 16000);
+    // done();
+    // }, 16000);
+  });
 
-  test("Username check length after blur event", async done => {
+  test("Username check length after blur event", async () => {
     //const page2 = await browser.newPage();
 
     //await page2.goto(process.env.TEST_URL + "login");
@@ -108,10 +107,11 @@ describe("Test Login page ", () => {
     //console.log("CHECK ", checkInvalidEntry);
 
     expect(checkInvalidEntry).toBe(true);
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Username, check length when password onFocus test", async done => {
+  test("Username, check length when password onFocus test", async () => {
     // remove any previous entries...
     await page.evaluate(function () {
       document.querySelector("input#username").value = "";
@@ -126,10 +126,11 @@ describe("Test Login page ", () => {
     //console.log("ACTIVE ", elID);
     expect(elID).toBe("username");
 
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Password check if empty on enter keypress test", async done => {
+  test("Password check if empty on enter keypress test", async () => {
     const passwordEl = await page.$("#password");
     const invalidEntry = i18nTranslate.__("invalidEntry");
     await passwordEl.tap();
@@ -144,10 +145,11 @@ describe("Test Login page ", () => {
     );
     //console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Login weak password quality check on enter keypress", async done => {
+  test("Login weak password quality check on enter keypress", async () => {
     // type username, so on focus check is not triggered....
 
     await page.type("#username", "testing");
@@ -169,27 +171,31 @@ describe("Test Login page ", () => {
     );
     //console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Login password change visibility, show", async done => {
+  test("Login password change visibility, show", async () => {
     await page.click(".PasswordRightIcon");
 
     const iconShown = await waitThis(page, ".HideIcon", 1000);
     expect(iconShown).toBe(true);
 
-    done();
-  }, 3000);
-  test("login password change visibility, hide", async done => {
+    //   done();
+    // }, 3000);
+  });
+
+  test("login password change visibility, hide", async () => {
     await page.click(".PasswordRightIcon");
 
     const iconShown = await waitThis(page, ".EyeIcon", 1000);
     expect(iconShown).toBe(true);
 
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Login weak password quality check on blur event", async done => {
+  test("Login weak password quality check on blur event", async () => {
     // type username, so on focus check is not triggered....
 
     await page.type("#username", "testing");
@@ -213,11 +219,12 @@ describe("Test Login page ", () => {
     );
     //console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
   ///===========test needs work
-  test("Login strong password quality check on blur event", async done => {
+  test("Login strong password quality check on blur event", async () => {
     // 2 test results...
     // expect.assertions(2);
 
@@ -248,10 +255,11 @@ describe("Test Login page ", () => {
     // Login button should now be normal
     expect(is_disabled).toBe(false);
 
-    done();
-  }, 8000);
+    //   done();
+    // }, 8000);
+  });
 
-  test("Login button click invalid credentials", async done => {
+  test("Login button click invalid credentials", async () => {
     // using previous test input field values....
     await page.click(".LoginButton");
     const invalidLogin = i18nTranslate.__("passwordQuality");
@@ -265,10 +273,11 @@ describe("Test Login page ", () => {
 
     expect(checkInvalidLogin).toBe(true);
 
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Login create account click", async done => {
+  test("Login create account click", async () => {
     await page.click("#createAccountButton");
 
     const createAccountTitle = i18nTranslate.__("createAccountTitle");
@@ -277,19 +286,21 @@ describe("Test Login page ", () => {
 
     ///go back to login page -- maybe change this with browser back button
     await page.click("#loginLinkButton");
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Login forgot password click", async done => {
+  test("Login forgot password click", async () => {
     await page.click(".ForgotPasswordButton");
     const forgotPasswordTitle = i18nTranslate.__("resetPasswordTitle");
     const checkTitle = await checkThis(page, "body", forgotPasswordTitle, 3000);
     expect(checkTitle).toBe(true);
     await page.click(".backButton");
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Login forgot username click", async done => {
+  test("Login forgot username click", async () => {
     await page.waitForSelector("#forgotUsernameButton");
 
     await page.click("#forgotUsernameButton");
@@ -298,8 +309,9 @@ describe("Test Login page ", () => {
     const checkTitle = await checkThis(page, "body", forgotPasswordTitle, 3000);
     expect(checkTitle).toBe(true);
     await page.click(".backButton");
-    done();
-  }, 10000);
+    //   done();
+    // }, 10000);
+  });
 });
 
 afterAll(() => {

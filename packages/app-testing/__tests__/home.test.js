@@ -3,15 +3,13 @@ const puppeteer = require("puppeteer");
 const i18nTranslate = require("../getI18n");
 i18nTranslate.init();
 
-const NODE_ENV = "";
-
 const isDebugging = () => {
   let debugging_mode = {
     headless: false,
     slowMo: 50,
     devtools: true,
   };
-  return NODE_ENV === "debug" ? debugging_mode : {};
+  return process.env.NODE_ENV === "debug" ? debugging_mode : {};
 };
 
 const checkThis = async (page, selector, text, timeout = 0) => {
@@ -26,10 +24,10 @@ const checkThis = async (page, selector, text, timeout = 0) => {
       text,
       selector,
     );
-    console.log(`The text "${text}" was found on the page`);
+    // console.log(`The text "${text}" was found on the page`);
     found = true;
   } catch (e) {
-    console.log(`The text "${text}" was not found on the page`);
+    // console.log(`The text "${text}" was not found on the page`);
     found = false;
   }
 
@@ -78,15 +76,15 @@ beforeAll(async () => {
 });
 
 describe("Test Home page ", () => {
-  test("Register page loads correctly", async done => {
-    let text = i18nTranslate.__("welcomeMessage");
-    console.log("I18n", i18nTranslate.__("welcomeMessage"));
-
-    const found = await checkThis(page, "body", text, 10000);
-
-    expect(found).toBe(true);
-    done();
-  }, 16000);
+  // test("Register page loads correctly", async () => {
+  //   let text = i18nTranslate.__("welcomeMessage");
+  //   console.log("I18n", i18nTranslate.__("welcomeMessage"));
+  //   const found = await checkThis(page, "body", text, 10000);
+  //   expect(found).toBe(true);
+  //   // done();
+  //   // }, 16000);
+  // }, 16000);
+ 
 });
 
 afterAll(() => {

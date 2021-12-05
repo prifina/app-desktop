@@ -3,15 +3,13 @@ const puppeteer = require("puppeteer");
 const i18nTranslate = require("../getI18n");
 i18nTranslate.init();
 
-const NODE_ENV = "";
-
 const isDebugging = () => {
   let debugging_mode = {
     headless: false,
     slowMo: 50,
     devtools: true,
   };
-  return NODE_ENV === "debug" ? debugging_mode : {};
+  return process.env.NODE_ENV === "debug" ? debugging_mode : {};
 };
 
 const checkThis = async (page, selector, text, timeout = 0) => {
@@ -80,27 +78,27 @@ beforeAll(async () => {
 });
 
 describe("Test Register page ", () => {
-  test("Register page loads correctly", async done => {
+  test("Register page loads correctly", async () => {
     let text = i18nTranslate.__("welcomeMessage");
     console.log("I18n", i18nTranslate.__("welcomeMessage"));
 
     const found = await checkThis(page, "body", text, 10000);
 
     expect(found).toBe(true);
-    done();
-  }, 16000);
-
-  test("Testing register page title", async done => {
+    //   done();
+    // }, 16000);
+  });
+  test("Testing register page title", async () => {
     let text = i18nTranslate.__("createAccountTitle");
     console.log("I18n", i18nTranslate.__("createAccountTitle"));
 
     const found = await checkThis(page, "#createAccountContainer", text, 10000);
 
     expect(found).toBe(true);
-    done();
-  }, 7000);
-
-  test("Username check length, or if empty after blur event", async done => {
+    //   done();
+    // }, 7000);
+  });
+  test("Username check length, or if empty after blur event", async () => {
     const invalidLength = i18nTranslate.__("usernameError", {
       length: process.env.USERNAME_LENGTH,
     });
@@ -120,10 +118,10 @@ describe("Test Register page ", () => {
     //console.log("CHECK ", checkInvalidEntry);
 
     expect(checkInvalidEntry).toBe(true);
-    done();
-  }, 6000);
-
-  test("Username input no spaces allowed test", async done => {
+    //   done();
+    // }, 6000);
+  });
+  test("Username input no spaces allowed test", async () => {
     await page.focus("#username");
 
     let spacesNotAllowed = i18nTranslate.__("usernameError2");
@@ -141,10 +139,10 @@ describe("Test Register page ", () => {
     //console.log("CHECK ", checkInvalidEntry);
 
     expect(checkInvalidEntry).toBe(true);
-    done();
-  }, 6000);
-
-  test("Password check onFocus event if requirements container pops up", async done => {
+    //   done();
+    // }, 6000);
+  });
+  test("Password check onFocus event if requirements container pops up", async () => {
     // remove any previous entries...
     await page.evaluate(function () {
       document.querySelector("input#username").value = "";
@@ -164,10 +162,11 @@ describe("Test Register page ", () => {
     );
     //console.log("CHECK ", checkInvalidEntry);
     expect(waitForPopperContianer).toBe(true);
-    done();
-  }, 6000);
+    //   done();
+    // }, 6000);
+  });
 
-  test("Password value conditions test", async done => {
+  test("Password value conditions test", async () => {
     // type in first name, last name and username
     await page.type("#firstName", "name");
     await page.type("#lastName", "lastname");
@@ -199,10 +198,10 @@ describe("Test Register page ", () => {
     );
     //console.log("CHECK ", checkInvalidEntry);
     expect(waitForPopperContianer).toBe(false);
-    done();
+    //   done();
+    // }, 8000);
   }, 8000);
-
-  test("Password and confirmation password not matching on next click test", async done => {
+  test("Password and confirmation password not matching on next click test", async () => {
     // type in first name, last name and username
     await page.type("#firstName", "name");
     await page.type("#lastName", "lastname");
@@ -234,27 +233,29 @@ describe("Test Register page ", () => {
     console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
 
-    done();
-  }, 8000);
-
-  test("Password input icon change visibility, show", async done => {
+    //   done();
+    // }, 8000);
+  });
+  test("Password input icon change visibility, show", async () => {
     await page.click(".PasswordRightIcon");
 
     const iconShown = await waitThis(page, ".HideIcon", 1000);
     expect(iconShown).toBe(true);
 
-    done();
-  }, 3000);
-  test("Password input icon change visibility, hide", async done => {
+    //   done();
+    // }, 3000);
+  });
+
+  test("Password input icon change visibility, hide", async () => {
     await page.click(".PasswordRightIcon");
 
     const iconShown = await waitThis(page, ".EyeIcon", 1000);
     expect(iconShown).toBe(true);
 
-    done();
-  }, 6000);
-
-  test("Email invalid or exisiting value test", async done => {
+    //   done();
+    // }, 6000);
+  });
+  test("Email invalid or exisiting value test", async () => {
     // remove any previous entries...
     await page.evaluate(function () {
       document.querySelector("input#email").value = "";
@@ -283,10 +284,10 @@ describe("Test Register page ", () => {
     console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
 
-    done();
-  }, 8000);
-
-  test("Login link button click", async done => {
+    //   done();
+    // }, 8000);
+  });
+  test("Login link button click", async () => {
     await page.waitForSelector("#loginLinkButton");
 
     await page.click("#loginLinkButton");
@@ -295,40 +296,9 @@ describe("Test Register page ", () => {
     const checkTitle = await checkThis(page, "body", loginTitle, 3000);
     expect(checkTitle).toBe(true);
     await page.click(".createAccountButton");
-    done();
-  }, 10000);
-
-  test("Next button disable test", async done => {
-    // window.location.reload(true);
-    // expect(component.find("#nextButton").props().disabled).toBeTruthy();
-
-    // const submitButton = page.find("#nexButton");
-
-    // expect(submitButton.prop("disabled")).toBeTruthy();
-    // const is_disabled = (await page.$("#nextButton[disabled]")) !== null;
-    // // Login button should now be normal
-    // expect(is_disabled).toBe(false);
-
-    // // const is_disabled = (await page.$("#nextButton[disabled]")) !== null;
-    // // // Login button should now be normal
-    // // expect(is_disabled).toBe(true);
-
-    // await page.type("#firstName", "name");
-    // await page.type("#lastName", "lastname");
-    // await page.type("#username", "username");
-    // await page.type("#accountPassword", "validPassword123!*#");
-    // await page.type("#passwordConfirm", "validPassword123!*#");
-    // await page.type("#email", "name@email.com");
-    // await page.type("#phoneNumber", "123123");
-
-    // // Login button should now be normal
-    // expect(is_disabled).toBe(true);
-    // expect(is_disabled).toBe(false);
-
-    done();
-  }, 8000);
-
-  ///addd testing for existing account
+    //   done();
+    // }, 10000);
+  });
 });
 
 afterAll(() => {
