@@ -1,2 +1,0 @@
-(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[26],{1152:function(t,e,p){"use strict";p.r(e);var i=p(14),c=p(54),n=(p(4),p(8)),s=p(3),a=["title","icon"];e.default=function(t){var e=t.title,p=t.icon,o=Object(c.a)(t,a),r=p;return Object(s.jsxs)(n.Box,Object(i.a)(Object(i.a)({p:1,textAlign:"center"},o),{},{children:[Object(s.jsx)(r,{}),Object(s.jsx)(n.Text,{textStyle:"caption",style:{position:"relative",top:"-12px"},children:e})]}))}}}]);
-//# sourceMappingURL=26.3ecf5881.chunk.js.map
