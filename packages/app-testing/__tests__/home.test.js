@@ -56,14 +56,10 @@ let page;
 beforeAll(async () => {
   // const browser = await puppeteer.launch({ headless: true });
 
-  jest.setTimeout(7000);
-
-  browser = await puppeteer.launch(isDebugging());
+  // browser = await puppeteer.launch(isDebugging());
+  browser = await puppeteer.launch({ headless: false });
   page = await browser.newPage();
   await page.goto(process.env.TEST_URL + "/home");
-  //   await page.goto(process.env.TEST_URL + "/register");
-
-  //   click on create account button to go to register
 
   // default design viewport size
   page.setViewport({ width: 500, height: 2400 });
@@ -76,15 +72,31 @@ beforeAll(async () => {
 });
 
 describe("Test Home page ", () => {
-  // test("Register page loads correctly", async () => {
-  //   let text = i18nTranslate.__("welcomeMessage");
-  //   console.log("I18n", i18nTranslate.__("welcomeMessage"));
-  //   const found = await checkThis(page, "body", text, 10000);
-  //   expect(found).toBe(true);
-  //   // done();
-  //   // }, 16000);
-  // }, 16000);
- 
+  test("Load Background test", async () => {
+    //in first test wait for home to completely load
+    await page.waitForNavigation({ waitUntil: "networkidle2" });
+
+    // await page.waitForSelector("#styledBackground");
+
+    const backgroundShown = await waitThis(page, "#styledBackground", 6000);
+    expect(backgroundShown).toBe(true);
+
+    // done();
+  }, 6000);
+  // });
+  test("Apps grid test", async () => {
+    const appGridShown = await waitThis(page, "#appsGrid", 6000);
+    expect(appGridShown).toBe(true);
+
+    // done();
+  }, 6000);
+
+  test("Apps cell test", async () => {
+    const appCellShown = await waitThis(page, "#cell", 6000);
+    expect(appCellShown).toBe(true);
+
+    // done();
+  }, 6000);
 });
 
 afterAll(() => {
