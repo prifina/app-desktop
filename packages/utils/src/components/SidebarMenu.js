@@ -10,6 +10,7 @@ import { BlendIcon } from "@blend-ui/icons";
 import PropTypes from "prop-types";
 
 import styled from "styled-components";
+import { backgroundColor } from "styled-system";
 
 const SidebarContainer = styled(Flex)`
   width: 286px;
@@ -54,34 +55,34 @@ const SidebarContainer = styled(Flex)`
 
 export const ListMenuItem = styled.li`
   /* */
-  color: #969595;
+
   list-style: none;
   width: 100%;
   &:hover {
-    background: #d7eeff;
+    background: ${props => props.pointerBackground || "#d7eeff"};
     .icon {
-      color: #9fcde3;
+      color: ${props => props.pointerIconColor || "#9fcde3"};
     }
     .text {
-      color: #9fcde3;
+      color: ${props => props.pointerTextColor || "#9fcde3"};
     }
   }
   .focus {
-    background: red;
+    background: ${props => props.pointerBackground || "#d7eeff"} !important;
     .icon {
-      color: #9fcde3;
+      color: ${props => props.pointerIconColor || "#9fcde3"};
     }
     .text {
-      color: #9fcde3;
+      color: ${props => props.pointerTextColor || "#9fcde3"};
     }
   }
   .active {
-    background: red !important;
+    background: ${props => props.pointerBackground || "#d7eeff"} !important;
     .icon {
-      color: #9fcde3;
+      color: ${props => props.pointerIconColor || "#9fcde3"};
     }
     .text {
-      color: #9fcde3;
+      color: ${props => props.pointerTextColor || "#9fcde3"};
     }
   }
   background-color: ${props => props.backgroundColor};
@@ -148,9 +149,13 @@ export const ListItemIconLink = ({
   </Flex>
 );
 
-export const SidebarMenu = ({
+const SidebarMenu = ({
   //theme,
   items,
+  pointerBackground,
+  pointerIconColor,
+  pointerTextColor,
+  backgroundColor,
   ...props
 }) => {
   console.log("SIDEBAR ", props);
@@ -163,7 +168,6 @@ export const SidebarMenu = ({
             label,
             onClick,
             icon,
-            backgroundColor,
             badge,
             badgeColor,
             disabled,
@@ -174,6 +178,9 @@ export const SidebarMenu = ({
               onClick={onClick}
               backgroundColor={backgroundColor}
               style={disabled ? { pointerEvents: "none" } : null}
+              pointerBackground={pointerBackground}
+              pointerIconColor={pointerIconColor}
+              pointerTextColor={pointerTextColor}
               {...rest}
             >
               <ListItemIconLink icon={icon} label={label}>
@@ -193,4 +200,10 @@ export const SidebarMenu = ({
 
 SidebarMenu.propTypes = {
   items: PropTypes.array,
+  pointerBackground: PropTypes.string,
+  pointerIconColor: PropTypes.string,
+  pointerTextColor: PropTypes.string,
+  backgroundColor: PropTypes.string,
 };
+
+export default SidebarMenu;
