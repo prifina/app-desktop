@@ -206,6 +206,7 @@ export const WidgetBase = styled.div`
   border-radius: 8px; // missing from theme...
   margin-right: 24px;
   margin-bottom: 24px;
+  cursor: pointer;
 
   .overContainer {
     transition: all 0.4s ease;
@@ -215,7 +216,7 @@ export const WidgetBase = styled.div`
     bottom: 0;
     width: 100%;
   }
-  :hover .overContainer {
+  &:hover .overContainer {
     height: 168px;
   }
 
@@ -374,6 +375,19 @@ export const UnderlineButton = styled(Button)`
   }
 `;
 
+export const DataSourceButton = styled.img`
+  width: 44px;
+  height: 44px;
+  border-radius: 8.80208px;
+  border: 0;
+  margin-right: 5px;
+  &:active {
+    opacity: 0.5;
+  }
+  cursor: pointer;
+`;
+
+/*
 export const DataSourceButton = styled.button`
   background-image: ${props => `url(${props.backgroundImage})`};
   background-position: "center";
@@ -387,3 +401,4 @@ export const DataSourceButton = styled.button`
     opacity: 0.5;
   }
 `;
+*/
