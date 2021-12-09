@@ -58,13 +58,13 @@ table {
     text-align: left;
     height: 55px;
     border-bottom: 1px solid #4b4b4b;
+    background: lightGray;
   },
   td {
     height:40px;
     margin: 0;
     //   padding: 0.5rem;
     border-bottom: 1px solid #4b4b4b;
-
     :last-child {
       border-right: 0;
     }

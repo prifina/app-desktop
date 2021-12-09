@@ -15,6 +15,7 @@ import { backgroundColor } from "styled-system";
 const SidebarContainer = styled(Flex)`
   width: 286px;
   height: 100%;
+  z-index: 1;
   padding-left: 64px;
   padding-right: 24px;
   padding-top: 130px;

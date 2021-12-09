@@ -1,8 +1,18 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
-import { Box, Flex, Text, Button, Image, Link, useTheme } from "@blend-ui/core";
-import { ReactComponent as DefaultWidget } from "../assets/third-party-app.svg";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Image,
+  Link,
+  Radio,
+  useTheme,
+} from "@blend-ui/core";
+
+import { BlendIcon } from "@blend-ui/icons";
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import styled, { createGlobalStyle } from "styled-components";
@@ -27,9 +37,17 @@ import connectDataSources from "../assets/data-cloud/connect-data-sources.svg";
 import folder from "../assets/folder.svg";
 
 ///data source icons
-
 import ouraIcon from "../assets/app-market/oura-icon.svg";
 import fitbitIcon from "../assets/app-market/fitbit-icon.svg";
+import garminIcon from "../assets/app-market/garmin-icon.svg";
+
+import lefArrow from "@iconify/icons-bx/bxs-chevron-left";
+import mdiFlash from "@iconify/icons-mdi/flash";
+import mdiFlashOutline from "@iconify/icons-mdi/flash-outline";
+import mdiHomeOutline from "@iconify/icons-mdi/home-outline";
+import mdiFileDocumentOutline from "@iconify/icons-mdi/file-document-outline";
+import { color } from "styled-system";
+
 const GlobalStyle = createGlobalStyle`
 .data-cloud path {
   fill: #F15F79;
@@ -55,22 +73,41 @@ const DataConsole = props => {
     });
   }, []);
 
+  const data = [
+    {
+      name: "Oura",
+      frequency: "Daily",
+      method: "API Connection",
+      last: "4/4/21",
+      batches: "4",
+      actions: "",
+    },
+    {
+      name: "Fitbit",
+      frequency: "Daily",
+      method: "API Connection",
+      last: "4/4/21",
+      batches: "4",
+      actions: "",
+    },
+  ];
+
   const Columns = [
     {
-      Header: "Name",
+      Header: "Data Source",
       accessor: "name",
       Cell: props => {
         return (
           <Text
             // fontSize="xs"
             onClick={() => {
-              setStep(3);
-              setAllValues({
-                ...allValues,
-                // title: widgets.current[w].title,
-                name: props.cell.value,
-                id: props.row.values.id,
-              });
+              // setStep(3);
+              // setAllValues({
+              //   ...allValues,
+              //   // title: widgets.current[w].title,
+              //   name: props.cell.value,
+              //   id: props.row.values.id,
+              // });
             }}
           >
             {props.cell.value}
@@ -79,63 +116,43 @@ const DataConsole = props => {
       },
     },
     {
-      Header: "App ID",
-      accessor: "id",
+      Header: "Frequency",
+      accessor: "frequency",
       Cell: props => {
         return <Text>{props.cell.value}</Text>;
       },
     },
     {
-      Header: "Type",
-      accessor: "appType",
-      className: "appType",
-      // Cell: cellProp => appTypes[cellProp.row.values.appType],
-    },
-
-    {
-      Header: "Title",
-      accessor: "title",
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      className: "status",
-      Cell: cellProp => versionStatus[cellProp.row.values.status],
-    },
-    {
-      Header: "Version",
-      accessor: "version",
-      className: "version",
-    },
-    {
-      Header: "Modified",
-      accessor: "modifiedAt",
-      className: "date",
+      Header: "Method",
+      accessor: "method",
       Cell: props => {
         return <Text>{props.cell.value}</Text>;
       },
     },
     {
-      Header: () => null, // No header
-      id: "sendApp", // It needs an ID
-      Cell: cellProp => {
-        //console.log("ROW ", cellProp);
-        return (
-          <Button
-            size="xs"
-            onClick={e => {
-              console.log(cellProp.row.values);
-              sendClick(cellProp.row.values);
-            }}
-          >
-            {i18n.__("submit")}
-          </Button>
-        );
+      Header: "Last",
+      accessor: "last",
+      Cell: props => {
+        return <Text>{props.cell.value}</Text>;
+      },
+    },
+    {
+      Header: "Batches",
+      accessor: "batches",
+      Cell: props => {
+        return <Text>{props.cell.value}</Text>;
+      },
+    },
+    {
+      Header: "Actions",
+      accessor: "actions",
+      Cell: props => {
+        return <Text>{props.cell.value}</Text>;
       },
     },
   ];
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2);
 
   switch (step) {
     case 0:
@@ -159,13 +176,29 @@ const DataConsole = props => {
     setActiveTab(tab);
   };
 
+  const [allValues, setAllValues] = useState({
+    title: "",
+  });
+
   const items = [
     {
       label: "Home",
+      icon: mdiHomeOutline,
+      onClick: () => {
+        setStep(0);
+      },
     },
-    { label: "Data Sources" },
     {
-      label: "Apps",
+      label: "Data Sources",
+      icon: mdiFlashOutline,
+      onClick: () => {
+        setStep(1);
+      },
+    },
+    {
+      label: "All Files",
+      icon: mdiFileDocumentOutline,
+      disabled: true,
     },
   ];
 
@@ -175,28 +208,66 @@ const DataConsole = props => {
       image: ouraIcon,
       category: "Health * Wearables",
       description: "The most accurate data on Sleep, Readiness, and Activity.",
-      buttonText: "connect",
+      children: (
+        <Button
+          size="xs"
+          onClick={() => {
+            setStep(2);
+            setAllValues({
+              ...allValues,
+              title: "Oura",
+            });
+          }}
+        >
+          Connect
+        </Button>
+      ),
     },
     {
       title: "Fitbit",
       image: fitbitIcon,
       category: "Health * Wearables",
       description: "The most accurate data on Sleep, Readiness, and Activity.",
-      buttonText: "connect",
+      children: (
+        <Button
+          size="xs"
+          onClick={() => {
+            setStep(2);
+            setAllValues({
+              ...allValues,
+              title: "Fitbit",
+            });
+          }}
+        >
+          Connect
+        </Button>
+      ),
     },
     {
       title: "Garmin",
-      image: fitbitIcon,
+      image: garminIcon,
       category: "Health * Wearables",
       description: "The most accurate data on Sleep, Readiness, and Activity.",
-      buttonText: "connect",
+      children: (
+        <Button
+          size="xs"
+          onClick={() => {
+            setStep(2);
+            setAllValues({
+              ...allValues,
+              title: "Garmin",
+            });
+          }}
+        >
+          Connect
+        </Button>
+      ),
     },
   ];
 
   return (
     <>
       <GlobalStyle />
-
       <SidebarMenu items={items} />
       <Navbar backgroundColor="baseWhite">
         <PrifinaLogo className={"data-cloud"} />
@@ -209,9 +280,12 @@ const DataConsole = props => {
               paddingRight="65px"
               paddingLeft="65px"
               flexDirection="column"
+              width="100vw"
+              alignItems="center"
             >
               <Flex
                 className="bannerContainer"
+                width="1024px"
                 flexDirection="row"
                 bg="backgroundPrimary"
                 borderRadius="15px"
@@ -247,7 +321,11 @@ const DataConsole = props => {
                 <Image src={dataCloudBanner} />
               </Flex>
 
-              <Flex marginTop="24px">
+              <Flex
+                marginTop="24px"
+                width="1024px"
+                justifyContent="space-between"
+              >
                 <Flex
                   className="connectDataContainer"
                   flexDirection="column"
@@ -266,7 +344,13 @@ const DataConsole = props => {
                     </Text>
                   </Flex>
                   <Image src={connectDataSources} />
-                  <Button size="sm" mt="40px">
+                  <Button
+                    size="sm"
+                    mt="40px"
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
                     Connect
                   </Button>
                 </Flex>
@@ -323,20 +407,16 @@ const DataConsole = props => {
               paddingRight="30px"
               paddingLeft="25px"
               flexDirection="column"
+              width="100vw"
             >
               <div
                 style={{
                   overflow: "hidden",
                   paddingTop: 16,
                   paddingBottom: 16,
-                  paddingLeft: 40,
-                  paddingRight: 40,
-                  borderRadius: 10,
-                  minWidth: 1192,
-                  width: "100%",
+                  paddingLeft: 15,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "center",
                   alignItems: "center",
                 }}
               >
@@ -355,14 +435,15 @@ const DataConsole = props => {
                     </Tab>
                   </TabList>
                   <TabPanelList style={{ backgroundColor: null }}>
-                    <TabPanel
-                      style={{
-                        height: "100vh",
-                        paddingBottom: "50px",
-                        overflow: "auto",
-                      }}
-                    >
-                      <div style={{ overflow: "auto" }}>
+                    <TabPanel>
+                      <div
+                        style={{
+                          overflow: "auto",
+                          paddingBottom: "50px",
+                          overflow: "auto",
+                          minWidth: 1192,
+                        }}
+                      >
                         <Flex flexDirection="column">
                           <Box textAlign="center">
                             <Text textStyle="h2">Available data sources</Text>
@@ -371,25 +452,45 @@ const DataConsole = props => {
                               your Data cloud
                             </Text>
                           </Box>
-                          <Flex mt={40} mb={20} mr={5}>
+                          <Flex
+                            mt={40}
+                            mb={20}
+                            paddingRight="10px"
+                            paddingLeft="10px"
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
                             <C.SourceCard items={sourceData} />
                           </Flex>
                         </Flex>
                       </div>
                     </TabPanel>
                     <TabPanel>
-                      <div style={{ overflow: "auto", marginTop: 50 }}>
-                        <Flex>
+                      <div
+                        style={{
+                          overflow: "auto",
+                          marginTop: 50,
+                          paddingBottom: "50px",
+                        }}
+                      >
+                        <Flex flexDirection="column">
                           <Flex
-                            flexDirection="column"
                             mb={20}
+                            paddingLeft="45px"
                             justifyContent="space-between"
+                            alignItems="center"
                           >
                             <Text>Connected data sources</Text>
-                            <Button>+ Add Source</Button>
+                            <Button
+                              onClick={() => {
+                                setActiveTab(0);
+                              }}
+                            >
+                              Add Source
+                            </Button>
                           </Flex>
                           <div>
-                            <Table columns={Columns} />
+                            <Table columns={Columns} data={data} />
                           </div>
                         </Flex>
                       </div>
@@ -400,21 +501,91 @@ const DataConsole = props => {
             </Flex>
           </>
         )}
+        {step === 2 && (
+          <>
+            <Flex
+              width="100%"
+              justifyContent="center"
+              alignItems="center"
+              position="relative"
+            >
+              <C.TextButton
+                onClick={() => {
+                  setStep(1);
+                }}
+                style={{ position: "absolute", top: 40, left: 30 }}
+              >
+                <BlendIcon iconify={lefArrow} size="14px" />
+                Connected Sources
+              </C.TextButton>
+
+              <Flex
+                width="587px"
+                height="478px"
+                flexDirection="column"
+                justifyContent="space-between"
+                paddingTop="35px"
+                paddingBottom="35px"
+                boxShadow="0px 3.29175px 6.5835px rgba(91, 92, 91, 0.35)"
+                borderRadius="10px"
+              >
+                <Flex paddingRight="40px" paddingLeft="40px" mb={30}>
+                  <Text textStyle="h2">{allValues.title} data connector</Text>
+                </Flex>
+                <Flex
+                  height="65px"
+                  bg="#E0EAFF"
+                  alignItems="center"
+                  padding={14}
+                  style={{ margin: 0 }}
+                >
+                  <BlendIcon iconify={mdiFlash} color={colors.baseLink} />
+                  <Text color={colors.baseLink} fontSize="xxs" ml={8}>
+                    Connect your {allValues.title} account and Prifina will
+                    automatically retrieve your data and add it to your Data
+                    Cloud.
+                  </Text>
+                </Flex>
+                <Flex
+                  paddingRight="40px"
+                  paddingLeft="40px"
+                  flexDirection="column"
+                  mt={23}
+                >
+                  <Text textStyle="h4">Connection Preferences</Text>
+                  <Text fontSize="sm" color={colors.textMuted}>
+                    Make your choices and sign in to get data from{" "}
+                    {allValues.title}.
+                  </Text>
+                  <Flex mt={18}>
+                    <Text>Sync with your cloud:</Text>
+                  </Flex>
+                  <Flex>
+                    <Radio
+                      checked
+                      onChange={() => {}}
+                      value="TABLE"
+                      fontSize="md"
+                      textStyle={{ color: "white" }}
+                    >
+                      Daily (recommended)
+                    </Radio>
+                  </Flex>
+                </Flex>
+
+                <Flex
+                  justifyContent="space-between"
+                  paddingRight="40px"
+                  paddingLeft="40px"
+                >
+                  <Button>Disconnect</Button>
+                  <Button>Connect</Button>
+                </Flex>
+              </Flex>
+            </Flex>
+          </>
+        )}
       </Flex>
-      {/* 
-    <Box width={"100vw"} height={"100vh"}>
-      <Flex
-        justifyContent={"center"}
-        alignItems={"center"}
-        width={"100%"}
-        height={"100%"}
-      >
-        <Text  textStyle={"h3"}>
-          DataConsole
-        </Text>
-      </Flex>
-    </Box>
-    */}
     </>
   );
 };
