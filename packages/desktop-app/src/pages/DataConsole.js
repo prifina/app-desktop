@@ -47,7 +47,6 @@ import mdiFlash from "@iconify/icons-mdi/flash";
 import mdiFlashOutline from "@iconify/icons-mdi/flash-outline";
 import mdiHomeOutline from "@iconify/icons-mdi/home-outline";
 import mdiFileDocumentOutline from "@iconify/icons-mdi/file-document-outline";
-import { color } from "styled-system";
 
 const GlobalStyle = createGlobalStyle`
 .data-cloud path {
@@ -98,22 +97,7 @@ const DataConsole = props => {
       Header: "Data Source",
       accessor: "name",
       Cell: props => {
-        return (
-          <Text
-            // fontSize="xs"
-            onClick={() => {
-              // setStep(3);
-              // setAllValues({
-              //   ...allValues,
-              //   // title: widgets.current[w].title,
-              //   name: props.cell.value,
-              //   id: props.row.values.id,
-              // });
-            }}
-          >
-            {props.cell.value}
-          </Text>
-        );
+        return <Text>{props.cell.value}</Text>;
       },
     },
     {
