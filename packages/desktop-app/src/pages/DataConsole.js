@@ -22,6 +22,7 @@ import {
   listDataSourcesQuery,
   SidebarMenu,
   Navbar,
+  i18n,
 } from "@prifina-apps/utils";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";

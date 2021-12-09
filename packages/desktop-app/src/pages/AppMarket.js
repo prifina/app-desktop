@@ -18,6 +18,8 @@ import {
   getPrifinaUserQuery,
   installWidgetMutation,
   listAppMarketQuery,
+  SidebarMenu,
+  Navbar,
   i18n,
 } from "@prifina-apps/utils";
 
@@ -455,13 +457,12 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   return (
     <>
       <C.GlobalStyle />
-      <C.AppMarketSidebar items={items} />
+      <SidebarMenu items={items} />
+      <Navbar backgroundColor="baseWhite">
+        <PrifinaLogo className={"app-market"} title="App Market" />
+      </Navbar>
       {step === 0 && (
         <>
-          <C.NavbarContainer bg="baseWhite">
-            <PrifinaLogo className={"app-market"} title="App Market" />
-          </C.NavbarContainer>
-
           <Flex
             width="100%"
             height="100%"
@@ -543,10 +544,6 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       )}
       {step === 1 && (
         <>
-          <C.NavbarContainer bg="baseWhite">
-            <PrifinaLogo className="app-market" title="App Market" />
-          </C.NavbarContainer>
-
           <Flex
             width="100%"
             height="100%"
@@ -786,9 +783,6 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
               dataSourceItems={dataSourceItems}
             />
           )}
-          <C.NavbarContainer bg="baseWhite">
-            <PrifinaLogo className={"app-market"} title="App Market" />
-          </C.NavbarContainer>
           <Flex
             width="100%"
             height="100%"
