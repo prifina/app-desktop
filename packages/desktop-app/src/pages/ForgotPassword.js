@@ -372,7 +372,7 @@ const ForgotPassword = props => {
             <Box mt={45} mb={30} display={"inline-flex"}>
               <Flex>
                 <Button
-                  className="BackButton"
+                  className="backButton"
                   variation={"outline"}
                   onClick={() => {
                     setStep(4);

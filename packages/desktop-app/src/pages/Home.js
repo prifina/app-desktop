@@ -396,14 +396,14 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     <React.Fragment>
       <StyledBox>
         <PrifinaLogo />
-        <StyledBackground>
+        <StyledBackground id="styledBackground">
           {loadingStatus && <div />}
           {!loadingStatus && (
             <animated.div
               style={{ opacity: opacity.interpolate(o => (o > 0.6 ? 1 : o)) }}
             >
               <Box m={8} mt={77} style={{ zIndex: 3 }}>
-                <CssGrid columns={gridCols} flow="column">
+                <CssGrid id="appsGrid" columns={gridCols} flow="column">
                   {/* 
                 <CssCell left={3} top={1}>
                   {appIcons}
@@ -415,6 +415,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
                         //console.log("RENDER ", appIcon);
                         return (
                           <CssCell
+                            id="cell"
                             key={"cell-" + colIndex + "-" + pos}
                             left={installedAppIcons.length - colIndex + 1}
                             top={icons.length - pos}

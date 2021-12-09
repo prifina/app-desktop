@@ -342,7 +342,8 @@ CODE_DELIVERY_DESTINATION: "+********7102"
               >
                 <Flex>
                   <Button
-                    className={"ForgotUsernameButton"}
+                    id="forgotUsernameButton"
+                    // className={"ForgotUsernameButton"}
                     variation={"link"}
                     fontSize={"10px"}
                     onClick={() => {
@@ -505,7 +506,8 @@ CODE_DELIVERY_DESTINATION: "+********7102"
             <Box mt={77} display={"inline-flex"}>
               <Flex>
                 <Button
-                  className={"CreateAccountButton"}
+                  className="createAccountButton"
+                  id="createAccountButton"
                   variation={"outline"}
                   onClick={createAccountClick}
                 >
