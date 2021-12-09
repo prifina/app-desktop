@@ -26,8 +26,8 @@ i18n.init();
 const Styles = styled(Box)`
 /* This is required to make the table full-width */
 display: block;
-// max-width: 100%;
-width:1000px;
+max-width: 100%;
+// width:1000px;
 
 
 /* This will make the table scrollable when it gets too small */
@@ -53,17 +53,15 @@ table {
     }
   }
   th {
-    padding-left: 16px;
-    padding-right: 16px;
-    text-align: left;
+    text-align: center;
     height: 55px;
     border-bottom: 1px solid #4b4b4b;
     background: lightGray;
   },
   td {
+      text-align:center;
     height:40px;
     margin: 0;
-    //   padding: 0.5rem;
     border-bottom: 1px solid #4b4b4b;
     :last-child {
       border-right: 0;

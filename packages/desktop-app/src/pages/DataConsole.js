@@ -48,6 +48,10 @@ import mdiFlashOutline from "@iconify/icons-mdi/flash-outline";
 import mdiHomeOutline from "@iconify/icons-mdi/home-outline";
 import mdiFileDocumentOutline from "@iconify/icons-mdi/file-document-outline";
 
+import mdiCached from "@iconify/icons-mdi/cached";
+import mdiFileEditOutline from "@iconify/icons-mdi/file-edit-outline";
+import mdiTrashCanOutline from "@iconify/icons-mdi/trashcan-outline";
+
 const GlobalStyle = createGlobalStyle`
 .data-cloud path {
   fill: #F15F79;
@@ -132,7 +136,17 @@ const DataConsole = props => {
       Header: "Actions",
       accessor: "actions",
       Cell: props => {
-        return <Text>{props.cell.value}</Text>;
+        return (
+          <div
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <BlendIcon iconify={mdiCached} />
+            <BlendIcon iconify={mdiFileEditOutline} />
+            <BlendIcon iconify={mdiTrashCanOutline} />
+          </div>
+        );
       },
     },
   ];
@@ -257,7 +271,7 @@ const DataConsole = props => {
       <Navbar backgroundColor="baseWhite">
         <PrifinaLogo className={"data-cloud"} />
       </Navbar>
-      <Flex width="100vw" height="100vh" paddingLeft="286px">
+      <Flex paddingLeft="286px">
         {step === 0 && (
           <>
             <Flex
@@ -389,10 +403,10 @@ const DataConsole = props => {
           <>
             <Flex
               paddingTop="30px"
-              paddingRight="30px"
-              paddingLeft="25px"
+              // paddingRight="30px"
+              // paddingLeft="25px"
               flexDirection="column"
-              width="100vw"
+              width="100%"
             >
               <div
                 style={{
@@ -424,9 +438,8 @@ const DataConsole = props => {
                       <div
                         style={{
                           overflow: "auto",
+                          marginTop: 40,
                           paddingBottom: "50px",
-                          overflow: "auto",
-                          minWidth: 1192,
                         }}
                       >
                         <Flex flexDirection="column">
@@ -491,7 +504,8 @@ const DataConsole = props => {
             <Flex
               width="100%"
               justifyContent="center"
-              alignItems="center"
+              // alignItems="center"
+
               position="relative"
             >
               <C.TextButton
@@ -505,8 +519,9 @@ const DataConsole = props => {
               </C.TextButton>
 
               <Flex
+                mt={140}
                 width="587px"
-                height="478px"
+                height="390px"
                 flexDirection="column"
                 justifyContent="space-between"
                 paddingTop="35px"
@@ -514,7 +529,7 @@ const DataConsole = props => {
                 boxShadow="0px 3.29175px 6.5835px rgba(91, 92, 91, 0.35)"
                 borderRadius="10px"
               >
-                <Flex paddingRight="40px" paddingLeft="40px" mb={30}>
+                <Flex paddingRight="40px" paddingLeft="40px" mb={20}>
                   <Text textStyle="h2">{allValues.title} data connector</Text>
                 </Flex>
                 <Flex
@@ -535,14 +550,14 @@ const DataConsole = props => {
                   paddingRight="40px"
                   paddingLeft="40px"
                   flexDirection="column"
-                  mt={23}
+                  mt={12}
                 >
                   <Text textStyle="h4">Connection Preferences</Text>
                   <Text fontSize="sm" color={colors.textMuted}>
                     Make your choices and sign in to get data from{" "}
                     {allValues.title}.
                   </Text>
-                  <Flex mt={18}>
+                  <Flex mt={10}>
                     <Text>Sync with your cloud:</Text>
                   </Flex>
                   <Flex>
@@ -562,6 +577,7 @@ const DataConsole = props => {
                   justifyContent="space-between"
                   paddingRight="40px"
                   paddingLeft="40px"
+                  mt={20}
                 >
                   <Button>Disconnect</Button>
                   <Button>Connect</Button>

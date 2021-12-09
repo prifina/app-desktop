@@ -12,12 +12,13 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 
 export const SourceCardContainer = styled(Flex)`
-  width: 346px;
+  width: 300px;
   height: 134px;
   border-radius: 9px;
   box-shadow: 0px 3.29175px 6.5835px rgba(91, 92, 91, 0.35);
   align-items: center;
   padding: 8px;
+  margin-right: 24px;
 `;
 
 const Badge = styled.span`
