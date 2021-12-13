@@ -208,7 +208,7 @@ const DataConsole = props => {
       title: "Oura",
       image: ouraIcon,
       category: "Health * Wearables",
-      description: "The most accurate data on Sleep, Readiness, and Activity.",
+      description: "Sleep, Activity, Readiness data from your Oura ring.",
       children: (
         <Button
           size="xs"
@@ -228,7 +228,7 @@ const DataConsole = props => {
       title: "Fitbit",
       image: fitbitIcon,
       category: "Health * Wearables",
-      description: "The most accurate data on Sleep, Readiness, and Activity.",
+      description: "Sleep, Activity, Heartrate data from your Fitbit device.",
       children: (
         <Button
           size="xs"
@@ -248,7 +248,7 @@ const DataConsole = props => {
       title: "Garmin",
       image: garminIcon,
       category: "Health * Wearables",
-      description: "The most accurate data on Sleep, Readiness, and Activity.",
+      description: "Sleep, Activity, Heartrate data from your Garmin device.",
       children: (
         <Button
           size="xs"
