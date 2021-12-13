@@ -214,7 +214,7 @@ export const listSystemNotificationsByDate = `query listSystemNotifications($own
 }`;
 
 export const getRequestToken = `query getRequestToken($id: String!,$source:String!) {
-  getRequestToken($id: String!,$source:String!) {
+  getRequestToken(id: $id,source:$source) {
     requestURL
   }
 }`;

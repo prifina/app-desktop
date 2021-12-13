@@ -22,6 +22,8 @@ import {
 
 import { BlendIcon } from "@blend-ui/icons";
 
+import Login from "./Login";
+
 import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
 
 //import i18n from "../lib/i18n";
@@ -296,7 +298,7 @@ const RecoverUsername = props => {
 
   return (
     <React.Fragment>
-      {/* {step === 4 && <Login />} */}
+      {step === 4 && <Login />}
       {step === 0 && (
         <Box mt={120}>
           <ProgressContainer
@@ -385,9 +387,10 @@ const RecoverUsername = props => {
             <Box mt={45} mb={30} display={"inline-flex"}>
               <Flex>
                 <Button
+                  className="backButton"
                   variation={"outline"}
                   onClick={() => {
-                    setStep(0);
+                    setStep(4);
                   }}
                 >
                   {i18n.__("Back")}

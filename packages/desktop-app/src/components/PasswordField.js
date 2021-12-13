@@ -137,6 +137,7 @@ const PasswordField = forwardRef(
       <React.Fragment>
         {addPopper && (
           <PopperContainer
+            id="passwordPopperContainer"
             theme={theme}
             ref={setPopperElement}
             style={popperStyles}
