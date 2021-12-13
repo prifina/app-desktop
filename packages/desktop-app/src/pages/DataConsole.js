@@ -25,6 +25,8 @@ import {
   i18n,
 } from "@prifina-apps/utils";
 
+i18n.init();
+
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import PropTypes from "prop-types";
@@ -218,7 +220,7 @@ const DataConsole = props => {
             });
           }}
         >
-          Connect
+          {i18n.__("connect")}
         </Button>
       ),
     },
@@ -238,7 +240,7 @@ const DataConsole = props => {
             });
           }}
         >
-          Connect
+          {i18n.__("connect")}
         </Button>
       ),
     },
@@ -258,7 +260,7 @@ const DataConsole = props => {
             });
           }}
         >
-          Connect
+          {i18n.__("connect")}
         </Button>
       ),
     },
@@ -301,20 +303,16 @@ const DataConsole = props => {
                   paddingBottom="25px"
                   maxWidth="613px"
                 >
-                  <Text textStyle="h3">
-                    Bring all your data into Data Cloud
-                  </Text>
+                  <Text textStyle="h3">{i18n.__("dataCloudHomeHeading")}</Text>
                   <Text color={colors.textMuted}>
-                    Your Data Cloud is the heart of your Personal Data Engine.
-                    By bringing your data into your personal data cloud, you can
-                    activate it in different apps in your Prifina account.
+                    {i18n.__("dataCloudHomeText")}
                   </Text>
                   <Button
                     size="md"
                     variation="outline"
                     style={{ position: "absolute", bottom: 30 }}
                   >
-                    Learn More
+                    {i18n.__("learnMore")}
                   </Button>
                 </Flex>
                 <Image src={dataCloudBanner} />
@@ -337,9 +335,9 @@ const DataConsole = props => {
                   padding="25px"
                 >
                   <Flex flexDirection="column" alignItems="center" mb={40}>
-                    <Text textStyle="h4">Connect data sources</Text>
+                    <Text textStyle="h4">{i18n.__("connectDataSources")}</Text>
                     <Text fontSize="xxs">
-                      Connecting your data sources to activate this data in apps
+                      {i18n.__("connectingDataSources")}
                     </Text>
                   </Flex>
                   <Image src={connectDataSources} />
@@ -350,7 +348,7 @@ const DataConsole = props => {
                       setStep(1);
                     }}
                   >
-                    Connect
+                    {i18n.__("connect")}
                   </Button>
                 </Flex>
                 <Flex
@@ -365,10 +363,8 @@ const DataConsole = props => {
                   padding="25px"
                 >
                   <Flex flexDirection="column" alignItems="center" mb={40}>
-                    <Text textStyle="h4">Upload your data</Text>
-                    <Text fontSize="xxs">
-                      You can upload one file at a time
-                    </Text>
+                    <Text textStyle="h4">{i18n.__("uploadData")}</Text>
+                    <Text fontSize="xxs">{i18n.__("uploadFileText")}</Text>
                   </Flex>
                   <Flex
                     bg="baseTertiary"
@@ -383,16 +379,14 @@ const DataConsole = props => {
                   >
                     <Image src={folder} width="73px" />
                     <Flex>
-                      <Text fontSize="xxs">
-                        Drag and drop your files here or
-                      </Text>
+                      <Text fontSize="xxs">{i18n.__("dragAndDropText")}</Text>
                       <Link fontSize="xxs" ml={3}>
-                        click to browse
+                        {i18n.__("clickToBrowse")}
                       </Link>
                     </Flex>
                   </Flex>
                   <Text fontSize="xxs" color={colors.textAccent}>
-                    Not more than 500 mb
+                    {i18n.__("notMoreThan500")}
                   </Text>
                 </Flex>
               </Flex>
@@ -427,10 +421,10 @@ const DataConsole = props => {
                 >
                   <TabList>
                     <Tab>
-                      <Text>Available Sources</Text>
+                      <Text>{i18n.__("availableSources")}</Text>
                     </Tab>
                     <Tab>
-                      <Text>Connected Sources</Text>
+                      <Text>{i18n.__("connectedSources")}</Text>
                     </Tab>
                   </TabList>
                   <TabPanelList style={{ backgroundColor: null }}>
@@ -444,10 +438,11 @@ const DataConsole = props => {
                       >
                         <Flex flexDirection="column">
                           <Box textAlign="center">
-                            <Text textStyle="h2">Available data sources</Text>
+                            <Text textStyle="h2">
+                              {i18n.__("availableDataSources")}
+                            </Text>
                             <Text fontSize="lg">
-                              Select from available data sources to add data to
-                              your Data cloud
+                              {i18n.__("selectAvailableDataSourcesText")}
                             </Text>
                           </Box>
                           <Flex
@@ -478,13 +473,13 @@ const DataConsole = props => {
                             justifyContent="space-between"
                             alignItems="center"
                           >
-                            <Text>Connected data sources</Text>
+                            <Text>{i18n.__("connectedSources")}</Text>
                             <Button
                               onClick={() => {
                                 setActiveTab(0);
                               }}
                             >
-                              Add Source
+                              {i18n.__("addSource")}
                             </Button>
                           </Flex>
                           <div>
@@ -501,13 +496,7 @@ const DataConsole = props => {
         )}
         {step === 2 && (
           <>
-            <Flex
-              width="100%"
-              justifyContent="center"
-              // alignItems="center"
-
-              position="relative"
-            >
+            <Flex width="100%" justifyContent="center" position="relative">
               <C.TextButton
                 onClick={() => {
                   setStep(1);
@@ -515,7 +504,7 @@ const DataConsole = props => {
                 style={{ position: "absolute", top: 40, left: 30 }}
               >
                 <BlendIcon iconify={lefArrow} size="14px" />
-                Connected Sources
+                {i18n.__("connectedSources")}
               </C.TextButton>
 
               <Flex
@@ -552,13 +541,13 @@ const DataConsole = props => {
                   flexDirection="column"
                   mt={12}
                 >
-                  <Text textStyle="h4">Connection Preferences</Text>
+                  <Text textStyle="h4">{i18n.__("connectionPreferences")}</Text>
                   <Text fontSize="sm" color={colors.textMuted}>
                     Make your choices and sign in to get data from{" "}
                     {allValues.title}.
                   </Text>
                   <Flex mt={10}>
-                    <Text>Sync with your cloud:</Text>
+                    <Text>{i18n.__("syncWithCloud")}</Text>
                   </Flex>
                   <Flex>
                     <Radio
@@ -568,7 +557,7 @@ const DataConsole = props => {
                       fontSize="md"
                       textStyle={{ color: "white" }}
                     >
-                      Daily (recommended)
+                      {i18n.__("dailyRecommended")}
                     </Radio>
                   </Flex>
                 </Flex>
@@ -579,8 +568,8 @@ const DataConsole = props => {
                   paddingLeft="40px"
                   mt={20}
                 >
-                  <Button>Disconnect</Button>
-                  <Button>Connect</Button>
+                  <Button>{i18n.__("disconnect")}</Button>
+                  <Button>{i18n.__("connect")}</Button>
                 </Flex>
               </Flex>
             </Flex>
