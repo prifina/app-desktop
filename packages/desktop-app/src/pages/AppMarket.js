@@ -18,7 +18,8 @@ import {
   getPrifinaUserQuery,
   installWidgetMutation,
   listAppMarketQuery,
-  listDataSourcesQuery,
+  SidebarMenu,
+  Navbar,
   i18n,
 } from "@prifina-apps/utils";
 
@@ -619,13 +620,12 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
   return (
     <>
       <C.GlobalStyle />
-      <C.AppMarketSidebar items={items} />
+      <SidebarMenu items={items} />
+      <Navbar backgroundColor="baseWhite">
+        <PrifinaLogo className={"app-market"} title="App Market" />
+      </Navbar>
       {step === 0 && (
         <>
-          <C.NavbarContainer bg="baseWhite">
-            <PrifinaLogo className={"app-market"} title="App Market" />
-          </C.NavbarContainer>
-
           <Flex
             width="100%"
             height="100%"
@@ -710,10 +710,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
       )}
       {step === 1 && (
         <>
-          <C.NavbarContainer bg="baseWhite">
-            <PrifinaLogo className="app-market" title="App Market" />
-          </C.NavbarContainer>
-
           <Flex
             width="100%"
             height="100%"
@@ -968,9 +964,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
               prifinaID={prifinaID}
             />
           )}
-          <C.NavbarContainer bg="baseWhite">
-            <PrifinaLogo className={"app-market"} title="App Market" />
-          </C.NavbarContainer>
           <Flex
             width="100%"
             height="100%"

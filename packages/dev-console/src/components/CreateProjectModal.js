@@ -144,9 +144,8 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                     // checked
                     onChange={() => {}}
                     value="TABLE"
-                    fontSize="14px"
+                    fontSize="sm"
                     color="#AA1370"
-                    styl
                     textStyle={{ color: "white" }}
                   >
                     {i18n.__("widget")}
@@ -157,7 +156,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                     checked
                     value="TABLE"
                     color="#AA1370"
-                    fontSize="14px"
+                    fontSize="sm"
                   >
                     {i18n.__("app")}
                   </Radio>
