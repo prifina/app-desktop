@@ -35,6 +35,15 @@ import {
   updatePrifinaUser,
 } from "./mutations";
 
+// until the amplify identitypoolregion bug is fixed...
+import {
+  CognitoIdentityClient,
+  GetIdCommand,
+  GetCredentialsForIdentityCommand,
+} from "@aws-sdk/client-cognito-identity";
+
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+
 //import Amplify, { Auth, API } from "aws-amplify";
 
 /*
@@ -51,6 +60,114 @@ input SearchResultInput {
 }
 */
 
+export const createClient = async (endpoint, region, currentSession) => {
+  /*
+    // this is not authenticated credentials, because of amplify bug...
+    Auth.currentCredentials().then(c => {
+      console.log("HOME USER CLIENT ", c);
+    });
+    */
+  console.log("CLIENT ", endpoint, region, currentSession);
+
+  //const _currentSession = await Auth.currentSession();
+  const token = currentSession.getIdToken().payload;
+  const userIdPool = localStorage.getItem("LastSessionIdentityPool");
+  //const provider='cognito-idp.'+userPoolRegion+'.amazonaws.com/'+userPoolId;
+  const provider = token["iss"].replace("https://", "");
+  let identityParams = {
+    IdentityPoolId: userIdPool,
+    Logins: {},
+  };
+  const idToken = currentSession.getIdToken().getJwtToken();
+  identityParams.Logins[provider] = idToken;
+  const cognitoClient = new CognitoIdentityClient({
+    region: userIdPool.split(":")[0],
+  });
+  //console.log(identityParams);
+  const cognitoIdentity = await cognitoClient.send(
+    new GetIdCommand(identityParams),
+  );
+  //console.log("COGNITO IDENTITY ", cognitoIdentity);
+
+  let credentialParams = {
+    IdentityId: cognitoIdentity.IdentityId,
+    Logins: {},
+  };
+
+  credentialParams.Logins[provider] = idToken;
+  //console.log(credentialParams);
+  const cognitoIdentityCredentials = await cognitoClient.send(
+    new GetCredentialsForIdentityCommand(credentialParams),
+  );
+  //console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
+  const clientCredentials = {
+    identityId: cognitoIdentity.IdentityId,
+    accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,
+    secretAccessKey: cognitoIdentityCredentials.Credentials.SecretKey,
+    sessionToken: cognitoIdentityCredentials.Credentials.SessionToken,
+    expiration: cognitoIdentityCredentials.Credentials.Expiration,
+    authenticated: true,
+  };
+  //console.log("APPSYNC CLIENT CREDENTIALS ", clientCredentials);
+  const client = new AWSAppSyncClient({
+    url: endpoint,
+    region: region,
+    auth: {
+      type: AUTH_TYPE.AWS_IAM,
+      credentials: clientCredentials,
+    },
+    disableOffline: true,
+  });
+  return Promise.resolve(client);
+
+  /*
+    const client = new AWSAppSyncClient({
+      url: endpoint,
+      region: region,
+      auth: {
+        type: AUTH_TYPE.AWS_IAM,
+        //credentials: () => Auth.currentCredentials(),
+      },
+
+      disableOffline: true,
+    });
+    return client;
+    */
+  /*
+    const AppSyncConfig = {
+      url: endpoint,
+      region: region,
+      auth: {
+        type: AUTH_TYPE.AWS_IAM,
+        credentials: () => Auth.currentCredentials(),
+      },
+
+      disableOffline: true,
+    };
+    const client = new AWSAppSyncClient(AppSyncConfig, {
+      link: new createAppSyncLink({
+        ...AppSyncConfig,
+        resultsFetcherLink: ApolloLink.from([
+          setContext((request, previousContext) => {
+            console.log("APOLLO ", previousContext, request);
+            return {
+              headers: {
+                ...previousContext.headers,
+                "x-tro-organization": "TESTING-HEADER",
+              },
+            };
+          }),
+          createHttpLink({
+            uri: AppSyncConfig.url,
+          }),
+        ]),
+      }),
+    });
+
+    console.log("USER CLIENT ", client);
+    */
+};
+
 export const installWidgetMutation = (API, id, widget) => {
   return API.graphql({
     query: installWidget,
@@ -62,14 +179,14 @@ export const updateActivityMutation = (API, id, app) => {
   return API.graphql({
     query: updateActivity,
     variables: { id: id, activeApp: app },
-    authMode: "AMAZON_COGNITO_USER_POOLS",
+    authMode: "AWS_IAM",
   });
 };
 export const createNotificationMutation = (API, input) => {
   return API.graphql({
     query: createNotification,
     variables: { input: input },
-    authMode: "AMAZON_COGNITO_USER_POOLS",
+    authMode: "AWS_IAM",
   });
 };
 export const addSearchResultMutation = (API, input) => {

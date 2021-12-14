@@ -45,6 +45,14 @@ import {
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
 
+//import CognitoIdentity from 'aws-sdk/clients/cognitoidentity';
+/*
+import {
+  CognitoIdentityClient,
+  GetIdCommand,
+  GetCredentialsForIdentityCommand,
+} from "@aws-sdk/client-cognito-identity";
+*/
 //import PropTypes from "prop-types";
 i18n.init();
 /*
@@ -131,6 +139,7 @@ getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
 
       // USER_IDENTITY_POOL_ID
       let userIdPool = config.cognito.USER_IDENTITY_POOL_ID;
+
       if (prifinaUserIdPool.data.getLoginUserIdentityPool !== "") {
         userIdPool = prifinaUserIdPool.data.getLoginUserIdentityPool;
       }
@@ -140,31 +149,71 @@ getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
       //Auth._config.identityPoolId
       //Auth._config.region
       currentConfig.identityPoolId = userIdPool;
-      currentConfig.region = userIdPool.split(":")[0];
+      //currentConfig.region = userIdPool.split(":")[0];
+      currentConfig.identityPoolRegion = userIdPool.split(":")[0];
       Auth.configure(currentConfig);
 
       let user = await Auth.signIn(loginFields.username, loginFields.password);
       console.log("LOGIN", user);
+      /*
       console.log("LOGIN CONFIG2", Auth._config);
+      console.log("LOGIN CONFIG3", currentConfig);
+      const credentials = await Auth.currentUserCredentials();
+      console.log("INIT AUTH CREDS ", credentials);
+      const _currentSession = await Auth.currentSession();
+      console.log("INIT SESSION ", _currentSession);
+      */
       localStorage.setItem(
         "LastSessionIdentityPool",
         currentConfig.identityPoolId,
       );
-      /*
-      localStorage.setItem(
-        "LastSessionIdentityPool",
-        "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3",
+      /*   
+      // Keep this in case there is a need to debug identity pool iam credentals
+      const token = _currentSession.getIdToken().payload;
+      //const provider='cognito-idp.'+userPoolRegion+'.amazonaws.com/'+userPoolId;
+      const provider = token["iss"].replace("https://", "");
+      let identityParams = {
+        IdentityPoolId: userIdPool,
+        //AccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
+        //AccountId: "352681697435",
+        Logins: {},
+      };
+      identityParams.Logins[provider] = _currentSession
+        .getIdToken()
+        .getJwtToken();
+
+      const cognitoClient = new CognitoIdentityClient({
+        //region: currentConfig.region,
+        region: currentConfig.identityPoolRegion,
+        //customUserAgent: getAmplifyUserAgent(),
+      });
+      // for a returning user, this will retrieve the previous identity assocaited with the logins
+      //const { IdentityId } = await cognitoClient.send(
+      console.log(identityParams);
+      const cognitoIdentity = await cognitoClient.send(
+        new GetIdCommand(identityParams),
       );
-      */
-      /*
-      let currentConfig = Auth._config;
-      console.log("AUTH CONFIG ", currentConfig);
-      currentConfig.identityPoolId =
-        "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3";
-      Auth.configure(currentConfig);
-      const _currentSession = await Auth.currentSession();
-      console.log("LOGIN SESSION ", _currentSession);
-      */
+
+      //const cognitoIdentity=await cognitoidentity.getId(identityParams).promise();
+      console.log(cognitoIdentity);
+
+      //const credentials=await Auth.currentUserCredentials();
+      //console.log('INIT AUTH CREDS ',credentials);
+    
+      const cognitoIdentity=await cognitoidentity.getId(identityParams).promise();
+      console.log(cognitoIdentity);
+
+      let credentialParams = {
+        IdentityId: cognitoIdentity.IdentityId,
+      Logins:{}};
+
+    
+    credentialParams.Logins[provider] = idToken;
+    const cognitoIdentityCredentials=await cognitoClient.send(
+				new GetCredentialsForIdentityCommand(credentialParams
+				)
+    //console.log(cognitoIdentityCredentials);
+*/
       //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
       //setConfirmCode(true);
       if (appDebug && user.preferredMFA === "NOMFA") {

@@ -31,7 +31,7 @@ import {
 //import ImportComponent from "../components/ImportComponent";
 //import { useIsMountedRef } from "../lib/componentUtils";
 
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+//import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
 //import AWSAppSyncClient, { createAppSyncLink } from "aws-appsync";
 //import { setContext } from "apollo-link-context";
@@ -67,7 +67,9 @@ import {
   withUsermenu,
   newSystemNotification,
   getSystemNotificationCountQuery,
+  //getRequestToken,
   //newConnectNotification,
+  createClient,
 } from "@prifina-apps/utils";
 
 //import { useAppContext } from "../lib/contextLib";
@@ -83,6 +85,14 @@ import { useSpring, animated } from "react-spring";
 
 import PropTypes from "prop-types";
 
+// until the amplify identitypoolregion bug is fixed...
+/*
+import {
+  CognitoIdentityClient,
+  GetIdCommand,
+  GetCredentialsForIdentityCommand,
+} from "@aws-sdk/client-cognito-identity";
+*/
 /*
 const newWaiting = `subscription addWaiting($key:String!) {
   Waiting(key: $key) {
@@ -260,7 +270,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
         userMenu.setClientHandler(clientHandler);
         userMenu.setActiveUser(activeUser);
         //userMenu.setPrifinaGraphQLHandler(GRAPHQL);
-
+        console.log("USER APPSYNC ", clientHandler);
         await clientHandler.mutate({
           mutation: gql(updateActivity),
           variables: {
@@ -479,21 +489,79 @@ const Home = props => {
     },
   });
 */
-  const createClient = (endpoint, region) => {
+  const createClientx = async (endpoint, region) => {
+    /*
+    // this is not authenticated credentials, because of amplify bug...
     Auth.currentCredentials().then(c => {
       console.log("HOME USER CLIENT ", c);
     });
+    */
+    console.log("CLIENT ", endpoint, region);
 
+    const _currentSession = await Auth.currentSession();
+    const token = _currentSession.getIdToken().payload;
+    const userIdPool = localStorage.getItem("LastSessionIdentityPool");
+    //const provider='cognito-idp.'+userPoolRegion+'.amazonaws.com/'+userPoolId;
+    const provider = token["iss"].replace("https://", "");
+    let identityParams = {
+      IdentityPoolId: userIdPool,
+      Logins: {},
+    };
+    const idToken = _currentSession.getIdToken().getJwtToken();
+    identityParams.Logins[provider] = idToken;
+    const cognitoClient = new CognitoIdentityClient({
+      region: userIdPool.split(":")[0],
+    });
+    //console.log(identityParams);
+    const cognitoIdentity = await cognitoClient.send(
+      new GetIdCommand(identityParams),
+    );
+    //console.log("COGNITO IDENTITY ", cognitoIdentity);
+
+    let credentialParams = {
+      IdentityId: cognitoIdentity.IdentityId,
+      Logins: {},
+    };
+
+    credentialParams.Logins[provider] = idToken;
+    //console.log(credentialParams);
+    const cognitoIdentityCredentials = await cognitoClient.send(
+      new GetCredentialsForIdentityCommand(credentialParams),
+    );
+    //console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
+    const clientCredentials = {
+      identityId: cognitoIdentity.IdentityId,
+      accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,
+      secretAccessKey: cognitoIdentityCredentials.Credentials.SecretKey,
+      sessionToken: cognitoIdentityCredentials.Credentials.SessionToken,
+      expiration: cognitoIdentityCredentials.Credentials.Expiration,
+      authenticated: true,
+    };
+    //console.log("APPSYNC CLIENT CREDENTIALS ", clientCredentials);
     const client = new AWSAppSyncClient({
       url: endpoint,
       region: region,
       auth: {
         type: AUTH_TYPE.AWS_IAM,
-        credentials: () => Auth.currentCredentials(),
+        credentials: clientCredentials,
+      },
+      disableOffline: true,
+    });
+    return Promise.resolve(client);
+
+    /*
+    const client = new AWSAppSyncClient({
+      url: endpoint,
+      region: region,
+      auth: {
+        type: AUTH_TYPE.AWS_IAM,
+        //credentials: () => Auth.currentCredentials(),
       },
 
       disableOffline: true,
     });
+    return client;
+    */
     /*
     const AppSyncConfig = {
       url: endpoint,
@@ -527,7 +595,6 @@ const Home = props => {
 
     console.log("USER CLIENT ", client);
     */
-    return client;
   };
 
   useEffect(async () => {
@@ -564,8 +631,27 @@ const Home = props => {
       clientEndpoint = appProfile.endpoint;
       clientRegion = appProfile.region;
 
-      const client = createClient(clientEndpoint, clientRegion);
-
+      const _currentSession = await Auth.currentSession();
+      const client = await createClient(
+        clientEndpoint,
+        clientRegion,
+        _currentSession,
+      );
+      /*
+      const client = await createClient(
+        "https://dbvmt7ntrfh6tli6gqexursdca.appsync-api.eu-west-1.amazonaws.com/graphql",
+        "eu-west-1",
+      );
+      //getRequestToken(id: String!, source: String!):
+      const testResult = await client.query({
+        query: gql(getRequestToken),
+        variables: {
+          id: "6145b3af07fa22f66456e20eca49e98bfe35",
+          source: "oura",
+        },
+      });
+      console.log("TEST ", testResult);
+      */
       userData.current = currentPrifinaUser.data.getPrifinaUser;
       //const dataConnectors = [];
 

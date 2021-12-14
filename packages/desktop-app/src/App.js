@@ -49,7 +49,9 @@ let AUTHConfig = {
   userPoolId: config.cognito.USER_POOL_ID,
   identityPoolId: config.cognito.IDENTITY_POOL_ID,
   userPoolWebClientId: config.cognito.APP_CLIENT_ID,
-  region: config.main_region,
+  region: config.auth_region,
+  identityPoolRegion: config.main_region,
+  //region: config.main_region,
 };
 /*
 async function initAuth(newAuth = false) {
@@ -76,13 +78,14 @@ async function initAuth(newAuth = false) {
 function App() {
   //const history = useHistory();
 
-  console.log("APP START");
+  console.log("APP START ", AUTHConfig);
   console.log("CONFIG ", config);
 
   const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
   if (lastIdentityPool !== null) {
     AUTHConfig.identityPoolId = lastIdentityPool;
-    AUTHConfig.region = lastIdentityPool.split(":")[0];
+    AUTHConfig.identityPoolRegion = lastIdentityPool.split(":")[0];
+    //AUTHConfig.region = lastIdentityPool.split(":")[0];
   }
 
   Auth.configure(AUTHConfig);
@@ -123,6 +126,8 @@ function App() {
 
   useEffect(() => {
     async function onLoad() {
+      console.log("AUTH START ", Auth._config);
+
       let _currentUser = {};
       const tracker = Base64.stringify(sha512(window.deviceFingerPrint));
       const lastAuthUser = localStorage.getItem(
@@ -147,7 +152,8 @@ function App() {
           console.log("CHANGE IDPOOL ", lastIdentityPool);
           let currentConfig = Auth._config;
           currentConfig.identityPoolId = lastIdentityPool;
-          currentConfig.region = lastIdentityPool.split(":")[0];
+          currentConfig.identityPoolRegion = lastIdentityPool.split(":")[0];
+          //currentConfig.region = lastIdentityPool.split(":")[0];
           Auth.configure(currentConfig);
         }
         const _currentSession = await Auth.currentSession();
