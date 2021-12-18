@@ -528,7 +528,7 @@ const Home = props => {
     const cognitoIdentityCredentials = await cognitoClient.send(
       new GetCredentialsForIdentityCommand(credentialParams),
     );
-    //console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
+    console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
     const clientCredentials = {
       identityId: cognitoIdentity.IdentityId,
       accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,

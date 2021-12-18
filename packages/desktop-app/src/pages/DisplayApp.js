@@ -521,7 +521,9 @@ const DisplayApp = ({
         },
         error: error => {
           console.log("ATHENA SUBS ERROR ");
-          console.warn(error);
+          console.error(error);
+          // handle this error ???
+          ///message: "Connection failed: com.amazon.coral.service#ExpiredTokenException"
         },
       });
 

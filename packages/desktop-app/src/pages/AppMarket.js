@@ -18,6 +18,7 @@ import {
   getPrifinaUserQuery,
   installWidgetMutation,
   listAppMarketQuery,
+  listDataSourcesQuery,
   SidebarMenu,
   Navbar,
   i18n,

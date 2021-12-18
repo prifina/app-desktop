@@ -37,6 +37,7 @@ import {
   withUsermenu,
   getSystemNotificationCountQuery,
   newSystemNotification,
+  createClient,
 } from "@prifina-apps/utils";
 
 /*
@@ -58,9 +59,9 @@ import {
 */
 import gql from "graphql-tag";
 
-//import config from "../config";
+import config from "../config";
 
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+//import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 import { useLocation, useHistory } from "react-router-dom";
 /*
 import {
@@ -200,7 +201,7 @@ const CoreApps = props => {
   //Amplify.configure(S3Config);
   console.log("AUTH CONFIG ", AUTHConfig);
 
-  const createClient = (endpoint, region) => {
+  const createClientx = (endpoint, region) => {
     Auth.currentCredentials().then(c => {
       console.log("CORE USER CLIENT ", c);
     });
@@ -280,7 +281,12 @@ const CoreApps = props => {
       clientEndpoint = appProfile.endpoint;
       clientRegion = appProfile.region;
 
-      const client = createClient(clientEndpoint, clientRegion);
+      const _currentSession = await Auth.currentSession();
+      const client = await createClient(
+        clientEndpoint,
+        clientRegion,
+        _currentSession,
+      );
 
       //const dataConnectors = [];
 
@@ -410,10 +416,7 @@ const CoreApps = props => {
 
             const remoteUrl = [
               "https:/",
-              process.env.REACT_APP_PRIFINA_APPS_BUCKET +
-                "-" +
-                process.env.REACT_APP_PRIFINA_ACCOUNT +
-                ".s3.amazonaws.com",
+              process.env.REACT_APP_PRIFINA_APPS_BUCKET + ".s3.amazonaws.com",
               w.id,
               widgetData[w.id].version,
               "main.bundle.js",
@@ -437,8 +440,6 @@ const CoreApps = props => {
                 image: [
                   "https:/",
                   process.env.REACT_APP_PRIFINA_APPS_BUCKET +
-                    "-" +
-                    process.env.REACT_APP_PRIFINA_ACCOUNT +
                     ".s3.amazonaws.com",
                   w.id,
                   widgetData[w.id].image,
@@ -519,6 +520,7 @@ const CoreApps = props => {
     }
   }, [settingsReady]);
 
+  // possibly obsolete code...messaging demo may have used this
   const remoteUser = opts => {
     console.log("REMOTE USER ", opts);
     console.log("ADDRESS BOOK ", addressBook.current);
@@ -526,9 +528,10 @@ const CoreApps = props => {
     const receiver = msg.receiver;
 
     const { endpoint, region } = addressBook.current[receiver];
-    const remoteClient = createClient(endpoint, region);
-    console.log(remoteClient);
-    return remoteClient.mutate({
+    //const remoteClient = createClient(endpoint, region);
+    const _remoteClient = createClient(endpoint, region);
+    console.log(_remoteClient);
+    return _remoteClient.mutate({
       mutation: gql(addNotification),
       variables: {
         input: {
@@ -541,8 +544,10 @@ const CoreApps = props => {
       },
     });
   };
-  const remoteClient = (endpoint, region) => {
-    return createClient(endpoint, region);
+  // possibly obsolete code...messaging demo may have used this
+  const remoteClient = async (endpoint, region) => {
+    const _currentSession = await Auth.currentSession();
+    return createClient(endpoint, region, _currentSession);
   };
 
   console.log("ACTIVE USER ", activeUser.current);
@@ -550,7 +555,7 @@ const CoreApps = props => {
     <>
       {appReady && coreApp === "DisplayApp" && (
         <PrifinaProvider
-          stage={"alpha"}
+          stage={config.STAGE}
           Context={PrifinaContext}
           activeUser={activeUser.current}
           activeApp={coreApp}

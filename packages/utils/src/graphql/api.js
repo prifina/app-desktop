@@ -42,7 +42,12 @@ import {
   GetCredentialsForIdentityCommand,
 } from "@aws-sdk/client-cognito-identity";
 
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+import AWSAppSyncClient, { AUTH_TYPE, createAppSyncLink } from "aws-appsync";
+//import { AppSyncClient } from "@aws-sdk/client-appsync";
+
+import { ApolloLink } from "apollo-link";
+import { createHttpLink } from "apollo-link-http";
+const { setContext } = require("apollo-link-context");
 
 //import Amplify, { Auth, API } from "aws-amplify";
 
@@ -99,7 +104,7 @@ export const createClient = async (endpoint, region, currentSession) => {
   const cognitoIdentityCredentials = await cognitoClient.send(
     new GetCredentialsForIdentityCommand(credentialParams),
   );
-  //console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
+  console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
   const clientCredentials = {
     identityId: cognitoIdentity.IdentityId,
     accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,
@@ -109,6 +114,7 @@ export const createClient = async (endpoint, region, currentSession) => {
     authenticated: true,
   };
   //console.log("APPSYNC CLIENT CREDENTIALS ", clientCredentials);
+  /*
   const client = new AWSAppSyncClient({
     url: endpoint,
     region: region,
@@ -118,6 +124,38 @@ export const createClient = async (endpoint, region, currentSession) => {
     },
     disableOffline: true,
   });
+*/
+
+  const AppSyncConfig = {
+    url: endpoint,
+    region: region,
+    auth: {
+      type: AUTH_TYPE.AWS_IAM,
+      credentials: clientCredentials,
+    },
+    disableOffline: true,
+  };
+
+  const client = new AWSAppSyncClient(AppSyncConfig, {
+    link: new createAppSyncLink({
+      ...AppSyncConfig,
+      resultsFetcherLink: ApolloLink.from([
+        setContext((request, previousContext) => {
+          //console.log("APOLLO ", previousContext, request);
+          return {
+            headers: {
+              ...previousContext.headers,
+              "prifina-user": idToken,
+            },
+          };
+        }),
+        createHttpLink({
+          uri: AppSyncConfig.url,
+        }),
+      ]),
+    }),
+  });
+
   return Promise.resolve(client);
 
   /*
