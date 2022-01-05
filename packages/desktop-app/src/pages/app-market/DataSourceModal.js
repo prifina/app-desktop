@@ -60,6 +60,7 @@ const DataSourceModal = ({
       GraphQLClient,
       prifinaID,
       dataSourceItem.id,
+      2,
     );
     //console.log("URL ", result);
     setRequestUrl(result.data.getRequestToken.requestURL);

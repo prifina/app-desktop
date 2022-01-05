@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 
-import { Storage as S3Storage } from "aws-amplify";
+import { Storage as S3Storage, Auth } from "aws-amplify";
 
 import { Box, Button, Text, Input } from "@blend-ui/core";
 import config from "../config";
 import { useFormFields } from "@prifina-apps/utils";
 
 //import { useFormFields } from "../lib/formFields";
+/*
+const userRegion = config.cognito.IDENTITY_POOL_ID.split(":")[0];
 
 S3Storage.configure({
   AWSS3: {
-    bucket: config.S3.bucket,
-    region: config.S3.region,
+    bucket: config.S3.bucket + "-" + userRegion,
+    region: userRegion,
     identityPoolId: config.cognito.IDENTITY_POOL_ID,
+    //identityPoolId: config.cognito.USER_IDENTITY_POOL_ID,
   },
 });
 console.log(S3Storage);
-
+*/
 const UploadApp = props => {
   const [uploaded, setUploaded] = useState("");
   console.log("PROPS ", props);
@@ -24,6 +27,7 @@ const UploadApp = props => {
   const [appFields, handleChange] = useFormFields({
     version: "",
   });
+  window.LOG_LEVEL = "DEBUG";
 
   const uploadFile = async e => {
     try {
@@ -31,20 +35,55 @@ const UploadApp = props => {
 
       console.log("Upload ", file);
       // check project appId is same as selected file
-      const s3Key = "uploaded/" + props.row.id + ".zip";
+      // remove apps when private upload works
+      const s3Key = "apps/uploaded/" + props.row.id + ".zip";
 
       //window.LOG_LEVEL = "DEBUG";
       //let metaData={ "alt-name": file.name };
       // amplify fails with multipart uploads... limit <5M
+      //identityId?: string, // id of another user, if `level: protected`
+      //const currentCredentials = await Auth.currentCredentials();
+      //console.log("CREDS ", currentCredentials);
+      const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+
+      //const _currentSession = await Auth.currentSession();
+      //const currentCredentials = await cognitoCredentials(_currentSession);
+      const currentCredentials = JSON.parse(
+        localStorage.getItem("PrifinaClientCredentials"),
+      );
+
+      // const s3path = `https://prifina-apps-${config.prifinaAccountId}.s3.amazonaws.com`;
+
+      console.log("CREDS ", currentCredentials);
+      S3Storage.configure({
+        bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+        region: userRegion,
+        /*
+        identityId: currentCredentials.identityId,
+        credentials: () => {
+          return Promise.resolve(currentCredentials);
+        },
+        */
+      });
+
       const s3Status = await S3Storage.put(s3Key, file, {
-        level: "private",
+        //bucket: `prifina-user-${config.prifinaAccountId}-${config.main_region}`,
+        //region: userRegion,
+        /*
+        bucket: "prifina-user-352681697435-eu-west-1",
+        region: "eu-west-1",
+        credentials: () => {
+          return Promise.resolve(currentCredentials);
+        }, */
+        level: "public", // private doesn't work
+
         metadata: { created: new Date().toISOString(), "alt-name": file.name },
         progressCallback(progress) {
           //console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
           setUploaded(`Uploaded: ${progress.loaded}/${progress.total}`);
         },
         customPrefix: {
-          private: "apps/",
+          // private: "apps/",
         },
       });
       props.close(true, appFields.version);

@@ -38,6 +38,7 @@ import {
   getSystemNotificationCountQuery,
   newSystemNotification,
   createClient,
+  useIsMountedRef,
 } from "@prifina-apps/utils";
 
 /*
@@ -175,18 +176,17 @@ const CoreApps = props => {
   const { app } = props;
   let coreApp = "";
   if (app) {
+    console.log("CORE APP ", app);
     coreApp = app;
   } else {
     const { pathname, search } = useLocation();
     coreApp = appPaths[pathname.split("/").pop()];
+    console.log("NO PROPS CORE ", pathname, coreApp);
   }
   //console.log("CORE ", path.pop());
-  //console.log("CORE ", pathname, search);
+  //console.log("CORE ", pathname );
   //console.log("CORE ", search);
   const AppComponent = importApp(coreApp);
-
-  const [appReady, setAppReady] = useState(false);
-
   const componentProps = useRef({});
   //const data = useRef([]);
   const activeUser = useRef({});
@@ -194,6 +194,8 @@ const CoreApps = props => {
   const lastActivity = useRef(new Date().getTime());
   const notificationCount = useRef(0);
   //const clientHandler = useRef(null);
+
+  const [appReady, setAppReady] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
 
   Auth.configure(AUTHConfig);
@@ -201,6 +203,21 @@ const CoreApps = props => {
   //Amplify.configure(S3Config);
   console.log("AUTH CONFIG ", AUTHConfig);
 
+  // const isMountedRef = useIsMountedRef();
+  /*
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      console.log("INIT MOUNT ");
+    } else {
+      // Your useEffect code here to be run on update
+      console.log("FIRST MOUNT ");
+      console.log("APP READY ", appReady);
+      console.log("APP READY PROPS ", componentProps);
+      console.log("APP READY NAME ", coreApp);
+    }
+  });
+*/
   const createClientx = (endpoint, region) => {
     Auth.currentCredentials().then(c => {
       console.log("CORE USER CLIENT ", c);
@@ -221,39 +238,43 @@ const CoreApps = props => {
   /*
   // get user auth...
   */
-  useEffect(async () => {
-    try {
-      const session = await Auth.currentSession();
-      /*
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const session = await Auth.currentSession();
+        /*
       const user = await Auth.currentAuthenticatedUser();
       console.log("USER ", user);
       if (!user) {
         console.log("NO CURRENT USER FOUND");
       }
       */
-      console.log("SESSION ", session);
-      if (!session) {
-        console.log("NO CURRENT SESSION FOUND");
-      }
-      console.log("PRIFINA-ID", session.idToken.payload["custom:prifina"]);
-      const prifinaID = session.idToken.payload["custom:prifina"];
+        console.log("SESSION ", session);
+        if (!session) {
+          console.log("NO CURRENT SESSION FOUND");
+        }
+        console.log("PRIFINA-ID", session.idToken.payload["custom:prifina"]);
+        const prifinaID = session.idToken.payload["custom:prifina"];
 
-      const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
+        const currentPrifinaUser = await getPrifinaUserQuery(
+          GRAPHQL,
+          prifinaID,
+        );
 
-      console.log("CURRENT USER ", currentPrifinaUser);
-      let appProfile = JSON.parse(
-        currentPrifinaUser.data.getPrifinaUser.appProfile,
-      );
-      console.log("CURRENT USER ", appProfile, appProfile.initials);
+        console.log("CURRENT USER ", currentPrifinaUser);
+        let appProfile = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.appProfile,
+        );
+        console.log("CURRENT USER ", appProfile, appProfile.initials);
 
-      // should get this from user ....
-      /*
+        // should get this from user ....
+        /*
       const client = createClient(
         APIConfig.aws_appsync_graphqlEndpoint,
         APIConfig.aws_appsync_region,
       );
 */
-      /*
+        /*
 
       let clientEndpoint =
         "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
@@ -265,82 +286,85 @@ const CoreApps = props => {
       }
       */
 
-      let clientEndpoint = "";
-      let clientRegion = "";
+        let clientEndpoint = "";
+        let clientRegion = "";
 
-      if (!appProfile.hasOwnProperty("endpoint")) {
-        const defaultProfileUpdate = await updateUserProfileMutation(
-          GRAPHQL,
-          currentUser.prifinaID,
+        if (!appProfile.hasOwnProperty("endpoint")) {
+          const defaultProfileUpdate = await updateUserProfileMutation(
+            GRAPHQL,
+            currentUser.prifinaID,
+          );
+          console.log("PROFILE UPDATE ", defaultProfileUpdate);
+          appProfile = JSON.parse(
+            defaultProfileUpdate.data.updateUserProfile.appProfile,
+          );
+        }
+        clientEndpoint = appProfile.endpoint;
+        clientRegion = appProfile.region;
+
+        const _currentSession = await Auth.currentSession();
+        const client = await createClient(
+          clientEndpoint,
+          clientRegion,
+          _currentSession,
         );
-        console.log("PROFILE UPDATE ", defaultProfileUpdate);
-        appProfile = JSON.parse(
-          defaultProfileUpdate.data.updateUserProfile.appProfile,
-        );
-      }
-      clientEndpoint = appProfile.endpoint;
-      clientRegion = appProfile.region;
 
-      const _currentSession = await Auth.currentSession();
-      const client = await createClient(
-        clientEndpoint,
-        clientRegion,
-        _currentSession,
-      );
+        //const dataConnectors = [];
 
-      //const dataConnectors = [];
+        activeUser.current = {
+          name: appProfile.name,
+          uuid: prifinaID,
+          endpoint: clientEndpoint,
+          region: clientRegion,
+          dataSources: currentPrifinaUser.data.getPrifinaUser.dataSources
+            ? JSON.parse(currentPrifinaUser.data.getPrifinaUser.dataSources)
+            : {},
+        };
 
-      activeUser.current = {
-        name: appProfile.name,
-        uuid: prifinaID,
-        endpoint: clientEndpoint,
-        region: clientRegion,
-        dataConnectors: currentPrifinaUser.data.getPrifinaUser.dataSources
-          ? JSON.parse(currentPrifinaUser.data.getPrifinaUser.dataSources)
-          : {},
-      };
+        console.log("APP NAME ", coreApp);
+        console.log("ACTIVE USER ", activeUser.current);
+        // app component props
+        if (coreApp === "DisplayApp") {
+          const addressBookResult = await client.query({
+            query: gql(getAddressBook),
+            variables: {
+              id: prifinaID,
+            },
+          });
 
-      console.log("APP NAME ", coreApp);
-      console.log("ACTIVE USER ", activeUser.current);
-      // app component props
-      if (coreApp === "DisplayApp") {
-        const addressBookResult = await client.query({
-          query: gql(getAddressBook),
-          variables: {
-            id: prifinaID,
-          },
-        });
+          //console.log(addressBookResult);
 
-        //console.log(addressBookResult);
+          if (
+            addressBookResult.data.getUserAddressBook.hasOwnProperty(
+              "addressBook",
+            ) &&
+            addressBookResult.data.getUserAddressBook.addressBook !== null
+          ) {
+            JSON.parse(
+              addressBookResult.data.getUserAddressBook.addressBook,
+            ).forEach(user => {
+              addressBook.current[user.uuid] = {
+                name: user.name,
+                endpoint: user.endpoint,
+                region: user.region,
+              };
+            });
+          }
 
-        if (
-          addressBookResult.data.getUserAddressBook.hasOwnProperty(
-            "addressBook",
-          ) &&
-          addressBookResult.data.getUserAddressBook.addressBook !== null
-        ) {
-          JSON.parse(
-            addressBookResult.data.getUserAddressBook.addressBook,
-          ).forEach(user => {
-            addressBook.current[user.uuid] = {
-              name: user.name,
-              endpoint: user.endpoint,
-              region: user.region,
+          const prifinaWidgets = await listAppMarketQuery(GRAPHQL, {
+            filter: { appType: { eq: 1 } },
+          });
+
+          const prifinaDataSources = await listDataSourcesQuery(GRAPHQL, {});
+          console.log("DATA SOURCES ", prifinaDataSources);
+          let dataSources = {};
+          prifinaDataSources.data.listDataSources.items.forEach(item => {
+            dataSources[item.source] = {
+              modules: item.modules,
+              sourceType: item.sourceType,
             };
           });
-        }
-
-        const prifinaWidgets = await listAppMarketQuery(GRAPHQL, {
-          filter: { appType: { eq: 1 } },
-        });
-
-        const prifinaDataSources = await listDataSourcesQuery(GRAPHQL, {});
-        console.log("DATA SOURCES ", prifinaDataSources);
-        let dataSources = {};
-        prifinaDataSources.data.listDataSources.items.forEach(item => {
-          dataSources[item.module] = { sourceType: item.sourceType };
-        });
-        /*
+          /*
         const prifinaWidgets = await getPrifinaWidgetsQuery(GRAPHQL, "WIDGETS");
         console.log(
           "CURRENT CONFIG ",
@@ -351,131 +375,131 @@ const CoreApps = props => {
           prifinaWidgets.data.getPrifinaApp.widgets,
         );
           */
-        let widgetData = {};
-        prifinaWidgets.data.listAppMarket.items.forEach(item => {
-          //console.log("APPMARKET ITEM ", item);
-          const manifest = JSON.parse(item.manifest);
-          console.log("APPMARKET MANIFEST ", manifest);
-          widgetData[item.id] = {
-            settings: item.settings,
-            name: item.name,
-            title: item.title,
-            /*
+          let widgetData = {};
+          prifinaWidgets.data.listAppMarket.items.forEach(item => {
+            //console.log("APPMARKET ITEM ", item);
+            const manifest = JSON.parse(item.manifest);
+            console.log("APPMARKET MANIFEST ", manifest);
+            widgetData[item.id] = {
+              settings: item.settings,
+              name: item.name,
+              title: item.title,
+              /*
             theme: manifest.theme || "dark",
             size: {
               height: manifest.size ? manifest.size.height : 300,
               width: manifest.size ? manifest.size.width : 300,
             },
             */
-            shortDescription: manifest.shortDescription,
-            version: item.version,
-            image: manifest.screenshots[0],
-            dataConnectors: item.dataSources || [],
-          };
-        });
-        let data = [];
-        if (
-          currentPrifinaUser.data.getPrifinaUser.hasOwnProperty(
-            "installedWidgets",
-          ) &&
-          currentPrifinaUser.data.getPrifinaUser.installedWidgets !== null
-        ) {
-          const installedWidgets = JSON.parse(
-            currentPrifinaUser.data.getPrifinaUser.installedWidgets,
-          );
-
-          let widgetCounts = {};
-          data = installedWidgets.map(w => {
-            if (widgetCounts.hasOwnProperty(w.id)) {
-              widgetCounts[w.id]++;
-            } else {
-              widgetCounts[w.id] = 0;
-            }
-            let defaultValues = {};
-            if (widgetData[w.id].settings) {
-              widgetData[w.id].settings.forEach(v => {
-                // if type=text...
-                if (v.field === "sizes") {
-                  defaultValues["size"] = JSON.parse(v.value)[0].value;
-                } else {
-                  defaultValues[v.field] = v.value;
-                }
-              });
-
-              if (w.hasOwnProperty("settings") && w.settings.length > 0) {
-                console.log("SETTINGS FOUND ", w);
-                w.settings.forEach(k => {
-                  if (defaultValues.hasOwnProperty(k.field)) {
-                    defaultValues[k.field] = k.value;
-                  }
-                });
-              }
-            }
-            //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/back-plate.png
-            //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/0.0.1/main.bundle.js
-
-            const remoteUrl = [
-              "https:/",
-              process.env.REACT_APP_PRIFINA_APPS_BUCKET + ".s3.amazonaws.com",
-              w.id,
-              widgetData[w.id].version,
-              "main.bundle.js",
-            ].join("/");
-            //console.log("WIDGET DATA ITEM ", widgetData[w.id]);
-            return {
-              url: remoteUrl,
-              settings: widgetData[w.id].settings.length > 0,
-              currentSettings: defaultValues,
-              dataConnectors: widgetData[w.id].dataConnectors,
-              widget: {
-                //size: widgetData[w.id].size,
-                //theme: widgetData[w.id].theme,
-                settings: widgetData[w.id].settings,
-                installCount: widgetCounts[w.id],
-                appID: w.id,
-                name: widgetData[w.id].name,
-                title: widgetData[w.id].title,
-                shortDescription: widgetData[w.id].shortDescription,
-                version: widgetData[w.id].version,
-                image: [
-                  "https:/",
-                  process.env.REACT_APP_PRIFINA_APPS_BUCKET +
-                    ".s3.amazonaws.com",
-                  w.id,
-                  widgetData[w.id].image,
-                ].join("/"),
-              },
+              shortDescription: manifest.shortDescription,
+              version: item.version,
+              image: manifest.screenshots[0],
+              dataSources: item.dataSources || [],
             };
           });
+          let data = [];
+          if (
+            currentPrifinaUser.data.getPrifinaUser.hasOwnProperty(
+              "installedWidgets",
+            ) &&
+            currentPrifinaUser.data.getPrifinaUser.installedWidgets !== null
+          ) {
+            const installedWidgets = JSON.parse(
+              currentPrifinaUser.data.getPrifinaUser.installedWidgets,
+            );
+
+            let widgetCounts = {};
+            data = installedWidgets.map(w => {
+              if (widgetCounts.hasOwnProperty(w.id)) {
+                widgetCounts[w.id]++;
+              } else {
+                widgetCounts[w.id] = 0;
+              }
+              let defaultValues = {};
+              if (widgetData[w.id].settings) {
+                widgetData[w.id].settings.forEach(v => {
+                  // if type=text...
+                  if (v.field === "sizes") {
+                    defaultValues["size"] = JSON.parse(v.value)[0].value;
+                  } else {
+                    defaultValues[v.field] = v.value;
+                  }
+                });
+
+                if (w.hasOwnProperty("settings") && w.settings.length > 0) {
+                  console.log("SETTINGS FOUND ", w);
+                  w.settings.forEach(k => {
+                    if (defaultValues.hasOwnProperty(k.field)) {
+                      defaultValues[k.field] = k.value;
+                    }
+                  });
+                }
+              }
+              //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/back-plate.png
+              //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/0.0.1/main.bundle.js
+
+              const remoteUrl = [
+                "https:/",
+                process.env.REACT_APP_PRIFINA_APPS_BUCKET + ".s3.amazonaws.com",
+                w.id,
+                widgetData[w.id].version,
+                "main.bundle.js",
+              ].join("/");
+              //console.log("WIDGET DATA ITEM ", widgetData[w.id]);
+              return {
+                url: remoteUrl,
+                settings: widgetData[w.id].settings.length > 0,
+                currentSettings: defaultValues,
+                dataSources: widgetData[w.id].dataSources,
+                widget: {
+                  //size: widgetData[w.id].size,
+                  //theme: widgetData[w.id].theme,
+                  settings: widgetData[w.id].settings,
+                  installCount: widgetCounts[w.id],
+                  appID: w.id,
+                  name: widgetData[w.id].name,
+                  title: widgetData[w.id].title,
+                  shortDescription: widgetData[w.id].shortDescription,
+                  version: widgetData[w.id].version,
+                  image: [
+                    "https:/",
+                    process.env.REACT_APP_PRIFINA_APPS_BUCKET +
+                      ".s3.amazonaws.com",
+                    w.id,
+                    widgetData[w.id].image,
+                  ].join("/"),
+                },
+              };
+            });
+          }
+          console.log("ADDRESS BOOK ", addressBook.current);
+
+          console.log("CURRENT SETTINGS 2", data, appProfile, client);
+          componentProps.current.appSyncClient = client;
+          componentProps.current.widgetConfigData = data;
+          componentProps.current.prifinaID = prifinaID;
+          componentProps.current.initials = appProfile.initials;
+          componentProps.current.dataSources = dataSources;
+        } else {
+          // default componentProps...
+          console.log("CURRENT SETTINGS 2", client);
+          componentProps.current.GraphQLClient = GRAPHQL;
+          componentProps.current.appSyncClient = client;
+          componentProps.current.prifinaID = prifinaID;
+          componentProps.current.initials = appProfile.initials;
         }
-        console.log("ADDRESS BOOK ", addressBook.current);
 
-        console.log("CURRENT SETTINGS 2", data, appProfile, client);
-        componentProps.current.appSyncClient = client;
-        componentProps.current.widgetConfigData = data;
-        componentProps.current.prifinaID = prifinaID;
-        componentProps.current.initials = appProfile.initials;
-        componentProps.current.dataSources = dataSources;
-      } else {
-        // default componentProps...
-        console.log("CURRENT SETTINGS 2", client);
-        componentProps.current.GraphQLClient = GRAPHQL;
-        componentProps.current.appSyncClient = client;
-        componentProps.current.prifinaID = prifinaID;
-        componentProps.current.initials = appProfile.initials;
-      }
-
-      // notificationCount...
-      const notificationCountResult = await getSystemNotificationCountQuery(
-        GRAPHQL,
-        {
-          filter: {
-            owner: { eq: prifinaID },
-            status: { eq: 0 },
+        // notificationCount...
+        const notificationCountResult = await getSystemNotificationCountQuery(
+          GRAPHQL,
+          {
+            filter: {
+              owner: { eq: prifinaID },
+              status: { eq: 0 },
+            },
           },
-        },
-      );
-      /*
+        );
+        /*
       const notificationCountResult = await client.query({
         query: gql(getNotificationCount),
         variables: {
@@ -486,31 +510,33 @@ const CoreApps = props => {
         },
       });
       */
-      console.log("COUNT ", notificationCountResult);
-      notificationCount.current =
-        notificationCountResult.data.getSystemNotificationCount;
+        console.log("COUNT ", notificationCountResult);
+        notificationCount.current =
+          notificationCountResult.data.getSystemNotificationCount;
 
-      componentProps.current.notificationCount = notificationCount.current;
+        componentProps.current.notificationCount = notificationCount.current;
 
-      lastActivity.current = new Date().getTime();
-      await client.mutate({
-        mutation: gql(updateActivity),
-        variables: {
-          id: prifinaID,
-          activeApp: coreApp,
-        },
-      });
+        lastActivity.current = new Date().getTime();
+        await client.mutate({
+          mutation: gql(updateActivity),
+          variables: {
+            id: prifinaID,
+            activeApp: coreApp,
+          },
+        });
 
-      setSettingsReady(true);
-    } catch (e) {
-      if (typeof e === "string" && e === "No current user") {
-        //const user = await Auth.signIn("tahola", "xxxx");
-        //console.log("AUTH ", user);
-        //console.log("APP DEBUG ", appCode);
+        setSettingsReady(true);
+      } catch (e) {
+        if (typeof e === "string" && e === "No current user") {
+          //const user = await Auth.signIn("tahola", "xxxx");
+          //console.log("AUTH ", user);
+          //console.log("APP DEBUG ", appCode);
+        }
+
+        console.log("AUTH ", e);
       }
-
-      console.log("AUTH ", e);
     }
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -550,7 +576,7 @@ const CoreApps = props => {
     return createClient(endpoint, region, _currentSession);
   };
 
-  console.log("ACTIVE USER ", activeUser.current);
+  console.log("ACTIVE USER ", activeUser.current, settingsReady);
   return (
     <>
       {appReady && coreApp === "DisplayApp" && (

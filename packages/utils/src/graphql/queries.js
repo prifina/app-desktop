@@ -213,8 +213,8 @@ export const listSystemNotificationsByDate = `query listSystemNotifications($own
   }
 }`;
 
-export const getRequestToken = `query getRequestToken($id: String!,$source:String!) {
-  getRequestToken(id: $id,source:$source) {
+export const getRequestToken = `query getRequestToken($id: String!,$source:String!,$status:Int) {
+  getRequestToken(id: $id,source:$source,status:$status) {
     requestURL
   }
 }`;

@@ -145,34 +145,48 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const history = useHistory();
 
-  const s3path = `https://prifina-apps-${config.prifinaAccountId}.s3.amazonaws.com`;
+  const s3path = `https://prifina-apps-${config.prifinaAccountId}-${config.main_region}.s3.amazonaws.com`;
 
   //const dataSourceItems = useRef([]);
   const availableDataSources = useRef([]);
+  const userDataSources = useRef({});
 
   const dataSourceIcons = {
     oura: ouraIcon,
     API: dataSourceIcon,
     fitbit: dataSourceIcon,
     garmin: dataSourceIcon,
+    "google-timeline": dataSourceIcon,
   };
 
   useEffect(async () => {
     const apps = await listAppMarketQuery(GraphQLClient, {
       filter: { appType: { lt: 3 } },
     });
-    const userInstalledWidgets = await getPrifinaUserQuery(
-      GraphQLClient,
-      prifinaID,
-    );
-
+    const prifinaUser = await getPrifinaUserQuery(GraphQLClient, prifinaID);
+    if (prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources")) {
+      //
+      //console.log(typeof prifinaUser.data.getPrifinaUser.dataSources);
+      userDataSources.current = JSON.parse(
+        prifinaUser.data.getPrifinaUser.dataSources,
+      );
+    }
     // filter sourceType===1 only oauth based datasources...
     const dataSources = await listDataSourcesQuery(GraphQLClient, {
-      filter: { sourceType: { eq: 1 } },
+      filter: { sourceType: { gt: 0 } },
     });
     //console.log("AVAILABLE DATASOURCES ", dataSources);
     availableDataSources.current = dataSources.data.listDataSources.items;
     console.log("AVAILABLE DATASOURCES ", availableDataSources.current);
+
+    let dataSourceModules = {};
+    Object.keys(availableDataSources.current).forEach(s => {
+      for (let m = 0; m < availableDataSources.current[s].modules.length; m++) {
+        const moduleName = availableDataSources.current[s].modules[m];
+        dataSourceModules[moduleName] = { ...availableDataSources.current[s] };
+      }
+    });
+
     /*
 export const listDataSources = `query listDataSources($filter:TableDataSourceFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
   listDataSources(filter: $filter, limit: $limit, nextToken: $nextToken,sortDirection:$sortDirection) {
@@ -229,20 +243,25 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
   ];
 */
       let dataSources = [];
+      //console.log("WDATA ", item);
       if (
-        manifest.hasOwnProperty("dataSources") &&
-        manifest.dataSources.length > 0
+        item.hasOwnProperty("dataSources") &&
+        item.dataSources !== null &&
+        item.dataSources.length > 0
       ) {
-        dataSources = manifest.dataSources.map(ds => {
+        dataSources = item.dataSources.map(ds => {
+          /*
           const dataSource = availableDataSources.current.find(
             d => d.source == ds,
           );
-          console.log("DS ", ds, dataSource);
+          */
+          const dataSource = dataSourceModules[ds];
+          //console.log("DS ", ds, dataSource);
           return {
-            id: ds,
-            title: dataSource ? dataSource.name : ds,
+            id: dataSource.source,
+            title: dataSource ? dataSource.name : dataSource.source,
             description: dataSource ? dataSource.description : "",
-            icon: dataSourceIcons[ds],
+            icon: dataSourceIcons[dataSource.source],
             connected: false,
             sourceType: dataSource ? dataSource.sourceType : 0,
           };
@@ -282,13 +301,11 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
     console.log("AVAILABLE WIDGETS ", availableWidgets);
     let currentInstalled = [];
     if (
-      userInstalledWidgets.data.getPrifinaUser.hasOwnProperty(
-        "installedWidgets",
-      ) &&
-      userInstalledWidgets.data.getPrifinaUser.installedWidgets !== null
+      prifinaUser.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
+      prifinaUser.data.getPrifinaUser.installedWidgets !== null
     ) {
       const installedWidgets = JSON.parse(
-        userInstalledWidgets.data.getPrifinaUser.installedWidgets,
+        prifinaUser.data.getPrifinaUser.installedWidgets,
       );
       installedWidgets.forEach(w => {
         //console.log(w, typeof availableWidgets[w.name]);
@@ -589,7 +606,13 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
         setStep(0);
       },
     },
-    { label: "Widgets", icon: bxsWidget },
+    {
+      label: "Widgets",
+      icon: bxsWidget,
+      onClick: () => {
+        setStep(0);
+      },
+    },
     {
       label: "Apps",
       icon: bxMinusBack,
@@ -814,7 +837,13 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                   ) : (
                     <Button
                       marginLeft="16px"
-                      // onClick={() => history.push("/core/display-app")}
+                      onClick={() => {
+                        window.location.replace(
+                          config.APP_URL + "/core/display-app",
+                        );
+
+                        //history.replace("/core/display-app");
+                      }}
                     >
                       {i18n.__("view")}
                     </Button>
@@ -1186,8 +1215,25 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                             key={"ds-" + index}
                             src={item.icon}
                             title={item.title}
+                            installed={
+                              Object.keys(userDataSources.current).indexOf(
+                                item.id,
+                              ) > -1
+                            }
                             onClick={() => {
-                              if (item.sourceType == 1) {
+                              //userDataSources.current =
+                              //console.log(" SOURCE ITEM ", item);
+                              const dataSourceExists =
+                                Object.keys(userDataSources.current).indexOf(
+                                  item.id,
+                                ) > -1;
+                              /*
+                              console.log(
+                                dataSourceExists,
+                                Object.keys(userDataSources.current),
+                              );
+                              */
+                              if (item.sourceType == 1 && !dataSourceExists) {
                                 setAddingDataSource(index);
                               }
                             }}

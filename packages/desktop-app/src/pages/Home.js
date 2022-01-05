@@ -271,13 +271,15 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
         userMenu.setActiveUser(activeUser);
         //userMenu.setPrifinaGraphQLHandler(GRAPHQL);
         console.log("USER APPSYNC ", clientHandler);
-        await clientHandler.mutate({
+        const updateRes = await clientHandler.mutate({
           mutation: gql(updateActivity),
           variables: {
             id: currentUser.id,
             activeApp: "Home",
           },
         });
+
+        console.log("READY ", updateRes);
         setInstalledApps(installedAppsJSON);
       }
     }
@@ -632,6 +634,7 @@ const Home = props => {
       clientRegion = appProfile.region;
 
       const _currentSession = await Auth.currentSession();
+
       const client = await createClient(
         clientEndpoint,
         clientRegion,

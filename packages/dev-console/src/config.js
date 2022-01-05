@@ -26,6 +26,7 @@ const prod = {
     bucket: "prifina-data-" + process.env.REACT_APP_PRIFINA_ACCOUNT,
     region: "us-east-1",
   },
+  prifinaAccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
 };
 const dev = {
   invalidVerificationLink:
@@ -50,6 +51,7 @@ const dev = {
     bucket: "prifina-data-" + process.env.REACT_APP_PRIFINA_ACCOUNT,
     region: "us-east-1",
   },
+  prifinaAccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
 };
 
 // Default to dev if not set

@@ -228,8 +228,10 @@ const dots = colors => keyframes`
 
 const DotsContainer = styled.div`
   color: ${props => (props.widgetTheme === "dark" ? "white" : "black")};
+  /*
   position: absolute;
   top: 110px;
+  */
   height: 69px;
   width: 69px;
   margin: 0 10px 0 0;
@@ -297,30 +299,63 @@ export const WidgetList = React.memo(
     console.log("WIDGET DATA", widgetData);
     console.log("WIDGET USER", currentUser);
     console.log("DATASOURCES", dataSources);
-    const userDataConnectors = Object.keys(currentUser.dataConnectors);
+    let dataSourceModules = {};
+    Object.keys(dataSources).forEach(s => {
+      for (let m = 0; m < dataSources[s].modules.length; m++) {
+        const moduleName = dataSources[s].modules[m];
+        dataSourceModules[moduleName] = {
+          source: s,
+          sourceType: dataSources[s].sourceType,
+        };
+      }
+    });
+    console.log("MODULES ", dataSourceModules);
+    const userDataSources = Object.keys(currentUser.dataSources);
     //const dataSources = { "@prifina/google-timeline": { sourceType: 2 } };
     return (
       <>
         {widgetList.map((Widget, i) => {
-          // only first datasource is used ????
-          const widgetDataSource = widgetData[i].dataConnectors[0];
           const size = widgetData[i].widget.size.split("x");
 
-          if (widgetData[i].dataConnectors.length > 0) {
+          console.log(
+            "DATASOURCE CHECK ",
+            i,
+            widgetData[i].hasOwnProperty("dataSources"),
+            widgetData[i].dataSources !== null,
+            widgetData[i].dataSources.length,
+          );
+
+          if (
+            widgetData[i].hasOwnProperty("dataSources") &&
+            widgetData[i].dataSources !== null &&
+            widgetData[i].dataSources.length > 0
+          ) {
+            console.log("DATASOURCE FOUND ", widgetData[i]);
+            // only first widget datasource is used ????
+            const widgetDataSourceModule = widgetData[i].dataSources[0];
+            const widgetDataSource =
+              dataSourceModules[widgetDataSourceModule].source;
             // data source is not connected....
             let userDataSourceStatus = 0;
             if (
-              userDataConnectors.length > 0 &&
-              userDataConnectors.indexOf(widgetDataSource) > -1
+              userDataSources.length > 0 &&
+              userDataSources.indexOf(widgetDataSource) > -1
             ) {
               // check dataSource status
               userDataSourceStatus =
-                currentUser.dataConnectors[widgetDataSource].status;
+                currentUser.dataSources[widgetDataSource].status;
             }
 
             const dataSourceType = dataSources[widgetDataSource].sourceType;
-            console.log("DATASOURCE TYPE", i, widgetDataSource, dataSourceType);
+            console.log(
+              "WIDGET DATASOURCE INFO ",
+              i,
+              userDataSourceStatus,
+              widgetDataSource,
+              dataSourceType,
+            );
             if (userDataSourceStatus < 2) {
+              console.log("WIDGET IDX STATUS<2 ", i);
               return (
                 <div
                   key={"widget-processing-" + i}
@@ -391,6 +426,7 @@ export const WidgetList = React.memo(
 
             // processing
             if (userDataSourceStatus === 2) {
+              console.log("WIDGET IDX STATUS=2 ", i);
               return (
                 <div
                   key={"widget-processing-" + i}

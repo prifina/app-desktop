@@ -65,16 +65,7 @@ input SearchResultInput {
 }
 */
 
-export const createClient = async (endpoint, region, currentSession) => {
-  /*
-    // this is not authenticated credentials, because of amplify bug...
-    Auth.currentCredentials().then(c => {
-      console.log("HOME USER CLIENT ", c);
-    });
-    */
-  console.log("CLIENT ", endpoint, region, currentSession);
-
-  //const _currentSession = await Auth.currentSession();
+export const cognitoCredentials = async currentSession => {
   const token = currentSession.getIdToken().payload;
   const userIdPool = localStorage.getItem("LastSessionIdentityPool");
   //const provider='cognito-idp.'+userPoolRegion+'.amazonaws.com/'+userPoolId;
@@ -113,18 +104,62 @@ export const createClient = async (endpoint, region, currentSession) => {
     expiration: cognitoIdentityCredentials.Credentials.Expiration,
     authenticated: true,
   };
-  //console.log("APPSYNC CLIENT CREDENTIALS ", clientCredentials);
+  return clientCredentials;
+};
+export const createClient = async (endpoint, region, currentSession) => {
   /*
-  const client = new AWSAppSyncClient({
-    url: endpoint,
-    region: region,
-    auth: {
-      type: AUTH_TYPE.AWS_IAM,
-      credentials: clientCredentials,
-    },
-    disableOffline: true,
+    // this is not authenticated credentials, because of amplify bug...
+    Auth.currentCredentials().then(c => {
+      console.log("HOME USER CLIENT ", c);
+    });
+    */
+
+  console.log("CLIENT ", endpoint, region, currentSession);
+
+  const token = currentSession.getIdToken().payload;
+  const userIdPool = localStorage.getItem("LastSessionIdentityPool");
+  //const provider='cognito-idp.'+userPoolRegion+'.amazonaws.com/'+userPoolId;
+  const provider = token["iss"].replace("https://", "");
+  let identityParams = {
+    IdentityPoolId: userIdPool,
+    Logins: {},
+  };
+  const idToken = currentSession.getIdToken().getJwtToken();
+  identityParams.Logins[provider] = idToken;
+  const cognitoClient = new CognitoIdentityClient({
+    region: userIdPool.split(":")[0],
   });
-*/
+  //console.log(identityParams);
+  const cognitoIdentity = await cognitoClient.send(
+    new GetIdCommand(identityParams),
+  );
+  //console.log("COGNITO IDENTITY ", cognitoIdentity);
+
+  let credentialParams = {
+    IdentityId: cognitoIdentity.IdentityId,
+    Logins: {},
+  };
+
+  credentialParams.Logins[provider] = idToken;
+  //console.log(credentialParams);
+  const cognitoIdentityCredentials = await cognitoClient.send(
+    new GetCredentialsForIdentityCommand(credentialParams),
+  );
+  console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
+  const clientCredentials = {
+    identityId: cognitoIdentity.IdentityId,
+    accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,
+    secretAccessKey: cognitoIdentityCredentials.Credentials.SecretKey,
+    sessionToken: cognitoIdentityCredentials.Credentials.SessionToken,
+    expiration: cognitoIdentityCredentials.Credentials.Expiration,
+    authenticated: true,
+  };
+  localStorage.setItem(
+    "PrifinaClientCredentials",
+    JSON.stringify(clientCredentials),
+  );
+
+  //const clientCredentials = await cognitoCredentials(currentSession);
 
   const AppSyncConfig = {
     url: endpoint,
@@ -501,10 +536,10 @@ export const updatePrifinaUserMutation = (API, input) => {
   });
 };
 
-export const getRequestTokenQuery = (API, id, source) => {
+export const getRequestTokenQuery = (API, id, source, status) => {
   return API.graphql({
     query: getRequestToken,
-    variables: { id: id, source: source },
+    variables: { id: id, source: source, status: status },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };

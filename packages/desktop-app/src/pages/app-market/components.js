@@ -385,6 +385,7 @@ export const DataSourceButton = styled.img`
     opacity: 0.5;
   }
   cursor: pointer;
+  opacity: ${props => (props.installed ? 0.2 : 1)};
 `;
 
 /*

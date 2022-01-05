@@ -129,7 +129,7 @@ const DisplayApp = ({
         w.currentSettings,
       );
       return {
-        dataConnectors: w.dataConnectors,
+        dataSources: w.dataSources,
         currentSettings: w.currentSettings,
         url: w.url,
         settings: w.settings,
@@ -237,7 +237,7 @@ const DisplayApp = ({
         installCount: w.widget.installCount,
         currentSettings: w.currentSettings,
         image: w.widget.image,
-        dataConnectors: w.dataConnectors,
+        dataSources: w.dataSources,
       };
     }),
   );
@@ -515,7 +515,7 @@ const DisplayApp = ({
           ) {
             console.log("FOUND CALLBACK ");
             c[currentAppId][widgetInstallCount]({
-              data: JSON.parse(res.data.athenaResults.data).content,
+              data: JSON.parse(res.data.athenaResults.data),
             });
           }
         },
@@ -1020,7 +1020,11 @@ input SearchResultInput {
 
       <PrifinaLogo title={"Display App"} />
       <C.PageContainer>
-        <div style={{ overflow: "hidden" }}>
+        <div
+          style={{
+            overflow: "hidden",
+          }}
+        >
           <Tabs
             activeTab={activeTab}
             onClick={tabClick}

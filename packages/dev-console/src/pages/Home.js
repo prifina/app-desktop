@@ -28,6 +28,7 @@ import {
   useUserMenu,
   withUsermenu,
   i18n,
+  createClient,
 } from "@prifina-apps/utils";
 
 i18n.init();
@@ -1259,7 +1260,7 @@ const Home = props => {
   const notificationCount = useRef(0);
   let AppComponent = Main;
 
-  const createClient = (endpoint, region) => {
+  const xcreateClient = (endpoint, region) => {
     Auth.currentCredentials().then(c => {
       console.log("DEV USER CLIENT ", c);
     });
@@ -1309,7 +1310,13 @@ const Home = props => {
         clientEndpoint = appProfile.endpoint;
         clientRegion = appProfile.region;
 
-        const client = createClient(clientEndpoint, clientRegion);
+        //const client = createClient(clientEndpoint, clientRegion);
+        const _currentSession = await Auth.currentSession();
+        const client = await createClient(
+          clientEndpoint,
+          clientRegion,
+          _currentSession,
+        );
 
         activeUser.current = {
           name: appProfile.name,
