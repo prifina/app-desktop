@@ -109,9 +109,15 @@ export const IconDiv = styled.div`
   }
   height: 20px;
   width: 20px;
+  /*
   position: relative;
   left: 290px;
   top: 20px;
+  */
+  position: absolute;
+  left: 275px;
+  top: 15px;
+
   opacity: 1;
   cursor: ${props => (props.open ? "default" : "pointer")};
   background-image: radial-gradient(
@@ -278,7 +284,7 @@ const Dot = styled.div`
     margin-right: 0;
   }
 `;
-const DotLoader = props => {
+export const DotLoader = props => {
   const theme = useTheme();
   console.log(theme.colors);
   return (
@@ -299,6 +305,7 @@ export const WidgetList = React.memo(
     console.log("WIDGET DATA", widgetData);
     console.log("WIDGET USER", currentUser);
     console.log("DATASOURCES", dataSources);
+    /*
     let dataSourceModules = {};
     Object.keys(dataSources).forEach(s => {
       for (let m = 0; m < dataSources[s].modules.length; m++) {
@@ -311,12 +318,13 @@ export const WidgetList = React.memo(
     });
     console.log("MODULES ", dataSourceModules);
     const userDataSources = Object.keys(currentUser.dataSources);
+    */
     //const dataSources = { "@prifina/google-timeline": { sourceType: 2 } };
     return (
       <>
         {widgetList.map((Widget, i) => {
           const size = widgetData[i].widget.size.split("x");
-
+          /*
           console.log(
             "DATASOURCE CHECK ",
             i,
@@ -324,175 +332,7 @@ export const WidgetList = React.memo(
             widgetData[i].dataSources !== null,
             widgetData[i].dataSources.length,
           );
-
-          if (
-            widgetData[i].hasOwnProperty("dataSources") &&
-            widgetData[i].dataSources !== null &&
-            widgetData[i].dataSources.length > 0
-          ) {
-            console.log("DATASOURCE FOUND ", widgetData[i]);
-            // only first widget datasource is used ????
-            const widgetDataSourceModule = widgetData[i].dataSources[0];
-            const widgetDataSource =
-              dataSourceModules[widgetDataSourceModule].source;
-            // data source is not connected....
-            let userDataSourceStatus = 0;
-            if (
-              userDataSources.length > 0 &&
-              userDataSources.indexOf(widgetDataSource) > -1
-            ) {
-              // check dataSource status
-              userDataSourceStatus =
-                currentUser.dataSources[widgetDataSource].status;
-            }
-
-            const dataSourceType = dataSources[widgetDataSource].sourceType;
-            console.log(
-              "WIDGET DATASOURCE INFO ",
-              i,
-              userDataSourceStatus,
-              widgetDataSource,
-              dataSourceType,
-            );
-            if (userDataSourceStatus < 2) {
-              console.log("WIDGET IDX STATUS<2 ", i);
-              return (
-                <div
-                  key={"widget-processing-" + i}
-                  style={{
-                    width: size[0] + "px",
-                    height: size[1] + "px",
-                    margin: "10px",
-                  }}
-                >
-                  <EmptyDiv />
-                  <WidgetWrapper key={"widget-wrapper-" + i}>
-                    <BlurImageDiv
-                      key={"prifina-widget-" + i}
-                      style={{
-                        backgroundImage: `url(${widgetData[i].widget.image})`,
-                      }}
-                    />
-
-                    <div
-                      style={{
-                        width: size[0] + "px",
-                        bottom: "60px",
-                        padding: "10px",
-                        position: "absolute",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Text
-                        textStyle={"h6"}
-                        color={
-                          widgetData[i].widget.theme === "dark"
-                            ? "white"
-                            : "black"
-                        }
-                      >
-                        {widgetData[i].widget.title}
-                      </Text>
-                      <Text
-                        textStyle={"caption"}
-                        color={
-                          widgetData[i].widget.theme === "dark"
-                            ? "white"
-                            : "black"
-                        }
-                      >
-                        {widgetData[i].widget.shortDescription}
-                      </Text>
-                    </div>
-                    <div
-                      style={{
-                        width: size[0] + "px",
-                        bottom: "15px",
-                        paddingLeft: "10px",
-                        position: "absolute",
-                      }}
-                    >
-                      {userDataSourceStatus === 0 && (
-                        <Button>
-                          {dataSourceType === 1 ? "Connect Data" : "Import"}
-                        </Button>
-                      )}
-                      {userDataSourceStatus === 1 && <Button>Activate</Button>}
-                    </div>
-                  </WidgetWrapper>
-                </div>
-              );
-            }
-
-            // processing
-            if (userDataSourceStatus === 2) {
-              console.log("WIDGET IDX STATUS=2 ", i);
-              return (
-                <div
-                  key={"widget-processing-" + i}
-                  style={{
-                    width: size[0] + "px",
-                    height: size[1] + "px",
-                    margin: "10px",
-                  }}
-                >
-                  <EmptyDiv />
-                  <WidgetWrapper key={"widget-wrapper-" + i}>
-                    <BlurImageDiv
-                      key={"prifina-widget-" + i}
-                      style={{
-                        backgroundImage: `url(${widgetData[i].widget.image})`,
-                      }}
-                    />
-                    <div
-                      key={"widget-dot-" + i}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        top: "0px",
-                        zIndex: 19,
-                      }}
-                    >
-                      <DotLoader widgetTheme={widgetData[i].widget.theme} />
-                      <div
-                        style={{
-                          width: size[0] + "px",
-                          bottom: "70px",
-                          padding: "5px",
-                          position: "absolute",
-                          textAlign: "center",
-                        }}
-                      >
-                        <Text
-                          textStyle={"h6"}
-                          color={
-                            widgetData[i].widget.theme === "dark"
-                              ? "white"
-                              : "black"
-                          }
-                        >
-                          Prosessing your data...
-                        </Text>
-                        <Text
-                          textStyle={"caption"}
-                          color={
-                            widgetData[i].widget.theme === "dark"
-                              ? "white"
-                              : "black"
-                          }
-                        >
-                          You will be notified as soon as the data becomes
-                          available in your cloud.
-                        </Text>
-                      </div>
-                    </div>
-                  </WidgetWrapper>
-                </div>
-              );
-            }
-          }
+*/
           return (
             <Widget
               data={{

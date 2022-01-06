@@ -45,7 +45,7 @@ import { PrifinaLogo } from "../components/PrifinaLogo";
 import PropTypes from "prop-types";
 import { system } from "styled-system";
 
-import { Box, Flex } from "@blend-ui/core";
+import { Box, Flex, Text, Button } from "@blend-ui/core";
 const short = require("short-uuid");
 i18n.init();
 
@@ -640,7 +640,51 @@ const DisplayApp = ({
       const widgets = widgetConfig.map((w, i) => {
         console.log("WIDGET COMPONENT ", w);
         //React.forwardRef((props, ref) =>
+        let dataSourceModules = {};
 
+        Object.keys(dataSources).forEach(s => {
+          for (let m = 0; m < dataSources[s].modules.length; m++) {
+            const moduleName = dataSources[s].modules[m];
+            dataSourceModules[moduleName] = {
+              source: s,
+              sourceType: dataSources[s].sourceType,
+            };
+          }
+        });
+        console.log("MODULES ", dataSourceModules);
+        const userDataSources = Object.keys(currentUser.dataSources);
+        console.log("USER DATASOURCES...", i, userDataSources);
+        let userDataSourceStatus = 0;
+        let dataSourceType = 0;
+        let datasourcesFound = false;
+        if (
+          w.hasOwnProperty("dataSources") &&
+          w.dataSources !== null &&
+          w.dataSources.length > 0
+        ) {
+          console.log("DATASOURCE FOUND ", w);
+          datasourcesFound = true;
+          const widgetDataSourceModule = w.dataSources[0];
+          const widgetDataSource =
+            dataSourceModules[widgetDataSourceModule].source;
+          if (
+            userDataSources.length > 0 &&
+            userDataSources.indexOf(widgetDataSource) > -1
+          ) {
+            // check dataSource status
+            userDataSourceStatus =
+              currentUser.dataSources[widgetDataSource].status;
+          }
+
+          dataSourceType = dataSources[widgetDataSource].sourceType;
+        }
+        console.log(
+          "USER DATASOURCE STATUS ",
+          i,
+          userDataSourceStatus,
+          dataSourceType,
+          datasourcesFound,
+        );
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
           const size = w.widget.size.split("x");
@@ -651,15 +695,16 @@ const DisplayApp = ({
                   width: size[0] + "px",
                   height: size[1] + "px",
                   margin: "10px",
+                  position: "relative",
                 }}
               >
-                <Flex flexDirection={"row"}>
+                <div>
                   {/* 
                   <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
                     <BlendIcon iconify={bxCog} />
                   </C.IconDiv>
                   */}
-                  <Flex>
+                  <div>
                     {w.settings && (
                       <C.IconDiv
                         open={props.open}
@@ -668,18 +713,141 @@ const DisplayApp = ({
                       />
                     )}
                     {!w.settings && <C.EmptyDiv />}
-                  </Flex>
-                  <Flex>
+                  </div>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
                     <C.WidgetWrapper
                       className={"prifina-widget"}
                       data-widget-index={i}
                       key={"widget-wrapper-" + i}
                       ref={ref}
                     >
-                      <RemoteComponent url={w.url} {...props} />
+                      {userDataSourceStatus < 3 && datasourcesFound && (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        >
+                          <C.BlurImageDiv
+                            testing={"OK"}
+                            key={"prifina-widget-" + i}
+                            style={{
+                              backgroundImage: `url(${w.widget.image})`,
+                            }}
+                          />
+                          {userDataSourceStatus === 2 && (
+                            <div>
+                              <div
+                                key={"widget-dot-" + i}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  top: "0px",
+                                  zIndex: 19,
+                                  position: "absolute",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <C.DotLoader widgetTheme={w.widget.theme} />
+                              </div>
+                              <div
+                                style={{
+                                  width: size[0] + "px",
+                                  bottom: 0,
+                                  position: "absolute",
+                                  padding: "5px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Text
+                                  textStyle={"h6"}
+                                  color={
+                                    w.widget.theme === "dark"
+                                      ? "white"
+                                      : "black"
+                                  }
+                                >
+                                  Prosessing your data...
+                                </Text>
+                                <Text
+                                  textStyle={"caption"}
+                                  color={
+                                    w.widget.theme === "dark"
+                                      ? "white"
+                                      : "black"
+                                  }
+                                >
+                                  You will be notified as soon as the data
+                                  becomes available in your cloud.
+                                </Text>
+                              </div>
+                            </div>
+                          )}
+                          {userDataSourceStatus < 2 && (
+                            <div
+                              style={{
+                                width: size[0] + "px",
+                                bottom: "10px",
+                                padding: "10px",
+                                position: "absolute",
+                                textAlign: "center",
+                              }}
+                            >
+                              <Text
+                                textStyle={"h6"}
+                                color={
+                                  w.widget.theme === "dark" ? "white" : "black"
+                                }
+                              >
+                                {w.widget.title}
+                              </Text>
+                              <Text
+                                textStyle={"caption"}
+                                color={
+                                  w.widget.theme === "dark" ? "white" : "black"
+                                }
+                              >
+                                {w.widget.shortDescription}
+                              </Text>
+                              <div
+                                style={{
+                                  marginTop: "10px",
+                                }}
+                              >
+                                {userDataSourceStatus === 0 && (
+                                  <Button>
+                                    {dataSourceType === 1
+                                      ? "Connect Data"
+                                      : "Import"}
+                                  </Button>
+                                )}
+                                {userDataSourceStatus === 1 && (
+                                  <Button>Activate</Button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {userDataSourceStatus === 3 && datasourcesFound && (
+                        <RemoteComponent url={w.url} {...props} />
+                      )}
+                      {dataSourceType === 0 && !datasourcesFound && (
+                        <RemoteComponent url={w.url} {...props} />
+                      )}
                     </C.WidgetWrapper>
-                  </Flex>
-                </Flex>
+                  </div>
+                </div>
               </div>
             </React.Fragment>
           );
