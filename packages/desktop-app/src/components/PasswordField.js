@@ -208,6 +208,8 @@ const PasswordField = forwardRef(
   },
 );
 
+PasswordField.displayName = "PasswordField";
+
 PasswordField.propTypes = {
   placeholder: PropTypes.string,
   addPopper: PropTypes.bool,

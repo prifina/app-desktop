@@ -148,6 +148,14 @@ export const ListItemIconLink = ({
   </Flex>
 );
 
+ListItemIconLink.propTypes = {
+  children: PropTypes.node,
+  icon: PropTypes.string,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  color: PropTypes.string,
+};
+
 export const AppMarketSidebar = ({
   //theme,
   items,
@@ -315,6 +323,11 @@ export const Card = ({ title, value }) => {
       </Flex>
     </Flex>
   );
+};
+
+Card.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.string,
 };
 
 export const InstalledText = styled(Text)`

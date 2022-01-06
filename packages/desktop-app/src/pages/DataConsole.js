@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
-import { BlendIcon } from "@blend-ui/icons";
+import { BlendIcon, Graphql } from "@blend-ui/icons";
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import styled, { createGlobalStyle } from "styled-components";
@@ -578,6 +578,12 @@ const DataConsole = props => {
       </Flex>
     </>
   );
+};
+
+DataConsole.propTypes = {
+  GraphQLClient: PropTypes.string,
+  prifinaID: PropTypes.string,
+  cell: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 DataConsole.displayName = "DataConsole";

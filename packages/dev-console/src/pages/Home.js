@@ -163,6 +163,8 @@ Content.propTypes = {
   updateNotificationHandler: PropTypes.func,
   appSyncClient: PropTypes.object,
   activeUser: PropTypes.object,
+  currentUser: PropTypes.object,
+  data: PropTypes.array,
 };
 
 const Main = ({ data, currentUser }) => {
@@ -1236,6 +1238,13 @@ const Main = ({ data, currentUser }) => {
       </StyledBox>
     </React.Fragment>
   );
+};
+
+Main.propTypes = {
+  data: PropTypes.array,
+  currentUser: PropTypes.object,
+  cell: PropTypes.array,
+  row: PropTypes.array,
 };
 
 const Home = props => {

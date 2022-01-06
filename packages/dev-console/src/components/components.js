@@ -5,6 +5,8 @@ import React from "react";
 // import { List, ListItem, ListDivider } from "@blend-ui/list";
 import { Box, Flex, Text, Button, Image, Divider, Input } from "@blend-ui/core";
 
+import PropTypes from "prop-types";
+
 import { BlendIcon } from "@blend-ui/icons";
 
 import { PrifinaLogo } from "./PrifinaLogo";
@@ -158,6 +160,14 @@ export const ListItemIconLink = ({
   </Flex>
 );
 
+ListItemIconLink.propTypes = {
+  children: PropTypes.node,
+  icon: PropTypes.string,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  color: PropTypes.string,
+};
+
 export const DevConsoleSidebar = ({
   // theme,
   items,
@@ -243,6 +253,10 @@ export const DevConsoleSidebar = ({
   );
 };
 
+DevConsoleSidebar.propTypes = {
+  items: PropTypes.array,
+};
+
 export const NavbarContainer = styled(Flex)`
   height: 65px;
   width: 100%;
@@ -279,4 +293,10 @@ export const ResourceCard = ({ title, description, src }) => {
       </Box>
     </Flex>
   );
+};
+
+ResourceCard.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
+  src: PropTypes.node,
 };

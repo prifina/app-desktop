@@ -352,6 +352,7 @@ WidgetList.propTypes = {
   widgetList: PropTypes.array.isRequired,
   widgetData: PropTypes.array.isRequired,
   currentUser: PropTypes.object,
+  dataSources: PropTypes.array,
 };
 
 //moment.tz.guess()

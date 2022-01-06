@@ -6,6 +6,8 @@ import { Box, Button, Text, Input } from "@blend-ui/core";
 import config from "../config";
 import { useFormFields } from "@prifina-apps/utils";
 
+import PropTypes from "prop-types";
+
 //import { useFormFields } from "../lib/formFields";
 /*
 const userRegion = config.cognito.IDENTITY_POOL_ID.split(":")[0];
@@ -122,6 +124,11 @@ const UploadApp = props => {
       </Box>
     </>
   );
+};
+
+UploadApp.propTypes = {
+  row: PropTypes.instanceOf(Array),
+  close: PropTypes.func,
 };
 
 UploadApp.displayName = "UploadApp";

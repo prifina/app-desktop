@@ -14,6 +14,8 @@ import {
 
 import { i18n } from "@prifina-apps/utils";
 
+import PropTypes from "prop-types";
+
 import { BlendIcon } from "@blend-ui/icons";
 
 import feDropRight from "@iconify/icons-fe/drop-right";
@@ -200,6 +202,11 @@ function Table({ columns, data }) {
     </>
   );
 }
+
+Table.propTypes = {
+  columns: PropTypes.instanceOf(Array),
+  data: PropTypes.instanceOf(Array),
+};
 
 // function App() {
 //   return (

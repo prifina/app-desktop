@@ -67,7 +67,6 @@ const WidgetBox = ({
   shortDescription,
   installedWidget,
   onClick,
-  settings,
   icon,
   category,
   bannerImage,
@@ -133,6 +132,9 @@ WidgetBox.propTypes = {
   shortDescription: PropTypes.string,
   installedWidget: PropTypes.number,
   onClick: PropTypes.func,
+  icon: PropTypes.string,
+  category: PropTypes.string,
+  bannerImage: PropTypes.string,
 };
 
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {

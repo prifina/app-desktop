@@ -4,6 +4,8 @@
 import React, { useState, useEffect } from "react";
 //import * as flagIcons from "./FlagIcons";
 
+import PropTypes from "prop-types";
+
 //import { countryList } from "../lib/utils";
 import { Icon } from "@iconify/react";
 
@@ -54,6 +56,10 @@ const Flags = props => {
   }, []);
 
   return <React.Suspense fallback={"Loading ..."}>{icons}</React.Suspense>;
+};
+
+Flags.propTypes = {
+  cList: PropTypes.func,
 };
 
 export default Flags;

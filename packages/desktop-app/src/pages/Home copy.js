@@ -648,6 +648,7 @@ Content.propTypes = {
   clientHandler: PropTypes.object,
   currentUser: PropTypes.object,
   activeUser: PropTypes.object,
+  API: PropTypes.string,
 };
 
 const Home = props => {

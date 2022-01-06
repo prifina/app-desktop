@@ -179,6 +179,13 @@ function Table({
   );
 }
 
+Table.propTypes = {
+  columns: PropTypes.instanceOf(Array),
+  data: PropTypes.instanceOf(Array),
+  getColumnProps: PropTypes.func,
+  getCellProps: PropTypes.func,
+};
+
 const Content = ({ data }) => {
   //console.log("CURRENT USER ", currentUser);
 
@@ -195,6 +202,10 @@ const Content = ({ data }) => {
       </TableStyles>
     </React.Fragment>
   );
+};
+
+Content.propTypes = {
+  data: PropTypes.array,
 };
 
 const Admin = props => {
