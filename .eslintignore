@@ -1,1 +1,4 @@
 **/stories/*.js
+dist
+build
+backup
