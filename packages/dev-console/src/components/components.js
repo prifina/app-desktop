@@ -1,21 +1,16 @@
 import React from "react";
 // import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button, Image, Divider, Input } from "@blend-ui/core";
+import { Box, Flex, Text, Image, Input } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
 import { BlendIcon } from "@blend-ui/icons";
 
-import { PrifinaLogo } from "./PrifinaLogo";
-import bxsCheckCircle from "@iconify/icons-bx/bxs-check-circle";
 
-import viewDashboard from "@iconify/icons-mdi/view-dashboard";
-import mdiWidget from "@iconify/icons-mdi/widgets";
-import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 import lock from "@iconify/icons-fe/lock";
 
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 
 const SidebarContainer = styled(Flex)`
   width: 286px;

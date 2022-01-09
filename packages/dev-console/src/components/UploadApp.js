@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { Storage as S3Storage, Auth } from "aws-amplify";
+import { Storage as S3Storage } from "aws-amplify";
 
 import { Box, Button, Text, Input } from "@blend-ui/core";
 import config from "../config";

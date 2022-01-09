@@ -4,7 +4,6 @@ import {
   Modal,
   ModalContent,
   ModalBody,
-  ModalHeader,
   ModalFooter,
 } from "@blend-ui/modal";
 import {
@@ -14,7 +13,6 @@ import {
   Flex,
   useTheme,
   Input,
-  Image,
 } from "@blend-ui/core";
 
 import styled from "styled-components";

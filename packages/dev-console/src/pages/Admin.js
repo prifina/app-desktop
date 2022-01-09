@@ -1,8 +1,8 @@
 /* global localStorage */
 
-import React, { useEffect, useReducer, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 //import { useTheme } from "@blend-ui/core";
-import { Box, Flex, Text } from "@blend-ui/core";
+import { Text } from "@blend-ui/core";
 
 import {
   useAppContext,
@@ -12,7 +12,7 @@ import {
 //import { useIsMountedRef } from "../lib/componentUtils";
 
 //import { useAppContext } from "../lib/contextLib";
-import { API, Auth } from "aws-amplify";
+import { API } from "aws-amplify";
 import { useHistory } from "react-router-dom";
 
 //import { listAppsQuery } from "../graphql/api";

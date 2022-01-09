@@ -8,7 +8,6 @@ import {
   Text,
   Button,
   Image,
-  SearchSelect,
   Link,
   useTheme,
 } from "@blend-ui/core";
@@ -39,16 +38,12 @@ import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 import { useHistory } from "react-router-dom";
 
 import { StyledBox } from "../components/DefaultBackground";
-import { PrifinaLogo } from "../components/PrifinaLogo";
 
 //import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
 
 //import withUsermenu from "../components/UserMenu";
 
-import styled from "styled-components";
-import { useTable } from "react-table";
 
-import gql from "graphql-tag";
 
 import UploadApp from "../components/UploadApp";
 
@@ -68,27 +63,21 @@ import { DevConsoleLogo } from "../components/DevConsoleLogo";
 import CreateProjectModal from "../components/CreateProjectModal";
 
 import Table from "../components/Table";
-import { all } from "micromatch";
 import BlendIcon from "@blend-ui/icons/dist/esm/BlendIcon";
 
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
-import copy from "@iconify/icons-mdi/content-copy";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
-import arrowTopRightBottomLeft from "@iconify/icons-mdi/arrow-top-right-bottom-left";
 import baselineWeb from "@iconify/icons-mdi/table";
 
 //sidebar icons
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";
 import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
-import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
-import bxsXCircle from "@iconify/icons-bx/bx-x-circle";
 
-import { mdiConnection } from "@iconify/icons-mdi/connection";
 
 import {
   AddRemoveDataSources,
@@ -96,7 +85,6 @@ import {
   DataSourceForm,
   ApiForm,
 } from "../components/helper";
-import { color } from "styled-system";
 
 /*
 const importApp = appName => {
