@@ -3,7 +3,7 @@ import { CssGrid, CssCell } from "@blend-ui/css-grid";
 import { useTheme } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
-// eslint-disable-next-line
+
 const defaultLayout = {
   backgroundColor: "#FFFFFF",
   header: { height: "65px" },
@@ -20,8 +20,7 @@ const defaultLayout = {
 
 const Sidebar = props => {
   const { position = "left", children, theme, ...rest } = props;
-  //  console.log('SIDEBAR ',props)
-  // this is only for left boxShadow={"6px 0px 18px rgba(0, 0, 0, 0.06)"}
+
   const _shadow =
     (position === "left" ? "6px" : "-6px") + " 0px 18px rgba(0, 0, 0, 0.06)";
 
@@ -40,7 +39,7 @@ Sidebar.propTypes = {
 
 const Header = props => {
   const { children, theme, ...rest } = props;
-  //console.log('HEADER ',props);
+
   return (
     <CssCell area="header" {...rest}>
       {children}
@@ -64,7 +63,7 @@ Footer.propTypes = {
 };
 const Content = props => {
   const { children, theme, ...rest } = props;
-  //console.log('CONTENT ',props)
+
   return (
     <CssCell area="content" {...rest}>
       {children}
@@ -81,25 +80,21 @@ Header.displayName = "LayoutHeader";
 Sidebar.displayName = "LayoutSidebar";
 Content.displayName = "LayoutContent";
 
-//const Dashboard=({children,sidebar="left",...props})=>{
 const Layout = ({ children, theme: layoutTheme, ...props }) => {
-  //const { children, theme, ...rest } = props;
   console.log("LAYOUT ", layoutTheme);
-  //console.log('LAYOUT PROPS ',props);
+
   const theme = useTheme();
-  //console.log("THEME", theme);
-  // eslint-disable-next-line
+
   let dashboardTheme = layoutTheme || theme;
   if (typeof dashboardTheme.layout === "undefined") {
     dashboardTheme = { ...dashboardTheme, layout: defaultLayout };
   }
   console.log("THEME", dashboardTheme);
-  //const dashboardTheme={};
+
   let dashboardCols = [];
   let dashboardRows = [];
   React.Children.map(children, (child, index) => {
     if (React.isValidElement(child)) {
-      //console.log(index, child);
       if (child.type.displayName === "LayoutHeader") {
         dashboardRows.push("HEADER");
       }
@@ -162,41 +157,13 @@ const Layout = ({ children, theme: layoutTheme, ...props }) => {
     }
   });
 
-  //console.log(gridColumns.join(" ").trim());
-  //console.log(gridRows.join(" ").trim());
-
   let _areas = [];
   dashboardRows.forEach((row, i) => {
     _areas.push(gridAreas[i].join(" ").trim());
   });
-  //console.log(_areas);
-  /*
-       console.log(gridAreas[0].join(" ").trim());
-       console.log(gridAreas[1].join(" ").trim());
-       console.log(gridAreas[2].join(" ").trim());
-       */
 
-  /*
-        const Items=React.Children.map(children, (child, index) => {
-          if (!React.isValidElement(child)) return;
-      
-          const isLast = index + 1 === React.Children.count(children);
-          if (isLast) {
-            return child;
-          }
-      
-          return React.cloneElement(child, { spacing });
-        })
-      */
   const Items = React.Children.map(children, (child, index) => {
     if (!React.isValidElement(child)) return;
-
-    /*    
-      const isLast = index + 1 === React.Children.count(children);
-      if (isLast) {
-        return child;
-      }
-      */
 
     return React.cloneElement(child, { theme });
   });
@@ -211,33 +178,8 @@ const Layout = ({ children, theme: layoutTheme, ...props }) => {
       {Items}
     </CssGrid>
   );
-
-  /*
-  return <React.Fragment>
-      {children}
-  </React.Fragment>
-  */
 };
-/*
-const Layout = (props) => {
-  //const { children, theme, ...rest } = props;
-  //console.log("LAYOUT ", layoutTheme);
-  //console.log('LAYOUT PROPS ',props);
-  //const theme = useTheme();
-  // eslint-disable-next-line
-  //const dashboardTheme = layoutTheme || theme;
 
-  return (
-    <CssGrid columns={2} gap="2px">
-      <CssCell>foo</CssCell>
-      <CssCell height={2}>bar</CssCell>
-      <CssCell width={2}>baz</CssCell>
-    </CssGrid>
-  );
-
- 
-};
-*/
 Layout.Header = Header;
 Layout.Footer = Footer;
 Layout.Sidebar = Sidebar;

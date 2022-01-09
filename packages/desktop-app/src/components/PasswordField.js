@@ -94,12 +94,10 @@ const mergeRefs = (...refs) => {
 const PasswordField = forwardRef(
   ({ placeholder, addPopper = false, verifications = [], ...props }, ref) => {
     const theme = useTheme();
-    //const referenceElement = ref;
 
     const [referenceElement, setReferenceElement] = useState(ref);
     const [popperElement, setPopperElement] = useState(null);
-    //const { styles, attributes } = usePopper(referenceElement, popperElement);
-    //const [addPopper, setAddPopper] = useState(false);
+
     const [hidePassword, setHidePassword] = useState(true);
     const [arrowElement, setArrowElement] = useState(null);
     const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -114,24 +112,13 @@ const PasswordField = forwardRef(
         },
       ],
     });
-    /*
-  const onPopper = (e) => {
-    e.preventDefault();
-    setAddPopper(!addPopper);
-  };
-  */
+
     const onHide = e => {
-      //console.log("HIDE PASSWORD ", hidePassword);
       e.preventDefault();
       setHidePassword(!hidePassword);
     };
     let popperStyles = { ...styles.popper };
-    //popperStyles["zIndex"] = 999;
-    //console.log(styles);
 
-    //console.log(popperStyles);
-    //console.log("PASS ", config);
-    //console.log("PASSWORD POPPER ", addPopper);
     return (
       <React.Fragment>
         {addPopper && (
@@ -215,7 +202,4 @@ PasswordField.propTypes = {
   verifications: PropTypes.instanceOf(Array),
 };
 
-//onClick={onHide}
-//ref={mergeRefs(local, ref)}
-//ref={setReferenceElement}
 export default PasswordField;

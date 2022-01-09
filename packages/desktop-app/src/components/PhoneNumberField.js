@@ -10,7 +10,6 @@ import { space } from "styled-system";
 import { useId } from "@reach/auto-id";
 
 import PropTypes from "prop-types";
-//import { useFocus } from "../lib/componentUtils";
 
 const StyledBox = styled("div")`
   ${space}
@@ -71,20 +70,19 @@ const InputContext = createContext();
 const useInputContext = () => useContext(InputContext);
 
 const PhoneNumberField = ({ children, disabled, id, ...props }) => {
-  //console.log("ICON FIELD ", props);
   const isIcon = item => item.type.isIcon || item.type.isIconButton;
   const { colors } = useTheme();
 
   const uuid = useId();
   const _id = id || uuid;
-  //console.log("ID ", uuid, _id);
+
   const formatIds = id => ({
     select: `search-${id}-select`,
     input: `search-${id}-input`,
   });
   const selectId = formatIds(_id)["select"];
   const inputId = formatIds(_id)["input"];
-  //console.log("ID ", _id, inputId);
+
   let inputError = false;
   let errorMsg = "";
   let promptMsg = "";
@@ -100,10 +98,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
     }
   });
 
-  //width={"50px"}
-  //containerRef={boxRef}
   const boxRef = createRef();
-  //const searchRef = createRef();
 
   return (
     <InputContext.Provider
@@ -161,11 +156,6 @@ const SelectField = forwardRef(
   ) => {
     const { selectId, boxRef } = useInputContext();
 
-    // const theme = useTheme();
-    // console.log("THEME ", theme);
-    //const theme = useTheme();
-    //console.log("DEFAULT ", defaultValue);
-
     return (
       <div
         style={{
@@ -204,12 +194,7 @@ const InputField = forwardRef(
   ({ children, errorMsg, promptMsg, ...props }, ref) => {
     const { disabled, inputId } = useInputContext();
     const theme = useTheme();
-    //console.log("INPUT ", defaultValue);
-    /*
-    if (defaultValue === "000" && renderStatus) {
-      setSelectFocus();
-    }
-    */
+
     return (
       <Input
         id={inputId}
@@ -234,8 +219,6 @@ InputField.propTypes = {
 const LeftIcon = styled(props => {
   const { disabled, inputError } = useInputContext();
   const theme = useTheme();
-  //const { color, ...rest } = props;
-  //color={disabled ? theme.colors.baseMuted : color}
 
   return (
     <BlendIcon

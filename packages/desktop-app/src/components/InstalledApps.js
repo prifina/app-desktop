@@ -12,12 +12,9 @@ const importComponent = name => {
 };
 
 export const InstalledApps = ({ apps, ...props }) => {
-  //const recentApps = ["./AppMarketIcon", "./NewsMuzzlerIcon"];
   const appIcons = apps.map(app => {
     return importComponent(app);
   });
-
-  //const apps = [AppMarketIcon, NewsMuzzlerIcon];
 
   return (
     <React.Suspense fallback={"Loading ..."}>
