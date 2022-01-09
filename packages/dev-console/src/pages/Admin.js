@@ -198,7 +198,7 @@ const Content = ({ data }) => {
 };
 
 Content.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.instanceOf(Array),
 };
 
 const Admin = props => {

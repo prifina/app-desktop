@@ -75,7 +75,6 @@ ProgressContainer.propTypes = {
   title: PropTypes.string.isRequired,
   mobileApp: PropTypes.bool,
   progress: PropTypes.number.isRequired,
-
-  children: PropTypes.array.isRequired,
+  children: PropTypes.instanceOf(Array).isRequired,
 };
 export default ProgressContainer;

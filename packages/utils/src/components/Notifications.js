@@ -119,7 +119,7 @@ export const NotificationHeader = ({
 
 NotificationHeader.propTypes = {
   title: PropTypes.string,
-  options: PropTypes.array,
+  options: PropTypes.instanceOf(Array),
   selectOnChange: PropTypes.func,
   buttonOnClick: PropTypes.func,
   closeClick: PropTypes.func,

@@ -636,10 +636,10 @@ UserMenuContextProvider.propTypes = {
   offset: PropTypes.string,
   id: PropTypes.string,
   position: PropTypes.string,
-  theme: PropTypes.object,
+  theme: PropTypes.instanceOf(Object),
   onExit: PropTypes.func,
   onHome: PropTypes.func,
-  children: PropTypes.array,
+  children: PropTypes.instanceOf(Array),
 };
 
 /* Hook */

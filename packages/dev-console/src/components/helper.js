@@ -173,7 +173,7 @@ export function AddRemoveDataSources({
 }
 
 AddRemoveDataSources.propTypes = {
-  dataSource: PropTypes.array,
+  dataSource: PropTypes.instanceOf(Array),
   index: PropTypes.number,
   completeDataSource: PropTypes.func,
   removeDataSource: PropTypes.func,
@@ -369,7 +369,7 @@ export function ControlAddedDataSources({
 }
 
 ControlAddedDataSources.propTypes = {
-  dataSource: PropTypes.array,
+  dataSource: PropTypes.instanceOf(Array),
   index: PropTypes.number,
   uncompleteDataSource: PropTypes.func,
   editControled: PropTypes.bool,
@@ -439,7 +439,7 @@ export function DataSourceForm({ addDataSource }) {
 }
 
 DataSourceForm.propTypes = {
-  addDataSource: PropTypes.array,
+  addDataSource: PropTypes.instanceOf(Array),
 };
 
 export function ApiForm({ addApi }) {

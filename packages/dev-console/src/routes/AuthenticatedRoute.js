@@ -22,5 +22,5 @@ export default function AuthenticatedRoute({ children, ...rest }) {
 }
 
 AuthenticatedRoute.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.instanceOf(Object).isRequired,
 };

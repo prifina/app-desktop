@@ -251,7 +251,7 @@ export const DevConsoleSidebar = ({
 };
 
 DevConsoleSidebar.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
 };
 
 export const NavbarContainer = styled(Flex)`

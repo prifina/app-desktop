@@ -158,10 +158,10 @@ Content.propTypes = {
   initials: PropTypes.string,
   notificationCount: PropTypes.number,
   updateNotificationHandler: PropTypes.func,
-  appSyncClient: PropTypes.object,
-  activeUser: PropTypes.object,
-  currentUser: PropTypes.object,
-  data: PropTypes.array,
+  appSyncClient: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
+  currentUser: PropTypes.instanceOf(Object),
+  data: PropTypes.instanceOf(Array),
 };
 
 const Main = ({ data, currentUser }) => {
@@ -1238,10 +1238,10 @@ const Main = ({ data, currentUser }) => {
 };
 
 Main.propTypes = {
-  data: PropTypes.array,
-  currentUser: PropTypes.object,
-  cell: PropTypes.array,
-  row: PropTypes.array,
+  data: PropTypes.instanceOf(Array),
+  currentUser: PropTypes.instanceOf(Object),
+  cell: PropTypes.instanceOf(Array),
+  row: PropTypes.instanceOf(Array),
 };
 
 const Home = props => {

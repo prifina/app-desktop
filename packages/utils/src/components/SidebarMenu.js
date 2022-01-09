@@ -205,7 +205,7 @@ const SidebarMenu = ({
 };
 
 SidebarMenu.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
   pointerBackground: PropTypes.string,
   pointerIconColor: PropTypes.string,
   pointerTextColor: PropTypes.string,
