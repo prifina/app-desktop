@@ -1,7 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/display-name */
-
 import React, { useRef, forwardRef, useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 
@@ -349,11 +345,13 @@ export const WidgetList = React.memo(
 );
 
 WidgetList.propTypes = {
-  widgetList: PropTypes.array.isRequired,
-  widgetData: PropTypes.array.isRequired,
-  currentUser: PropTypes.object,
-  dataSources: PropTypes.array,
+  widgetList: PropTypes.instanceOf(Array).isRequired,
+  widgetData: PropTypes.instanceOf(Array).isRequired,
+  currentUser: PropTypes.instanceOf(Object),
+  dataSources: PropTypes.instanceOf(Array),
 };
+
+WidgetList.displayName = "WidgetList";
 
 //moment.tz.guess()
 //console.log("MOMENT ", moment.tz.names());
@@ -623,7 +621,7 @@ export const SettingsDialog = ({
 
 SettingsDialog.propTypes = {
   widgetIndex: PropTypes.number.isRequired,
-  widgetSettings: PropTypes.object.isRequired,
+  widgetSettings: PropTypes.instanceOf(Object).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 
@@ -684,6 +682,8 @@ SearchBox.propTypes = {
   searchOpen: PropTypes.bool,
   saveSearchKey: PropTypes.func.isRequired,
 };
+
+SearchBox.displayName = "SearchBox";
 
 export const SearchResults = props => {
   const { searchBox, searchKey, roleKey, saveSearchResult } = props;
@@ -796,7 +796,7 @@ export const SearchResults = props => {
   );
 };
 SearchResults.propTypes = {
-  searchBox: PropTypes.object.isRequired,
+  searchBox: PropTypes.instanceOf(Object).isRequired,
   searchKey: PropTypes.string,
   roleKey: PropTypes.string,
   saveSearchResult: PropTypes.func.isRequired,
@@ -844,5 +844,5 @@ export const SearchHistory = props => {
 };
 
 SearchHistory.propTypes = {
-  searchBox: PropTypes.object.isRequired,
+  searchBox: PropTypes.instanceOf(Object).isRequired,
 };

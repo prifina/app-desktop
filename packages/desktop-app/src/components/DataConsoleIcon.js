@@ -10,5 +10,5 @@ const DataConsoleIcon = () => (
   <AppIcon title={i18n.__("Data Cloud")} icon={DataConsole} />
 );
 
-DataConsoleIcon.displayName = "DataConsole";
+DataConsoleIcon.displayName = "DataConsoleIcon";
 export default DataConsoleIcon;

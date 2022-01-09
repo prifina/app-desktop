@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useState, forwardRef } from "react";
 import { IconField, Text, Box, useTheme } from "@blend-ui/core";
 
@@ -213,7 +212,7 @@ PasswordField.displayName = "PasswordField";
 PasswordField.propTypes = {
   placeholder: PropTypes.string,
   addPopper: PropTypes.bool,
-  verifications: PropTypes.array,
+  verifications: PropTypes.instanceOf(Array),
 };
 
 //onClick={onHide}

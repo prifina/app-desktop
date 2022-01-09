@@ -10,5 +10,5 @@ const DevConsoleIcon = () => (
   <AppIcon title={i18n.__("Dev Console")} icon={DevConsole} />
 );
 
-DevConsoleIcon.displayName = "DevConsole";
+DevConsoleIcon.displayName = "DevConsoleIcon";
 export default DevConsoleIcon;

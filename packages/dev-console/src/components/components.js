@@ -1,6 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
 // import { List, ListItem, ListDivider } from "@blend-ui/list";
 import { Box, Flex, Text, Button, Image, Divider, Input } from "@blend-ui/core";

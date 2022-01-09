@@ -1,6 +1,3 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
 import React, { useEffect, useState, useRef, useCallback } from "react";

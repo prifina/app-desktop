@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 //import { useAppContext } from "../lib/contextLib";
@@ -42,5 +41,5 @@ export default function UnauthenticatedRoute({ children, ...rest }) {
 }
 
 UnauthenticatedRoute.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.instanceOf(Object).isRequired,
 };

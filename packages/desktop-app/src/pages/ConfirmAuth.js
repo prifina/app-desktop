@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useState } from "react";
 import { Box, Flex, Button, Text, IconField } from "@blend-ui/core";
 
@@ -165,6 +164,6 @@ name: "CodeMismatchException"
 
 ConfirmAuth.propTypes = {
   backButton: PropTypes.func.isRequired,
-  authOptions: PropTypes.object.isRequired,
+  authOptions: PropTypes.instanceOf(Object).isRequired,
 };
 export default ConfirmAuth;

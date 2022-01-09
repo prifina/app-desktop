@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import NotFoundPage from "../components/NotFoundPage";

@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React, { useState, useEffect, useRef } from "react";
 
 import {
@@ -1270,7 +1268,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
 };
 
 AppMarket.propTypes = {
-  GraphQLClient: PropTypes.object,
+  GraphQLClient: PropTypes.instanceOf(Object),
   prifinaID: PropTypes.string,
 };
 AppMarket.displayName = "AppMarket";

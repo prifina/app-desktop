@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React, { createRef, forwardRef, createContext, useContext } from "react";
 import { Input, Text, Box, useTheme, SearchSelect } from "@blend-ui/core";
 
@@ -18,21 +16,21 @@ const StyledBox = styled("div")`
   ${space}
   /* remove flex and safari works....  */ 
   display: flex;
-  opacity:0.999;
-  
+  opacity: 0.999;
+
   height: ${props =>
     props.height
       ? props.height
       : props.theme.componentStyles.input.base.height};
 
-  background-color: #F5F8F7;
+  background-color: #f5f8f7;
 
-/*
+  /*
       background-color: ${props =>
-        props.disabled
-          ? props.theme.colors.text.muted
-          : props.theme.componentStyles.input.base.backgroundColor ||
-            "transparent"};
+    props.disabled
+      ? props.theme.colors.text.muted
+      : props.theme.componentStyles.input.base.backgroundColor ||
+        "transparent"};
             */
   border: ${props =>
     typeof props.borders !== "undefined"
@@ -52,7 +50,7 @@ const StyledBox = styled("div")`
     box-shadow: none;
     border: ${props => props.theme.borders.input.active};
   }
-  
+
   /*
   &:disabled {
     background: ${props => props.theme.colors.text.muted};
@@ -147,7 +145,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
 PhoneNumberField.propTypes = {
   id: PropTypes.string,
   disabled: PropTypes.bool,
-  children: PropTypes.array,
+  children: PropTypes.instanceOf(Array),
 };
 const SelectField = forwardRef(
   (
@@ -196,7 +194,7 @@ const SelectField = forwardRef(
 );
 
 SelectField.propTypes = {
-  options: PropTypes.array,
+  options: PropTypes.instanceOf(Array),
   defaultValue: PropTypes.string,
   searchLength: PropTypes.number,
   showList: PropTypes.bool,
@@ -231,7 +229,7 @@ const InputField = forwardRef(
 InputField.propTypes = {
   errorMsg: PropTypes.string,
   promptMsg: PropTypes.string,
-  children: PropTypes.array,
+  children: PropTypes.instanceOf(Array),
 };
 const LeftIcon = styled(props => {
   const { disabled, inputError } = useInputContext();

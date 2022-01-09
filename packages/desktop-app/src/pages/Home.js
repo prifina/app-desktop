@@ -1,13 +1,6 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
-import React, {
-  useEffect,
-  useReducer,
-  useState,
-  useRef,
-} from "react";
+import React, { useEffect, useReducer, useState, useRef } from "react";
 //import { useTheme } from "@blend-ui/core";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
@@ -454,9 +447,9 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 };
 
 Content.propTypes = {
-  clientHandler: PropTypes.object,
-  currentUser: PropTypes.object,
-  activeUser: PropTypes.object,
+  clientHandler: PropTypes.instanceOf(Object),
+  currentUser: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
 };
 
 const Home = props => {

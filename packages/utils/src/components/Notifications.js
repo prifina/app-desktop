@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React from "react";
 
 import { Select, Box, Flex, Text, Button } from "@blend-ui/core";

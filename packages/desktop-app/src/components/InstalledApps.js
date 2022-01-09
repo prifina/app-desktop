@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React from "react";
 
 import PropTypes from "prop-types";
@@ -30,5 +29,5 @@ export const InstalledApps = ({ apps, ...props }) => {
 };
 
 InstalledApps.propTypes = {
-  apps: PropTypes.array.isRequired,
+  apps: PropTypes.instanceOf(Array).isRequired,
 };

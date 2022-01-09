@@ -1,7 +1,3 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 //global localStorage
 
 import React, { useState, useEffect } from "react";
@@ -214,9 +210,9 @@ const DataSourceModal = ({
 DataSourceModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   onButtonClick: PropTypes.func.isRequired,
-  dataSourceItems: PropTypes.array,
+  dataSourceItems: PropTypes.instanceOf(Array),
   selectedDataSourceIndex: PropTypes.number.isRequired,
-  GraphQLClient: PropTypes.object,
+  GraphQLClient: PropTypes.instanceOf(Object),
   prifinaID: PropTypes.string,
 };
 export default DataSourceModal;

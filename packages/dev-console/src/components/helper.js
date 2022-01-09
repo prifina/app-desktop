@@ -1,6 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React, { useState, useEffect, useReducer } from "react";
 import {
   Flex,

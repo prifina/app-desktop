@@ -1,6 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
 // import { List, ListItem, ListDivider } from "@blend-ui/list";
 import { Flex, Text, Button } from "@blend-ui/core";
@@ -201,7 +198,7 @@ export const AppMarketSidebar = ({
 };
 
 AppMarketSidebar.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
 };
 
 export const WidgetBase = styled.div`

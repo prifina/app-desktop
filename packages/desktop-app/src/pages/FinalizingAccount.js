@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useEffect } from "react";
 
 import styled from "styled-components";
@@ -103,6 +102,6 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
 };
 
 FinalizingAccount.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.instanceOf(Object).isRequired,
 };
 export default FinalizingAccount;

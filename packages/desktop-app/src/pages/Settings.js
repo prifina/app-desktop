@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React, { useState } from "react";
 import { Box, Text } from "@blend-ui/core";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";

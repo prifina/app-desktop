@@ -1,7 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
-
 import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
 
@@ -849,6 +845,8 @@ const DisplayApp = ({
           );
         });
 
+        Widget.displayName = "Widget";
+
         //const Widget = (props) => <RemoteComponent url={remoteUrl} {...props} />;
 
         //return <Widget key={"prifina-widget-" + i} test={"ok"} />;
@@ -1263,14 +1261,15 @@ input SearchResultInput {
 };
 
 DisplayApp.propTypes = {
-  widgetConfigData: PropTypes.array.isRequired,
-  appSyncClient: PropTypes.object.isRequired,
+  widgetConfigData: PropTypes.instanceOf(Array).isRequired,
+  appSyncClient: PropTypes.instanceOf(Object).isRequired,
   prifinaID: PropTypes.string.isRequired,
   open: PropTypes.bool,
   width: PropTypes.string,
   height: PropTypes.string,
   visibility: PropTypes.string,
   transform: PropTypes.string,
-  dataSources: PropTypes.array,
+  dataSources: PropTypes.instanceOf(Array),
 };
+
 export default DisplayApp;

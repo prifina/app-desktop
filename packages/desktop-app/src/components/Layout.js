@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React from "react";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 import { useTheme } from "@blend-ui/core";
@@ -36,7 +34,7 @@ const Sidebar = props => {
 
 Sidebar.propTypes = {
   position: PropTypes.string,
-  theme: PropTypes.object,
+  theme: PropTypes.instanceOf(Object),
   children: PropTypes.elementType.isRequired,
 };
 
@@ -51,7 +49,7 @@ const Header = props => {
 };
 
 Header.propTypes = {
-  theme: PropTypes.object,
+  theme: PropTypes.instanceOf(Object),
   children: PropTypes.elementType.isRequired,
 };
 const Footer = ({ children, theme, ...props }) => (
@@ -61,7 +59,7 @@ const Footer = ({ children, theme, ...props }) => (
 );
 
 Footer.propTypes = {
-  theme: PropTypes.object,
+  theme: PropTypes.instanceOf(Object),
   children: PropTypes.elementType.isRequired,
 };
 const Content = props => {
@@ -75,7 +73,7 @@ const Content = props => {
 };
 
 Content.propTypes = {
-  theme: PropTypes.object,
+  theme: PropTypes.instanceOf(Object),
   children: PropTypes.elementType.isRequired,
 };
 Footer.displayName = "LayoutFooter";
@@ -246,7 +244,7 @@ Layout.Sidebar = Sidebar;
 Layout.Content = Content;
 
 Layout.propTypes = {
-  theme: PropTypes.object,
+  theme: PropTypes.instanceOf(Object),
   children: PropTypes.elementType.isRequired,
 };
 

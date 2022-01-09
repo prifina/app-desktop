@@ -1,13 +1,5 @@
-/* eslint-disable react/no-multi-comp */
 import React, { useState } from "react";
-import {
-  Flex,
-  Text,
-  Button,
-  Image,
-  Divider,
-  useTheme,
-} from "@blend-ui/core";
+import { Flex, Text, Button, Image, Divider, useTheme } from "@blend-ui/core";
 
 import { i18n } from "@prifina-apps/utils";
 

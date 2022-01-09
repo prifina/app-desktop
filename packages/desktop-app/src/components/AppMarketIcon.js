@@ -10,5 +10,5 @@ const AppMarketIcon = () => (
   <AppIcon title={i18n.__("App Market")} icon={AppMarket} />
 );
 
-AppMarketIcon.displayName = "AppMarket";
+AppMarketIcon.displayName = "AppMarketIcon";
 export default AppMarketIcon;

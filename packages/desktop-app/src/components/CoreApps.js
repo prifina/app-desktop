@@ -1,7 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
-
 import React, { useRef, useState, useEffect } from "react";
 import { PrifinaProvider, PrifinaContext } from "@prifina/hooks";
 
@@ -160,8 +156,8 @@ Content.propTypes = {
   Component: PropTypes.elementType.isRequired,
   initials: PropTypes.string,
   notificationCount: PropTypes.number,
-  appSyncClient: PropTypes.object,
-  activeUser: PropTypes.object,
+  appSyncClient: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
 };
 const CoreApps = props => {
   console.log("CORE COMPONENT --->", props, props.hasOwnProperty("app"));
