@@ -1,24 +1,17 @@
 // /* global localStorage */
 
 import React, { useEffect, useReducer, useRef } from "react";
-//import { useHistory } from "react-router-dom";
 
 import { withRouter, useLocation, useHistory } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
-//import { AppContext } from "./lib/contextLib";
+
 import { API, Auth } from "aws-amplify";
 import { ThemeProvider, baseStyles } from "@blend-ui/core";
 import { createGlobalStyle } from "styled-components";
 
 import sha512 from "crypto-js/sha512";
 import Base64 from "crypto-js/enc-base64";
-/*
-import {
-  addPrifinaSessionMutation,
-  getPrifinaSessionQuery,
-  deletePrifinaSessionMutation,
-} from "./graphql/api";
-*/
+
 import {
   addPrifinaSessionMutation,
   getPrifinaSessionQuery,
@@ -26,10 +19,7 @@ import {
   AppContext,
 } from "@prifina-apps/utils";
 
-//import { getPrifinaSessionQuery as graphqlTEST } from "@prifina-apps/utils";
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
-
-//import { countryList } from "./lib/utils";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -53,31 +43,8 @@ let AUTHConfig = {
   identityPoolRegion: config.main_region,
   //region: config.main_region,
 };
-/*
-async function initAuth(newAuth = false) {
-  Auth.configure(AUTHConfig);
-  Amplify.configure(APIConfig);
-  console.log(AUTHConfig);
-  console.log(APIConfig);
-
-  console.log("INIT AUTH ", new Date(), Auth);
-  let session;
-  if (newAuth) {
-    try {
-      await Auth.signIn("tero-test", "xxxxxx");
-    } catch (e) {
-      console.log("ERR", e);
-    }
-  }
-  session = await Auth.currentSession();
-
-  return session;
-}
-*/
 
 function App() {
-  //const history = useHistory();
-
   console.log("APP START ", AUTHConfig);
   console.log("CONFIG ", config);
 
@@ -85,15 +52,13 @@ function App() {
   if (lastIdentityPool !== null) {
     AUTHConfig.identityPoolId = lastIdentityPool;
     AUTHConfig.identityPoolRegion = lastIdentityPool.split(":")[0];
-    //AUTHConfig.region = lastIdentityPool.split(":")[0];
   }
 
   Auth.configure(AUTHConfig);
   API.configure(APIConfig);
   const { pathname, search } = useLocation();
   const history = useHistory();
-  //console.log(JSON.stringify(countryList()));
-  //window.matchMedia('(max-width: 600px)');
+
   const userAgent =
     typeof window.navigator === "undefined" ? "" : navigator.userAgent;
   const mobile = Boolean(
@@ -108,7 +73,6 @@ function App() {
     const maxD = Math.max(window.screen.availWidth, window.screen.availHeight);
     const minD = Math.min(window.screen.availWidth, window.screen.availHeight);
     if (minD / maxD < 0.7) {
-      //console.log('NOT TABLET....');
       mobileApp = true;
     }
   }
@@ -153,16 +117,11 @@ function App() {
           let currentConfig = Auth._config;
           currentConfig.identityPoolId = lastIdentityPool;
           currentConfig.identityPoolRegion = lastIdentityPool.split(":")[0];
-          //currentConfig.region = lastIdentityPool.split(":")[0];
+
           Auth.configure(currentConfig);
         }
         const _currentSession = await Auth.currentSession();
 
-        //const _currentSession = await initAuth(false);
-        //console.log("AUTH ", Auth);
-        //const _currentSession = await Auth.currentSession();
-        //Auth.currentAuthenticatedUser().then((user) => console.log(user));
-        //Auth.currentCredentials().then((creds) => console.log(creds));
         // Auth.currentSession() does not currently support federated identities. Please store the auth0 session info manually(for example, store tokens into the local storage).Auth.currentAuthenticatedUser().then(user => console.log(user));
         Auth.currentCredentials().then(c => {
           console.log("USER IAM CREDENTIALS ", c);
@@ -177,13 +136,7 @@ function App() {
             client: token["aud"],
             prifinaID: token["custom:prifina"],
           };
-          /*
-          console.log(
-            "EXISTING APP SESSION  ",
-            currentIdToken === _currentSession.getIdToken().jwtToken,
-            currentIdToken,
-          );
-          */
+
           if (
             refreshSession.current ||
             currentIdToken !== _currentSession.getIdToken().jwtToken
@@ -244,7 +197,7 @@ function App() {
             console.log("SESSION ", prifinaSession);
           }
         }
-        //const prifinaID = session.idToken.payload["custom:prifina"];
+
         setState({
           isAuthenticating: false,
           currentUser: _currentUser,
@@ -259,7 +212,7 @@ function App() {
           if (prifinaSession.data.getSession === null) {
             localStorage.removeItem("LastSessionIdentityPool");
             refreshSession.current = true;
-            //setLogin(false);
+
             // redirect to login page with path+query...
             console.log("REDIRECT PATH", pathname);
             console.log("REDIRECT SEARCH", search);
@@ -296,7 +249,6 @@ function App() {
         }
         if (e !== "No current user") {
         }
-        //userHasAuthenticated(true);
         setState({
           isAuthenticating: false,
           currentUser: _currentUser,
