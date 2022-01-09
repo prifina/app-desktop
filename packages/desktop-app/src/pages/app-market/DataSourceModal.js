@@ -1,9 +1,10 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
-/* global localStorage */
 
-import React, { useState, useRef, useEffect } from "react";
+//global localStorage
+
+import React, { useState, useEffect } from "react";
 
 import {
   Modal,
@@ -12,7 +13,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@blend-ui/modal";
-import { Box, Flex, Button, Text, Image, useTheme } from "@blend-ui/core";
+import { Flex, Button, Text, Image, useTheme } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 

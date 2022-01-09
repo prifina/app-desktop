@@ -7,12 +7,11 @@ import React, {
   useReducer,
   useState,
   useRef,
-  useLayoutEffect,
 } from "react";
 //import { useTheme } from "@blend-ui/core";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
-import { Box, Flex } from "@blend-ui/core";
+import { Box } from "@blend-ui/core";
 //import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 /*
 import {
@@ -56,8 +55,6 @@ import {
 import {
   //getNotificationCount,
   updateActivity,
-  //newNotification,
-  getInstalledAppsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   listAppMarketQuery,
@@ -65,7 +62,6 @@ import {
   useAppContext,
   useUserMenu,
   withUsermenu,
-  newSystemNotification,
   getSystemNotificationCountQuery,
   //getRequestToken,
   //newConnectNotification,

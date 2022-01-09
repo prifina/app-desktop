@@ -4,13 +4,10 @@
 
 import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
-import { BlendIcon } from "@blend-ui/icons";
-import bxCog from "@iconify/icons-bx/bx-cog";
 
 //import html2canvas from "html2canvas";
 //import ReactDOM from "react-dom";
 import {
-  useSpring,
   useSprings,
   animated,
   config as SpringConfig,
@@ -43,9 +40,8 @@ import {
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import PropTypes from "prop-types";
-import { system } from "styled-system";
 
-import { Box, Flex, Text, Button } from "@blend-ui/core";
+import { Text, Button } from "@blend-ui/core";
 const short = require("short-uuid");
 i18n.init();
 

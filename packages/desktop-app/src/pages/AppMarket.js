@@ -14,7 +14,6 @@ import {
 import { BlendIcon } from "@blend-ui/icons";
 
 import {
-  getPrifinaWidgetsQuery,
   getPrifinaUserQuery,
   installWidgetMutation,
   listAppMarketQuery,
@@ -38,9 +37,6 @@ import config from "../config";
 //assets
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import appMarketBanner from "../assets/app-market/app-market-banner.svg";
-import apiDataImg from "../assets/app-market/api-data.svg";
-import healthData from "../assets/app-market/health-data.svg";
-import viewingData from "../assets/app-market/viewing-data.svg";
 import useHeldDataImage from "../assets/app-market/user-held-data.svg";
 //dataSource icons
 import ouraIcon from "../assets/app-market/oura-icon.svg";

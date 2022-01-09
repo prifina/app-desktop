@@ -1,15 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 
 import {
   Box,
-  Flex,
   Text,
-  Button,
-  Image,
-  useTheme,
-  ThemeProvider,
 } from "@blend-ui/core";
 
 import { i18n } from "@prifina-apps/utils";

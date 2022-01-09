@@ -10,7 +10,7 @@ import ProgressContainer from "../components/ProgressContainer";
 //import { onlyDigitChars } from "../lib/utils";
 
 //import { useFocus } from "../lib/componentUtils";
-import Amplify, { API } from "aws-amplify";
+import { API } from "aws-amplify";
 //import { useAppContext } from "../lib/contextLib";
 /*
 import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
@@ -21,7 +21,6 @@ import {
   i18n,
   useFormFields,
   useFocus,
-  useAppContext,
   useAccountContext,
   onlyDigitChars,
 } from "@prifina-apps/utils";

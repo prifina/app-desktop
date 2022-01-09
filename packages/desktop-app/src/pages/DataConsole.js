@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   Box,
@@ -12,13 +12,12 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
-import { BlendIcon, Graphql } from "@blend-ui/icons";
+import { BlendIcon } from "@blend-ui/icons";
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
-import styled, { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from "styled-components";
 
 import {
-  getPrifinaUserQuery,
   listDataSourcesQuery,
   SidebarMenu,
   Navbar,

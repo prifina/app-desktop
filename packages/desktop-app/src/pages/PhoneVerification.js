@@ -10,7 +10,7 @@ import ProgressContainer from "../components/ProgressContainer";
 //import { onlyDigitChars } from "../lib/utils";
 
 //import { useFocus } from "../lib/componentUtils";
-import Amplify, { API } from "aws-amplify";
+import { API } from "aws-amplify";
 //import { useAppContext } from "../lib/contextLib";
 //import { verifyCodeMutation } from "../graphql/api";
 
@@ -20,7 +20,6 @@ import {
   sendVerificationMutation,
   useFormFields,
   useFocus,
-  useAppContext,
   useAccountContext,
   i18n,
   onlyDigitChars,

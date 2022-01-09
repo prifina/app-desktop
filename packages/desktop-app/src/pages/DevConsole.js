@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState, useReducer } from "react";
+import React, { useState } from "react";
 import {
-  Box,
   Flex,
   Text,
   Button,
@@ -10,7 +9,7 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
-import { i18n, AccountContext } from "@prifina-apps/utils";
+import { i18n } from "@prifina-apps/utils";
 
 i18n.init();
 

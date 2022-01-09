@@ -1,18 +1,11 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
-/* global localStorage */
 
-import React, {
-  useEffect,
-  useReducer,
-  useState,
-  useRef,
-  useLayoutEffect,
-} from "react";
+import React, { useEffect, useReducer, useState, useRef } from "react";
 //import { useTheme } from "@blend-ui/core";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
-import { Box, Flex } from "@blend-ui/core";
+import { Box } from "@blend-ui/core";
 //import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
 /*
 import {
@@ -57,7 +50,6 @@ import {
   getNotificationCount,
   updateActivity,
   newNotification,
-  getInstalledAppsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   listAppMarketQuery,

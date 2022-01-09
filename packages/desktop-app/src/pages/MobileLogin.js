@@ -24,9 +24,7 @@ import bxUser from "@iconify/icons-bx/bx-user";
 import bxKey from "@iconify/icons-bx/bx-key";
 import PasswordField from "../components/PasswordField";
 
-import Amplify, { Auth } from "aws-amplify";
 //import { useAppContext } from "../lib/contextLib";
-import { useHistory } from "react-router-dom";
 //import { useFormFields } from "../lib/formFields";
 //import { useFocus } from "../lib/componentUtils";
 import { useToast } from "@blend-ui/toast";

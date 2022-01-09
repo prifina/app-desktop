@@ -2,7 +2,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/no-multi-comp */
 
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { PrifinaProvider, PrifinaContext } from "@prifina/hooks";
 
 //import i18n from "../lib/i18n";
@@ -19,16 +19,12 @@ import {
 */
 
 import {
-  getPrifinaWidgetsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   listAppMarketQuery,
   listDataSourcesQuery,
-  createNotification,
   updateActivity,
   addNotification,
-  //newNotification,
-  listNotifications,
   //getNotificationCount,
   getAddressBook,
   i18n,
@@ -36,9 +32,7 @@ import {
   useUserMenu,
   withUsermenu,
   getSystemNotificationCountQuery,
-  newSystemNotification,
   createClient,
-  useIsMountedRef,
 } from "@prifina-apps/utils";
 
 /*

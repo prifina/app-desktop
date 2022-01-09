@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Flex, Button, Text, IconField } from "@blend-ui/core";
+import { Box, Flex, Button, IconField } from "@blend-ui/core";
 
 import bxUser from "@iconify/icons-bx/bx-user";
 
