@@ -27,7 +27,7 @@ import {
 } from "@prifina-apps/utils";
 
 //import { getPrifinaSessionQuery as graphqlTEST } from "@prifina-apps/utils";
-import config, { REFRESH_TOKEN_EXPIRY } from "./config";
+import config, { REFRESH_TOKEN_EXPIRY } from "./config";;
 
 //import { countryList } from "./lib/utils";
 
