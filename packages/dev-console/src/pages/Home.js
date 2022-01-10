@@ -2,15 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
-import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Image,
-  Link,
-  useTheme,
-} from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image, Link, useTheme } from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
@@ -42,8 +34,6 @@ import { StyledBox } from "../components/DefaultBackground";
 //import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
 
 //import withUsermenu from "../components/UserMenu";
-
-
 
 import UploadApp from "../components/UploadApp";
 
@@ -78,22 +68,12 @@ import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 
 import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
 
-
 import {
   AddRemoveDataSources,
   ControlAddedDataSources,
   DataSourceForm,
   ApiForm,
 } from "../components/helper";
-
-/*
-const importApp = appName => {
-  console.log("APP ", appName);
-  return React.lazy(() =>
-    import("../pages/" + appName).catch(() => import("./NotFoundPage")),
-  );
-};
-*/
 
 // Create a default prop getter
 const defaultPropGetter = () => ({});
@@ -132,12 +112,10 @@ const Content = ({
       PrifinaGraphQLHandler: GRAPHQL,
       prifinaID: activeUser.uuid,
     });
-    //console.log(RecentApps);
   }, []);
 
   updateNotificationHandler(userMenu.onUpdate);
 
-  //return <Component appSyncClient={appSyncClient} {...props} />;
   return <Component data={props.data} currentUser={props.currentUser} />;
 };
 
@@ -186,7 +164,6 @@ const Main = ({ data, currentUser }) => {
       Cell: props => {
         return (
           <Text
-            // fontSize="xs"
             onClick={() => {
               setStep(3);
               setAllValues({
@@ -243,7 +220,6 @@ const Main = ({ data, currentUser }) => {
       Header: () => null, // No header
       id: "sendApp", // It needs an ID
       Cell: cellProp => {
-        //console.log("ROW ", cellProp);
         return (
           <Button
             size="xs"
@@ -542,13 +518,6 @@ const Main = ({ data, currentUser }) => {
                         marginBottom="40px"
                       >
                         <Text textStyle="h3">{i18n.__("projects")}</Text>
-                        {/* <Button
-                          onClick={() => {
-                            history.push("/new-app");
-                          }}
-                        >
-                          New App
-                        </Button> */}
                         <Button
                           onClick={() => {
                             setProjectDialogOpen(true);
@@ -1074,7 +1043,6 @@ const Main = ({ data, currentUser }) => {
                                                   setEditControled(true);
                                                 }}
                                               >
-                                                {/* <Text textStyle="h3">E</Text> */}
                                                 <BlendIcon iconify={bxsEdit} />
                                               </button>
                                             </>
@@ -1341,23 +1309,6 @@ const Home = props => {
         componentProps.current.initials = appProfile.initials;
         componentProps.current.updateNotificationHandler = updateNotification;
         componentProps.current.activeUser = activeUser.current;
-
-        // notificationCount...
-
-        // const notificationCountResult = await client.query({
-        //   query: gql(getNotificationCount),
-        //   variables: {
-        //     filter: {
-        //       owner: { eq: currentUser.prifinaID },
-        //       status: { eq: 0 },
-        //     },
-        //   },
-        // });
-        // console.log("COUNT ", notificationCountResult);
-        // notificationCount.current =
-        //   notificationCountResult.data.getNotificationCount;
-
-        // componentProps.current.notificationCount = notificationCount.current;
 
         console.log("COMPONENT ", componentProps);
         setInitClient(true);

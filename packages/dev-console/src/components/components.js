@@ -1,11 +1,10 @@
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
+
 import { Box, Flex, Text, Image, Input } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
 import { BlendIcon } from "@blend-ui/icons";
-
 
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 import lock from "@iconify/icons-fe/lock";
@@ -187,7 +186,6 @@ export const DevConsoleSidebar = ({
           }) => (
             <ListMenuItem
               key={id}
-              // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
               onClick={onClick}
               backgroundColor={backgroundColor}
             >
@@ -195,24 +193,8 @@ export const DevConsoleSidebar = ({
             </ListMenuItem>
           ),
         )}
-        {/* <ListMenuItem
-          // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
-          onClick={stateOne}
-          backgroundColor={backgroundColor1}
-        >
-          <ListItemIconLink icon={viewDashboard}>Dashboard</ListItemIconLink>
-        </ListMenuItem>
-        <ListMenuItem onClick={stateTwo} backgroundColor={backgroundColor2}>
-          <ListItemIconLink icon={mdiWidget}>Projects</ListItemIconLink>
-        </ListMenuItem>
-        <ListMenuItem onClick={stateThree} backgroundColor={backgroundColor3}>
-          <ListItemIconLink icon={mdiBookOpenVariant}>
-            Resources
-          </ListItemIconLink>
-        </ListMenuItem> */}
+
         <ListMenuItem
-          // onClick={stateFour}
-          // backgroundColor={backgroundColor4}
           //temporary needs update
           style={{ pointerEvents: "none" }}
         >

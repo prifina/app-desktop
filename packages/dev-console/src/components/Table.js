@@ -2,10 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 
-import {
-  Box,
-  Text,
-} from "@blend-ui/core";
+import { Box, Text } from "@blend-ui/core";
 
 import { i18n } from "@prifina-apps/utils";
 
@@ -202,13 +199,5 @@ Table.propTypes = {
   columns: PropTypes.instanceOf(Array),
   data: PropTypes.instanceOf(Array),
 };
-
-// function App() {
-//   return (
-//     <Styles>
-//       <Table columns={columns} data={data} />
-//     </Styles>
-//   );
-// }
 
 export default Table;

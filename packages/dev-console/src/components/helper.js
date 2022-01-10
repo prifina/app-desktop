@@ -25,12 +25,6 @@ import { i18n } from "@prifina-apps/utils";
 import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
 import bxsXCircle from "@iconify/icons-bx/bx-x-circle";
 
-//import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
-
-//import withUsermenu from "../components/UserMenu";
-
-// import styled from "styled-components";
-
 import * as C from "./components";
 
 i18n.init();
@@ -88,11 +82,7 @@ export function AddRemoveDataSources({
         <Flex paddingTop="5px">
           <Text mr="5px">{dataSource.text}</Text>
 
-          <Link
-            href={dataSource.url}
-            target="_blank"
-            // style={{ color: "#AA1370" }}
-          >
+          <Link href={dataSource.url} target="_blank">
             {i18n.__("fullSpecHere")}
           </Link>
         </Flex>
@@ -330,11 +320,8 @@ export function ControlAddedDataSources({
                 </Button>
                 <Button
                   onClick={e => {
-                    // setDialogOpen(false);
-                    // dataSource.push("hey");
                     setDialogOpen(false);
-                    ///further iimplementation
-
+                    ///further implementation
                     e.preventDefault();
                   }}
                 >
@@ -350,7 +337,6 @@ export function ControlAddedDataSources({
               onClick={() => setDialogOpen(true)}
               style={{ width: 50, height: 50, marginRight: 5 }}
             >
-              {/* <Text textStyle="h3">E</Text> */}
               <BlendIcon iconify={bxsEdit} />
             </button>
             <button
