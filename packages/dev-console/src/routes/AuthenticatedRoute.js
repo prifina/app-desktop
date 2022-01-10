@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 export default function AuthenticatedRoute({ children, ...rest }) {
   const { pathname, search } = useLocation();
   const { isAuthenticated, currentUser } = useAppContext();
-  //const schemaId = localStorage.getItem("builderDefaultSchemaId");
+
   console.log("AUTH ROUTE ", isAuthenticated, currentUser);
   return (
     <Route {...rest}>

@@ -17,14 +17,6 @@ import Landing from "../pages/Landing";
 export default props => (
   <React.Suspense fallback={"Loading routing..."}>
     <Switch>
-      {/* 
-      <AppliedRoute path="/" exact>
-        <Landing />
-      </AppliedRoute>
-      <AppliedRoute path="/home" exact>
-        <Home />
-      </AppliedRoute>
-      */}
       <AuthenticatedRoute path="/upload" exact>
         <UploadApp />
       </AuthenticatedRoute>
@@ -40,11 +32,6 @@ export default props => (
       <AuthenticatedRoute path="/home" exact>
         <Home />
       </AuthenticatedRoute>
-      {/* 
-      <AuthenticatedRoute path="/settings" exact>
-        <Settings />
-      </AuthenticatedRoute>
-      */}
       <AuthenticatedRoute path="/" exact>
         <Home />
       </AuthenticatedRoute>
@@ -60,15 +47,6 @@ export default props => (
       <AuthenticatedRoute path="/logout" exact>
         <Logout />
       </AuthenticatedRoute>
-      {/*
-      <AuthenticatedRoute path="/verify-email" exact>
-        <Landing />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/verify-phone" exact>
-        <Landing />
-      </AuthenticatedRoute>
-      */}
-
       <Route component={NotFoundPage} />
     </Switch>
   </React.Suspense>
