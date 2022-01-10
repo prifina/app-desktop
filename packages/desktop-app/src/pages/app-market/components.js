@@ -1,5 +1,5 @@
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
+
 import { Flex, Text, Button } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
@@ -397,19 +397,3 @@ export const DataSourceButton = styled.img`
   cursor: pointer;
   opacity: ${props => (props.installed ? 0.2 : 1)};
 `;
-
-/*
-export const DataSourceButton = styled.button`
-  background-image: ${props => `url(${props.backgroundImage})`};
-  background-position: "center";
-  background-size: "cover";
-  background-repeat: "no-repeat";
-  width: 44px;
-  height: 44px;
-  border-radius: 8.80208px;
-  border: 0;
-  &:active {
-    opacity: 0.5;
-  }
-`;
-*/

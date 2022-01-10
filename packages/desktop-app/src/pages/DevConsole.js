@@ -17,40 +17,6 @@ const DevConsole = props => {
 
   const { colors } = useTheme();
 
-  const [step, setStep] = useState(0);
-
-  switch (step) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      break;
-    default:
-  }
-
-  const nextStepAction = step => {
-    console.log("ACTION STEP ", step);
-    if (step === 3) {
-      //await Auth.signOut();
-      //history.replace("/");
-      //setState({ phoneVerified: currentUser.phone_number });
-      //setRegisterStep(step);
-      _currentUser.termsAccepted = true;
-    } else if (step === 2) {
-      setState({ termsAccepted: true });
-      // setRegisterStep(step);
-      window.location.href = config.DEV_URL; // browser-back is /core/dev-console
-    } else if (step === 0) {
-      // terms declined...
-      // alerts.info(i18n.__("acceptTerms"), {});
-      // setStep(0);
-      window.location.href = config.APP_URL; // browser-back is /home
-    }
-  };
-
   return (
     <>
       <Flex
@@ -98,7 +64,6 @@ const DevConsole = props => {
           >
             <Text
               mb={16}
-              // textStyle={"h5"}
               fontSize="lg"
               fontWeight="semiBold"
               color={colors.brandAccent}

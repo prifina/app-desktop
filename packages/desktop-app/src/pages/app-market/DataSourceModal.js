@@ -59,7 +59,7 @@ const DataSourceModal = ({
       dataSourceItem.id,
       2,
     );
-    //console.log("URL ", result);
+
     setRequestUrl(result.data.getRequestToken.requestURL);
   }, []);
   const onCloseCheck = (e, action) => {
@@ -94,7 +94,6 @@ const DataSourceModal = ({
             <Flex
               style={{
                 height: 73,
-                //   background: "#EBF3FF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -142,12 +141,7 @@ const DataSourceModal = ({
                   </Text>
                 </Flex>
               </Flex>
-              <Flex
-                flex={2}
-                flexDirection="column"
-                justifyContent="center"
-                // alignItems="center"
-              >
+              <Flex flex={2} flexDirection="column" justifyContent="center">
                 <Text mb={8}>Prifina + {dataSourceItem.title}</Text>
                 <Text mb={12} fontSize="sm" color={colors.textMuted}>
                   {i18n.__("dataSourceModalText1")}
@@ -163,7 +157,6 @@ const DataSourceModal = ({
               style={{
                 height: 73,
                 width: "100%",
-                //   background: "#EBF3FF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",

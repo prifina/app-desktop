@@ -5,14 +5,10 @@ import bxKey from "@iconify/icons-bx/bx-key";
 import { ReactComponent as Phone } from "../assets/phone.svg";
 
 import ProgressContainer from "../components/ProgressContainer";
-//import { useFormFields } from "../lib/formFields";
 
-//import { onlyDigitChars } from "../lib/utils";
-
-//import { useFocus } from "../lib/componentUtils";
 import { useHistory } from "react-router-dom";
 import { useToast } from "@blend-ui/toast";
-//import i18n from "../lib/i18n";
+
 import {
   i18n,
   useFormFields,
@@ -27,7 +23,7 @@ i18n.init();
 const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
   const history = useHistory();
   const alerts = useToast();
-  //console.log("TOAST ", alerts);
+
   const appDebug =
     process.env.REACT_APP_DEBUG === "true" &&
     history.location.search === "?debug=true";
@@ -41,11 +37,11 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
 
   const checkInput = code => {
     const checkResult = onlyDigitChars(code);
-    //console.log(checkResult);
+
     let validCode = true;
     if (!checkResult) {
       setInputError({ status: true, msg: i18n.__("codeDigitsError") });
-      //alerts.error(i18n.__("codeDigitsError"), {});
+
       const errorMsg = i18n.__("codeDigitsError");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
@@ -88,15 +84,8 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
         if (!alerts.check().some(alert => alert.message === errorMsg))
           alerts.error(errorMsg, {});
       }
-
-      /*
-      code: "CodeMismatchException"
-message: "Invalid code or auth state for the user."
-name: "CodeMismatchException"
-*/
     }
   };
-  // 86 ,114
   return (
     <ProgressContainer title={i18n.__("confirmTitle")} progress={100}>
       <Box mt={47}>

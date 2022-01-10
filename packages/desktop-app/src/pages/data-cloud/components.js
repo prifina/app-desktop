@@ -1,5 +1,5 @@
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
+
 import { Flex, Text, Button, Image } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
