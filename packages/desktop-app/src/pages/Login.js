@@ -4,19 +4,16 @@ import { Box, Flex, Button, IconField } from "@blend-ui/core";
 import bxUser from "@iconify/icons-bx/bx-user";
 
 import ProgressContainer from "../components/ProgressContainer";
-//import { useFormFields } from "../lib/formFields";
 
 import { API, Auth } from "aws-amplify";
-//import { useAppContext } from "../lib/contextLib";
+
 import { useHistory } from "react-router-dom";
 import PasswordField from "../components/PasswordField";
 import ConfirmAuth from "./ConfirmAuth";
 
 import ForgotPassword from "./ForgotPassword";
 import RecoverUsername from "./RecoverUsername";
-/*
-import { getLoginUserIdentityPoolQuery } from "../graphql/api";
-*/
+
 import {
   getLoginUserIdentityPoolQuery,
   i18n,
@@ -30,46 +27,15 @@ import {
   hasNonChars,
   digitChars,
 } from "@prifina-apps/utils";
-/*
-import {
-  validUsername,
-  lowerCaseChars,
-  upperCaseChars,
-  hasSpaces,
-  hasNonChars,
-  digitChars,
-} from "../lib/utils";
-*/
-//import { useFocus } from "../lib/componentUtils";
-//import i18n from "../lib/i18n";
+
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
 
-//import CognitoIdentity from 'aws-sdk/clients/cognitoidentity';
-/*
-import {
-  CognitoIdentityClient,
-  GetIdCommand,
-  GetCredentialsForIdentityCommand,
-} from "@aws-sdk/client-cognito-identity";
-*/
-//import PropTypes from "prop-types";
 i18n.init();
-/*
-function useIsMountedRef() {
-  const isMountedRef = useRef(null);
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => (isMountedRef.current = false);
-  });
-  return isMountedRef;
-}
-*/
 
 const Login = () => {
-  //console.log("Phone ", props);
   const history = useHistory();
-  //const { APIConfig, userAuth } = useAppContext();
+
   const { userAuth } = useAppContext();
   const APIConfig = {
     aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
@@ -79,17 +45,13 @@ const Login = () => {
   };
   // set default prifina api configs...
   API.configure(APIConfig);
-  //const isMountedRef = useIsMountedRef();
-  //console.log("ENV ", process.env);
-  //console.log("HISTORY ", history.location.search);
-  //REACT_APP_DEBUG: "true"
+
   const appDebug =
     process.env.REACT_APP_DEBUG === "true" &&
     history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
   const alerts = useToast();
-  //console.log("USE ", useToast);
 
   const [loginFields, handleChange] = useFormFields({
     username: "",
@@ -107,37 +69,20 @@ const Login = () => {
   const [inputUsername, setInputUsernameFocus] = useFocus();
   const [inputPassword, setInputPasswordFocus] = useFocus();
 
-  //const [invalidLogin, setInvalidLogin] = useState(0);
   const [confirmCode, setConfirmCode] = useState(false);
   const [authOptions, setAuthOptions] = useState({});
 
   const [step, setStep] = useState(0);
 
   const loginClick = async () => {
-    //setInvalidLogin(0);
     try {
-      //this.setState({loading: true, disabled: true});
-      /*
-      {
-        "data": {
-          "getLoginUserIdentityPool": "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
-        }
-      }
-      */
-      //getLoginUserIdentityPool(poolID: "us-east-1_L9Jzzwr2V", username: "tahola")
-
       const prifinaUserIdPool = await getLoginUserIdentityPoolQuery(
         API,
         loginFields.username,
         config.cognito.USER_POOL_ID,
       );
       console.log("ID POOL ", prifinaUserIdPool);
-      /*
-      data:
-getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
-*/
 
-      // USER_IDENTITY_POOL_ID
       let userIdPool = config.cognito.USER_IDENTITY_POOL_ID;
 
       if (prifinaUserIdPool.data.getLoginUserIdentityPool !== "") {
@@ -146,23 +91,15 @@ getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
 
       let currentConfig = Auth._config;
       console.log("LOGIN CONFIG");
-      //Auth._config.identityPoolId
-      //Auth._config.region
+
       currentConfig.identityPoolId = userIdPool;
-      //currentConfig.region = userIdPool.split(":")[0];
+
       currentConfig.identityPoolRegion = userIdPool.split(":")[0];
       Auth.configure(currentConfig);
 
       let user = await Auth.signIn(loginFields.username, loginFields.password);
       console.log("LOGIN", user);
-      /*
-      console.log("LOGIN CONFIG2", Auth._config);
-      console.log("LOGIN CONFIG3", currentConfig);
-      const credentials = await Auth.currentUserCredentials();
-      console.log("INIT AUTH CREDS ", credentials);
-      const _currentSession = await Auth.currentSession();
-      console.log("INIT SESSION ", _currentSession);
-      */
+
       localStorage.setItem(
         "LastSessionIdentityPool",
         currentConfig.identityPoolId,
@@ -214,8 +151,7 @@ getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
 				)
     //console.log(cognitoIdentityCredentials);
 */
-      //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
-      //setConfirmCode(true);
+
       if (appDebug && user.preferredMFA === "NOMFA") {
         userAuth(true);
         history.replace("/home");
@@ -226,23 +162,11 @@ getLoginUserIdentityPool: "us-east-1:37a1a326-618e-4e3f-bf8f-a0bbd06a25b3"
           user = await Auth.signIn(loginFields.username, loginFields.password);
           console.log("LOGIN2", user);
         } else if (user.challengeName === "SMS_MFA") {
-          //normal login...
-          //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
         }
         alerts.info(i18n.__("confirmationCodeSent"), {});
         setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
         setConfirmCode(true);
       }
-      //userAuth(true);
-      //history.replace("/home");
-      //authOptions.setAuth(true);
-      //preferredMFA: "NOMFA"
-      //challengeName: "SMS_MFA"
-      /*
-      challengeParam:
-CODE_DELIVERY_DELIVERY_MEDIUM: "SMS"
-CODE_DELIVERY_DESTINATION: "+********7102"
-*/
     } catch (e) {
       console.log("ERR", e);
       if (
@@ -250,14 +174,13 @@ CODE_DELIVERY_DESTINATION: "+********7102"
         e.code === "UserNotFoundException"
       ) {
         alerts.error(i18n.__("invalidLogin"), {});
-        //setInvalidLogin(2);
+
         setInputUsernameFocus();
       }
     }
   };
 
   const checkUsername = (username, checkLength = false) => {
-    //const username = e.target.value;
     console.log("USERNAME ", username);
     let userMsg = "";
     if (username.length === 0) {
@@ -282,10 +205,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
     return userMsg;
   };
   const checkPassword = (password, onBlur = false) => {
-    //const userState = validUsername(username, config.usernameLength);
-    //config.passwordLength
     let checkResult = false;
-    //const password = e.target.value;
 
     if (password.length < config.passwordLength && !onBlur) {
       checkResult = true;
@@ -300,18 +220,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
     return checkResult;
   };
 
-  /*
-  useEffect(() => {
-    if (isMountedRef.current) {
-      console.log(
-        "START ",
-        document.getElementById("username").value,
-        loginFields
-      );
-      
-    }
-  }, [isMountedRef]);
-*/
   const createAccountClick = e => {
     history.replace("/register");
     e.preventDefault();
@@ -357,7 +265,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   id={"username"}
                   name={"username"}
                   onChange={e => {
-                    //console.log("USER ", e.target.value);
                     handleChange(e);
                   }}
                   ref={inputUsername}
@@ -386,13 +293,11 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 style={{
                   position: "relative",
                   top: "-7px",
-                  /* top: usernameError.status ? "-33px" : "-7px", */
                 }}
               >
                 <Flex>
                   <Button
                     id="forgotUsernameButton"
-                    // className={"ForgotUsernameButton"}
                     variation={"link"}
                     fontSize={"10px"}
                     onClick={() => {
@@ -404,9 +309,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 </Flex>
               </Box>
             </Box>
-            {/* 
-            <Box mt={usernameError.status ? -19 : 9}> */}
-
             <Box mt={9}>
               <PasswordField
                 placeholder={i18n.__("passwordPlaceholder")}
@@ -417,7 +319,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                     loginFields.username.length === 0 ||
                     document.querySelector("input#username").value.length === 0
                   ) {
-                    //checkUsername("");
                     console.log(
                       "PASSWORD ON FOCUS CHECK...",
                       loginFields.username.length,
@@ -428,43 +329,7 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                   }
                 }}
                 onChange={e => {
-                  //console.log("PASS ", e.target.value);
                   handleChange(e);
-                  /*
-                  const passwordError = checkPassword(e.target.value);
-                  if (passwordError) {
-                    setPasswordError({
-                      status: true,
-                    });
-                    //alerts.error(i18n.__("passwordQuality"), {});
-                    const errorMsg = i18n.__("passwordQuality");
-                    if (
-                      !alerts
-                        .check()
-                        .some((alert) => alert.message === errorMsg)
-                    )
-                      alerts.error(errorMsg, {});
-                  } else if (e.target.value.length > 7) {
-                    setPasswordError({
-                      status: false,
-                    });
-                    const userError = checkUsername(loginFields.username, true);
-                    if (userError !== "") {
-                      //alerts.error(userError, {});
-
-                      if (
-                        !alerts
-                          .check()
-                          .some((alert) => alert.message === userError)
-                      )
-                        alerts.error(userError, {});
-                      setUsernameError({ status: true });
-                    } else {
-                      setUsernameError({ status: false });
-                      setInvalidLogin(1);
-                    }
-                  }
-                  */
                 }}
                 onKeyDown={e => {
                   if (e.key === "Enter") {
@@ -533,7 +398,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 style={{
                   position: "relative",
                   top: "-7px",
-                  /* top: passwordError.status ? "-33px" : "-7px", */
                 }}
               >
                 <Flex>
@@ -550,8 +414,6 @@ CODE_DELIVERY_DESTINATION: "+********7102"
                 </Flex>
               </Box>
             </Box>
-            {/* 
-            <Box mt={passwordError.status ? 49 : 77} display={"inline-flex"}> */}
             <Box mt={77} display={"inline-flex"}>
               <Flex>
                 <Button
