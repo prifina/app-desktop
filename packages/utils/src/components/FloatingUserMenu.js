@@ -22,23 +22,17 @@ import bxBell from "@iconify/icons-bx/bx-bell";
 import bxHistory from "@iconify/icons-bx/bx-history";
 import logoutIcon from "@iconify/icons-fe/logout";
 
-//import { ReactComponent as DisplayAppIcon } from "./display-app.svg";
 import { DisplayAppIcon } from "./assets/display-app.js";
 import { NotificationHeader, NotificationCard } from "./Notifications";
 
 import gql from "graphql-tag";
-//import { listNotificationsByDate } from "../graphql/queries";
+
 import { listSystemNotificationsByDateQuery } from "../graphql/api";
 import { newSystemNotification } from "../graphql/subscriptions";
 
 import PropTypes from "prop-types";
-/*
-const emptyAvatar =
-  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTkiIGhlaWdodD0iNTkiIHZpZXdCb3g9IjAgMCA1OSA1OSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjkuNSIgY3k9IjI5LjUiIHI9IjI5LjUiIGZpbGw9IiNDM0MyQzIiLz4KPHBhdGggZD0iTTIzLjY4NzUgMjIuMzk1NkMyMy42ODc1IDI1LjYwMDMgMjYuMjk1NCAyOC4yMDgxIDI5LjUgMjguMjA4MUMzMi43MDQ2IDI4LjIwODEgMzUuMzEyNSAyNS42MDAzIDM1LjMxMjUgMjIuMzk1NkMzNS4zMTI1IDE5LjE5MSAzMi43MDQ2IDE2LjU4MzEgMjkuNSAxNi41ODMxQzI2LjI5NTQgMTYuNTgzMSAyMy42ODc1IDE5LjE5MSAyMy42ODc1IDIyLjM5NTZaTTM5LjgzMzQgNDEuMTI0OEg0MS4xMjVWMzkuODMzMUM0MS4xMjUgMzQuODQ4NiAzNy4wNjc5IDMwLjc5MTUgMzIuMDgzNCAzMC43OTE1SDI2LjkxNjdDMjEuOTMwOSAzMC43OTE1IDE3Ljg3NSAzNC44NDg2IDE3Ljg3NSAzOS44MzMxVjQxLjEyNDhIMzkuODMzNFoiIGZpbGw9IiNGNUY4RjciLz4KPC9zdmc+Cg==";
-*/
 
 const positionVariation = props => {
-  //console.log("POS ", props);
   let pos = null;
 
   if (props.positionOption === "top-left") {
@@ -208,20 +202,15 @@ const UserMenuContextProvider = ({
   theme,
   onExit,
   onHome,
-  /*
-  clientHandler,
-  activeUser,
-  */
   children,
 }) => {
-  //console.log("ID ", id, id === null, typeof id);
   const defaultTheme = useTheme();
   theme = theme || defaultTheme;
   const menuContext = useRef(null);
   const [userMenu, setUserMenu] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const isMountedRef = useIsMountedRef();
-  //const [avatarWidth, setAvatarWidth] = useState(32);
+
   const [iconButtons, setIconButtons] = useState([false, true, false, false]);
 
   const [notificationCount, setNotificationCount] = useState(0);
@@ -254,22 +243,8 @@ const UserMenuContextProvider = ({
         sortDirection: "DESC",
       },
     );
-    /*
-  
 
-    const notifications = await clientHandler.current.query({
-      query: gql(listNotificationsByDate),
-      variables: {
-        owner: activeUser.current.uuid,
-        filter: {
-          status: { eq: 0 },
-        },
-        sortDirection: "DESC",
-      },
-    });
-    */
     console.log("NOTIFICATION LIST", notifications);
-    //console.log("NOTIFICATION CARD", NotificationCard);
 
     const cardList = notifications.data.listSystemNotificationsByDate.items.map(
       (c, i) => {
@@ -286,15 +261,8 @@ const UserMenuContextProvider = ({
         );
       },
     );
-    //console.log("cardList ", cardList);
-    //setNotificationCards(cardList);
-    return cardList;
 
-    /*
-    data:
-    listNotificationsByDate:
-    items: Array(6)
-    */
+    return cardList;
   };
   const iconClick = (e, i) => {
     console.log("CLICK ", i);
@@ -334,11 +302,6 @@ const UserMenuContextProvider = ({
       next: ({ provider, value }) => {
         console.log("NOTIFICATION SUBS RESULTS ", value);
         onUpdate(1);
-        /*
-        if (value.data.newSystemNotification.owner !== "") {
-          notificationHandler.current(1);
-        }
-        */
       },
       error: error => console.warn(error),
     });
@@ -380,18 +343,6 @@ const UserMenuContextProvider = ({
     totalNotifications.current += cnt;
     setNotificationCount(totalNotifications.current);
   };
-  /*
-  const onUpdate = useCallback(cnt => {
-    console.log(
-      "UPDATE NOTIFICATION ",
-      cnt,
-      notificationCount,
-      totalNotifications.current,
-    );
-    totalNotifications.current += cnt;
-    setNotificationCount(totalNotifications.current);
-  }, []);
-  */
 
   const show = useCallback(
     (options = {}) => {
@@ -418,7 +369,7 @@ const UserMenuContextProvider = ({
       setUserMenu(menu);
       return menu;
     },
-    // [position, remove, timeout, type]
+
     [],
   );
   const setActiveUser = useCallback(user => {
@@ -430,22 +381,6 @@ const UserMenuContextProvider = ({
   const setPrifinaGraphQLHandler = useCallback(handler => {
     prifinaQraphQLHandler.current = handler;
   }, []);
-  /*
-  const success = useCallback(
-    (message = "", options = {}) => {
-      options.type = "success";
-      return show(message, options);
-    },
-    [show],
-  );
-*/
-  /*
-  useEffect(() => {
-    if (isMountedRef.current) {
-      show({});
-    }
-  }, [isMountedRef]);
-*/
 
   const notificationSelectChange = e => {};
   const notificationButtonClick = e => {};
@@ -453,22 +388,15 @@ const UserMenuContextProvider = ({
   menuContext.current = {
     userMenu,
     show,
-    //onUpdate,
-
     setClientHandler,
     setActiveUser,
     setPrifinaGraphQLHandler,
   };
-  //console.log(alertContext);
+
   const baseProps = {
     positionOption: position,
     theme,
-    /*
-      onMouseEnter: onMouseEnter,
-      onMouseLeave: onMouseLeave,
-  */
     id: menuId,
-    //w:window.innerWidth
   };
 
   return (

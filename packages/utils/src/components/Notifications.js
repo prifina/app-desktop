@@ -4,14 +4,11 @@ import { Select, Box, Flex, Text, Button } from "@blend-ui/core";
 
 import styled, { css } from "styled-components";
 
-//import { ReactComponent as DisplayAppIcon } from "../assets/display-app.svg";
-
 import bxChevronRightCircle from "@iconify/icons-bx/bx-chevron-right-circle";
 import { BlendIcon } from "@blend-ui/icons";
 import PropTypes from "prop-types";
 
 import i18n from "../lib/i18n";
-//import { i18n } from "@prifina-apps/utils";
 
 i18n.init();
 

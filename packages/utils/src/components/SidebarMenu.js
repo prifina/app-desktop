@@ -1,5 +1,5 @@
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
+
 import { Flex, Text } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
