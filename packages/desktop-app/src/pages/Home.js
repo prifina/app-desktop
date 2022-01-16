@@ -225,20 +225,20 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     <React.Fragment>
       <StyledBox>
         <PrifinaLogo />
-        <StyledBackground id="styledBackground">
+        <StyledBackground id="home-styledBackground">
           {loadingStatus && <div />}
           {!loadingStatus && (
             <animated.div
               style={{ opacity: opacity.interpolate(o => (o > 0.6 ? 1 : o)) }}
             >
               <Box m={8} mt={77} style={{ zIndex: 3 }}>
-                <CssGrid id="appsGrid" columns={gridCols} flow="column">
+                <CssGrid id="home-appsGrid" columns={gridCols} flow="column">
                   {installedAppIcons.length > 0 &&
                     installedAppIcons.map((icons, colIndex) => {
                       return icons.map((appIcon, pos) => {
                         return (
                           <CssCell
-                            id="cell"
+                            id="home-appCell"
                             key={"cell-" + colIndex + "-" + pos}
                             left={installedAppIcons.length - colIndex + 1}
                             top={icons.length - pos}
