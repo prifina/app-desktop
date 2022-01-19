@@ -49,7 +49,8 @@ let AUTHConfig = {
   userPoolId: config.cognito.USER_POOL_ID,
   identityPoolId: config.cognito.IDENTITY_POOL_ID,
   userPoolWebClientId: config.cognito.APP_CLIENT_ID,
-  region: config.main_region,
+  region: config.auth_region,
+  identityPoolRegion: config.main_region,
 };
 /*
 async function initAuth(newAuth = false) {

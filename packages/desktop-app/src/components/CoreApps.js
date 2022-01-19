@@ -577,6 +577,7 @@ const CoreApps = props => {
   };
 
   console.log("ACTIVE USER ", activeUser.current, settingsReady);
+
   return (
     <>
       {appReady && coreApp === "DisplayApp" && (

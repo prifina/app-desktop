@@ -127,9 +127,10 @@ function App() {
   useEffect(() => {
     async function onLoad() {
       console.log("AUTH START ", Auth._config);
-
+      console.log("TRACKER FINGERPRINT ", window.deviceFingerPrint);
       let _currentUser = {};
       const tracker = Base64.stringify(sha512(window.deviceFingerPrint));
+
       const lastAuthUser = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
           config.cognito.APP_CLIENT_ID +

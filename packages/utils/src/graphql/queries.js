@@ -218,3 +218,29 @@ export const getRequestToken = `query getRequestToken($id: String!,$source:Strin
     requestURL
   }
 }`;
+
+export const getAppVersion = `query appVerion($id: String!) {
+  getAppVersion(id: $id) {
+      appType
+      createdAt
+      dataSources
+      id
+      identity
+      identityPool
+      manifest
+      modifiedAt
+      name
+      nextVersion
+      prifinaId
+      settings {
+        field
+        label
+        type
+        value
+      }
+      status
+      sub
+      title
+      version
+    }
+}`;

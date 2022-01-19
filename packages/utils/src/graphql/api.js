@@ -16,6 +16,7 @@ import {
   listSystemNotificationsByDate,
   getSystemNotificationCount,
   getRequestToken,
+  getAppVersion,
 } from "./queries";
 import {
   verifyCode,
@@ -540,6 +541,14 @@ export const getRequestTokenQuery = (API, id, source, status) => {
   return API.graphql({
     query: getRequestToken,
     variables: { id: id, source: source, status: status },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+
+export const getAppVersionQuery = (API, id) => {
+  return API.graphql({
+    query: getAppVersion,
+    variables: { id: id },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
