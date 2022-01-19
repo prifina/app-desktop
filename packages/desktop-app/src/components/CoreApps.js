@@ -1,115 +1,33 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
-
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { PrifinaProvider, PrifinaContext } from "@prifina/hooks";
 
-//import i18n from "../lib/i18n";
-
 import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
-/*
-import {
-  getPrifinaWidgetsQuery,
-  getPrifinaUserQuery,
-  updateUserProfileMutation,
-  listAppMarketQuery,
-  listDataSourcesQuery,
-} from "../graphql/api";
-*/
 
 import {
-  getPrifinaWidgetsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   listAppMarketQuery,
   listDataSourcesQuery,
-  createNotification,
   updateActivity,
   addNotification,
-  //newNotification,
-  listNotifications,
-  //getNotificationCount,
   getAddressBook,
   i18n,
   useAppContext,
   useUserMenu,
   withUsermenu,
   getSystemNotificationCountQuery,
-  newSystemNotification,
   createClient,
-  useIsMountedRef,
 } from "@prifina-apps/utils";
 
-/*
-import {
-  createNotification,
-  updateActivity,
-  addNotification,
-} from "../graphql/mutations";
-*/
-/*
-import { newNotification } from "../graphql/subscriptions";
-*/
-/*
-import {
-  listNotifications,
-  getNotificationCount,
-  getAddressBook,
-} from "../graphql/queries";
-*/
 import gql from "graphql-tag";
 
 import config from "../config";
 
-//import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 import { useLocation, useHistory } from "react-router-dom";
-/*
-import {
-  UserMenuContextProvider,
-  useUserMenu,
-} from "@blend-ui/floating-user-menu";
-*/
-
-//import withUsermenu from "./UserMenu";
-
-//import UserMenuContextProvider, { useUserMenu } from "./FloatingUserMenu";
-//import { useUserMenu } from "./FloatingUserMenu";
-
-//import LogoutDialog from "./LogoutDialog";
-//import { useAppContext } from "../lib/contextLib";
 
 import PropTypes from "prop-types";
-//import DisplayApp from "../pages/DisplayApp";
-
-//const DisplayApp = React.lazy(() => import("../pages/DisplayApp"));
 
 i18n.init();
-/*
-const APIConfig = {
-  aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
-  aws_appsync_region: config.main_region,
-  aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
-};
-
-const AUTHConfig = {
-  // To get the aws credentials, you need to configure
-  // the Auth module with your Cognito Federated Identity Pool
-  mandatorySignIn: false,
-  userPoolId: config.cognito.USER_POOL_ID,
-  identityPoolId: config.cognito.IDENTITY_POOL_ID,
-  userPoolWebClientId: config.cognito.APP_CLIENT_ID,
-  region: config.main_region,
-};
-*/
-/*
-const S3Config = {
-  AWSS3: {
-    bucket: config.S3.bucket, //REQUIRED -  Amazon S3 bucket name
-    region: config.S3.region, //OPTIONAL -  Amazon service region
-  },
-};
-*/
 
 const appPaths = {
   "display-app": "DisplayApp",
@@ -132,7 +50,6 @@ const Content = ({
   Component,
   initials,
   notificationCount,
-  /*clientHandler,*/
   appSyncClient,
   activeUser,
   ...props
@@ -155,8 +72,6 @@ const Content = ({
       PrifinaGraphQLHandler: GRAPHQL,
       prifinaID: activeUser.uuid,
     });
-    //userMenu.setPrifinaGraphQLHandler(GRAPHQL);
-    //console.log(RecentApps);
   }, []);
 
   return <Component appSyncClient={appSyncClient} {...props} />;
@@ -166,8 +81,8 @@ Content.propTypes = {
   Component: PropTypes.elementType.isRequired,
   initials: PropTypes.string,
   notificationCount: PropTypes.number,
-  appSyncClient: PropTypes.object,
-  activeUser: PropTypes.object,
+  appSyncClient: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
 };
 const CoreApps = props => {
   console.log("CORE COMPONENT --->", props, props.hasOwnProperty("app"));
@@ -183,41 +98,23 @@ const CoreApps = props => {
     coreApp = appPaths[pathname.split("/").pop()];
     console.log("NO PROPS CORE ", pathname, coreApp);
   }
-  //console.log("CORE ", path.pop());
-  //console.log("CORE ", pathname );
-  //console.log("CORE ", search);
+
   const AppComponent = importApp(coreApp);
   const componentProps = useRef({});
-  //const data = useRef([]);
+
   const activeUser = useRef({});
   const addressBook = useRef({});
   const lastActivity = useRef(new Date().getTime());
   const notificationCount = useRef(0);
-  //const clientHandler = useRef(null);
 
   const [appReady, setAppReady] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
 
   Auth.configure(AUTHConfig);
   Amplify.configure(APIConfig);
-  //Amplify.configure(S3Config);
+
   console.log("AUTH CONFIG ", AUTHConfig);
 
-  // const isMountedRef = useIsMountedRef();
-  /*
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      console.log("INIT MOUNT ");
-    } else {
-      // Your useEffect code here to be run on update
-      console.log("FIRST MOUNT ");
-      console.log("APP READY ", appReady);
-      console.log("APP READY PROPS ", componentProps);
-      console.log("APP READY NAME ", coreApp);
-    }
-  });
-*/
   const createClientx = (endpoint, region) => {
     Auth.currentCredentials().then(c => {
       console.log("CORE USER CLIENT ", c);
@@ -235,20 +132,12 @@ const CoreApps = props => {
     return client;
   };
 
-  /*
   // get user auth...
-  */
   useEffect(() => {
     async function fetchData() {
       try {
         const session = await Auth.currentSession();
-        /*
-      const user = await Auth.currentAuthenticatedUser();
-      console.log("USER ", user);
-      if (!user) {
-        console.log("NO CURRENT USER FOUND");
-      }
-      */
+
         console.log("SESSION ", session);
         if (!session) {
           console.log("NO CURRENT SESSION FOUND");
@@ -268,23 +157,6 @@ const CoreApps = props => {
         console.log("CURRENT USER ", appProfile, appProfile.initials);
 
         // should get this from user ....
-        /*
-      const client = createClient(
-        APIConfig.aws_appsync_graphqlEndpoint,
-        APIConfig.aws_appsync_region,
-      );
-*/
-        /*
-
-      let clientEndpoint =
-        "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
-      let clientRegion = "us-east-1";
-
-      if (appProfile.hasOwnProperty("endpoint")) {
-        clientEndpoint = appProfile.endpoint;
-        clientRegion = appProfile.region;
-      }
-      */
 
         let clientEndpoint = "";
         let clientRegion = "";
@@ -309,8 +181,6 @@ const CoreApps = props => {
           _currentSession,
         );
 
-        //const dataConnectors = [];
-
         activeUser.current = {
           name: appProfile.name,
           uuid: prifinaID,
@@ -331,8 +201,6 @@ const CoreApps = props => {
               id: prifinaID,
             },
           });
-
-          //console.log(addressBookResult);
 
           if (
             addressBookResult.data.getUserAddressBook.hasOwnProperty(
@@ -364,17 +232,7 @@ const CoreApps = props => {
               sourceType: item.sourceType,
             };
           });
-          /*
-        const prifinaWidgets = await getPrifinaWidgetsQuery(GRAPHQL, "WIDGETS");
-        console.log(
-          "CURRENT CONFIG ",
-          JSON.parse(prifinaWidgets.data.getPrifinaApp.widgets),
-        );
 
-        const widgetData = JSON.parse(
-          prifinaWidgets.data.getPrifinaApp.widgets,
-        );
-          */
           let widgetData = {};
           prifinaWidgets.data.listAppMarket.items.forEach(item => {
             //console.log("APPMARKET ITEM ", item);
@@ -384,13 +242,6 @@ const CoreApps = props => {
               settings: item.settings,
               name: item.name,
               title: item.title,
-              /*
-            theme: manifest.theme || "dark",
-            size: {
-              height: manifest.size ? manifest.size.height : 300,
-              width: manifest.size ? manifest.size.width : 300,
-            },
-            */
               shortDescription: manifest.shortDescription,
               version: item.version,
               image: manifest.screenshots[0],
@@ -435,8 +286,6 @@ const CoreApps = props => {
                   });
                 }
               }
-              //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/back-plate.png
-              //https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/0.0.1/main.bundle.js
 
               const remoteUrl = [
                 "https:/",
@@ -445,15 +294,13 @@ const CoreApps = props => {
                 widgetData[w.id].version,
                 "main.bundle.js",
               ].join("/");
-              //console.log("WIDGET DATA ITEM ", widgetData[w.id]);
+
               return {
                 url: remoteUrl,
                 settings: widgetData[w.id].settings.length > 0,
                 currentSettings: defaultValues,
                 dataSources: widgetData[w.id].dataSources,
                 widget: {
-                  //size: widgetData[w.id].size,
-                  //theme: widgetData[w.id].theme,
                   settings: widgetData[w.id].settings,
                   installCount: widgetCounts[w.id],
                   appID: w.id,
@@ -499,17 +346,7 @@ const CoreApps = props => {
             },
           },
         );
-        /*
-      const notificationCountResult = await client.query({
-        query: gql(getNotificationCount),
-        variables: {
-          filter: {
-            owner: { eq: prifinaID },
-            status: { eq: 0 },
-          },
-        },
-      });
-      */
+
         console.log("COUNT ", notificationCountResult);
         notificationCount.current =
           notificationCountResult.data.getSystemNotificationCount;
@@ -528,9 +365,6 @@ const CoreApps = props => {
         setSettingsReady(true);
       } catch (e) {
         if (typeof e === "string" && e === "No current user") {
-          //const user = await Auth.signIn("tahola", "xxxx");
-          //console.log("AUTH ", user);
-          //console.log("APP DEBUG ", appCode);
         }
 
         console.log("AUTH ", e);
@@ -554,7 +388,6 @@ const CoreApps = props => {
     const receiver = msg.receiver;
 
     const { endpoint, region } = addressBook.current[receiver];
-    //const remoteClient = createClient(endpoint, region);
     const _remoteClient = createClient(endpoint, region);
     console.log(_remoteClient);
     return _remoteClient.mutate({

@@ -1,9 +1,6 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button } from "@blend-ui/core";
+
+import { Flex, Text, Button } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -148,6 +145,14 @@ export const ListItemIconLink = ({
   </Flex>
 );
 
+ListItemIconLink.propTypes = {
+  children: PropTypes.node,
+  icon: PropTypes.string,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  color: PropTypes.string,
+};
+
 export const AppMarketSidebar = ({
   //theme,
   items,
@@ -193,7 +198,7 @@ export const AppMarketSidebar = ({
 };
 
 AppMarketSidebar.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
 };
 
 export const WidgetBase = styled.div`
@@ -317,6 +322,11 @@ export const Card = ({ title, value }) => {
   );
 };
 
+Card.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.string,
+};
+
 export const InstalledText = styled(Text)`
   color: #47a7d6; // not on theme
   line-height: 23px;
@@ -387,19 +397,3 @@ export const DataSourceButton = styled.img`
   cursor: pointer;
   opacity: ${props => (props.installed ? 0.2 : 1)};
 `;
-
-/*
-export const DataSourceButton = styled.button`
-  background-image: ${props => `url(${props.backgroundImage})`};
-  background-position: "center";
-  background-size: "cover";
-  background-repeat: "no-repeat";
-  width: 44px;
-  height: 44px;
-  border-radius: 8.80208px;
-  border: 0;
-  &:active {
-    opacity: 0.5;
-  }
-`;
-*/

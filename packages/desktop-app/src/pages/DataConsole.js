@@ -1,5 +1,4 @@
-/* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   Box,
@@ -15,10 +14,9 @@ import {
 import { BlendIcon } from "@blend-ui/icons";
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
-import styled, { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from "styled-components";
 
 import {
-  getPrifinaUserQuery,
   listDataSourcesQuery,
   SidebarMenu,
   Navbar,
@@ -578,6 +576,12 @@ const DataConsole = props => {
       </Flex>
     </>
   );
+};
+
+DataConsole.propTypes = {
+  GraphQLClient: PropTypes.string,
+  prifinaID: PropTypes.string,
+  cell: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 DataConsole.displayName = "DataConsole";

@@ -1,11 +1,12 @@
 const puppeteer = require("puppeteer");
 
-const i18nTranslate = require("../getI18n");
-i18nTranslate.init();
+const { i18n } = require("@prifina-apps/utils");
+
+i18n.init();
 
 const isDebugging = () => {
   let debugging_mode = {
-    headless: false,
+    headless: true,
     slowMo: 50,
     devtools: true,
   };
@@ -40,10 +41,10 @@ const waitThis = async (page, selector, timeout = 0) => {
 
   try {
     await page.waitForSelector(selector, { timeout: timeout });
-    // console.log(`"${selector}" was found on the page`);
+    console.log(`"${selector}" was found on the page`);
     found = true;
   } catch (e) {
-    // console.log(`"${selector}" was not found on the page`);
+    console.log(`"${selector}" was not found on the page`);
     found = false;
   }
 
@@ -54,25 +55,17 @@ let browser;
 let page;
 
 beforeAll(async () => {
-  // const browser = await puppeteer.launch({ headless: true });
-
   browser = await puppeteer.launch(isDebugging());
   page = await browser.newPage();
   await page.goto(process.env.TEST_URL + "/login");
   // default design viewport size
   page.setViewport({ width: 500, height: 2400 });
-  /*
-  page.on("console", (msg) => {
-    for (let i = 0; i < msg.args().length; ++i)
-      console.log(`${i}: ${msg.args()[i]}`);
-  });
-  */
 });
 
 describe("Test Login page ", () => {
   test("Login page loads correctly", async () => {
-    let text = i18nTranslate.__("loginWelcomeMessage");
-    console.log("I18n", i18nTranslate.__("loginWelcomeMessage"));
+    let text = i18n.__("loginWelcomeMessage");
+    console.log("I18n", i18n.__("loginWelcomeMessage"));
 
     const found = await checkThis(page, "body", text, 10000);
 
@@ -82,12 +75,9 @@ describe("Test Login page ", () => {
   });
 
   test("Username check length after blur event", async () => {
-    //const page2 = await browser.newPage();
-
-    //await page2.goto(process.env.TEST_URL + "login");
     const usernameEl = await page.$("#username");
 
-    const invalidLength = i18nTranslate.__("usernameError", {
+    const invalidLength = i18n.__("usernameError", {
       length: process.env.USERNAME_LENGTH,
     });
     await usernameEl.tap();
@@ -132,7 +122,7 @@ describe("Test Login page ", () => {
 
   test("Password check if empty on enter keypress test", async () => {
     const passwordEl = await page.$("#password");
-    const invalidEntry = i18nTranslate.__("invalidEntry");
+    const invalidEntry = i18n.__("invalidEntry");
     await passwordEl.tap();
     await page.focus("#password");
     await page.keyboard.press("Enter");
@@ -157,7 +147,7 @@ describe("Test Login page ", () => {
       document.querySelector("input#username").value = "testing";
     });
     const passwordEl = await page.$("#password");
-    const invalidPassword = i18nTranslate.__("passwordQuality");
+    const invalidPassword = i18n.__("passwordQuality");
     await passwordEl.tap();
     //await page.focus("#password");
     await page.type("#password", "weakpassword");
@@ -204,7 +194,7 @@ describe("Test Login page ", () => {
       document.querySelector("input#password").value = "";
     });
     const passwordEl = await page.$("#password");
-    const invalidPassword = i18nTranslate.__("passwordQuality");
+    const invalidPassword = i18n.__("passwordQuality");
     await passwordEl.tap();
     //await page.focus("#password");
     await page.type("#password", "weakpassword");
@@ -235,7 +225,7 @@ describe("Test Login page ", () => {
       document.querySelector("input#password").value = "";
     });
     const passwordEl = await page.$("#password");
-    const invalidPassword = i18nTranslate.__("passwordQuality");
+    const invalidPassword = i18n.__("passwordQuality");
     await passwordEl.tap();
     //await page.focus("#password");
     await page.type("#password", "thisISGoodPassword12!#");
@@ -262,7 +252,7 @@ describe("Test Login page ", () => {
   test("Login button click invalid credentials", async () => {
     // using previous test input field values....
     await page.click(".LoginButton");
-    const invalidLogin = i18nTranslate.__("passwordQuality");
+    const invalidLogin = i18n.__("passwordQuality");
     const checkInvalidLogin = await checkThis(
       page,
       "[id*='blend-toast-']",
@@ -280,7 +270,7 @@ describe("Test Login page ", () => {
   test("Login create account click", async () => {
     await page.click("#createAccountButton");
 
-    const createAccountTitle = i18nTranslate.__("createAccountTitle");
+    const createAccountTitle = i18n.__("createAccountTitle");
     const checkTitle = await checkThis(page, "body", createAccountTitle, 3000);
     expect(checkTitle).toBe(true);
 
@@ -292,7 +282,7 @@ describe("Test Login page ", () => {
 
   test("Login forgot password click", async () => {
     await page.click(".ForgotPasswordButton");
-    const forgotPasswordTitle = i18nTranslate.__("resetPasswordTitle");
+    const forgotPasswordTitle = i18n.__("resetPasswordTitle");
     const checkTitle = await checkThis(page, "body", forgotPasswordTitle, 3000);
     expect(checkTitle).toBe(true);
     await page.click(".backButton");
@@ -305,7 +295,7 @@ describe("Test Login page ", () => {
 
     await page.click("#forgotUsernameButton");
     // const forgotPasswordTitle = "Forgot username?";
-    const forgotPasswordTitle = i18nTranslate.__("recoverUsernameTitle");
+    const forgotPasswordTitle = i18n.__("recoverUsernameTitle");
     const checkTitle = await checkThis(page, "body", forgotPasswordTitle, 3000);
     expect(checkTitle).toBe(true);
     await page.click(".backButton");

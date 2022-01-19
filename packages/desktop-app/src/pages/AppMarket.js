@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React, { useState, useEffect, useRef } from "react";
 
 import {
@@ -14,7 +12,6 @@ import {
 import { BlendIcon } from "@blend-ui/icons";
 
 import {
-  getPrifinaWidgetsQuery,
   getPrifinaUserQuery,
   installWidgetMutation,
   listAppMarketQuery,
@@ -38,9 +35,6 @@ import config from "../config";
 //assets
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import appMarketBanner from "../assets/app-market/app-market-banner.svg";
-import apiDataImg from "../assets/app-market/api-data.svg";
-import healthData from "../assets/app-market/health-data.svg";
-import viewingData from "../assets/app-market/viewing-data.svg";
 import useHeldDataImage from "../assets/app-market/user-held-data.svg";
 //dataSource icons
 import ouraIcon from "../assets/app-market/oura-icon.svg";
@@ -67,7 +61,6 @@ const WidgetBox = ({
   shortDescription,
   installedWidget,
   onClick,
-  settings,
   icon,
   category,
   bannerImage,
@@ -133,11 +126,14 @@ WidgetBox.propTypes = {
   shortDescription: PropTypes.string,
   installedWidget: PropTypes.number,
   onClick: PropTypes.func,
+  icon: PropTypes.string,
+  category: PropTypes.string,
+  bannerImage: PropTypes.string,
 };
 
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   console.log("APP MARKET PROPS ", props);
-  //const [widgets, setWidgets] = useState({});
+
   const widgets = useRef({});
   const [installedWidgets, setInstalledWidgets] = useState([]);
 
@@ -147,7 +143,6 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const s3path = `https://prifina-apps-${config.prifinaAccountId}-${config.main_region}.s3.amazonaws.com`;
 
-  //const dataSourceItems = useRef([]);
   const availableDataSources = useRef([]);
   const userDataSources = useRef({});
 
@@ -243,20 +238,15 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
   ];
 */
       let dataSources = [];
-      //console.log("WDATA ", item);
+
       if (
         item.hasOwnProperty("dataSources") &&
         item.dataSources !== null &&
         item.dataSources.length > 0
       ) {
         dataSources = item.dataSources.map(ds => {
-          /*
-          const dataSource = availableDataSources.current.find(
-            d => d.source == ds,
-          );
-          */
           const dataSource = dataSourceModules[ds];
-          //console.log("DS ", ds, dataSource);
+
           return {
             id: dataSource.source,
             title: dataSource ? dataSource.name : dataSource.source,
@@ -308,9 +298,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
         prifinaUser.data.getPrifinaUser.installedWidgets,
       );
       installedWidgets.forEach(w => {
-        //console.log(w, typeof availableWidgets[w.name]);
-        //console.log(availableWidgets[w.name]);
-        //availableWidgets[w].installed = true;
         if (availableWidgets.hasOwnProperty(w.id)) {
           availableWidgets[w.id].installed = true;
           currentInstalled.push(w.id);
@@ -325,106 +312,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
       setInstalledWidgets(currentInstalled);
     }
 
-    /*
-    listAppMarketQuery(GraphQLClient, { filter: { appType: { lt: 3 } } }).then(
-      res => {
-        //getPrifinaWidgetsQuery(GraphQLClient, "WIDGETS").then(res => {
-        //const widgetData = JSON.parse(res.data.getPrifinaApp.widgets);
-        const widgetData = res.data.listAppMarket.items;
-
-        //console.log(widgetData);
-        let availableWidgets = {};
-      
-        widgetData.forEach(item => {
-          const manifest = JSON.parse(item.manifest);
-          let theme = "dark";
-          let size = "300x300";
-          let defaultSettings = [
-            { field: "size", size },
-            { field: "theme", theme },
-          ];
-
-          if (item.settings && item.settings.length > 0) {
-            item.settings.forEach(s => {
-              if (s.field === "sizes") {
-                defaultSettings[0] = {
-                  field: "size",
-                  value: JSON.parse(s.value)[0].value,
-                };
-                //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
-              } else if (s.field === "theme") {
-                defaultSettings[1] = {
-                  field: "theme",
-                  value: JSON.parse(s.value)[0].value,
-                };
-              } else {
-                defaultSettings.push({ field: s.field, value: s.value });
-              }
-            });
-          }
-
-          availableWidgets[item.id] = {
-            title: item.title,
-            installed: false,
-            settings: defaultSettings,
-            publisher: manifest.publisher,
-            icon: `${s3path}/${manifest.id}/${manifest.icon}`,
-            bannerImage: `${s3path}/${manifest.id}/${manifest.bannerImage}`,
-            description: manifest.description,
-            shortDescription: manifest.shortDescription,
-            longDescription: manifest.longDescription,
-            dataTypes: manifest.dataTypes,
-            category: manifest.category,
-            deviceSupport: manifest.deviceSupport,
-            languages: manifest.languages,
-            age: manifest.age,
-            screenshots: manifest.screenshots,
-            keyFeatures: manifest.keyFeatures,
-            userHeld: manifest.userHeld,
-            userGenerated: manifest.userGenerated,
-            public: manifest.public,
-            id: manifest.id,
-            dataConnectors: manifest.dataConnectors || [],
-          };
-
-          console.log("MANIFEST HEHE", manifest);
-          const screenshots = [
-            `${s3path}/${manifest.id}/${manifest.screenshots}`,
-          ];
-          console.log("sreenshots", screenshots);
-        });
-
-        console.log("AVAILABLE WIDGETS ", availableWidgets);
-        let currentInstalled = [];
-        getPrifinaUserQuery(GraphQLClient, prifinaID).then(res => {
-          if (
-            res.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
-            res.data.getPrifinaUser.installedWidgets !== null
-          ) {
-            const installedWidgets = JSON.parse(
-              res.data.getPrifinaUser.installedWidgets,
-            );
-            installedWidgets.forEach(w => {
-              //console.log(w, typeof availableWidgets[w.name]);
-              //console.log(availableWidgets[w.name]);
-              //availableWidgets[w].installed = true;
-              if (availableWidgets.hasOwnProperty(w.id)) {
-                availableWidgets[w.id].installed = true;
-                currentInstalled.push(w.id);
-              }
-            });
-            console.log(availableWidgets);
-            widgets.current = availableWidgets;
-            setInstalledWidgets(currentInstalled);
-          } else {
-            // no widgets installed....
-            widgets.current = availableWidgets;
-            setInstalledWidgets(currentInstalled);
-          }
-        });
-      },
-    );
-    */
     return () => {
       widgets.current = {};
     };
@@ -432,7 +319,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
 
   const installWidget = (e, id, settings) => {
     console.log("CLICK ", id);
-    //console.log("INSTALL ", widgets);
 
     installWidgetMutation(GraphQLClient, prifinaID, {
       id: id,
@@ -441,24 +327,14 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
     }).then(res => {
       console.log("INSTALL ", res);
 
-      //let availableWidgets = widgets.current;
-      //availableWidgets[name].installed = true;
       widgets.current[id].installed = true;
-      // widgets.current[id].installed = true;
 
       setInstalledWidgets(...installedWidgets, id);
-      /*
-      setAllValues({
-        ...allValues,
-        installed: true,
-      });
-      */
     });
   };
 
   const uninstallWidget = (e, id, settings) => {
     console.log("CLICK ", id);
-    //console.log("INSTALL ", widgets);
 
     installWidgetMutation(GraphQLClient, prifinaID, {
       id: id,
@@ -467,22 +343,12 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
     }).then(res => {
       console.log("INSTALL ", res);
 
-      //let availableWidgets = widgets.current;
-      //availableWidgets[name].installed = true;
       widgets.current[id].installed = false;
-      // widgets.current[id].installed = true;
 
       setInstalledWidgets(...installedWidgets, id);
-      /*
-      setAllValues({
-        ...allValues,
-        installed: false,
-      });
-      */
     });
   };
 
-  //const [allValues, setAllValues] = useState({});
   const [selectedWidgetIndex, setSelectedWidgetIndex] = useState(-1);
 
   const [step, setStep] = useState(0);
@@ -698,31 +564,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                       onClick={() => {
                         setStep(1);
                         setSelectedWidgetIndex(w);
-                        /*
-                        setAllValues({
-                          ...allValues,
-                          title: widgets.current[w].title,
-                          publisher: widgets.current[w].publisher,
-                          icon: widgets.current[w].icon,
-                          bannerImage: widgets.current[w].bannerImage,
-                          description: widgets.current[w].description,
-                          shortDescription: widgets.current[w].shortDescription,
-                          longDescription: widgets.current[w].longDescription,
-                          dataTypes: widgets.current[w].dataTypes,
-                          category: widgets.current[w].category,
-                          deviceSupport: widgets.current[w].deviceSupport,
-                          languages: widgets.current[w].languages,
-                          age: widgets.current[w].age,
-                          screenshots: widgets.current[w].screenshots,
-                          keyFeatures: widgets.current[w].keyFeatures,
-                          userHeld: widgets.current[w].userHeld,
-                          userGenerated: widgets.current[w].userGenerated,
-                          public: widgets.current[w].public,
-                          id: widgets.current[w].id,
-                          installed: widgets.current[w].installed,
-                          settings: widgets.current[w].settings,
-                        });
-                        */
                       }}
                     />
                   );
@@ -871,12 +712,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                 </C.UnderlineButton>
               </Flex>
               <Flex alt="bottomContainer" justifyContent="space-between">
-                <Flex
-                  alt="leftSide"
-                  flexDirection="column"
-                  // paddingRight="113px"
-                  width="549px"
-                >
+                <Flex alt="leftSide" flexDirection="column" width="549px">
                   <Flex alt="widgetInfo" alignItems="center">
                     <Text marginRight="24px" fontSize="18px">
                       {widgets.current[selectedWidgetIndex].title}
@@ -1044,10 +880,8 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                 justifyContent="space-between"
                 alignItems="center"
                 width="100%"
-                // minHeight="88px"
                 paddingTop="32px"
                 paddingBottom="24px"
-                // marginBottom="20px"
               >
                 <Flex alt="leftSide" alignItems="center">
                   <Image
@@ -1195,12 +1029,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
               <Divider as={"div"} color="#F2F4F5" height={"1px"} />
               <Flex alt="addData" paddingTop="32px" paddingBottom="40px">
                 <Flex flexDirection="column" marginRight="190px">
-                  {/* 
-                  <Flex paddingBottom="8px">
-                    <Image src={healthData} alt={"Image"} shape={"square"} />
-                    <Text marginLeft="8px">{i18n.__("addHealthData")}</Text>
-                  </Flex>
-*/}
                   {widgets.current[selectedWidgetIndex].dataSources.length >
                     0 && (
                     <Text color={colors.textMuted}>
@@ -1221,18 +1049,11 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                               ) > -1
                             }
                             onClick={() => {
-                              //userDataSources.current =
-                              //console.log(" SOURCE ITEM ", item);
                               const dataSourceExists =
                                 Object.keys(userDataSources.current).indexOf(
                                   item.id,
                                 ) > -1;
-                              /*
-                              console.log(
-                                dataSourceExists,
-                                Object.keys(userDataSources.current),
-                              );
-                              */
+
                               if (item.sourceType == 1 && !dataSourceExists) {
                                 setAddingDataSource(index);
                               }
@@ -1243,25 +1064,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                     )}
                   </Flex>
                 </Flex>
-                {/* 
-                <Flex flexDirection="column">
-                  <Flex paddingBottom="8px">
-                    <Image src={viewingData} alt={"Image"} shape={"square"} />
-                    <Text marginLeft="8px">{i18n.__("addViewingData")}</Text>
-                  </Flex>
-                  <Text color={colors.textMuted}>
-                    {i18n.__("selectAvailableData")}
-                  </Text>
-                  <Flex paddingTop="31px">
-                    <Box
-                      height="44px"
-                      width="44px"
-                      borderRadius="8.8px"
-                      bg="grey"
-                    />
-                  </Flex>
-                </Flex>
-                */}
               </Flex>
             </Flex>
           </Flex>
@@ -1272,7 +1074,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
 };
 
 AppMarket.propTypes = {
-  GraphQLClient: PropTypes.object,
+  GraphQLClient: PropTypes.instanceOf(Object),
   prifinaID: PropTypes.string,
 };
 AppMarket.displayName = "AppMarket";

@@ -1,10 +1,8 @@
 import React from "react";
-import { Box, Button } from "@blend-ui/core";
+import { Box } from "@blend-ui/core";
 
-import ProgressContainer from "../components/ProgressContainer";
 
 import { useHistory } from "react-router-dom";
-import { Auth } from "aws-amplify";
 
 import { useAppContext, i18n } from "@prifina-apps/utils";
 

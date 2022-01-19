@@ -1,5 +1,4 @@
-/* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Box, Flex, Text } from "@blend-ui/core";
 
 const SmartSearch = props => {

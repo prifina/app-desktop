@@ -1,7 +1,5 @@
-/* eslint-disable react/forbid-prop-types */
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-//import { useAppContext } from "../lib/contextLib";
 
 import { useAppContext } from "@prifina-apps/utils";
 import PropTypes from "prop-types";
@@ -25,7 +23,7 @@ function querystring(name, url = window.location.href) {
 export default function UnauthenticatedRoute({ children, ...rest }) {
   const { isAuthenticated } = useAppContext();
   const redirect = querystring("redirect");
-  //const schemaId = localStorage.getItem("builderDefaultSchemaId");
+
   console.log("UN AUTH ", isAuthenticated);
   let landingPage = "/";
 
@@ -43,5 +41,5 @@ export default function UnauthenticatedRoute({ children, ...rest }) {
 }
 
 UnauthenticatedRoute.propTypes = {
-  children: PropTypes.object.isRequired,
+  children: PropTypes.instanceOf(Object).isRequired,
 };

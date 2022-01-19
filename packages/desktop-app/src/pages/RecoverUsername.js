@@ -2,15 +2,6 @@ import React, { useState, useReducer, useEffect, useRef } from "react";
 
 import config from "../config";
 
-//import { useFocus } from "../lib/componentUtils";
-
-// import { addRegionCode, isValidNumber } from "../lib/utils";
-/*
-import {
-  getCountryCodeQuery,
-  checkCognitoAttributeQuery,
-} from "../graphql/api";
-*/
 import {
   getCountryCodeQuery,
   checkCognitoAttributeQuery,
@@ -25,8 +16,6 @@ import { BlendIcon } from "@blend-ui/icons";
 import Login from "./Login";
 
 import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
-
-//import i18n from "../lib/i18n";
 
 import { Box, Flex, Button, Text } from "@blend-ui/core";
 import { useToast } from "@blend-ui/toast";
@@ -75,12 +64,6 @@ const RecoverUsername = props => {
   };
 
   const [step, setStep] = useState(0);
-
-  //   const [loginFields, handleChange] = useFormFields({
-  //     username: "",
-  //     password: "",
-  //     confirmationCode: "",
-  //   });
 
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
@@ -152,7 +135,6 @@ const RecoverUsername = props => {
     }
 
     if (phoneState && check) {
-      //let phoneNumber = addRegionCode(region, phone);
       checkPhoneAttr(region, phone, phoneOpts).then(res => {
         if (typeof res.data !== "undefined" && res.data.checkCognitoAttribute) {
           phoneAlert(errorMsg, false, phoneOpts);
@@ -236,7 +218,6 @@ const RecoverUsername = props => {
         (document.activeElement.id === "accountPassword" ||
           document.activeElement.id === "passwordConfirm")
       ) {
-        //console.log("SPECIAL ", state.phoneNumber);
       } else {
         let id = event.target.id;
 
@@ -254,26 +235,6 @@ const RecoverUsername = props => {
           fld.status = event.target.value.length === 0;
         }
 
-        /*
-        if (id === "passwordConfirm") {
-          const cPassword = event.target.value;
-          const confirmStatus = state.accountPassword.value === cPassword;
-          if (
-            (!confirmStatus && cPassword.length >= config.passwordLength) ||
-            (!confirmStatus && !nextDisabled)
-          ) {
-            const errorMsg = i18n.__("invalidPassword");
-            setNextDisabled(true);
-            fld.status = true;
-
-            if (!alerts.check().some((alert) => alert.message === errorMsg))
-              alerts.error(errorMsg, {});
-          } else {
-            fld.status = false;
-            setNextDisabled(false);
-          }
-        }
-        */
         console.log("CHANGE ID ", id, fld);
         setState({
           [id]: fld,
@@ -398,10 +359,6 @@ const RecoverUsername = props => {
               </Flex>
               <Flex ml={99}>
                 <Button
-                  //   disabled={
-                  //     usernameError.status ||
-                  //     loginFields.username.length < config.usernameLength
-                  //   }
                   onClick={() => {
                     setStep(1);
                   }}

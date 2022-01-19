@@ -1,11 +1,10 @@
 // npm install --save-dev @iconify/react @iconify-icons/emojione-v1
 //import { Icon, InlineIcon } from '@iconify/react';
 //import flagForFinland from '@iconify-icons/emojione-v1/"flag-for-finland';
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { countryList } from "../lib/utils";
 //import * as flagIcons from "@iconify-icons/emojione-v1";
 
-import { Icon } from "@iconify/react";
 
 const convertList = {
   "brunei-darussalam": "flag-for-brunei",

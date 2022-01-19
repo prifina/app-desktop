@@ -1,7 +1,4 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Text,
@@ -21,16 +18,12 @@ import {
   ModalFooter,
 } from "@blend-ui/modal";
 
+import PropTypes from "prop-types";
+
 import { i18n } from "@prifina-apps/utils";
 
 import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
 import bxsXCircle from "@iconify/icons-bx/bx-x-circle";
-
-//import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
-
-//import withUsermenu from "../components/UserMenu";
-
-// import styled from "styled-components";
 
 import * as C from "./components";
 
@@ -89,11 +82,7 @@ export function AddRemoveDataSources({
         <Flex paddingTop="5px">
           <Text mr="5px">{dataSource.text}</Text>
 
-          <Link
-            href={dataSource.url}
-            target="_blank"
-            // style={{ color: "#AA1370" }}
-          >
+          <Link href={dataSource.url} target="_blank">
             {i18n.__("fullSpecHere")}
           </Link>
         </Flex>
@@ -172,6 +161,13 @@ export function AddRemoveDataSources({
     </Flex>
   );
 }
+
+AddRemoveDataSources.propTypes = {
+  dataSource: PropTypes.instanceOf(Array),
+  index: PropTypes.number,
+  completeDataSource: PropTypes.func,
+  removeDataSource: PropTypes.func,
+};
 
 export function ControlAddedDataSources({
   dataSource,
@@ -324,11 +320,8 @@ export function ControlAddedDataSources({
                 </Button>
                 <Button
                   onClick={e => {
-                    // setDialogOpen(false);
-                    // dataSource.push("hey");
                     setDialogOpen(false);
-                    ///further iimplementation
-
+                    ///further implementation
                     e.preventDefault();
                   }}
                 >
@@ -344,7 +337,6 @@ export function ControlAddedDataSources({
               onClick={() => setDialogOpen(true)}
               style={{ width: 50, height: 50, marginRight: 5 }}
             >
-              {/* <Text textStyle="h3">E</Text> */}
               <BlendIcon iconify={bxsEdit} />
             </button>
             <button
@@ -361,6 +353,13 @@ export function ControlAddedDataSources({
     </Flex>
   );
 }
+
+ControlAddedDataSources.propTypes = {
+  dataSource: PropTypes.instanceOf(Array),
+  index: PropTypes.number,
+  uncompleteDataSource: PropTypes.func,
+  editControled: PropTypes.bool,
+};
 
 export function DataSourceForm({ addDataSource }) {
   const [value, setValue] = useState("");
@@ -425,6 +424,10 @@ export function DataSourceForm({ addDataSource }) {
   );
 }
 
+DataSourceForm.propTypes = {
+  addDataSource: PropTypes.instanceOf(Array),
+};
+
 export function ApiForm({ addApi }) {
   const [value, setValue] = useState("");
 
@@ -456,3 +459,7 @@ export function ApiForm({ addApi }) {
     </form>
   );
 }
+
+ApiForm.propTypes = {
+  addApi: PropTypes.string,
+};

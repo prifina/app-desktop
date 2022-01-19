@@ -1,9 +1,6 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-/* global localStorage */
+//global localStorage
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Modal,
@@ -12,7 +9,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@blend-ui/modal";
-import { Box, Flex, Button, Text, Image, useTheme } from "@blend-ui/core";
+import { Flex, Button, Text, Image, useTheme } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -62,7 +59,7 @@ const DataSourceModal = ({
       dataSourceItem.id,
       2,
     );
-    //console.log("URL ", result);
+
     setRequestUrl(result.data.getRequestToken.requestURL);
   }, []);
   const onCloseCheck = (e, action) => {
@@ -97,7 +94,6 @@ const DataSourceModal = ({
             <Flex
               style={{
                 height: 73,
-                //   background: "#EBF3FF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -145,12 +141,7 @@ const DataSourceModal = ({
                   </Text>
                 </Flex>
               </Flex>
-              <Flex
-                flex={2}
-                flexDirection="column"
-                justifyContent="center"
-                // alignItems="center"
-              >
+              <Flex flex={2} flexDirection="column" justifyContent="center">
                 <Text mb={8}>Prifina + {dataSourceItem.title}</Text>
                 <Text mb={12} fontSize="sm" color={colors.textMuted}>
                   {i18n.__("dataSourceModalText1")}
@@ -166,7 +157,6 @@ const DataSourceModal = ({
               style={{
                 height: 73,
                 width: "100%",
-                //   background: "#EBF3FF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -213,9 +203,9 @@ const DataSourceModal = ({
 DataSourceModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   onButtonClick: PropTypes.func.isRequired,
-  dataSourceItems: PropTypes.array,
+  dataSourceItems: PropTypes.instanceOf(Array),
   selectedDataSourceIndex: PropTypes.number.isRequired,
-  GraphQLClient: PropTypes.object,
+  GraphQLClient: PropTypes.instanceOf(Object),
   prifinaID: PropTypes.string,
 };
 export default DataSourceModal;

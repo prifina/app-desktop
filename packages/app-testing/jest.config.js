@@ -1,8 +1,4 @@
 module.exports = {
-  /* setupFilesAfterEnv: ['./test-setup.js'], */
-
-  
-
   coverageReporters: ["lcov", "html"],
   coveragePathIgnorePatterns: [
     "/node_modules/",

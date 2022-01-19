@@ -1,8 +1,5 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
+
 import { Flex, Text } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
@@ -150,6 +147,14 @@ export const ListItemIconLink = ({
   </Flex>
 );
 
+ListItemIconLink.propTypes = {
+  children: PropTypes.node,
+  icon: PropTypes.string,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  color: PropTypes.string,
+};
+
 const SidebarMenu = ({
   //theme,
   items,
@@ -200,7 +205,7 @@ const SidebarMenu = ({
 };
 
 SidebarMenu.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
   pointerBackground: PropTypes.string,
   pointerIconColor: PropTypes.string,
   pointerTextColor: PropTypes.string,

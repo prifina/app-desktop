@@ -1,25 +1,16 @@
 {
   "name": "app-testing",
-  "version": "1.0.0",
+  "version": "0.0.10",
   "description": "Prifina app testing package",
   "author": "hamza <hamzahalilovic.12@gmail.com>",
-  "homepage": "https://github.com/prifina/app-desktop#readme",
   "license": "MIT",
-  "main": "lib/app-testing.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+  "main": "dist/esm/index.js",
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
-    "lib"
+    "dist"
   ],
-  "publishConfig": {
-    "registry": "https://registry.yarnpkg.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/prifina/app-desktop.git"
-  },
   "scripts": {
     "test": "jest --verbose ./__tests__/login.test",
     "test2": "jest --verbose ./__tests__/register.test",
@@ -35,9 +26,7 @@
     "jest": "^27.0.4",
     "jest-cli": "^27.0.4",
     "prompt-sync": "^4.2.0",
-    "puppeteer": "^10.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/prifina/app-desktop/issues"
+    "puppeteer": "^10.0.0",
+    "@prifina-apps/utils": "^0.0.2-alpha.0"
   }
 }

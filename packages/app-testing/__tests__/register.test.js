@@ -1,11 +1,12 @@
 const puppeteer = require("puppeteer");
 
-const i18nTranslate = require("../getI18n");
-i18nTranslate.init();
+const { i18n } = require("@prifina-apps/utils");
+
+i18n.init();
 
 const isDebugging = () => {
   let debugging_mode = {
-    headless: false,
+    headless: true,
     slowMo: 50,
     devtools: true,
   };
@@ -54,33 +55,21 @@ let browser;
 let page;
 
 beforeAll(async () => {
-  // const browser = await puppeteer.launch({ headless: true });
-
-  // jest.setTimeout(10000);
-
   browser = await puppeteer.launch(isDebugging());
   page = await browser.newPage();
   await page.goto(process.env.TEST_URL);
-  //   await page.goto(process.env.TEST_URL + "/register");
 
-  //   click on create account button to go to register
   await page.waitForSelector(".createAccountButton");
   await page.click(".createAccountButton");
 
   // default design viewport size
   page.setViewport({ width: 500, height: 2400 });
-  /*
-  page.on("console", (msg) => {
-    for (let i = 0; i < msg.args().length; ++i)
-      console.log(`${i}: ${msg.args()[i]}`);
-  });
-  */
 });
 
 describe("Test Register page ", () => {
   test("Register page loads correctly", async () => {
-    let text = i18nTranslate.__("welcomeMessage");
-    console.log("I18n", i18nTranslate.__("welcomeMessage"));
+    let text = i18n.__("welcomeMessage");
+    console.log("I18n", i18n.__("welcomeMessage"));
 
     const found = await checkThis(page, "body", text, 10000);
 
@@ -89,8 +78,8 @@ describe("Test Register page ", () => {
     // }, 16000);
   });
   test("Testing register page title", async () => {
-    let text = i18nTranslate.__("createAccountTitle");
-    console.log("I18n", i18nTranslate.__("createAccountTitle"));
+    let text = i18n.__("createAccountTitle");
+    console.log("I18n", i18n.__("createAccountTitle"));
 
     const found = await checkThis(page, "#createAccountContainer", text, 10000);
 
@@ -99,7 +88,7 @@ describe("Test Register page ", () => {
     // }, 7000);
   });
   test("Username check length, or if empty after blur event", async () => {
-    const invalidLength = i18nTranslate.__("usernameError", {
+    const invalidLength = i18n.__("usernameError", {
       length: process.env.USERNAME_LENGTH,
     });
 
@@ -115,7 +104,6 @@ describe("Test Register page ", () => {
       invalidLength,
       4000,
     );
-    //console.log("CHECK ", checkInvalidEntry);
 
     expect(checkInvalidEntry).toBe(true);
     //   done();
@@ -124,7 +112,7 @@ describe("Test Register page ", () => {
   test("Username input no spaces allowed test", async () => {
     await page.focus("#username");
 
-    let spacesNotAllowed = i18nTranslate.__("usernameError2");
+    let spacesNotAllowed = i18n.__("usernameError2");
 
     await page.type("#username", "test test");
     await page.$eval("#username", e => e.blur());
@@ -136,7 +124,6 @@ describe("Test Register page ", () => {
       spacesNotAllowed,
       4000,
     );
-    //console.log("CHECK ", checkInvalidEntry);
 
     expect(checkInvalidEntry).toBe(true);
     //   done();
@@ -160,7 +147,7 @@ describe("Test Register page ", () => {
       "#passwordPopperContainer",
       4000,
     );
-    //console.log("CHECK ", checkInvalidEntry);
+
     expect(waitForPopperContianer).toBe(true);
     //   done();
     // }, 6000);
@@ -172,7 +159,7 @@ describe("Test Register page ", () => {
     await page.type("#lastName", "lastname");
     await page.type("#username", "username");
 
-    const passwordQuality = i18nTranslate.__("passwordQuality");
+    const passwordQuality = i18n.__("passwordQuality");
 
     //input invalid password
     await page.type("#accountPassword", "invalidPassword#");
@@ -196,7 +183,7 @@ describe("Test Register page ", () => {
       "#passwordPopperContainer",
       4000,
     );
-    //console.log("CHECK ", checkInvalidEntry);
+
     expect(waitForPopperContianer).toBe(false);
     //   done();
     // }, 8000);
@@ -207,7 +194,7 @@ describe("Test Register page ", () => {
     await page.type("#lastName", "lastname");
     await page.type("#username", "username");
 
-    const invalidPassword = i18nTranslate.__("invalidPassword");
+    const invalidPassword = i18n.__("invalidPassword");
 
     //input password
     await page.type("#accountPassword", "validPassword123!*#");
@@ -268,7 +255,7 @@ describe("Test Register page ", () => {
     await page.type("#accountPassword", "validPassword123!*#");
     await page.type("#passwordConfirm", "validPassword123!*#");
 
-    const invalidEmail = i18nTranslate.__("invalidEmail");
+    const invalidEmail = i18n.__("invalidEmail");
 
     //input invalid email
     await page.type("#email", "invaildEmail");
@@ -292,7 +279,7 @@ describe("Test Register page ", () => {
 
     await page.click("#loginLinkButton");
     // const forgotPasswordTitle = "Forgot username?";
-    const loginTitle = i18nTranslate.__("loginPage");
+    const loginTitle = i18n.__("loginPage");
     const checkTitle = await checkThis(page, "body", loginTitle, 3000);
     expect(checkTitle).toBe(true);
     await page.click(".createAccountButton");

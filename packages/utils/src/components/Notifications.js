@@ -1,19 +1,14 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React from "react";
 
 import { Select, Box, Flex, Text, Button } from "@blend-ui/core";
 
 import styled, { css } from "styled-components";
 
-//import { ReactComponent as DisplayAppIcon } from "../assets/display-app.svg";
-
 import bxChevronRightCircle from "@iconify/icons-bx/bx-chevron-right-circle";
 import { BlendIcon } from "@blend-ui/icons";
 import PropTypes from "prop-types";
 
 import i18n from "../lib/i18n";
-//import { i18n } from "@prifina-apps/utils";
 
 i18n.init();
 
@@ -121,7 +116,7 @@ export const NotificationHeader = ({
 
 NotificationHeader.propTypes = {
   title: PropTypes.string,
-  options: PropTypes.array,
+  options: PropTypes.instanceOf(Array),
   selectOnChange: PropTypes.func,
   buttonOnClick: PropTypes.func,
   closeClick: PropTypes.func,

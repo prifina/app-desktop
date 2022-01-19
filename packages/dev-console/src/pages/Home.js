@@ -1,20 +1,8 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
-import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Image,
-  SearchSelect,
-  Link,
-  useTheme,
-} from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image, Link, useTheme } from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
@@ -42,16 +30,10 @@ import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 import { useHistory } from "react-router-dom";
 
 import { StyledBox } from "../components/DefaultBackground";
-import { PrifinaLogo } from "../components/PrifinaLogo";
 
 //import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
 
 //import withUsermenu from "../components/UserMenu";
-
-import styled from "styled-components";
-import { useTable } from "react-table";
-
-import gql from "graphql-tag";
 
 import UploadApp from "../components/UploadApp";
 
@@ -71,27 +53,20 @@ import { DevConsoleLogo } from "../components/DevConsoleLogo";
 import CreateProjectModal from "../components/CreateProjectModal";
 
 import Table from "../components/Table";
-import { all } from "micromatch";
 import BlendIcon from "@blend-ui/icons/dist/esm/BlendIcon";
 
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
-import copy from "@iconify/icons-mdi/content-copy";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
-import arrowTopRightBottomLeft from "@iconify/icons-mdi/arrow-top-right-bottom-left";
 import baselineWeb from "@iconify/icons-mdi/table";
 
 //sidebar icons
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";
 import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
-import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
-import bxsXCircle from "@iconify/icons-bx/bx-x-circle";
-
-import { mdiConnection } from "@iconify/icons-mdi/connection";
 
 import {
   AddRemoveDataSources,
@@ -99,16 +74,6 @@ import {
   DataSourceForm,
   ApiForm,
 } from "../components/helper";
-import { color } from "styled-system";
-
-/*
-const importApp = appName => {
-  console.log("APP ", appName);
-  return React.lazy(() =>
-    import("../pages/" + appName).catch(() => import("./NotFoundPage")),
-  );
-};
-*/
 
 // Create a default prop getter
 const defaultPropGetter = () => ({});
@@ -147,12 +112,10 @@ const Content = ({
       PrifinaGraphQLHandler: GRAPHQL,
       prifinaID: activeUser.uuid,
     });
-    //console.log(RecentApps);
   }, []);
 
   updateNotificationHandler(userMenu.onUpdate);
 
-  //return <Component appSyncClient={appSyncClient} {...props} />;
   return <Component data={props.data} currentUser={props.currentUser} />;
 };
 
@@ -161,8 +124,10 @@ Content.propTypes = {
   initials: PropTypes.string,
   notificationCount: PropTypes.number,
   updateNotificationHandler: PropTypes.func,
-  appSyncClient: PropTypes.object,
-  activeUser: PropTypes.object,
+  appSyncClient: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
+  currentUser: PropTypes.instanceOf(Object),
+  data: PropTypes.instanceOf(Array),
 };
 
 const Main = ({ data, currentUser }) => {
@@ -199,7 +164,6 @@ const Main = ({ data, currentUser }) => {
       Cell: props => {
         return (
           <Text
-            // fontSize="xs"
             onClick={() => {
               setStep(3);
               setAllValues({
@@ -256,7 +220,6 @@ const Main = ({ data, currentUser }) => {
       Header: () => null, // No header
       id: "sendApp", // It needs an ID
       Cell: cellProp => {
-        //console.log("ROW ", cellProp);
         return (
           <Button
             size="xs"
@@ -555,13 +518,6 @@ const Main = ({ data, currentUser }) => {
                         marginBottom="40px"
                       >
                         <Text textStyle="h3">{i18n.__("projects")}</Text>
-                        {/* <Button
-                          onClick={() => {
-                            history.push("/new-app");
-                          }}
-                        >
-                          New App
-                        </Button> */}
                         <Button
                           onClick={() => {
                             setProjectDialogOpen(true);
@@ -1087,7 +1043,6 @@ const Main = ({ data, currentUser }) => {
                                                   setEditControled(true);
                                                 }}
                                               >
-                                                {/* <Text textStyle="h3">E</Text> */}
                                                 <BlendIcon iconify={bxsEdit} />
                                               </button>
                                             </>
@@ -1238,6 +1193,13 @@ const Main = ({ data, currentUser }) => {
   );
 };
 
+Main.propTypes = {
+  data: PropTypes.instanceOf(Array),
+  currentUser: PropTypes.instanceOf(Object),
+  cell: PropTypes.instanceOf(Array),
+  row: PropTypes.instanceOf(Array),
+};
+
 const Home = props => {
   const history = useHistory();
   const {
@@ -1347,23 +1309,6 @@ const Home = props => {
         componentProps.current.initials = appProfile.initials;
         componentProps.current.updateNotificationHandler = updateNotification;
         componentProps.current.activeUser = activeUser.current;
-
-        // notificationCount...
-
-        // const notificationCountResult = await client.query({
-        //   query: gql(getNotificationCount),
-        //   variables: {
-        //     filter: {
-        //       owner: { eq: currentUser.prifinaID },
-        //       status: { eq: 0 },
-        //     },
-        //   },
-        // });
-        // console.log("COUNT ", notificationCountResult);
-        // notificationCount.current =
-        //   notificationCountResult.data.getNotificationCount;
-
-        // componentProps.current.notificationCount = notificationCount.current;
 
         console.log("COMPONENT ", componentProps);
         setInitClient(true);

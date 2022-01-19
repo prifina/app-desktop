@@ -1,11 +1,6 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button, Image } from "@blend-ui/core";
 
-import { BlendIcon } from "@blend-ui/icons";
+import { Flex, Text, Button, Image } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
@@ -76,7 +71,7 @@ export const SourceCard = ({ items, ...props }) => (
   </>
 );
 SourceCard.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
 };
 
 //not on blend theme
