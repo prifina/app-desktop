@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from "react";
 
 import { Flex, Text, Button } from "@blend-ui/core";
@@ -7,7 +8,7 @@ import { BlendIcon } from "@blend-ui/icons";
 import PropTypes from "prop-types";
 
 import styled, { createGlobalStyle } from "styled-components";
-
+/*
 const SidebarContainer = styled(Flex)`
   width: 286px;
   height: 100%;
@@ -48,6 +49,7 @@ const SidebarContainer = styled(Flex)`
     box-shadow: -6px 5px 0 #f6f7f9;
   }
 `;
+*/
 
 export const ListMenuItem = styled.li`
   /* */
@@ -120,7 +122,7 @@ const MenuBadge = styled.span`
   justify-content: center;
   align-items: center;
 `;
-
+/*
 export const ListItemIconLink = ({
   children,
   icon,
@@ -147,7 +149,7 @@ export const ListItemIconLink = ({
 
 ListItemIconLink.propTypes = {
   children: PropTypes.node,
-  icon: PropTypes.string,
+  icon: PropTypes.object,
   onClick: PropTypes.func,
   label: PropTypes.string,
   color: PropTypes.string,
@@ -200,7 +202,7 @@ export const AppMarketSidebar = ({
 AppMarketSidebar.propTypes = {
   items: PropTypes.instanceOf(Array),
 };
-
+*/
 export const WidgetBase = styled.div`
   display: flex;
   position: relative;

@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from "react";
 
 import { Flex, Text } from "@blend-ui/core";
@@ -149,7 +150,7 @@ export const ListItemIconLink = ({
 
 ListItemIconLink.propTypes = {
   children: PropTypes.node,
-  icon: PropTypes.string,
+  icon: PropTypes.object,
   onClick: PropTypes.func,
   label: PropTypes.string,
   color: PropTypes.string,
