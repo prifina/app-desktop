@@ -51,6 +51,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
           <ModalFooter>
             <Box textAlign={"center"} width={1}>
               <Button
+                className="dialog-cancelButton"
                 variation={"outline"}
                 colorStyle={"error"}
                 onClick={e => {
@@ -62,6 +63,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
                 {i18n.__("cancelButton")}
               </Button>
               <Button
+                className="dialog-logoutButton"
                 ml={20}
                 onClick={e => {
                   setDialogOpen(false);

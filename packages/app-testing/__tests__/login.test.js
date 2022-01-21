@@ -55,7 +55,8 @@ let browser;
 let page;
 
 beforeAll(async () => {
-  browser = await puppeteer.launch(isDebugging());
+  // browser = await puppeteer.launch(isDebugging());
+  browser = await puppeteer.launch({ headless: false });
   page = await browser.newPage();
   await page.goto(process.env.TEST_URL + "/login");
   // default design viewport size

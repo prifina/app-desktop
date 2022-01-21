@@ -57,14 +57,49 @@ beforeAll(async () => {
   // browser = await puppeteer.launch({ headless: false });
 
   page = await browser.newPage();
-  await page.goto(process.env.TEST_URL + "/home");
+  await page.goto("http://localhost:3000/login?debug=true");
+  // await page.goto(process.env.TEST_URL);
+
   await page.waitForNavigation({ waitUntil: "networkidle2" });
 
   // default design viewport size
-  page.setViewport({ width: 500, height: 2400 });
+  // page.setViewport({ width: 500, height: 2400 });
 });
 
 describe("Test Home page ", () => {
+  test("Login test", async () => {
+    const usernameEl = await page.$("#username");
+    const passwordEl = await page.$("#password");
+
+    await usernameEl.tap();
+    // await page.focus("#username");
+
+    await page.type("#username", process.env.USERNAME);
+
+    await passwordEl.tap();
+
+    // await page.focus("#username");
+
+    await page.type("#password", process.env.PASSWORD);
+
+    await page.click(".LoginButton");
+
+    // expect(page).toEqual(process.env.TEST_URL + "/home");
+
+    // check if empty username triggers toast
+
+    //console.log("CHECK ", checkInvalidEntry);
+
+    const backgroundShown = await waitThis(
+      page,
+      "#home-styledBackground",
+      6000,
+    );
+    expect(backgroundShown).toBe(true);
+
+    //   done();
+    // }, 6000);
+  });
   test("Load Background test", async () => {
     const backgroundShown = await waitThis(
       page,
@@ -91,10 +126,29 @@ describe("Test Home page ", () => {
     // done();
     // }, 6000);
   });
+
+  test("Logout test", async () => {
+    await page.waitForSelector("#userMenu-avatar");
+    await page.click("#userMenu-avatar");
+
+    await page.click(".userMenu-logout");
+    await page.click(".dialog-logoutButton");
+
+    let text = i18n.__("loginWelcomeMessage");
+    console.log("I18n", i18n.__("loginWelcomeMessage"));
+
+    const found = await checkThis(page, "body", text, 10000);
+
+    expect(found).toBe(true);
+    //   done();
+    // }, 6000);
+  });
 });
 
 afterAll(() => {
   if (isDebugging()) {
+    browser.close();
+  } else {
     browser.close();
   }
 });

@@ -409,6 +409,7 @@ const UserMenuContextProvider = ({
               {userMenu && !isOpen && (
                 <React.Fragment>
                   <Avatar
+                    id="userMenu-avatar"
                     src={userMenu.options.avatar}
                     initials={userMenu.options.initials}
                     alt={"avatar"}
@@ -461,6 +462,7 @@ const UserMenuContextProvider = ({
                         }}
                       >
                         <BlendIcon
+                          className="userMenu-logout"
                           iconify={logoutIcon}
                           color={"#00847A"}
                           onClick={e => iconClick(e, 0)}
