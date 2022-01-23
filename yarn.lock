@@ -5192,7 +5192,7 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@paciolan/remote-component@^2.11.0", "@paciolan/remote-component@^2.12.0":
+"@paciolan/remote-component@^2.11.0":
   version "2.12.0"
   resolved "https://registry.yarnpkg.com/@paciolan/remote-component/-/remote-component-2.12.0.tgz#6072f0a953d74323362bc9a8bc17d91a354be061"
   integrity sha512-0KX6ftbdCRWoP288QBvRh3iT42aKU5aOXVe2HR4YwZQnEYuePZ/ge4orSKouvUnTEBxiQjT9Xk+jCep9kmS5NQ==
