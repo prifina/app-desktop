@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Box, Button, Input } from "@blend-ui/core";
 
@@ -10,11 +10,9 @@ import {
   newAppVersionMutation,
 } from "@prifina-apps/utils";
 
-//import { newAppVersionMutation } from "../graphql/api";
 import { useHistory } from "react-router-dom";
 
 const short = require("short-uuid");
-//const appId = short.generate();
 
 const NewApp = () => {
   const { currentUser } = useAppContext();
@@ -73,16 +71,6 @@ const NewApp = () => {
             onChange={handleChange}
           />
         </Box>
-        {/* 
-        <Box mt={10}>
-          <Input
-            placeholder={"Version"}
-            id={"version"}
-            name={"version"}
-            onChange={handleChange}
-          />
-        </Box>
-        */}
         <Box mt={20}>
           <Button
             mr={5}

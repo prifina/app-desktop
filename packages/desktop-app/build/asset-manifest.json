@@ -1,5 +1,6 @@
 {
   "files": {
+
     "static/js/0.af4112a0.chunk.js": "/static/js/0.af4112a0.chunk.js",
     "static/js/0.af4112a0.chunk.js.map": "/static/js/0.af4112a0.chunk.js.map",
     "static/js/1.9ebdd49f.chunk.js": "/static/js/1.9ebdd49f.chunk.js",
@@ -67,22 +68,27 @@
     "index.html": "/index.html",
     "static/js/0.af4112a0.chunk.js.LICENSE.txt": "/static/js/0.af4112a0.chunk.js.LICENSE.txt",
     "static/js/20.276a3adc.chunk.js.LICENSE.txt": "/static/js/20.276a3adc.chunk.js.LICENSE.txt",
+
+  
     "static/media/DisplayApp copy 2.1js": "/static/media/DisplayApp copy 2.f30f3c87.1js",
     "static/media/DisplayApp copy.1js": "/static/media/DisplayApp copy.2d622316.1js",
-    "static/media/api-data.53d075d5.svg": "/static/media/api-data.53d075d5.svg",
     "static/media/app-market-banner.d71a7efc.svg": "/static/media/app-market-banner.d71a7efc.svg",
     "static/media/app-market.62c6dcb3.svg": "/static/media/app-market.62c6dcb3.svg",
     "static/media/back-plate.539c4885.png": "/static/media/back-plate.539c4885.png",
     "static/media/background.png": "/static/media/background.b3d5f165.png",
+
+
     "static/media/data-console.svg": "/static/media/data-console.a61c4bd2.svg",
     "static/media/data-source-icon.78c7aa22.svg": "/static/media/data-source-icon.78c7aa22.svg",
     "static/media/dev-console.c88b4a2a.svg": "/static/media/dev-console.c88b4a2a.svg",
     "static/media/display-app.ab435327.svg": "/static/media/display-app.ab435327.svg",
     "static/media/email-envelope.3aa93cdd.svg": "/static/media/email-envelope.3aa93cdd.svg",
+
     "static/media/health-data.8d8ee288.svg": "/static/media/health-data.8d8ee288.svg",
     "static/media/infinity-icon.7f583562.svg": "/static/media/infinity-icon.7f583562.svg",
     "static/media/mobile-background.d0a7cbfa.png": "/static/media/mobile-background.d0a7cbfa.png",
     "static/media/oura-icon.6adb72ac.svg": "/static/media/oura-icon.6adb72ac.svg",
+
     "static/media/phone.svg": "/static/media/phone.3a9dbcc9.svg",
     "static/media/prifina-icon.5face91b.svg": "/static/media/prifina-icon.5face91b.svg",
     "static/media/prifina-text.svg": "/static/media/prifina-text.b1cc116a.svg",
@@ -90,6 +96,7 @@
     "static/media/profile-cards.2520c23d.svg": "/static/media/profile-cards.2520c23d.svg",
     "static/media/settings.f372eb4e.svg": "/static/media/settings.f372eb4e.svg",
     "static/media/smart-search.d84f326c.svg": "/static/media/smart-search.d84f326c.svg",
+
     "static/media/third-party-app.66caf594.svg": "/static/media/third-party-app.66caf594.svg",
     "static/media/user-held-data.06583934.svg": "/static/media/user-held-data.06583934.svg",
     "static/media/viewing-data.6a377feb.svg": "/static/media/viewing-data.6a377feb.svg"
@@ -98,5 +105,6 @@
     "static/js/runtime-main.0945fef1.js",
     "static/js/20.276a3adc.chunk.js",
     "static/js/main.25204cdb.chunk.js"
+
   ]
 }

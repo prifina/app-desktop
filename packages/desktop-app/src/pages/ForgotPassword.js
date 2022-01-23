@@ -2,17 +2,9 @@ import React, { useState, useReducer } from "react";
 
 import config from "../config";
 
-//import { useFormFields } from "../lib/formFields";
-
-//import { useFocus } from "../lib/componentUtils";
-
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxKey from "@iconify/icons-bx/bx-key";
 
-//import { checkPassword, validUsername } from "../lib/utils";
-/*
-import { checkUsernameQuery } from "../graphql/api";
-*/
 import {
   checkUsernameQuery,
   i18n,
@@ -25,8 +17,6 @@ import {
 import { BlendIcon } from "@blend-ui/icons";
 
 import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
-
-//import i18n from "../lib/i18n";
 
 import Login from "./Login";
 
@@ -117,9 +107,6 @@ const ForgotPassword = props => {
     confirmationCode: "",
   });
 
-  // const [confirmationFields, handleChange] = useFormFields({
-  //   confirmationCode: "",
-  // });
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
@@ -239,12 +226,8 @@ const ForgotPassword = props => {
   };
 
   const checkInputPassword = (password, updateVerification = true) => {
-    //console.log(password);
     const checkResult = checkPassword(password, config.passwordLength, [
-      // state.firstName.value,
-
       state.username.value,
-      /* state.email.value, */
     ]);
     console.log("PASS CHECK ", checkResult);
     setPasswordVerification(checkResult);
@@ -268,11 +251,11 @@ const ForgotPassword = props => {
 
   const checkInput = code => {
     const checkResult = onlyDigitChars(code);
-    //console.log(checkResult);
+
     let validCode = true;
     if (!checkResult) {
       setInputError({ status: true, msg: i18n.__("codeDigitsError") });
-      //alerts.error(i18n.__("codeDigitsError"), {});
+
       const errorMsg = i18n.__("codeDigitsError");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
@@ -280,7 +263,7 @@ const ForgotPassword = props => {
     }
     if (code.length > 1 && code.length !== 6) {
       setInputError({ status: true, msg: i18n.__("codeLengthError") });
-      //alerts.error(i18n.__("codeLengthError"), {});
+
       const errorMsg = i18n.__("codeLengthError");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
@@ -372,7 +355,7 @@ const ForgotPassword = props => {
             <Box mt={45} mb={30} display={"inline-flex"}>
               <Flex>
                 <Button
-                  className="BackButton"
+                  className="backButton"
                   variation={"outline"}
                   onClick={() => {
                     setStep(4);
@@ -465,7 +448,6 @@ const ForgotPassword = props => {
                   size={"17"}
                 />
                 <IconField.InputField
-                  // autoFocus={true}
                   placeholder={i18n.__("usernamePlaceholder")}
                   id={"username"}
                   name={"username"}

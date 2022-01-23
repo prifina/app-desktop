@@ -1,5 +1,3 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
 //import HmacSHA1 from "crypto-js/hmac-sha1";
 import sha512 from "crypto-js/sha512";
 import Base64 from "crypto-js/enc-base64";
