@@ -967,7 +967,7 @@ DisplayApp.propTypes = {
   height: PropTypes.string,
   visibility: PropTypes.string,
   transform: PropTypes.string,
-  dataSources: PropTypes.instanceOf(Array),
+  dataSources: PropTypes.instanceOf(Object),
 };
 
 export default DisplayApp;

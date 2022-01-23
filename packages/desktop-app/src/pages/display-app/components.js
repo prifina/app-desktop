@@ -257,7 +257,7 @@ WidgetList.propTypes = {
   widgetList: PropTypes.instanceOf(Array).isRequired,
   widgetData: PropTypes.instanceOf(Array).isRequired,
   currentUser: PropTypes.instanceOf(Object),
-  dataSources: PropTypes.instanceOf(Array),
+  dataSources: PropTypes.instanceOf(Object),
 };
 
 WidgetList.displayName = "WidgetList";
