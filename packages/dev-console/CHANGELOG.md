@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.6-beta.0](https://prifina-admin/prifina/app-desktop/compare/@prifina-apps/dev-console@0.0.5-beta.0...@prifina-apps/dev-console@0.0.6-beta.0) (2022-01-23)
+
+**Note:** Version bump only for package @prifina-apps/dev-console
+
+
+
+
+
 ## [0.0.5-beta.0](https://prifina-admin/prifina/app-desktop/compare/@prifina-apps/dev-console@0.0.4-beta.0...@prifina-apps/dev-console@0.0.5-beta.0) (2022-01-23)
 
 **Note:** Version bump only for package @prifina-apps/dev-console

@@ -1,6 +1,6 @@
 {
   "name": "app-testing",
-  "version": "0.0.11-beta.0",
+  "version": "0.0.12-beta.0",
   "description": "Prifina app testing package",
   "author": "hamza <hamzahalilovic.12@gmail.com>",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "test-index": "jest --verbose ./__tests__/index"
   },
   "devDependencies": {
-    "@prifina-apps/utils": "0.0.4-beta.0",
+    "@prifina-apps/utils": "^0.0.5-beta.0",
     "aws-amplify": "^4.1.1",
     "aws-appsync": "^4.0.3",
     "aws-sdk": "^2.932.0",
