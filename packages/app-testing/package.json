@@ -18,7 +18,7 @@
     "test-index": "jest --verbose ./__tests__/index"
   },
   "devDependencies": {
-    "@prifina-apps/utils": "^0.0.2-alpha.0",
+    "@prifina-apps/utils": "0.0.4-beta.0",
     "aws-amplify": "^4.1.1",
     "aws-appsync": "^4.0.3",
     "aws-sdk": "^2.932.0",
