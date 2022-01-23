@@ -17,7 +17,7 @@
     "test3": "jest --verbose ./__tests__/home.test",
     "test-index": "jest --verbose ./__tests__/index"
   },
-  "dependencies": {
+  "devDependencies": {
     "aws-amplify": "^4.1.1",
     "aws-appsync": "^4.0.3",
     "aws-sdk": "^2.932.0",
