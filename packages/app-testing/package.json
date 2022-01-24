@@ -1,5 +1,5 @@
 {
-  "name": "app-testing",
+  "name": "@prifina-apps/app-testing",
   "version": "0.0.10",
   "description": "Prifina app testing package",
   "author": "hamza <hamzahalilovic.12@gmail.com>",
@@ -17,7 +17,7 @@
     "test3": "jest --verbose ./__tests__/home.test",
     "test-index": "jest --verbose ./__tests__/index"
   },
-  "dependencies": {
+  "devDependencies": {
     "aws-amplify": "^4.1.1",
     "aws-appsync": "^4.0.3",
     "aws-sdk": "^2.932.0",
@@ -26,7 +26,9 @@
     "jest": "^27.0.4",
     "jest-cli": "^27.0.4",
     "prompt-sync": "^4.2.0",
-    "puppeteer": "^10.0.0",
+    "puppeteer": "^10.0.0"
+  },
+  "dependencies": {
     "@prifina-apps/utils": "^0.0.2-alpha.0"
   }
 }
