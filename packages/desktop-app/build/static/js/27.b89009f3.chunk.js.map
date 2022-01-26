@@ -1,1 +1,0 @@
-{"version":3,"sources":["components/NotFoundPage.js"],"names":["NotFoundPage","href"],"mappings":"gJAAA,uBAQeA,UANM,kBACnB,yCACQ,mBAAGC,KAAM,IAAT","file":"static/js/27.b89009f3.chunk.js","sourcesContent":["import React from \"react\";\n\nconst NotFoundPage = () => (\n  <div>\n    404 - <a href={\"/\"}>Home</a>\n  </div>\n);\n\nexport default NotFoundPage;\n"],"sourceRoot":""}

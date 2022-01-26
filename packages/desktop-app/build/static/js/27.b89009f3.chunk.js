@@ -1,2 +1,0 @@
-(this["webpackJsonp@prifina-apps/desktop-app"]=this["webpackJsonp@prifina-apps/desktop-app"]||[]).push([[27],{1459:function(p,s,e){"use strict";e.r(s);e(4);var i=e(3);s.default=function(){return Object(i.jsxs)("div",{children:["404 - ",Object(i.jsx)("a",{href:"/",children:"Home"})]})}}}]);
-//# sourceMappingURL=27.b89009f3.chunk.js.map

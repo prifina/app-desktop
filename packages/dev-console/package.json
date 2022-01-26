@@ -33,8 +33,7 @@
     "babel-jest": "^27.1.1",
     "babel-loader": "^8.2.2",
     "babel-plugin-react-docgen": "^4.2.1",
-    "babel-plugin-styled-components": "^1.13.2",
-    "cross-env": "^7.0.3"
+    "babel-plugin-styled-components": "^1.13.2"
   },
   "dependencies": {
     "@blend-ui/core": "1.1.64-alpha.0",
@@ -60,6 +59,7 @@
     "@testing-library/user-event": "^13.2.1",
     "aws-amplify": "^4.3.3",
     "aws-appsync": "^4.1.4",
+    "cross-env": "^7.0.3",
     "crypto-js": "^4.1.1",
     "graphql-tag": "^2.12.5",
     "moment": "^2.29.1",

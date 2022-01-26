@@ -159,12 +159,18 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       filter: { appType: { lt: 3 } },
     });
     const prifinaUser = await getPrifinaUserQuery(GraphQLClient, prifinaID);
-    if (prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources")) {
+    if (
+      prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources") &&
+      prifinaUser.data.getPrifinaUser.dataSources !== null
+    ) {
       //
       //console.log(typeof prifinaUser.data.getPrifinaUser.dataSources);
+      //console.log("INIT USER DATASOURCES...", prifinaUser.data.getPrifinaUser);
       userDataSources.current = JSON.parse(
         prifinaUser.data.getPrifinaUser.dataSources,
       );
+    } else {
+      userDataSources.current = {};
     }
     // filter sourceType===1 only oauth based datasources...
     const dataSources = await listDataSourcesQuery(GraphQLClient, {
@@ -227,16 +233,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
           }
         });
       }
-
-      /*
-  const dataSourceItems = [
-    {
-      id: 1,
-      title: "Oura",
-      icon: ouraIcon,
-    },
-  ];
-*/
+      console.log("WidgetData ITEM ", item);
       let dataSources = [];
 
       if (
@@ -506,6 +503,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
       ? widgets.current[selectedWidgetIndex].installed
       : null,
   );
+  console.log("LEFT MENU ", items);
 
   return (
     <>

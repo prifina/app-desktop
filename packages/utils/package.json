@@ -29,7 +29,6 @@
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.1.1",
     "babel-loader": "^8.2.2",
-    "cross-env": "^7.0.3",
     "prop-types": "^15.7.2",
     "react": ">=16.8.6",
     "react-dom": ">=16.8.6"
@@ -53,6 +52,7 @@
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
     "countries-list": "^2.6.1",
+    "cross-env": "^7.0.3",
     "libphonenumber-js": "^1.9.32"
   }
 }
