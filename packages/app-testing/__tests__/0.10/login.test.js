@@ -15,7 +15,7 @@ const isDebugging = () => {
 
 const checkThis = async (page, selector, text, timeout = 0) => {
   let found = false;
-  console.log("CHECK ", text);
+  // console.log("CHECK ", text);
 
   try {
     await page.waitForFunction(
@@ -25,10 +25,10 @@ const checkThis = async (page, selector, text, timeout = 0) => {
       text,
       selector,
     );
-    console.log(`The text "${text}" was found on the page`);
+    // console.log(`The text "${text}" was found on the page`);
     found = true;
   } catch (e) {
-    console.log(`The text "${text}" was not found on the page`);
+    // console.log(`The text "${text}" was not found on the page`);
     found = false;
   }
 
@@ -37,14 +37,14 @@ const checkThis = async (page, selector, text, timeout = 0) => {
 
 const waitThis = async (page, selector, timeout = 0) => {
   let found = false;
-  console.log("WAIT ", selector);
+  // console.log("WAIT ", selector);
 
   try {
     await page.waitForSelector(selector, { timeout: timeout });
-    console.log(`"${selector}" was found on the page`);
+    // console.log(`"${selector}" was found on the page`);
     found = true;
   } catch (e) {
-    console.log(`"${selector}" was not found on the page`);
+    // console.log(`"${selector}" was not found on the page`);
     found = false;
   }
 
@@ -55,12 +55,12 @@ let browser;
 let page;
 
 beforeAll(async () => {
-  // browser = await puppeteer.launch(isDebugging());
-  browser = await puppeteer.launch({ headless: false });
+  browser = await puppeteer.launch(isDebugging());
+  // browser = await puppeteer.launch({ headless: false });
   page = await browser.newPage();
   await page.goto(process.env.TEST_URL + "/login");
   // default design viewport size
-  page.setViewport({ width: 500, height: 2400 });
+  // page.setViewport({ width: 500, height: 2400 });
 });
 
 describe("Test Login page ", () => {

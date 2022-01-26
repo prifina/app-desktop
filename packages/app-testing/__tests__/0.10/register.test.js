@@ -15,7 +15,7 @@ const isDebugging = () => {
 
 const checkThis = async (page, selector, text, timeout = 0) => {
   let found = false;
-  console.log("CHECK ", text);
+  // console.log("CHECK ", text);
 
   try {
     await page.waitForFunction(
@@ -25,10 +25,10 @@ const checkThis = async (page, selector, text, timeout = 0) => {
       text,
       selector,
     );
-    console.log(`The text "${text}" was found on the page`);
+    // console.log(`The text "${text}" was found on the page`);
     found = true;
   } catch (e) {
-    console.log(`The text "${text}" was not found on the page`);
+    // console.log(`The text "${text}" was not found on the page`);
     found = false;
   }
 
@@ -37,14 +37,14 @@ const checkThis = async (page, selector, text, timeout = 0) => {
 
 const waitThis = async (page, selector, timeout = 0) => {
   let found = false;
-  console.log("WAIT ", selector);
+  // console.log("WAIT ", selector);
 
   try {
     await page.waitForSelector(selector, { timeout: timeout });
-    console.log(`"${selector}" was found on the page`);
+    // console.log(`"${selector}" was found on the page`);
     found = true;
   } catch (e) {
-    console.log(`"${selector}" was not found on the page`);
+    // console.log(`"${selector}" was not found on the page`);
     found = false;
   }
 
@@ -69,7 +69,7 @@ beforeAll(async () => {
 describe("Test Register page ", () => {
   test("Register page loads correctly", async () => {
     let text = i18n.__("welcomeMessage");
-    console.log("I18n", i18n.__("welcomeMessage"));
+    // console.log("I18n", i18n.__("welcomeMessage"));
 
     const found = await checkThis(page, "body", text, 10000);
 
@@ -79,7 +79,7 @@ describe("Test Register page ", () => {
   });
   test("Testing register page title", async () => {
     let text = i18n.__("createAccountTitle");
-    console.log("I18n", i18n.__("createAccountTitle"));
+    // console.log("I18n", i18n.__("createAccountTitle"));
 
     const found = await checkThis(page, "#createAccountContainer", text, 10000);
 
@@ -217,7 +217,7 @@ describe("Test Register page ", () => {
       invalidPassword,
       2000,
     );
-    console.log("CHECK ", checkInvalidEntry);
+    // console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
 
     //   done();
@@ -268,7 +268,7 @@ describe("Test Register page ", () => {
       invalidEmail,
       2000,
     );
-    console.log("CHECK ", checkInvalidEntry);
+    // console.log("CHECK ", checkInvalidEntry);
     expect(checkInvalidEntry).toBe(true);
 
     //   done();
