@@ -12,10 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest --verbose ./__tests__/login.test",
-    "test2": "jest --verbose ./__tests__/register.test",
-    "test3": "jest --verbose ./__tests__/home.test",
-    "test-index": "jest --verbose ./__tests__/index"
+    "test": "jest --verbose"
   },
   "devDependencies": {
     "aws-amplify": "^4.1.1",
