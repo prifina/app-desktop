@@ -1,23 +1,17 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
-import React, { useEffect, useReducer, useState, useRef } from "react";
-//import { useTheme } from "@blend-ui/core";
-import { Box, Flex, Text } from "@blend-ui/core";
+import React, { useEffect, useState, useRef } from "react";
+
+import { Text } from "@blend-ui/core";
 
 import {
   useAppContext,
   listAppsQuery,
   useIsMountedRef,
 } from "@prifina-apps/utils";
-//import { useIsMountedRef } from "../lib/componentUtils";
 
-//import { useAppContext } from "../lib/contextLib";
-import { API, Auth } from "aws-amplify";
+import { API } from "aws-amplify";
 import { useHistory } from "react-router-dom";
-
-//import { listAppsQuery } from "../graphql/api";
 
 import styled from "styled-components";
 import { useTable } from "react-table";
@@ -127,16 +121,11 @@ function Table({
 }) {
   console.log("TABLE ", data);
   // Use the state and functions returned from useTable to build your UI
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({
-    columns,
-    data,
-  });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({
+      columns,
+      data,
+    });
 
   return (
     <table {...getTableProps()}>
@@ -179,11 +168,14 @@ function Table({
   );
 }
 
+Table.propTypes = {
+  columns: PropTypes.instanceOf(Array),
+  data: PropTypes.instanceOf(Array),
+  getColumnProps: PropTypes.func,
+  getCellProps: PropTypes.func,
+};
+
 const Content = ({ data }) => {
-  //console.log("CURRENT USER ", currentUser);
-
-  //console.log("TABLE DATA ", data, Object.keys(data));
-
   return (
     <React.Fragment>
       <div>ADMIN...</div>
@@ -195,6 +187,10 @@ const Content = ({ data }) => {
       </TableStyles>
     </React.Fragment>
   );
+};
+
+Content.propTypes = {
+  data: PropTypes.instanceOf(Array),
 };
 
 const Admin = props => {
@@ -217,12 +213,7 @@ const Admin = props => {
         const prifinaApps = await listAppsQuery(API, {});
         console.log("APPS ", prifinaApps.data);
         apps.current = prifinaApps.data.listApps.items;
-        /*
-        await newAppVersionMutation(API, "testing", "prifinaID", {
-          name: "name",
-          version: "0.0.0",
-        });
-        */
+
         console.log("APPS ", prifinaApps.data);
 
         setInitClient(true);

@@ -62,3 +62,9 @@ export const DeveloperCard = ({ currentUser, avatar, text }) => {
     </DevCard>
   );
 };
+
+DeveloperCard.propTypes = {
+  currentUser: PropTypes.instanceOf(Object),
+  avatar: PropTypes.node,
+  text: PropTypes.string,
+};

@@ -272,6 +272,29 @@ const strings = {
       "To get access to Prifina’s Developer Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
     appStudioDisclaimer:
       "Disclaimer message or T&C’s if required Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
+    /* Data Cloud */
+    dataCloudHomeHeading: "Bring all your data into Data Cloud",
+    dataCloudHomeText:
+      "Your Data Cloud is the heart of your Personal Data Engine. By bringing your data into your personal data cloud, you can activate it in different apps in your Prifina account.",
+    learnMore: "Learn More",
+    connectDataSources: "Connect data sources",
+    connectingDataSources:
+      "Connecting your data sources to activate this data in apps",
+    uploadData: "Upload your data",
+    uploadFileText: "You can upload one file at a time",
+    dragAndDropText: "Drag and drop your files here or",
+    clickToBrowse: "click to browse",
+    notMoreThan500: "Not more than 500 mb",
+    availableSources: "Available Sources",
+    connectedSources: "Connected Sources",
+    availableDataSources: "Available data sources",
+    selectAvailableDataSourcesText:
+      "Select from available data sources to add data to your Data cloud",
+    addSource: "Add Source",
+    connectionPreferences: "Connection Preferences",
+    syncWithCloud: "Sync with your cloud:",
+    disconnect: "Disconnect",
+    dailyRecommended: "Daily (recommended)",
   },
 };
 

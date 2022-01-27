@@ -1,0 +1,31 @@
+{
+  "name": "@prifina-apps/app-testing",
+  "version": "0.0.10",
+  "description": "Prifina app testing package",
+  "author": "hamza <hamzahalilovic.12@gmail.com>",
+  "license": "MIT",
+  "main": "dist/esm/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "jest --verbose"
+  },
+  "devDependencies": {
+    "aws-amplify": "^4.1.1",
+    "aws-appsync": "^4.0.3",
+    "aws-sdk": "^2.932.0",
+    "dotenv": "^10.0.0",
+    "graphql-tag": "^2.12.4",
+    "jest": "^27.0.4",
+    "jest-cli": "^27.0.4",
+    "prompt-sync": "^4.2.0",
+    "puppeteer": "^10.0.0"
+  },
+  "dependencies": {
+    "@prifina-apps/utils": "^0.0.2-alpha.0"
+  }
+}

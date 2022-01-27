@@ -1,63 +1,15 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 /* global localStorage */
 
-import React, {
-  useEffect,
-  useReducer,
-  useState,
-  useRef,
-  useLayoutEffect,
-} from "react";
-//import { useTheme } from "@blend-ui/core";
+import React, { useEffect, useReducer, useState, useRef } from "react";
+
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
-import { Box, Flex } from "@blend-ui/core";
-//import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
-/*
-import {
-  UserMenuContextProvider,
-  useUserMenu,
-} from "@blend-ui/floating-user-menu";
-*/
-//import { useUserMenu } from "../components/FloatingUserMenu";
-
-//import { Background } from "../assets/background-image";
-//import Background from "../assets/background.png";
-//import styled from "styled-components";
-//import InstalledApps from "../components/InstalledApps";
-//import { ReactComponent as SettingsIcon } from "../assets/settings.svg";
-//import AppIcon from "../components/AppIcon";
-//import ImportComponent from "../components/ImportComponent";
-//import { useIsMountedRef } from "../lib/componentUtils";
-
-import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-
-//import AWSAppSyncClient, { createAppSyncLink } from "aws-appsync";
-//import { setContext } from "apollo-link-context";
-//import { ApolloLink } from "apollo-link";
-//import { createHttpLink } from "apollo-link-http";
+import { Box } from "@blend-ui/core";
 
 import gql from "graphql-tag";
-/*
-import { getNotificationCount } from "../graphql/queries";
-
-import { updateActivity } from "../graphql/mutations";
-
-import { newNotification } from "../graphql/subscriptions";
 
 import {
-  getInstalledAppsQuery,
-  getPrifinaUserQuery,
-  updateUserProfileMutation,
-  listAppMarketQuery,
-} from "../graphql/api";
-*/
-import {
-  //getNotificationCount,
   updateActivity,
-  //newNotification,
-  getInstalledAppsQuery,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   listAppMarketQuery,
@@ -65,12 +17,10 @@ import {
   useAppContext,
   useUserMenu,
   withUsermenu,
-  newSystemNotification,
   getSystemNotificationCountQuery,
-  //newConnectNotification,
+  createClient,
 } from "@prifina-apps/utils";
 
-//import { useAppContext } from "../lib/contextLib";
 import { API as GRAPHQL, Auth } from "aws-amplify";
 import { useHistory } from "react-router-dom";
 
@@ -79,49 +29,8 @@ import { PrifinaLogo } from "../components/PrifinaLogo";
 
 import { useSpring, animated } from "react-spring";
 
-//import withUsermenu from "../components/UserMenu";
-
 import PropTypes from "prop-types";
 
-/*
-const newWaiting = `subscription addWaiting($key:String!) {
-  Waiting(key: $key) {
-    createdAt
-    endpoint
-    name
-    senderKey
-  }
-}`;
-*/
-
-/*
-// HACK since this PR {@link https://github.com/awslabs/aws-mobile-appsync-sdk-js/pull/633/files} has not been accepted
-// after several months, we go ahead and modify the method to drop the graphql_headers that are causing subscription problems.
-const {
-  AppSyncRealTimeSubscriptionHandshakeLink,
-} = require("aws-appsync/node_modules/aws-appsync-subscription-link/lib/realtime-subscription-handshake-link");
-const oldStartSubscription =
-  AppSyncRealTimeSubscriptionHandshakeLink.prototype
-    ._startSubscriptionWithAWSAppSyncRealTime;
-AppSyncRealTimeSubscriptionHandshakeLink.prototype._startSubscriptionWithAWSAppSyncRealTime = function (
-  a,
-) {
-  if (a.options) {
-    delete a.options.graphql_headers;
-  }
-  return oldStartSubscription.call(this, a);
-};
-*/
-/*
-const importComponent = (name) => {
-  console.log("IMPORT ", name);
-  return React.lazy(() =>
-    import(`${name}`).catch((err) => {
-      console.log("ERR ", err);
-    })
-  );
-};
-*/
 const array_chunks = (array, chunk_size) =>
   Array(Math.ceil(array.length / chunk_size))
     .fill()
@@ -131,10 +40,7 @@ const array_chunks = (array, chunk_size) =>
 const Content = ({ clientHandler, currentUser, activeUser }) => {
   const history = useHistory();
   const userMenu = useUserMenu();
-  //const theme = useTheme();
 
-  //Amplify.configure(APIConfig);
-  //console.log("AMPLIFY ", Amplify.configure(), API.configure());
   console.log("CURRENT USER ", currentUser);
 
   const isMountedRef = useIsMountedRef();
@@ -147,52 +53,9 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
   const [installedApps, setInstalledApps] = useState([]);
 
-  //const clients = useRef([]);
-  //const activeUser = useRef({});
-
-  // const [logout, setLogout] = useState(true);
-  //let installedApps = [];
-  /*
-  let installedApps = JSON.parse(localStorage.getItem("PrifinaInstalledApps"));
-  if (installedApps === null) {
-    installedApps = [
-      "Settings",
-      "DataConsole",
-      "AppMarket",
-      "SmartSearch",
-      "DisplayApp",
-      "ProfileCards",
-      "DevConsole",
-    ];
-    localStorage.setItem("PrifinaInstalledApps", JSON.stringify(installedApps));
-  }
-*/
-
-  /*
-  const updateNotification = useCallback(handler => {
-    notificationHandler.current = handler;
-  }, []);
-*/
-
-  /*
-  useLayoutEffect(async () => {
-    console.log("SUBS NOTIFICATIONS:..", currentUser);
-
-    subscriptionHandler.current = await subscribeNotification(clientHandler, {
-      owner: currentUser.id,
-    });
-  }, [currentUser.id]);
-*/
   useEffect(() => {
     async function fetchData() {
       if (isMountedRef.current) {
-        //const prifinaAppsData = await getPrifinaAppsQuery(API, "APPS");
-        //console.log("APPS 1", prifinaAppsData);
-        /*
-        const prifinaAppsJSON = JSON.parse(
-          prifinaAppsData.data.getPrifinaApp.apps,
-        );
-        */
         const prifinaAppsData2 = await listAppMarketQuery(GRAPHQL, {
           filter: { appType: { gt: 1 } }, // apps+core apps
         });
@@ -217,12 +80,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
         const initials = appProfile.initials;
 
         console.log("APP PROFILE ", appProfile);
-        /*
-        activeUser.current = {
-          name: appProfile.name,
-          uuid: currentUser.id
-        };
-*/
+
         const notificationCountResult = await getSystemNotificationCountQuery(
           GRAPHQL,
           {
@@ -233,17 +91,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
           },
         );
 
-        /*
-        const notificationCountResult = await clientHandler.query({
-          query: gql(getNotificationCount),
-          variables: {
-            filter: {
-              owner: { eq: currentUser.id },
-              status: { eq: 0 },
-            },
-          },
-        });
-        */
         console.log("COUNT ", notificationCountResult);
 
         userMenu.show({
@@ -259,15 +106,17 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 
         userMenu.setClientHandler(clientHandler);
         userMenu.setActiveUser(activeUser);
-        //userMenu.setPrifinaGraphQLHandler(GRAPHQL);
 
-        await clientHandler.mutate({
+        console.log("USER APPSYNC ", clientHandler);
+        const updateRes = await clientHandler.mutate({
           mutation: gql(updateActivity),
           variables: {
             id: currentUser.id,
             activeApp: "Home",
           },
         });
+
+        console.log("READY ", updateRes);
         setInstalledApps(installedAppsJSON);
       }
     }
@@ -301,17 +150,6 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     };
   }, []);
 
-  //height={"100vh"}
-  /*
-  <StyledBox
-  minWidth={"1440px"}
-  maxHeight={"792px"}
-  minHeight={"792px"}
->
-*/
-  //const installedApps=InstalledApps(["./SettingsIcon"])
-
-  //const Component = ImportComponent("./SettingsIcon");
   useEffect(() => {
     if (installedApps.length > 0) {
       const appImports = installedApps.map(app => {
@@ -331,20 +169,16 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
             name: Component.default.displayName,
           };
         });
-        //console.log(appComponents);
+
         console.log("IMPORT APP ICONS...", appComponents);
         setState({ loadingStatus: false, appIcons: appComponents });
       });
     }
-    // Spread operator, wrapper function (recommended)
-    // setSearches(searches => [...searches, query])
-    // Using .concat(), wrapper function (recommended)
-    // setSearches(searches => searches.concat(query))
   }, [installedApps]);
 
   const { loadingStatus, appIcons } = state;
   console.log("APP ICONS ", appIcons, appIcons.length * 100);
-  // window.innerHeight-130  (130 is from top)
+
   const iconCols = Math.ceil(
     (appIcons.length * 115) / (window.innerHeight - 130),
   );
@@ -369,9 +203,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   console.log("CHECK ", appIcons.length > 0, installedAppIcons.length === 0);
   if (isNaN(maxColHeight)) maxColHeight = appIcons.length;
   if (appIcons.length > 0 && installedAppIcons.length === 0) {
-    //console.log("UPDATE THIS ", appIcons);
     setInstalledAppIcons(array_chunks(appIcons, maxColHeight - 1));
-    //console.log(installedAppIcons);
   }
   if (installedAppIcons.length > 0) {
     installedAppIcons.map((v, i) => {
@@ -384,10 +216,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     from: { opacity: 0 },
     config: { duration: 3000 },
   });
-  // opacity.interpolate(o => (o > 0.7 ? 1 : o)),
-  //visibility: props.opacity.interpolate(o => o === 0 ? 'hidden' : 'visible')
-  // <a.div class="c front" style={{ opacity, transform: transform.interpolate(t => `${t} rotateX(180deg)`) }} />
-  //style={{ opacity: opacity.interpolate(o => (o > 0.5 ? 1 : o)) }}
+
   const copyInstance = obj => {
     let copy = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
     return copy;
@@ -396,25 +225,20 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     <React.Fragment>
       <StyledBox>
         <PrifinaLogo />
-        <StyledBackground>
+        <StyledBackground id="home-styledBackground">
           {loadingStatus && <div />}
           {!loadingStatus && (
             <animated.div
               style={{ opacity: opacity.interpolate(o => (o > 0.6 ? 1 : o)) }}
             >
               <Box m={8} mt={77} style={{ zIndex: 3 }}>
-                <CssGrid columns={gridCols} flow="column">
-                  {/* 
-                <CssCell left={3} top={1}>
-                  {appIcons}
-                </CssCell>
-                */}
+                <CssGrid id="home-appsGrid" columns={gridCols} flow="column">
                   {installedAppIcons.length > 0 &&
                     installedAppIcons.map((icons, colIndex) => {
                       return icons.map((appIcon, pos) => {
-                        //console.log("RENDER ", appIcon);
                         return (
                           <CssCell
+                            id="home-appCell"
                             key={"cell-" + colIndex + "-" + pos}
                             left={installedAppIcons.length - colIndex + 1}
                             top={icons.length - pos}
@@ -445,9 +269,9 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 };
 
 Content.propTypes = {
-  clientHandler: PropTypes.object,
-  currentUser: PropTypes.object,
-  activeUser: PropTypes.object,
+  clientHandler: PropTypes.instanceOf(Object),
+  currentUser: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
 };
 
 const Home = props => {
@@ -459,74 +283,59 @@ const Home = props => {
 
   const [initClient, setInitClient] = useState(false);
   const activeUser = useRef({});
-  /*
-  const appSyncClient = new AWSAppSyncClient({
-    url: config.amplify_config.aws_appsync_graphqlEndpoint,
-    request: async (operation) => {
-      const user = await Auth.currentUserInfo();
-      logger.debug("AWSAppSyncClient request:", user);
-      operation.setContext({
-        headers: {
-          'amt-custom-username': user.username
-        }
-      });
-    },
-    region: config.amplify_config.aws_appsync_region,
-    auth: {
-      type: AUTH_TYPE.AWS_IAM,
-      credentials: () => Auth.currentCredentials(),
-    },
-  });
-*/
-  const createClient = (endpoint, region) => {
-    Auth.currentCredentials().then(c => {
-      console.log("HOME USER CLIENT ", c);
+
+  const createClientx = async (endpoint, region) => {
+    console.log("CLIENT ", endpoint, region);
+
+    const _currentSession = await Auth.currentSession();
+    const token = _currentSession.getIdToken().payload;
+    const userIdPool = localStorage.getItem("LastSessionIdentityPool");
+
+    const provider = token["iss"].replace("https://", "");
+    let identityParams = {
+      IdentityPoolId: userIdPool,
+      Logins: {},
+    };
+    const idToken = _currentSession.getIdToken().getJwtToken();
+    identityParams.Logins[provider] = idToken;
+    const cognitoClient = new CognitoIdentityClient({
+      region: userIdPool.split(":")[0],
     });
+
+    const cognitoIdentity = await cognitoClient.send(
+      new GetIdCommand(identityParams),
+    );
+
+    let credentialParams = {
+      IdentityId: cognitoIdentity.IdentityId,
+      Logins: {},
+    };
+
+    credentialParams.Logins[provider] = idToken;
+
+    const cognitoIdentityCredentials = await cognitoClient.send(
+      new GetCredentialsForIdentityCommand(credentialParams),
+    );
+    console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
+    const clientCredentials = {
+      identityId: cognitoIdentity.IdentityId,
+      accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,
+      secretAccessKey: cognitoIdentityCredentials.Credentials.SecretKey,
+      sessionToken: cognitoIdentityCredentials.Credentials.SessionToken,
+      expiration: cognitoIdentityCredentials.Credentials.Expiration,
+      authenticated: true,
+    };
 
     const client = new AWSAppSyncClient({
       url: endpoint,
       region: region,
       auth: {
         type: AUTH_TYPE.AWS_IAM,
-        credentials: () => Auth.currentCredentials(),
+        credentials: clientCredentials,
       },
-
       disableOffline: true,
     });
-    /*
-    const AppSyncConfig = {
-      url: endpoint,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.AWS_IAM,
-        credentials: () => Auth.currentCredentials(),
-      },
-
-      disableOffline: true,
-    };
-    const client = new AWSAppSyncClient(AppSyncConfig, {
-      link: new createAppSyncLink({
-        ...AppSyncConfig,
-        resultsFetcherLink: ApolloLink.from([
-          setContext((request, previousContext) => {
-            console.log("APOLLO ", previousContext, request);
-            return {
-              headers: {
-                ...previousContext.headers,
-                "x-tro-organization": "TESTING-HEADER",
-              },
-            };
-          }),
-          createHttpLink({
-            uri: AppSyncConfig.url,
-          }),
-        ]),
-      }),
-    });
-
-    console.log("USER CLIENT ", client);
-    */
-    return client;
+    return Promise.resolve(client);
   };
 
   useEffect(async () => {
@@ -543,13 +352,6 @@ const Home = props => {
       let clientEndpoint = "";
       let clientRegion = "";
 
-      /*
-      let clientEndpoint =
-        "https://kxsr2w4zxbb5vi5p7nbeyfzuee.appsync-api.us-east-1.amazonaws.com/graphql";
-      let clientRegion = "us-east-1";
-*/
-      //updateUserProfile(id: String!, profile: AWSJSON)
-
       if (!appProfile.hasOwnProperty("endpoint")) {
         const defaultProfileUpdate = await updateUserProfileMutation(
           GRAPHQL,
@@ -563,10 +365,15 @@ const Home = props => {
       clientEndpoint = appProfile.endpoint;
       clientRegion = appProfile.region;
 
-      const client = createClient(clientEndpoint, clientRegion);
+      const _currentSession = await Auth.currentSession();
+
+      const client = await createClient(
+        clientEndpoint,
+        clientRegion,
+        _currentSession,
+      );
 
       userData.current = currentPrifinaUser.data.getPrifinaUser;
-      //const dataConnectors = [];
 
       activeUser.current = {
         name: appProfile.name,

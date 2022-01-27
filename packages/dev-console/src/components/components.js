@@ -1,22 +1,15 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button, Image, Divider, Input } from "@blend-ui/core";
+
+import { Box, Flex, Text, Image, Input } from "@blend-ui/core";
+
+import PropTypes from "prop-types";
 
 import { BlendIcon } from "@blend-ui/icons";
 
-import { PrifinaLogo } from "./PrifinaLogo";
-import bxsCheckCircle from "@iconify/icons-bx/bxs-check-circle";
-
-import viewDashboard from "@iconify/icons-mdi/view-dashboard";
-import mdiWidget from "@iconify/icons-mdi/widgets";
-import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 import lock from "@iconify/icons-fe/lock";
 
-import styled, { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 
 const SidebarContainer = styled(Flex)`
   width: 286px;
@@ -158,6 +151,14 @@ export const ListItemIconLink = ({
   </Flex>
 );
 
+ListItemIconLink.propTypes = {
+  children: PropTypes.node,
+  icon: PropTypes.string,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  color: PropTypes.string,
+};
+
 export const DevConsoleSidebar = ({
   // theme,
   items,
@@ -185,7 +186,6 @@ export const DevConsoleSidebar = ({
           }) => (
             <ListMenuItem
               key={id}
-              // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
               onClick={onClick}
               backgroundColor={backgroundColor}
             >
@@ -193,24 +193,8 @@ export const DevConsoleSidebar = ({
             </ListMenuItem>
           ),
         )}
-        {/* <ListMenuItem
-          // onClick={{e => menuItemClick(e, "/schema/" + schemaInfo.uuid, 0)}}
-          onClick={stateOne}
-          backgroundColor={backgroundColor1}
-        >
-          <ListItemIconLink icon={viewDashboard}>Dashboard</ListItemIconLink>
-        </ListMenuItem>
-        <ListMenuItem onClick={stateTwo} backgroundColor={backgroundColor2}>
-          <ListItemIconLink icon={mdiWidget}>Projects</ListItemIconLink>
-        </ListMenuItem>
-        <ListMenuItem onClick={stateThree} backgroundColor={backgroundColor3}>
-          <ListItemIconLink icon={mdiBookOpenVariant}>
-            Resources
-          </ListItemIconLink>
-        </ListMenuItem> */}
+
         <ListMenuItem
-          // onClick={stateFour}
-          // backgroundColor={backgroundColor4}
           //temporary needs update
           style={{ pointerEvents: "none" }}
         >
@@ -241,6 +225,10 @@ export const DevConsoleSidebar = ({
       </PublisherCard>
     </SidebarContainer>
   );
+};
+
+DevConsoleSidebar.propTypes = {
+  items: PropTypes.instanceOf(Array),
 };
 
 export const NavbarContainer = styled(Flex)`
@@ -279,4 +267,10 @@ export const ResourceCard = ({ title, description, src }) => {
       </Box>
     </Flex>
   );
+};
+
+ResourceCard.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
+  src: PropTypes.node,
 };

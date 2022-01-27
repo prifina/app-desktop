@@ -1,4 +1,3 @@
-import React from "react";
 import Background from "../assets/background.png";
 import styled from "styled-components";
 import { Box } from "@blend-ui/core";

@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
 import React, { createRef, forwardRef, createContext, useContext } from "react";
 import { Input, Text, Box, useTheme, SearchSelect } from "@blend-ui/core";
 
@@ -12,27 +10,26 @@ import { space } from "styled-system";
 import { useId } from "@reach/auto-id";
 
 import PropTypes from "prop-types";
-//import { useFocus } from "../lib/componentUtils";
 
 const StyledBox = styled("div")`
   ${space}
   /* remove flex and safari works....  */ 
   display: flex;
-  opacity:0.999;
-  
+  opacity: 0.999;
+
   height: ${props =>
     props.height
       ? props.height
       : props.theme.componentStyles.input.base.height};
 
-  background-color: #F5F8F7;
+  background-color: #f5f8f7;
 
-/*
+  /*
       background-color: ${props =>
-        props.disabled
-          ? props.theme.colors.text.muted
-          : props.theme.componentStyles.input.base.backgroundColor ||
-            "transparent"};
+    props.disabled
+      ? props.theme.colors.text.muted
+      : props.theme.componentStyles.input.base.backgroundColor ||
+        "transparent"};
             */
   border: ${props =>
     typeof props.borders !== "undefined"
@@ -52,7 +49,7 @@ const StyledBox = styled("div")`
     box-shadow: none;
     border: ${props => props.theme.borders.input.active};
   }
-  
+
   /*
   &:disabled {
     background: ${props => props.theme.colors.text.muted};
@@ -73,20 +70,19 @@ const InputContext = createContext();
 const useInputContext = () => useContext(InputContext);
 
 const PhoneNumberField = ({ children, disabled, id, ...props }) => {
-  //console.log("ICON FIELD ", props);
   const isIcon = item => item.type.isIcon || item.type.isIconButton;
   const { colors } = useTheme();
 
   const uuid = useId();
   const _id = id || uuid;
-  //console.log("ID ", uuid, _id);
+
   const formatIds = id => ({
     select: `search-${id}-select`,
     input: `search-${id}-input`,
   });
   const selectId = formatIds(_id)["select"];
   const inputId = formatIds(_id)["input"];
-  //console.log("ID ", _id, inputId);
+
   let inputError = false;
   let errorMsg = "";
   let promptMsg = "";
@@ -102,10 +98,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
     }
   });
 
-  //width={"50px"}
-  //containerRef={boxRef}
   const boxRef = createRef();
-  //const searchRef = createRef();
 
   return (
     <InputContext.Provider
@@ -147,7 +140,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
 PhoneNumberField.propTypes = {
   id: PropTypes.string,
   disabled: PropTypes.bool,
-  children: PropTypes.array,
+  children: PropTypes.instanceOf(Array),
 };
 const SelectField = forwardRef(
   (
@@ -162,11 +155,6 @@ const SelectField = forwardRef(
     ref,
   ) => {
     const { selectId, boxRef } = useInputContext();
-
-    // const theme = useTheme();
-    // console.log("THEME ", theme);
-    //const theme = useTheme();
-    //console.log("DEFAULT ", defaultValue);
 
     return (
       <div
@@ -196,7 +184,7 @@ const SelectField = forwardRef(
 );
 
 SelectField.propTypes = {
-  options: PropTypes.array,
+  options: PropTypes.instanceOf(Array),
   defaultValue: PropTypes.string,
   searchLength: PropTypes.number,
   showList: PropTypes.bool,
@@ -206,12 +194,7 @@ const InputField = forwardRef(
   ({ children, errorMsg, promptMsg, ...props }, ref) => {
     const { disabled, inputId } = useInputContext();
     const theme = useTheme();
-    //console.log("INPUT ", defaultValue);
-    /*
-    if (defaultValue === "000" && renderStatus) {
-      setSelectFocus();
-    }
-    */
+
     return (
       <Input
         id={inputId}
@@ -231,13 +214,11 @@ const InputField = forwardRef(
 InputField.propTypes = {
   errorMsg: PropTypes.string,
   promptMsg: PropTypes.string,
-  children: PropTypes.array,
+  children: PropTypes.instanceOf(Array),
 };
 const LeftIcon = styled(props => {
   const { disabled, inputError } = useInputContext();
   const theme = useTheme();
-  //const { color, ...rest } = props;
-  //color={disabled ? theme.colors.baseMuted : color}
 
   return (
     <BlendIcon
