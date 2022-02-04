@@ -10,7 +10,7 @@ import {
 import { Box, Button, Text, useTheme } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
-//import { i18n } from "@prifina-apps/utils";
+
 import i18n from "../lib/i18n";
 i18n.init();
 
@@ -24,13 +24,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
     onClose(e, action);
     e.preventDefault();
   };
-  /*
-  <div
-  style={{ fontSize: "18px", lineHeight: "24px", fontWeight: 600 }}
->
-  Title
-</div>
-*/
+
   return (
     <React.Fragment>
       <Modal
@@ -57,6 +51,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
           <ModalFooter>
             <Box textAlign={"center"} width={1}>
               <Button
+                className="dialog-cancelButton"
                 variation={"outline"}
                 colorStyle={"error"}
                 onClick={e => {
@@ -68,6 +63,7 @@ const LogoutDialog = ({ onClose, onButtonClick, ...props }) => {
                 {i18n.__("cancelButton")}
               </Button>
               <Button
+                className="dialog-logoutButton"
                 ml={20}
                 onClick={e => {
                   setDialogOpen(false);

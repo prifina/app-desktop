@@ -1,6 +1,4 @@
-/* eslint-disable react/forbid-prop-types */
 import React from "react";
-//import { withTheme } from "styled-components";
 import { Box, Divider, Text, useTheme } from "@blend-ui/core";
 import { CircularProgress, CircularProgressLabel } from "@blend-ui/progress";
 import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
@@ -13,9 +11,8 @@ const ProgressContainer = ({
   mobileApp = false,
   ...props
 }) => {
-  //console.log("CONTAINER ", props, title, progress);
   const { colors } = useTheme();
-  //console.log("THEME ", colors);
+
   return (
     <React.Fragment>
       {mobileApp && (
@@ -77,6 +74,6 @@ ProgressContainer.propTypes = {
   mobileApp: PropTypes.bool,
   progress: PropTypes.number.isRequired,
 
-  children: PropTypes.array.isRequired,
+  children: PropTypes.instanceOf(Array).isRequired,
 };
 export default ProgressContainer;

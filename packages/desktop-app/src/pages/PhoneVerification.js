@@ -5,39 +5,27 @@ import bxKey from "@iconify/icons-bx/bx-key";
 import { ReactComponent as Phone } from "../assets/phone.svg";
 
 import ProgressContainer from "../components/ProgressContainer";
-//import { useFormFields } from "../lib/formFields";
 
-//import { onlyDigitChars } from "../lib/utils";
+import { API } from "aws-amplify";
 
-//import { useFocus } from "../lib/componentUtils";
-import Amplify, { API } from "aws-amplify";
-//import { useAppContext } from "../lib/contextLib";
-//import { verifyCodeMutation } from "../graphql/api";
-
-//import { getVerificationQuery, sendVerificationMutation } from "../graphql/api";
 import {
   getVerificationQuery,
   sendVerificationMutation,
   useFormFields,
   useFocus,
-  useAppContext,
   useAccountContext,
   i18n,
   onlyDigitChars,
 } from "@prifina-apps/utils";
-//import { useHistory } from "react-router-dom";
 
 import { useToast } from "@blend-ui/toast";
-//import { useAccountContext } from "../lib/contextLib";
 
 import config from "../config";
 import PropTypes from "prop-types";
-//import i18n from "../lib/i18n";
+
 i18n.init();
 
 const PhoneVerification = ({ invalidLink, ...props }) => {
-  //const history = useHistory();
-  //console.log("USER ", currentUser);
   const { nextStepAction, currentUser } = useAccountContext();
   const alerts = useToast();
 
@@ -57,7 +45,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
 
   const checkInput = code => {
     const checkResult = onlyDigitChars(code);
-    //console.log(checkResult);
+
     let validCode = true;
     if (!checkResult) {
       const errorMsg = i18n.__("codeDigitsError");
@@ -82,17 +70,6 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   };
   const verifyClick = async e => {
     try {
-      /*
-      const result = await verifyCodeMutation(
-        API,
-        [
-          currentUser.username,
-          currentUser.client,
-          "email",
-          verificationFields.verificationCode,
-        ].join("#")
-      );
-      */
       const userCode = [
         currentUser.username,
         currentUser.client,
@@ -101,7 +78,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
       ].join("#");
 
       const result = await getVerificationQuery(API, userCode);
-      //console.log(result.data.getVerification);
+
       if (result.data.getVerification === null) {
         alerts.error(i18n.__("invalidCode"), {});
         setInputError({ status: true });
@@ -128,19 +105,11 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         }),
       );
       alerts.info(i18n.__("phoneVerificatioSent"), {});
-      /*
-      setToastSuccess({
-        status: true,
-        msg: i18n.__("emailVerificatioSent"),
-      });
-      */
     } catch (e) {
       console.log("ERR", e);
     }
   };
   useEffect(() => {
-    //console.log("SEND MSG ", currentUser);
-
     sendVerificationMutation(
       API,
       "phone",
@@ -200,18 +169,6 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
                 />
               </IconField>
             </Box>
-            {/* 
-            <Box mt={3} display={"inline-flex"}>
-              <Flex alignItems={"center"}>
-                <Text textStyle={"caption2"} mr={5}>
-                  {i18n.__("codeMissing")}
-                </Text>
-                <Link href={invalidLink} target="_blank" fontSize={"10px"}>
-                  {i18n.__("sendAgainLinkText")}
-                </Link>
-              </Flex>
-            </Box>
-*/}
             <Box mt={inputError.status ? 0 : 3} display={"inline-flex"}>
               <Flex alignItems={"center"}>
                 <Text textStyle={"caption2"} mr={5}>
@@ -255,19 +212,6 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
           </Button>
         </Flex>
       </Box>
-      {/*
-      <Box mt={inputError.status ? 60 : 84} textAlign={"center"}>
-        <Button
-          disabled={
-            inputError.status ||
-            verificationFields.verificationCode.length !== 6
-          }
-          onClick={verifyClick}
-        >
-          {i18n.__("verifyButton")}
-        </Button>
-      </Box>
-        */}
     </ProgressContainer>
   );
 };

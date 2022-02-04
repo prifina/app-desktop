@@ -1,16 +1,14 @@
-/* eslint-disable react/forbid-prop-types */
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import styled from "styled-components";
 
 import { Box, Text, Flex } from "@blend-ui/core";
 
 import { Auth } from "aws-amplify";
-//import { useAppContext, useAccountContext } from "../lib/contextLib";
 
 import { useHistory } from "react-router-dom";
 import { i18n, useAppContext } from "@prifina-apps/utils";
-//import i18n from "../lib/i18n";
+
 import { useToast } from "@blend-ui/toast";
 import { DotLoader } from "@blend-ui/progress";
 
@@ -31,24 +29,18 @@ const LoaderBox = styled(Box)`
 `;
 
 const FinalizingAccount = ({ currentUser, ...props }) => {
-  //console.log("Phone ", props);
   const history = useHistory();
   const { AUTHConfig, userAuth } = useAppContext();
   Auth.configure(AUTHConfig);
-  //const { currentUser, state } = useAccountContext();
 
   const alerts = useToast();
 
   console.log("FIN ", currentUser);
 
-  //console.log("USE ", useToast);
-
-  //const [confirmCode, setConfirmCode] = useState(false);
-
   useEffect(() => {
     async function onLoad() {
       const abortController = new AbortController();
-      //console.log("SIGNUP ", state);
+
       try {
         const _newUser = {
           username: currentUser.uuid,
@@ -65,15 +57,6 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
         const { user } = await Auth.signUp(_newUser);
         console.log(user);
         history.replace("/login");
-        /*
-        alerts.success("Account created", {
-          duration: 10000,
-          onClose: () => {
-            console.log("ON CLOSE...");
-            //history.replace("/");
-          },
-        });
-        */
       } catch (e) {
         console.log("ERR ", e);
         if (e.code === "AuthError" || e.code === "UsernameExistsException") {
@@ -85,7 +68,6 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
       };
     }
     onLoad();
-    //});
   }, []);
 
   return (
@@ -103,6 +85,6 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
 };
 
 FinalizingAccount.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.instanceOf(Object).isRequired,
 };
 export default FinalizingAccount;

@@ -1,6 +1,3 @@
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
-
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { PrifinaProvider, PrifinaContext } from "@prifina/hooks";
 

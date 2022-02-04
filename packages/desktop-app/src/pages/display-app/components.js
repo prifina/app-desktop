@@ -1,7 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/display-name */
-
 import React, { useRef, forwardRef, useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 
@@ -16,15 +12,13 @@ import {
   Label,
   Select,
 } from "@blend-ui/core";
-//import { useFormFields } from "../../lib/formFields";
+
 import bxSearchAlt2 from "@iconify/icons-bx/bx-search-alt-2";
 import bxChevronUp from "@iconify/icons-bx/bx-chevron-up";
 import bxChevronDown from "@iconify/icons-bx/bx-chevron-down";
 
-//import useFetch from "../../lib/hooks/useFetch";
 import { API_KEY, GOOGLE_URL, SEARCH_ENGINE } from "../../config";
 
-//import i18n from "../../lib/i18n";
 import { i18n, useFetch, useFormFields } from "@prifina-apps/utils";
 import moment from "moment";
 import "moment-timezone";
@@ -34,16 +28,6 @@ import { useTheme } from "@blend-ui/core";
 
 i18n.init();
 
-/*
-position: absolute;
-width: 1309px;
-height: 716px;
-left: 64px;
-top: 182px;
-
-background: #FFFFFF;
-box-shadow: 0px -4px 8px #F5F6F6;
-*/
 export const TabText = styled(Text)`
   padding-left: 20px;
   padding-top: 25px;
@@ -69,38 +53,6 @@ export const WidgetWrapper = styled.div`
   min-width: 200px;
   */
 `;
-/*
-div {
-  width: 100px;
-  height: 100px;
-  background-image: radial-gradient(circle, black 10px, transparent 11px);
-  background-size: 100% 33.33%;
-}
-{
-    height: 20px;
-    width: 30px;
-    position: relative;
-    left: 188px;
-    top: 41px;
-    opacity: 1;
-    cursor: pointer;
-    background-image: radial-gradient(circle,black 2px,transparent 0px);
-    background-size: 100% 33.33%;
-}
-*/
-/*
-export const IconDiv = styled.div`
-  height: 24px;
-  position: relative;
-  left: 197px;
-  top: 23px;
-  opacity: 0;
-  cursor: ${props => (props.open ? "default" : "pointer")};
-  &:hover {
-    opacity: ${props => (props.open ? 0 : 1)};
-  }
-`;
-*/
 
 export const IconDiv = styled.div`
   &:hover {
@@ -109,9 +61,15 @@ export const IconDiv = styled.div`
   }
   height: 20px;
   width: 20px;
+  /*
   position: relative;
   left: 290px;
   top: 20px;
+  */
+  position: absolute;
+  left: 275px;
+  top: 15px;
+
   opacity: 1;
   cursor: ${props => (props.open ? "default" : "pointer")};
   background-image: radial-gradient(
@@ -155,17 +113,7 @@ export const ModalBackground = styled.div`
   left: 0;
   top: 0;
 `;
-/*
-export const SearchModal = styled.div`
-width: 100%;
-height: 100vh;
-z-index: 15;
-background-color: rgba(30, 29, 29, 0.3);
-position: absolute;
-left: 0;
-top: 0;
-`;
-*/
+
 export const SearchContainer = styled.div`
   width: ${props => props.width}px;
   /* height: 100vh; */
@@ -189,21 +137,6 @@ export const SettingsDiv = styled.div`
   z-index: 50;
 `;
 
-/*
-.bg-image {
-  
-  background-image: url("photographer.jpg");
-
-  filter: blur(8px);
-  -webkit-filter: blur(8px);
-
-  height: 100%;
-
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-*/
 export const BlurImageDiv = styled.div`
   filter: blur(4px);
   -webkit-filter: blur(4px);
@@ -228,8 +161,10 @@ const dots = colors => keyframes`
 
 const DotsContainer = styled.div`
   color: ${props => (props.widgetTheme === "dark" ? "white" : "black")};
+  /*
   position: absolute;
   top: 110px;
+  */
   height: 69px;
   width: 69px;
   margin: 0 10px 0 0;
@@ -276,7 +211,7 @@ const Dot = styled.div`
     margin-right: 0;
   }
 `;
-const DotLoader = props => {
+export const DotLoader = props => {
   const theme = useTheme();
   console.log(theme.colors);
   return (
@@ -297,166 +232,12 @@ export const WidgetList = React.memo(
     console.log("WIDGET DATA", widgetData);
     console.log("WIDGET USER", currentUser);
     console.log("DATASOURCES", dataSources);
-    const userDataConnectors = Object.keys(currentUser.dataConnectors);
-    //const dataSources = { "@prifina/google-timeline": { sourceType: 2 } };
+
     return (
       <>
         {widgetList.map((Widget, i) => {
-          // only first datasource is used ????
-          const widgetDataSource = widgetData[i].dataConnectors[0];
           const size = widgetData[i].widget.size.split("x");
 
-          if (widgetData[i].dataConnectors.length > 0) {
-            // data source is not connected....
-            let userDataSourceStatus = 0;
-            if (
-              userDataConnectors.length > 0 &&
-              userDataConnectors.indexOf(widgetDataSource) > -1
-            ) {
-              // check dataSource status
-              userDataSourceStatus =
-                currentUser.dataConnectors[widgetDataSource].status;
-            }
-
-            const dataSourceType = dataSources[widgetDataSource].sourceType;
-            console.log("DATASOURCE TYPE", i, widgetDataSource, dataSourceType);
-            if (userDataSourceStatus < 2) {
-              return (
-                <div
-                  key={"widget-processing-" + i}
-                  style={{
-                    width: size[0] + "px",
-                    height: size[1] + "px",
-                    margin: "10px",
-                  }}
-                >
-                  <EmptyDiv />
-                  <WidgetWrapper key={"widget-wrapper-" + i}>
-                    <BlurImageDiv
-                      key={"prifina-widget-" + i}
-                      style={{
-                        backgroundImage: `url(${widgetData[i].widget.image})`,
-                      }}
-                    />
-
-                    <div
-                      style={{
-                        width: size[0] + "px",
-                        bottom: "60px",
-                        padding: "10px",
-                        position: "absolute",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Text
-                        textStyle={"h6"}
-                        color={
-                          widgetData[i].widget.theme === "dark"
-                            ? "white"
-                            : "black"
-                        }
-                      >
-                        {widgetData[i].widget.title}
-                      </Text>
-                      <Text
-                        textStyle={"caption"}
-                        color={
-                          widgetData[i].widget.theme === "dark"
-                            ? "white"
-                            : "black"
-                        }
-                      >
-                        {widgetData[i].widget.shortDescription}
-                      </Text>
-                    </div>
-                    <div
-                      style={{
-                        width: size[0] + "px",
-                        bottom: "15px",
-                        paddingLeft: "10px",
-                        position: "absolute",
-                      }}
-                    >
-                      {userDataSourceStatus === 0 && (
-                        <Button>
-                          {dataSourceType === 1 ? "Connect Data" : "Import"}
-                        </Button>
-                      )}
-                      {userDataSourceStatus === 1 && <Button>Activate</Button>}
-                    </div>
-                  </WidgetWrapper>
-                </div>
-              );
-            }
-
-            // processing
-            if (userDataSourceStatus === 2) {
-              return (
-                <div
-                  key={"widget-processing-" + i}
-                  style={{
-                    width: size[0] + "px",
-                    height: size[1] + "px",
-                    margin: "10px",
-                  }}
-                >
-                  <EmptyDiv />
-                  <WidgetWrapper key={"widget-wrapper-" + i}>
-                    <BlurImageDiv
-                      key={"prifina-widget-" + i}
-                      style={{
-                        backgroundImage: `url(${widgetData[i].widget.image})`,
-                      }}
-                    />
-                    <div
-                      key={"widget-dot-" + i}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        top: "0px",
-                        zIndex: 19,
-                      }}
-                    >
-                      <DotLoader widgetTheme={widgetData[i].widget.theme} />
-                      <div
-                        style={{
-                          width: size[0] + "px",
-                          bottom: "70px",
-                          padding: "5px",
-                          position: "absolute",
-                          textAlign: "center",
-                        }}
-                      >
-                        <Text
-                          textStyle={"h6"}
-                          color={
-                            widgetData[i].widget.theme === "dark"
-                              ? "white"
-                              : "black"
-                          }
-                        >
-                          Prosessing your data...
-                        </Text>
-                        <Text
-                          textStyle={"caption"}
-                          color={
-                            widgetData[i].widget.theme === "dark"
-                              ? "white"
-                              : "black"
-                          }
-                        >
-                          You will be notified as soon as the data becomes
-                          available in your cloud.
-                        </Text>
-                      </div>
-                    </div>
-                  </WidgetWrapper>
-                </div>
-              );
-            }
-          }
           return (
             <Widget
               data={{
@@ -473,44 +254,13 @@ export const WidgetList = React.memo(
 );
 
 WidgetList.propTypes = {
-  widgetList: PropTypes.array.isRequired,
-  widgetData: PropTypes.array.isRequired,
-  currentUser: PropTypes.object,
+  widgetList: PropTypes.instanceOf(Array).isRequired,
+  widgetData: PropTypes.instanceOf(Array).isRequired,
+  currentUser: PropTypes.instanceOf(Object),
+  dataSources: PropTypes.instanceOf(Object),
 };
 
-//moment.tz.guess()
-//console.log("MOMENT ", moment.tz.names());
-/*
-  var select = document.getElementById('timezones');
-moment.tz.names().forEach(function(timezone){
-	var option = document.createElement('option');
-  option.textContent = timezone + ': ' + moment.tz(timezone).format('Z');
-  select.appendChild(option);
-});
-*/
-/*
-moment.tz.names().forEach(function (timezone) {
-  //console.log(moment.tz(timezone).utcOffset());
-});
-*/
-//console.log(moment.tz.names());
-/*
-<Label htmlFor="cabinClass">Cabin Class</Label>
-<Select
-  id="cabinClass"
-  name="cabinClass"
-  defaultValue="Premium Economy"
-  onChange={changeAction}
->
-  <option>Economy</option>
-  <option>Premium Economy</option>
-  <option>Business</option>
-  <option>First Class</option>
-  <option>
-    With a super long label that doesn't get clobbered by the chevron
-  </option>
-</Select>
-*/
+WidgetList.displayName = "WidgetList";
 
 export const SettingsDialog = ({
   widgetIndex,
@@ -518,7 +268,6 @@ export const SettingsDialog = ({
   onUpdate,
   ...props
 }) => {
-  //const currentSettings = widgetSettings[widget];
   console.log("SETTINGS ", widgetIndex, widgetSettings);
   let inputFields = useRef({});
   let timezones = useRef([]);
@@ -546,7 +295,6 @@ export const SettingsDialog = ({
       console.log(s);
       if (fieldTypeCheck.indexOf(s.type) === -1) fieldTypeCheck.push(s.type);
     });
-    //console.log(fieldTypeCheck);
 
     // have timezone field type...
     if (fieldTypeCheck.indexOf("TZ") > -1) {
@@ -560,7 +308,6 @@ export const SettingsDialog = ({
     }
     setFieldInit(true);
   }, []);
-  //console.log(timezones);
 
   // 1== widget settings, 2== system settings like theme,size...
   const settingsType = 1;
@@ -720,7 +467,6 @@ export const SettingsDialog = ({
               width={"100%"}
               onClick={e => {
                 console.log("UPDATE BUTTON ", fields);
-                //console.log(fields);
 
                 if (timezones.length > 0 && fields.hasOwnProperty("tz")) {
                   onUpdate({
@@ -730,9 +476,6 @@ export const SettingsDialog = ({
                 } else {
                   onUpdate(fields);
                 }
-
-                //console.log("UPDATE CLICK ", e.target.className);
-                //onUpdate(fields);
               }}
             >
               Update
@@ -746,7 +489,7 @@ export const SettingsDialog = ({
 
 SettingsDialog.propTypes = {
   widgetIndex: PropTypes.number.isRequired,
-  widgetSettings: PropTypes.object.isRequired,
+  widgetSettings: PropTypes.instanceOf(Object).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 
@@ -773,7 +516,6 @@ export const SearchBox = forwardRef(
             onChange={handleChange}
             onKeyDown={e => {
               if (e.key === "Enter") {
-                //console.log("SEARCH ....", fields.search);
                 saveSearchKey(fields.search);
                 searchKey(fields.search);
               }
@@ -808,10 +550,11 @@ SearchBox.propTypes = {
   saveSearchKey: PropTypes.func.isRequired,
 };
 
+SearchBox.displayName = "SearchBox";
+
 export const SearchResults = props => {
   const { searchBox, searchKey, roleKey, saveSearchResult } = props;
-  //console.log(searchBox);
-  //console.log(searchBox.current.getBoundingClientRect());
+
   const boxRect = searchBox.current.getBoundingClientRect();
   const containerProps = {
     width: boxRect.width,
@@ -823,23 +566,7 @@ export const SearchResults = props => {
   console.log("NEW SEARCH ", searchKey);
   const [content, setContent] = useState(null);
   const { data, error, isLoading, setUrl } = useFetch();
-  /*
-  setUrl(
-    `${GOOGLE_URL}?cx=${SEARCH_ENGINE}&exactTerms=${
-      roleKey.length > 0 ? encodeURIComponent(roleKey) : ""
-    }&q=${encodeURIComponent(searchKey)}&lr=lang_en&key=${API_KEY}`,
-  );
-*/
-  //let searchHistory = [];
-  /*
-  let searchHistory = JSON.parse(localStorage.getItem("searchHistory"));
-  if (searchHistory === null) {
-    searchHistory = [];
-  } else {
-    searchHistory.unshift({ search: searchKey });
-  }
-  localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
-*/
+
   useEffect(() => {
     if (!isLoading)
       setUrl(
@@ -851,7 +578,6 @@ export const SearchResults = props => {
     if (!data && isLoading) setContent(<h2>LOADING...</h2>);
     if (!data && !isLoading) setContent(null);
     if (data) {
-      //console.log(Object.keys(data));
       console.log(data);
       const items = data.items.map((item, i) => {
         return (
@@ -877,36 +603,6 @@ export const SearchResults = props => {
       setContent(<ol>{items}</ol>);
     }
   }, [searchKey, error, isLoading, data]);
-  /*
-  const getContent = newSearch => {
-    if (error) return <h2>Error when fetching: {error}</h2>;
-    if (!data && isLoading) return <h2>LOADING...</h2>;
-    if (!data) return null;
-    console.log(Object.keys(data));
-    console.log(data);
-    console.log("NEW SEARCH2 ", searchKey);
-    console.log("NEW SEARCH3 ", newSearch);
-    console.log("NEW SEARCH4 ", prevSearchKey);
-
-    prevSearchKey.current = newSearch;
-    return (
-      <ol>
-        {data.items.map((item, i) => {
-          return (
-            <li key={"search-result-" + i}>
-              <div>
-                <a href={item.link} target={"_blank"}>
-                  {item.title}
-                </a>
-              </div>
-              <div style={{ fontSize: "0.75rem" }}>{item.snippet}</div>
-            </li>
-          );
-        })}
-      </ol>
-    );
-  };
-*/
 
   return (
     <>
@@ -919,7 +615,7 @@ export const SearchResults = props => {
   );
 };
 SearchResults.propTypes = {
-  searchBox: PropTypes.object.isRequired,
+  searchBox: PropTypes.instanceOf(Object).isRequired,
   searchKey: PropTypes.string,
   roleKey: PropTypes.string,
   saveSearchResult: PropTypes.func.isRequired,
@@ -928,7 +624,7 @@ SearchResults.propTypes = {
 export const SearchHistory = props => {
   const { searchBox } = props;
   console.log("HISTORY ", searchBox);
-  //console.log(searchBox.current.getBoundingClientRect());
+
   const boxRect = searchBox.current.getBoundingClientRect();
   const containerProps = {
     width: boxRect.width,
@@ -937,18 +633,6 @@ export const SearchHistory = props => {
   };
   console.log(containerProps);
   let searchHistory = [];
-  /*
-  let searchHistory = JSON.parse(localStorage.getItem("searchHistory"));
-  if (searchHistory === null) {
-    searchHistory = [{ search: "Testing..." }];
-  }
-*/
-  /*
-    localStorage.setItem(
-      "WidgetImage",
-      JSON.stringify({ image: res.target.result })
-    );
-    */
 
   return (
     <>
@@ -967,5 +651,5 @@ export const SearchHistory = props => {
 };
 
 SearchHistory.propTypes = {
-  searchBox: PropTypes.object.isRequired,
+  searchBox: PropTypes.instanceOf(Object).isRequired,
 };

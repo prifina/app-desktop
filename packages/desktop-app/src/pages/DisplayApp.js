@@ -1,16 +1,7 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/display-name */
-/* eslint-disable react/no-multi-comp */
-
 import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
-import { BlendIcon } from "@blend-ui/icons";
-import bxCog from "@iconify/icons-bx/bx-cog";
 
-//import html2canvas from "html2canvas";
-//import ReactDOM from "react-dom";
 import {
-  useSpring,
   useSprings,
   animated,
   config as SpringConfig,
@@ -18,10 +9,6 @@ import {
 
 import { RemoteComponent } from "../RemoteComponent";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
-//import i18n from "../lib/i18n";
-
-//import widgetData from "./widgetData";
-//import installedWidgets from "./installedWidgets";
 
 import Amplify, { API as GRAPHQL, Storage } from "aws-amplify";
 import config from "../config";
@@ -30,10 +17,6 @@ import gql from "graphql-tag";
 
 import * as C from "./display-app/components";
 
-//import { addSearchResultMutation, addSearchKeyMutation } from "../graphql/api";
-/*
-import { addSearchResult, addSearchKey } from "../graphql/mutations";
-*/
 import {
   addSearchResult,
   addSearchKey,
@@ -43,9 +26,8 @@ import {
 
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import PropTypes from "prop-types";
-import { system } from "styled-system";
 
-import { Box, Flex } from "@blend-ui/core";
+import { Text, Button } from "@blend-ui/core";
 const short = require("short-uuid");
 i18n.init();
 
@@ -129,7 +111,7 @@ const DisplayApp = ({
         w.currentSettings,
       );
       return {
-        dataConnectors: w.dataConnectors,
+        dataSources: w.dataSources,
         currentSettings: w.currentSettings,
         url: w.url,
         settings: w.settings,
@@ -198,25 +180,6 @@ const DisplayApp = ({
     };
   });
 
-  /*
-  const [springs, setSprings] = useSprings(items.length, index => ({
-    from: {
-      transform: items[index].transform,
-      opacity: 1,
-    },
-    config: {
-      mass: 5,
-      tension: 500,
-      friction: 220,
-    },
-  }));
-  */
-  /*
-  const { transform } = useSpring({
-    transform: `perspective(600px) rotateX(${open ? 180 : 0}deg)`,
-    config: { mass: 5, tension: 500, friction: 180 },
-  });
-*/
   console.log("SPRINGS ", springs);
   const refs = useRef([]);
   const settingsRef = useRef([]);
@@ -237,7 +200,7 @@ const DisplayApp = ({
         installCount: w.widget.installCount,
         currentSettings: w.currentSettings,
         image: w.widget.image,
-        dataConnectors: w.dataConnectors,
+        dataSources: w.dataSources,
       };
     }),
   );
@@ -265,8 +228,6 @@ const DisplayApp = ({
     });
     await Promise.all(promises).then(cachedImages => {
       console.log("Images loaded....", cachedImages);
-      //imageCache.current = cachedImages;
-      //setImagesReady(true);
     });
   }, []);
 
@@ -302,15 +263,11 @@ const DisplayApp = ({
   const openSettings = w => {
     if (!open) {
       console.log("CLICK...", w);
-      //console.log("REFS...", refs.current[0].getBoundingClientRect());
-      //const ww = refs.current[w].getBoundingClientRect();
-      //console.log(document.querySelectorAll("[data-widget-index='" + w + "']"));
 
       const ww = document
         .querySelectorAll("[data-widget-index='" + w + "']")[0]
         .getBoundingClientRect();
-      // const element = ReactDOM.findDOMNode(refs.current[settings.widget]);
-      //const ww = { left: 0, top: 0, height: 0, width: 0 };
+
       console.log("WW...", ww);
 
       settings.current = {
@@ -320,51 +277,10 @@ const DisplayApp = ({
         width: ww.width + "px",
         widget: w,
       };
-      /*
-      animationItems.current = [
-        {
-          opacity: 1,
-          transform: `perspective(1000px) rotateX(${open ? 180 : 0}deg)`,
-          //transform: `perspective(1000px) rotateY(180deg)`,
-          height: ww.height + "px",
-          width: ww.width + "px",
-          visibility: "visible",
-          //reset: true,
-          config: {
-            mass: 5,
-            tension: 500,
-            friction: 220,
-          },
-        },
-        
-        {
-          delay: 500,
-          reset: true,
-          from: {
-            transform: "none",
-            width: ww.width + "px",
-            height: ww.height + "px",
-            visibility: "hidden",
-          },
-          to: {
-            transform: "none",
-            width: "400px",
-            height: "400px",
-            visibility: "hidden",
-          },
-        },
-        
-      ];
-*/
-      //setSprings(fn(animationItems.current));
-
-      //takeSnapshot(w);
 
       setSprings(index => {
         if (index === 0) {
           return {
-            //transform: `perspective(1000px) rotateY(180deg)`, right-toleft
-
             transform: `perspective(1000px) rotateY(150deg)`,
             onRest: () => {
               setFlipped(true);
@@ -386,9 +302,7 @@ const DisplayApp = ({
             height: "400px",
           },
           config: { ...SpringConfig.molasses, duration: 3500 },
-          onRest: () => {
-            //setFinish(true);
-          },
+          onRest: () => {},
         };
       });
 
@@ -515,113 +429,20 @@ const DisplayApp = ({
           ) {
             console.log("FOUND CALLBACK ");
             c[currentAppId][widgetInstallCount]({
-              data: JSON.parse(res.data.athenaResults.data).content,
+              data: JSON.parse(res.data.athenaResults.data),
             });
           }
         },
         error: error => {
           console.log("ATHENA SUBS ERROR ");
-          console.warn(error);
+          console.error(error);
+          // handle this error ???
+          ///message: "Connection failed: com.amazon.coral.service#ExpiredTokenException"
         },
       });
 
-    /*
-    let data = installedWidgets.map(w => {
-      return {
-        url: widgetData[w].url,
-        settings: widgetData[w].settings.length > 0,
-        currentSetting: {},
-      };
-    });
-*/
     console.log("WIDGET CONFIG ", widgetConfig);
-    /*
-    //await getSettings(appID, "f902cbca-8748-437d-a7bb-bd2dc9d25be5")
-    let allSettings = [];
-    getSettings("", "f902cbca-8748-437d-a7bb-bd2dc9d25be5").then(res => {
-      //console.log("SETTINGS ", res);
-      const widgets = JSON.parse(res.data.getInstalledWidgets.installedWidgets);
-      console.log("INSTALLED ", widgets);
-      widgetSettings.current = widgetConfig.map((w, i) => {
-        let defaultValues = {};
-        if (w.settings) {
-          w.widget.settings.forEach(v => {
-            // if type=text...
-            defaultValues[v.value] = "";
-          });
-          if (widgets.hasOwnProperty(w.widget.appID)) {
-            //console.log("SEETINGS FOUND ", w.widget.appID);
-            widgets[w.widget.appID].forEach(w => {
-              if (defaultValues.hasOwnProperty(w.field)) {
-                defaultValues[w.field] = w.value;
-              }
-            });
-          }
-        }
-        widgetConfig[i].currentSetting = defaultValues;
-        return {
-          settings: w.widget.settings || [],
-          title: w.widget.title,
-          appId: w.widget.appID,
-          currentSetting: defaultValues,
-        };
-      });
 
-      console.log("WIDGET CONFIG 2", widgetConfig);
-    });
-    */
-    /*
-    widgetSettings.current = widgetConfig.map((w, i) => {
-      let defaultValues = {};
-      console.log("WIDGET SETTINGS ", w);
-      if (w.settings) {
-        w.widget.settings.forEach(v => {
-          // if type=text...
-          defaultValues[v.value] = "";
-        });
-        allSettings.push(getSettings(w));
-      } else {
-        allSettings.push(Promise.resolve({}));
-      }
-
-      return {
-        settings: w.widget.settings || [],
-        title: w.widget.title,
-        appId: w.widget.appID,
-        currentSetting: defaultValues,
-      };
-    });
-    */
-    /*
-    Promise.all(allSettings).then(r => {
-      //console.log("GET SETTINGS ", r);
-      r.forEach((d, i) => {
-        //console.log("GET SETTINGS 2", d);
-        let defaultValues = {};
-        if (Object.keys(d).length > 0) {
-          Object.keys(d).forEach(k => {
-            defaultValues[k] = d[k];
-          });
-          widgetConfig[i].currentSetting = defaultValues;
-          widgetSettings.current[i].currentSetting = defaultValues;
-        }
-      });
-      //console.log("WIDGET CONFIG ", data);
-      //setWidgetConfig(data);
-    });
-    */
-    /*
-    console.log("GET SETTINGS ", d);
-        if (Object.keys(d).length > 0) {
-          Object.keys(d).forEach(k => {
-            defaultValues[k] = d[k];
-          });
-        }
-        data[i].currentSetting = defaultValues;
-
-    console.log("WIDGET CONFIG ", data);
-    setWidgetConfig(data);
-    */
     return () => {
       // unsubscribe...
       if (athenaSubscription.current) {
@@ -638,7 +459,51 @@ const DisplayApp = ({
       const widgets = widgetConfig.map((w, i) => {
         console.log("WIDGET COMPONENT ", w);
         //React.forwardRef((props, ref) =>
+        let dataSourceModules = {};
 
+        Object.keys(dataSources).forEach(s => {
+          for (let m = 0; m < dataSources[s].modules.length; m++) {
+            const moduleName = dataSources[s].modules[m];
+            dataSourceModules[moduleName] = {
+              source: s,
+              sourceType: dataSources[s].sourceType,
+            };
+          }
+        });
+        console.log("MODULES ", dataSourceModules);
+        const userDataSources = Object.keys(currentUser.dataSources);
+        console.log("USER DATASOURCES...", i, userDataSources);
+        let userDataSourceStatus = 0;
+        let dataSourceType = 0;
+        let datasourcesFound = false;
+        if (
+          w.hasOwnProperty("dataSources") &&
+          w.dataSources !== null &&
+          w.dataSources.length > 0
+        ) {
+          console.log("DATASOURCE FOUND ", w);
+          datasourcesFound = true;
+          const widgetDataSourceModule = w.dataSources[0];
+          const widgetDataSource =
+            dataSourceModules[widgetDataSourceModule].source;
+          if (
+            userDataSources.length > 0 &&
+            userDataSources.indexOf(widgetDataSource) > -1
+          ) {
+            // check dataSource status
+            userDataSourceStatus =
+              currentUser.dataSources[widgetDataSource].status;
+          }
+
+          dataSourceType = dataSources[widgetDataSource].sourceType;
+        }
+        console.log(
+          "USER DATASOURCE STATUS ",
+          i,
+          userDataSourceStatus,
+          dataSourceType,
+          datasourcesFound,
+        );
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
           const size = w.widget.size.split("x");
@@ -649,15 +514,11 @@ const DisplayApp = ({
                   width: size[0] + "px",
                   height: size[1] + "px",
                   margin: "10px",
+                  position: "relative",
                 }}
               >
-                <Flex flexDirection={"row"}>
-                  {/* 
-                  <C.IconDiv open={props.open} onClick={() => openSettings(i)}>
-                    <BlendIcon iconify={bxCog} />
-                  </C.IconDiv>
-                  */}
-                  <Flex>
+                <div>
+                  <div>
                     {w.settings && (
                       <C.IconDiv
                         open={props.open}
@@ -666,30 +527,151 @@ const DisplayApp = ({
                       />
                     )}
                     {!w.settings && <C.EmptyDiv />}
-                  </Flex>
-                  <Flex>
+                  </div>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
                     <C.WidgetWrapper
                       className={"prifina-widget"}
                       data-widget-index={i}
                       key={"widget-wrapper-" + i}
                       ref={ref}
                     >
-                      <RemoteComponent url={w.url} {...props} />
+                      {userDataSourceStatus < 3 && datasourcesFound && (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        >
+                          <C.BlurImageDiv
+                            testing={"OK"}
+                            key={"prifina-widget-" + i}
+                            style={{
+                              backgroundImage: `url(${w.widget.image})`,
+                            }}
+                          />
+                          {userDataSourceStatus === 2 && (
+                            <div>
+                              <div
+                                key={"widget-dot-" + i}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  top: "0px",
+                                  zIndex: 19,
+                                  position: "absolute",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <C.DotLoader widgetTheme={w.widget.theme} />
+                              </div>
+                              <div
+                                style={{
+                                  width: size[0] + "px",
+                                  bottom: 0,
+                                  position: "absolute",
+                                  padding: "5px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Text
+                                  textStyle={"h6"}
+                                  color={
+                                    w.widget.theme === "dark"
+                                      ? "white"
+                                      : "black"
+                                  }
+                                >
+                                  Prosessing your data...
+                                </Text>
+                                <Text
+                                  textStyle={"caption"}
+                                  color={
+                                    w.widget.theme === "dark"
+                                      ? "white"
+                                      : "black"
+                                  }
+                                >
+                                  You will be notified as soon as the data
+                                  becomes available in your cloud.
+                                </Text>
+                              </div>
+                            </div>
+                          )}
+                          {userDataSourceStatus < 2 && (
+                            <div
+                              style={{
+                                width: size[0] + "px",
+                                bottom: "10px",
+                                padding: "10px",
+                                position: "absolute",
+                                textAlign: "center",
+                              }}
+                            >
+                              <Text
+                                textStyle={"h6"}
+                                color={
+                                  w.widget.theme === "dark" ? "white" : "black"
+                                }
+                              >
+                                {w.widget.title}
+                              </Text>
+                              <Text
+                                textStyle={"caption"}
+                                color={
+                                  w.widget.theme === "dark" ? "white" : "black"
+                                }
+                              >
+                                {w.widget.shortDescription}
+                              </Text>
+                              <div
+                                style={{
+                                  marginTop: "10px",
+                                }}
+                              >
+                                {userDataSourceStatus === 0 && (
+                                  <Button>
+                                    {dataSourceType === 1
+                                      ? "Connect Data"
+                                      : "Import"}
+                                  </Button>
+                                )}
+                                {userDataSourceStatus === 1 && (
+                                  <Button>Activate</Button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {userDataSourceStatus === 3 && datasourcesFound && (
+                        <RemoteComponent url={w.url} {...props} />
+                      )}
+                      {dataSourceType === 0 && !datasourcesFound && (
+                        <RemoteComponent url={w.url} {...props} />
+                      )}
                     </C.WidgetWrapper>
-                  </Flex>
-                </Flex>
+                  </div>
+                </div>
               </div>
             </React.Fragment>
           );
         });
 
-        //const Widget = (props) => <RemoteComponent url={remoteUrl} {...props} />;
+        Widget.displayName = "Widget";
 
-        //return <Widget key={"prifina-widget-" + i} test={"ok"} />;
         return Widget;
       });
-      //refs.current = widgets;
-      // <RemoteComponent url={remoteUrl} fallback={<div>Testing...</div>} />;
+
       console.log("WIDGETS ", widgets);
 
       setWidgetList(widgets);
@@ -699,7 +681,7 @@ const DisplayApp = ({
   const onUpdate = data => {
     console.log("Update settings ", data);
     console.log("HOOK ", WidgetHooks);
-    //console.log(getCallbacks());
+
     console.log(settings.current, widgetSettings);
     // deep-copy...
     const currentSettings = JSON.parse(
@@ -707,13 +689,13 @@ const DisplayApp = ({
         widgetSettings.current[settings.current.widget].currentSettings,
       ),
     );
-    //console.log("CURRENT SETTINGS COPY", currentSettings);
+
     let systemSettingsUpdated = false;
 
     let currentWidgetConfig = JSON.parse(JSON.stringify(widgetConfig));
     Object.keys(data).forEach(k => {
       let dataField = k;
-      // check system settings... and update widgetConfig
+
       if (
         ["theme"].indexOf(dataField) > -1 &&
         currentSettings[dataField] !== data[dataField]
@@ -748,39 +730,11 @@ const DisplayApp = ({
         newSettings.push({ field: k, value: currentSettings[k] });
       }
     });
-    /*
-    for (let s = 0; s < newSettings.length; s++) {
-      // only keep field+values
-      delete newSettings[s].label;
-      delete newSettings[s].type;
-      console.log("NEW SETTING LOOP ", newSettings[s]);
-      if (newSettings[s].field === "size" && data.hasOwnProperty("sizes")) {
-        newSettings[s].value = data["sizes"];
-      } else if (data.hasOwnProperty(newSettings[s].field)) {
-        newSettings[s].value = data[newSettings[s].field];
-      }
-    }
-    */
-
-    /*
-    Object.keys(data).forEach(k => {
-      widgetSettings.current[settings.current.widget].currentSetting[k] =
-        data[k];
-      newSettings.push({ field: k, value: data[k] });
-    });
-    */
 
     const currentAppId = widgetSettings.current[settings.current.widget].appId;
-    //"f902cbca-8748-437d-a7bb-bd2dc9d25be5"
-    /*
-    input WidgetSettingInput {
-      field: String!
-      value: String!
-    }
-*/
+
     console.log("NEW SETTINGS ", newSettings, currentAppId);
     console.log("UPDATED SETTINGS ", widgetSettings.current, currentAppId);
-    // useCallback((appID, uuid, settings = [{}])
 
     setSettings(currentAppId, prifinaID, {
       type: "WIDGET",
@@ -805,20 +759,6 @@ const DisplayApp = ({
       c[currentAppId][widgetInstallCount]({ settings: data });
     }
 
-    //setWidgetData([data]);
-    //setOpen(false);
-    //console.log(check());
-    /*
-    console.log(settings, widgetSettings[settings.current.widget]);
-    const currentSettings = widgetSettings[settings.current.widget];
-    console.log(prifina.getCallbacks());
-    const c = prifina.getCallbacks();
-    if (typeof c[currentSettings.appID] === "function") {
-      prifina.setSettings(currentSettings.appID, data);
-      c[currentSettings.appID](data);
-      setOpen(false);
-    }
-    */
     setSprings(index => {
       return {
         from: {
@@ -862,21 +802,6 @@ const DisplayApp = ({
           },
         },
       });
-
-    /*
-      addSearchKeyMutation(GRAPHQL, {
-        owner: currentUser.uuid,
-        searchKey: searchKey,
-        role: activeTab === 0 ? "" : roleKey[activeTab],
-      });
-      */
-    /*
-input SearchKeyInput {
-	owner: String!
-	searchKey: String
-	role: String
-}
-*/
   };
   const saveSearchResult = async (searchKey, searchResult) => {
     if (searchKey.length > 0) {
@@ -894,14 +819,6 @@ input SearchKeyInput {
         },
       });
 
-      /*
-      addSearchResultMutation(GRAPHQL, {
-        owner: currentUser.uuid,
-        searchKey: searchKey,
-        role: activeTab === 0 ? "" : roleKey[activeTab],
-        selectedResult: searchBuckeyKey,
-      });
-      */
       await Storage.put(searchBuckeyKey, JSON.stringify(searchResult), {
         level: "public",
         contentType: "application/json",
@@ -913,30 +830,8 @@ input SearchKeyInput {
         },
       });
     }
-
-    /*
-
-input SearchResultInput {
-	owner: String!
-	searchKey: String!
-	selectedResult: AWSJSON
-}
-
-*/
   };
-  /*
-  useEffect(() => {
-    if (widgetList.length > 0) {
-      const widgets = document.querySelectorAll(
-        ".prifina-widget >*:first-child",
-      );
-      console.log(widgets);
-      widgets.forEach((w, i) => {
-        console.log(w.getBoundingClientRect());
-      });
-    }
-  }, [widgetList]);
-*/
+
   return (
     <>
       {open && (
@@ -963,27 +858,15 @@ input SearchResultInput {
               <animated.div
                 style={{
                   transform: props.transform,
-                  /*opacity: props.opacity, */
                   left: settings.current.left,
                   top: settings.current.top,
-
                   width: props.width,
                   height: props.height,
-
                   position: "absolute",
-
-                  /*border: i === 0 ? "2px outset" : null,*/
                   borderRadius: i === 0 ? "8px" : null,
                   visibility: open ? "visible" : "hidden",
-                  /*
-                  visible: props.transform.interpolate(
-                    [0, 150],
-                    ["visible", "hidden"],
-                  ),
-                  */
                   zIndex: 50,
                   backgroundSize: "cover",
-                  /*backgroundColor: flipped ? "white" : null,*/
                   backgroundImage:
                     i > 0
                       ? null
@@ -1018,7 +901,11 @@ input SearchResultInput {
 
       <PrifinaLogo title={"Display App"} />
       <C.PageContainer>
-        <div style={{ overflow: "hidden" }}>
+        <div
+          style={{
+            overflow: "hidden",
+          }}
+        >
           <Tabs
             activeTab={activeTab}
             onClick={tabClick}
@@ -1047,27 +934,6 @@ input SearchResultInput {
                   overflow: "auto",
                 }}
               >
-                {/* 
-              <div style={{ overflow: "hidden" }}>
-                <C.SearchBox
-                  ref={searchBox}
-                  showHistory={setSearchHistory}
-                  chevronOpen={searchHistory}
-                  searchKey={setSearchKey}
-                  searchOpen={searchKey.length > 0}
-                  saveSearchKey={saveSearchKey}
-                />
-                {searchKey.length > 0 && !searchHistory && (
-                  <C.SearchResults
-                    searchBox={searchBox}
-                    searchKey={searchKey}
-                    roleKey={roleKeys[activeTab]}
-                    saveSearchResult={saveSearchResult}
-                  />
-                )}
-                {searchHistory && <C.SearchHistory searchBox={searchBox} />}
-              </div>
-*/}
                 <div style={{ overflow: "auto" }}>
                   <C.WidgetContainer className={"prifina-widget-container"}>
                     {widgetList.length > 0 && (
@@ -1093,13 +959,15 @@ input SearchResultInput {
 };
 
 DisplayApp.propTypes = {
-  widgetConfigData: PropTypes.array.isRequired,
-  appSyncClient: PropTypes.object.isRequired,
+  widgetConfigData: PropTypes.instanceOf(Array).isRequired,
+  appSyncClient: PropTypes.instanceOf(Object).isRequired,
   prifinaID: PropTypes.string.isRequired,
   open: PropTypes.bool,
   width: PropTypes.string,
   height: PropTypes.string,
   visibility: PropTypes.string,
   transform: PropTypes.string,
+  dataSources: PropTypes.instanceOf(Object),
 };
+
 export default DisplayApp;

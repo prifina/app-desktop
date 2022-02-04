@@ -1,18 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 
-import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Image,
-  useTheme,
-  ThemeProvider,
-} from "@blend-ui/core";
+import { Box, Text } from "@blend-ui/core";
 
 import { i18n } from "@prifina-apps/utils";
+
+import PropTypes from "prop-types";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -201,12 +195,9 @@ function Table({ columns, data }) {
   );
 }
 
-// function App() {
-//   return (
-//     <Styles>
-//       <Table columns={columns} data={data} />
-//     </Styles>
-//   );
-// }
+Table.propTypes = {
+  columns: PropTypes.instanceOf(Array),
+  data: PropTypes.instanceOf(Array),
+};
 
 export default Table;
