@@ -431,7 +431,7 @@ const RemoteContent = ({ url, ...props }) => {
 
 //const Content = ({ appSyncClient, url, prifinaID, ...props }) => {
 const Content = forwardRef((props, ref) => {
-  const { appSyncClient, url, prifinaID } = props;
+  const { appSyncClient, url, prifinaID, updateDebug } = props;
   const {
     check,
     currentUser,
@@ -464,8 +464,92 @@ const Content = forwardRef((props, ref) => {
   };
   */
 
+  function stringify(obj) {
+    if (typeof obj !== "object" || obj === null || obj instanceof Array) {
+      console.log("WRONG OBJ TYPE ", typeof obj);
+      return value(obj);
+    }
+
+    const logicalOperators = Object.getOwnPropertySymbols(obj);
+    const objKeys = Object.keys(obj);
+    if (logicalOperators.length > 0) {
+      return (
+        "{" +
+        logicalOperators
+          .map(function (k) {
+            if (typeof k === "symbol") {
+              return '"' + k.toString() + '":' + value(obj[k]);
+            } else {
+              return null;
+            }
+          })
+          .filter(function (i) {
+            return i;
+          }) +
+        "}"
+      );
+    }
+
+    if (objKeys.length > 0) {
+      return (
+        "{" +
+        objKeys
+          .map(function (k) {
+            return typeof obj[k] === "function"
+              ? null
+              : '"' + k + '":' + value(obj[k]);
+          })
+          .filter(function (i) {
+            return i;
+          }) +
+        "}"
+      );
+    }
+
+    /*
+    return '{' + Object.keys(obj).map(function (k) {
+        return (typeof obj[k] === 'function') ? null : '"' + k + '":' + value(obj[k]);
+    }).filter(function (i) { return i; }) + '}';
+    */
+  }
+
+  function value(val) {
+    //console.log("VAL TYPE ",typeof val);
+    switch (typeof val) {
+      case "string":
+        return '"' + val.replace(/\\/g, "\\\\").replace('"', '\\"') + '"';
+      case "number":
+      case "boolean":
+        return "" + val;
+      case "function":
+        return "null";
+      case "symbol":
+        return val.toString();
+      case "object":
+        if (val instanceof Date) return '"' + val.toISOString() + '"';
+        if (val instanceof Array) return "[" + val.map(value).join(",") + "]";
+        if (val === null) return "null";
+        return stringify(val);
+    }
+  }
+
   const updateTest = data => {
     console.log("UPDATE TEST ", data, Object.keys(data));
+    const payload = Object.assign({}, data);
+
+    if (data.hasOwnProperty("connectorFunction")) {
+      console.log("QUERY UPDATE ");
+      //console.log("SERIALIZE ",stringify(data.query.filter));
+      // data.query.filter=stringify(data.query.filter);
+      //const filter=Object.assign({},data.query.filter);
+      /*
+       const filter=stringify(data.connectorFunction.filter);
+       delete payload.connectorFunction;
+       payload[data.connectorFunction.name]=data.connectorFunction;
+       payload[data.connectorFunction.name].filter=filter;
+       */
+    }
+    updateDebug(payload);
   };
   useEffect(() => {
     onUpdate("sandbox", updateTest);
@@ -820,15 +904,27 @@ const Sandbox = props => {
     console.log("DEBUG ", state, data);
 
     // if (state.isOpen) {
-    const newContent = asyncContent;
+    //const newContent = asyncContent;
     //content=content.replace(/\"/g, "").split("\n");
-    newContent.unshift({ ...data });
-    console.log("DEBUG 2", newContent);
-    setAsyncContent(newContent);
-    setState({ updated: new Date().toString() });
+    //newContent.unshift({ ...data });
+    //console.log("DEBUG 2", newContent);
+    updateDebugInfo(data);
+    //setAsyncContent(newContent);
+    //setState({ updated: new Date().toString() });
   };
   //}, []);
 
+  const updateDebugInfo = data => {
+    let newContent = asyncContent;
+    const maxElements = 20;
+    if (newContent.length > maxElements) {
+      newContent = newContent.slice(0, maxElements);
+    }
+    newContent.unshift({ ...data });
+    console.log("UPDATE DEBUG", newContent);
+    setAsyncContent(newContent);
+    setState({ updated: new Date().toString() });
+  };
   const onDialogClose = e => {
     setOptions(false);
     setSettings(false);
@@ -902,6 +998,7 @@ const Sandbox = props => {
                         remoteRef.current = ref;
                       }
                     }}
+                    updateDebug={updateDebugInfo}
                     {...componentProps.current}
                   />
                 )}
@@ -941,6 +1038,13 @@ const Sandbox = props => {
                       </OptionListItem>
                       <OptionListItem>QueryBuilder</OptionListItem>
                       <OptionListItem>SQL</OptionListItem>
+                      <OptionListItem
+                        onClick={e => {
+                          e.preventDefault();
+                        }}
+                      >
+                        Remote URL
+                      </OptionListItem>
                     </List>
                   </div>
                   <Arrow ref={arrowRef} />

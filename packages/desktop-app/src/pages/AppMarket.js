@@ -499,6 +499,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
 
   console.log(
     "install",
+    //widgets.current,
     selectedWidgetIndex > -1
       ? widgets.current[selectedWidgetIndex].installed
       : null,
