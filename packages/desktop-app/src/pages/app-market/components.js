@@ -1,16 +1,14 @@
 /* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/no-multi-comp */
-
 import React from "react";
-// import { List, ListItem, ListDivider } from "@blend-ui/list";
-import { Box, Flex, Text, Button } from "@blend-ui/core";
+
+import { Flex, Text, Button } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 
 import PropTypes from "prop-types";
 
 import styled, { createGlobalStyle } from "styled-components";
-
+/*
 const SidebarContainer = styled(Flex)`
   width: 286px;
   height: 100%;
@@ -51,6 +49,7 @@ const SidebarContainer = styled(Flex)`
     box-shadow: -6px 5px 0 #f6f7f9;
   }
 `;
+*/
 
 export const ListMenuItem = styled.li`
   /* */
@@ -123,7 +122,7 @@ const MenuBadge = styled.span`
   justify-content: center;
   align-items: center;
 `;
-
+/*
 export const ListItemIconLink = ({
   children,
   icon,
@@ -147,6 +146,14 @@ export const ListItemIconLink = ({
     <Flex ml="16px">{children}</Flex>
   </Flex>
 );
+
+ListItemIconLink.propTypes = {
+  children: PropTypes.node,
+  icon: PropTypes.object,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  color: PropTypes.string,
+};
 
 export const AppMarketSidebar = ({
   //theme,
@@ -193,9 +200,9 @@ export const AppMarketSidebar = ({
 };
 
 AppMarketSidebar.propTypes = {
-  items: PropTypes.array,
+  items: PropTypes.instanceOf(Array),
 };
-
+*/
 export const WidgetBase = styled.div`
   display: flex;
   position: relative;
@@ -206,6 +213,7 @@ export const WidgetBase = styled.div`
   border-radius: 8px; // missing from theme...
   margin-right: 24px;
   margin-bottom: 24px;
+  cursor: pointer;
 
   .overContainer {
     transition: all 0.4s ease;
@@ -215,7 +223,7 @@ export const WidgetBase = styled.div`
     bottom: 0;
     width: 100%;
   }
-  :hover .overContainer {
+  &:hover .overContainer {
     height: 168px;
   }
 
@@ -316,6 +324,11 @@ export const Card = ({ title, value }) => {
   );
 };
 
+Card.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.string,
+};
+
 export const InstalledText = styled(Text)`
   color: #47a7d6; // not on theme
   line-height: 23px;
@@ -374,16 +387,15 @@ export const UnderlineButton = styled(Button)`
   }
 `;
 
-export const DataSourceButton = styled.button`
-  background-image: ${props => `url(${props.backgroundImage})`};
-  background-position: "center";
-  background-size: "cover";
-  background-repeat: "no-repeat";
+export const DataSourceButton = styled.img`
   width: 44px;
   height: 44px;
   border-radius: 8.80208px;
   border: 0;
+  margin-right: 5px;
   &:active {
     opacity: 0.5;
   }
+  cursor: pointer;
+  opacity: ${props => (props.installed ? 0.2 : 1)};
 `;

@@ -1,42 +1,9 @@
-/* eslint-disable react/no-multi-comp */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, Text } from "@blend-ui/core";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
-//import { useIsMountedRef } from "../lib/componentUtils";
 
 const Settings = props => {
   console.log("SETTINGS PROPS ", props);
-  //const isMountedRef = useIsMountedRef();
-
-  /*
-  useEffect(() => {
-    async function fetchData() {
-      try {
-       
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    fetchData();
-  }, [isMountedRef]);
-  */
-
-  /*
-  useEffect(() => {
-    window.onbeforeunload = confirmExit;
-    function confirmExit(e) {
-      console.log("UNLOAD ", e);
-      e.returnValue = "Leave site 1";
-      if (e.stopPropagation) {
-        e.stopPropagation();
-        e.preventDefault();
-      }
-      return "Leave site 2";
-      //return "";
-    }
-  }, []);
-  */
 
   const [activeTab, setActiveTab] = useState(0);
   const tabClick = (e, tab) => {
@@ -86,5 +53,4 @@ const Settings = props => {
 
 Settings.displayName = "Settings";
 
-//export default compose(withUsermenu(), withDiv)(Settings);
 export default Settings;

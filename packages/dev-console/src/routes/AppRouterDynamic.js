@@ -8,6 +8,7 @@ import UnauthenticatedRoute from "./UnauthenticatedRoute";
 const Home = React.lazy(() => import("../pages/Home"));
 const Logout = React.lazy(() => import("../pages/Logout"));
 const Admin = React.lazy(() => import("../pages/Admin"));
+const Sandbox = React.lazy(() => import("../pages/Sandbox"));
 const NewApp = React.lazy(() => import("../pages/NewApp"));
 
 const UploadApp = React.lazy(() => import("../components/UploadApp"));
@@ -17,14 +18,6 @@ import Landing from "../pages/Landing";
 export default props => (
   <React.Suspense fallback={"Loading routing..."}>
     <Switch>
-      {/* 
-      <AppliedRoute path="/" exact>
-        <Landing />
-      </AppliedRoute>
-      <AppliedRoute path="/home" exact>
-        <Home />
-      </AppliedRoute>
-      */}
       <AuthenticatedRoute path="/upload" exact>
         <UploadApp />
       </AuthenticatedRoute>
@@ -34,17 +27,15 @@ export default props => (
       <AuthenticatedRoute path="/admin" exact>
         <Admin />
       </AuthenticatedRoute>
+      <AuthenticatedRoute path="/sandbox" exact>
+        <Sandbox />
+      </AuthenticatedRoute>
       <AuthenticatedRoute path="/test" exact>
         <Landing />
       </AuthenticatedRoute>
       <AuthenticatedRoute path="/home" exact>
         <Home />
       </AuthenticatedRoute>
-      {/* 
-      <AuthenticatedRoute path="/settings" exact>
-        <Settings />
-      </AuthenticatedRoute>
-      */}
       <AuthenticatedRoute path="/" exact>
         <Home />
       </AuthenticatedRoute>
@@ -60,15 +51,6 @@ export default props => (
       <AuthenticatedRoute path="/logout" exact>
         <Logout />
       </AuthenticatedRoute>
-      {/*
-      <AuthenticatedRoute path="/verify-email" exact>
-        <Landing />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/verify-phone" exact>
-        <Landing />
-      </AuthenticatedRoute>
-      */}
-
       <Route component={NotFoundPage} />
     </Switch>
   </React.Suspense>

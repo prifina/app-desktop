@@ -5,9 +5,8 @@ import ProgressContainer from "../components/ProgressContainer";
 import DeclineDialog from "../components/DeclineDialog";
 import styled from "styled-components";
 
-//import { useAccountContext } from "../lib/contextLib";
 import { i18n, useAccountContext } from "@prifina-apps/utils";
-//import i18n from "../lib/i18n";
+
 i18n.init();
 
 const StyledBox = styled(Box)`
@@ -70,19 +69,15 @@ const TermsOfUse = props => {
   console.log("Terms ", props);
   const { nextStepAction } = useAccountContext();
 
-  //console.log(nextStepAction);
-  //console.log(ctx);
-
   const { colors } = useTheme();
-  //console.log("THEME ", colors);
+
   const [scrolled, setScrolled] = useState(false);
   const [decline, setDecline] = useState(false);
 
   const _handleScroll = e => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-    //console.log(e.target);
-    //console.log(bottom);
+
     if (bottom) {
       setScrolled(true);
     }
@@ -92,34 +87,19 @@ const TermsOfUse = props => {
     e.preventDefault();
   };
   const approveTerms = e => {
-    // next step email verification ===2,... finalizing===4
     nextStepAction(2);
   };
   const onDialogClose = (e, action) => {
-    //console.log("CLOSE ", e, action);
     setDecline(false);
     e.preventDefault();
   };
   const onDialogClick = (e, action) => {
-    //console.log("BUTTON ", e, action);
     setDecline(false);
     if (action === "decline") {
-      // back to create account page
       nextStepAction(0);
     }
     e.preventDefault();
   };
-  /*
-    let timer = null;
-    if (isActive) {
-      timer = setTimeout(() => {
-        console.log("This will run after 5 second!");
-        onAction("email");
-      }, 5000);
-    }
-    return () => clearTimeout(timer);
-  }, [isActive,onAction]);
-  */
 
   return (
     <React.Fragment>

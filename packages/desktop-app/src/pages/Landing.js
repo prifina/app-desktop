@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Box, Flex, Text, useTheme } from "@blend-ui/core";
-//import { ReactComponent as BackPlate } from "../assets/back-plate.svg";
-//import BackPlate from "../assets/plate.svg";
+
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
 
 import Background from "../assets/background.png";
-//import { Background } from "../assets/background-image";
-//import { Plate } from "../assets/back-plate-png";
+
 import Plate from "../assets/back-plate.png";
 
 import { BlendIcon } from "@blend-ui/icons";
@@ -18,22 +16,16 @@ import styled from "styled-components";
 import CreateAccount from "./CreateAccount";
 import Login from "./Login";
 
-//import { useAppContext } from "../lib/contextLib";
-
 import { useHistory } from "react-router-dom";
 
-//import NotFoundPage from "../components/NotFoundPage";
-//import Logout from "./Logout";
 import Home from "./Home";
 
 import FinalizingAccount from "./FinalizingAccount";
 
 import { ToastContextProvider } from "@blend-ui/toast";
 import { i18n, useAppContext, NotFoundPage } from "@prifina-apps/utils";
-//import i18n from "../lib/i18n";
-i18n.init();
 
-//const backPlatePath = "../assets/back-plate.svg";
+i18n.init();
 
 const StyledBox = styled(Box)`
   /* border-radius: 20px; */
@@ -69,7 +61,7 @@ const Landing = props => {
   const { pathname, search } = useLocation();
   console.log("LOCATION ", pathname, search);
   const { colors } = useTheme();
-  //console.log("THEME ", colors);
+
   let initStep = 5;
   if (pathname === "/login") {
     initStep = 5;
@@ -79,20 +71,8 @@ const Landing = props => {
     initStep = 6;
   }
 
-  //console.log("STEP ", initStep);
   const [stepCounter, setStepCounter] = useState(initStep);
-  //const [accountFields, setAccountFields] = useState({});
-  /*
-  const [accountFields, setAccountFields] = useState({
-    email: { value: "tro9999@gmail.com" },
-    firstName: { value: "Tero" },
-    lastName: { value: "Ahola" },
-    password: { value: "Huuhaa12!#" },
-    phone: { value: "407077102" },
-    regionCode: "+358",
-    username: { value: "tero-testing3" },
-  });
-  */
+
   const [accountFields, setAccountFields] = useState({});
 
   useEffect(() => {
@@ -115,11 +95,7 @@ const Landing = props => {
         {mobileApp && <div>Mobile browser APP</div>}
         {!mobileApp && stepCounter === 6 && isAuthenticated && <Home />}
         {!mobileApp && stepCounter !== 6 && (
-          <StyledBox
-            minWidth={"1440px"}
-            /* maxHeight={"792px"} */
-            minHeight={"792px"}
-          >
+          <StyledBox minWidth={"1440px"} minHeight={"792px"}>
             <Box display={"inline-flex"} width={"100%"}>
               <Flex width={stepCounter === 7 ? "100%" : "44%"} height={"792px"}>
                 <Box display={"inline-block"} zIndex={2} ml={"63px"}>
@@ -189,9 +165,6 @@ const Landing = props => {
                         {stepCounter === 1 && !isAuthenticated && (
                           <CreateAccount finalStep={finalStep} />
                         )}
-
-                        {/* stepCounter === 6 && isAuthenticated && <Logout /> */}
-
                         {stepCounter === 5 && <Login />}
                       </Box>
                     </Flex>
@@ -207,5 +180,4 @@ const Landing = props => {
   );
 };
 
-//<img src={Plate} height={"920px"} width={"795px"} />
 export default Landing;

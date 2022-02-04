@@ -4,6 +4,7 @@ export const GOOGLE_URL = "https://customsearch.googleapis.com/customsearch/v1";
 export const REFRESH_TOKEN_EXPIRY = process.env.REACT_APP_REFRESH_TOKEN_EXPIRY;
 
 const prod = {
+  STAGE: process.env.REACT_APP_STAGE,
   APP_URL: process.env.REACT_APP_ALPHA_APP,
   DEV_URL: process.env.REACT_APP_ALPHA_APP_STUDIO,
   invalidVerificationLink:
@@ -31,6 +32,7 @@ const prod = {
   prifinaAccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
 };
 const dev = {
+  STAGE: "alpha",
   APP_URL: "http://localhost:3000",
   DEV_URL: "http://localhost:3001",
   invalidVerificationLink:

@@ -10,7 +10,6 @@ import {
   Divider,
 } from "@blend-ui/core";
 
-//import { useAppContext } from "../lib/contextLib";
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 import ProgressContainer from "../components/ProgressContainer";
@@ -18,27 +17,8 @@ import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
 import { useHistory } from "react-router-dom";
 
-//import { useFormFields } from "../lib/formFields";
-/*
-import {
-  checkPassword,
-  validEmail,
-  validUsername,
-  isValidNumber,
-  countryList,
-  lowerCaseChars,
-  addRegionCode,
-} from "../lib/utils"; */
-
-//import { useFocus } from "../lib/componentUtils";
 import config from "../config";
-/*
-import {
-  checkUsernameQuery,
-  getCountryCodeQuery,
-  checkCognitoAttributeQuery,
-} from "../graphql/api";
-*/
+
 import {
   checkUsernameQuery,
   getCountryCodeQuery,
@@ -60,17 +40,11 @@ import { API, Auth } from "aws-amplify";
 
 import { v4 as uuidv4 } from "uuid";
 
-//import strings from "../lib/locales/en";
-
-//const { i18n } = require("../lib/i18n");
-//import i18n from "../lib/i18n";
 import TermsOfUse from "./TermsOfUse";
 
 import EmailVerification from "./EmailVerification";
 import PhoneVerification from "./PhoneVerification";
 import { useToast } from "@blend-ui/toast";
-
-//import { AccountContext } from "../lib/contextLib";
 
 import useFlags from "../hooks/UseFlags";
 
@@ -93,7 +67,7 @@ const popularList = ["US", "GB", "FI"];
 const CreateAccount = props => {
   const history = useHistory();
   const alerts = useToast();
-  //const { APIConfig, AUTHConfig } = useAppContext();
+
   const { AUTHConfig } = useAppContext();
 
   const APIConfig = {
@@ -108,24 +82,17 @@ const CreateAccount = props => {
 
   const uuid = uuidv4();
 
-  //console.log("ENV ", process.env);
-  //console.log("HISTORY ", history.location.search);
-  //REACT_APP_DEBUG: "true"
   const appDebug =
     process.env.REACT_APP_DEBUG === "true" &&
     history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
-  //console.log(i18n.__("Testing"));
-
-  //console.log(i18n.__("testMessage"));
   const { colors } = useTheme();
   const { cList, nList } = countryList(continents, popularList);
   const { icons, isLoading } = useFlags(nList);
   const [flags, setFlags] = useState(false);
 
   const selectOptions = useRef([]);
-  //console.log(selectOptions);
 
   const initUser = {
     username: uuid,
@@ -139,7 +106,6 @@ const CreateAccount = props => {
   const [registerStep, setRegisterStep] = useState(0);
 
   const [nextDisabled, setNextDisabled] = useState(true);
-  //const [passwordConfirmEntered, setPasswordConfirmEntered] = useState(false);
 
   const [passwordVerification, setPasswordVerification] = useState([
     false,
@@ -255,7 +221,6 @@ const CreateAccount = props => {
   };
 
   const checkPhone = (region, phone, check = false, changeNumber = true) => {
-    //console.log("FIELDS ", fields);
     console.log(phone, region);
 
     const errorMsg = i18n.__("invalidPhoneNumber");
@@ -283,9 +248,6 @@ const CreateAccount = props => {
     }
 
     if (phoneState && check) {
-      //  console.log("CHECKING PHONE NUMBER");
-
-      //let phoneNumber = addRegionCode(region, phone);
       checkPhoneAttr(region, phone, phoneOpts).then(res => {
         if (typeof res.data !== "undefined" && res.data.checkCognitoAttribute) {
           phoneAlert(errorMsg, false, phoneOpts);
@@ -310,31 +272,11 @@ const CreateAccount = props => {
       phoneAlert(errorMsg, phoneState, phoneOpts);
     }
 
-    //return !phoneState;
     const returnState = check ? !phoneState : phoneState;
     console.log("PHONE CHECK STATE ", check, phoneState, "===>", returnState);
     return returnState;
   };
-  /*
-  const checkEmailAttr = async (email) => {
-    let checkResult = false;
-    const emailExists = await checkCognitoAttributeQuery(
-      API,
-      "email",
-      email,
-      config.cognito.USER_POOL_ID
-    );
-    if (
-      typeof emailExists.data !== "undefined" &&
-      emailExists.data.checkCognitoAttribute
-    ) {
-      checkResult = true;
-    }
-    console.log("EMAIL ATTR CHECK ", emailExists, checkResult);
 
-    return checkResult;
-  };
-*/
   const checkEmailAttr = email => {
     return checkCognitoAttributeQuery(
       API,
@@ -355,7 +297,6 @@ const CreateAccount = props => {
   };
 
   const checkEmail = (email, check = false) => {
-    //console.log("FIELDS ", fields);
     let emailState = validEmail(email);
     console.log("EMAIL ", emailState);
 
@@ -385,8 +326,6 @@ const CreateAccount = props => {
     setState({ username: { ...state.username, status: userError } });
   };
   const checkUsername = (username, check = false) => {
-    //console.log("FIELDS2 ", fields);
-    //console.log(await checkUsernameQuery(API, "tero-test"));
     const userState = validUsername(username, config.usernameLength);
     let userError = userState !== "";
     let userMsg = "";
@@ -433,13 +372,7 @@ const CreateAccount = props => {
       console.log("check 3");
       setState({ username: { ...state.username, status: true } });
       setInputUsernameFocus();
-    } /* else if (state.email.value.length === 0) {
-      console.log("check 4");
-      setState({ email: { ...state.email, status: true } });
-      setInputEmailFocus();
-    } */ else if (
-      state.username.status
-    ) {
+    } else if (state.username.status) {
       console.log("check 5");
       setInputUsernameFocus();
     } else if (state.email.status && state.email.value.length === 0) {
@@ -456,7 +389,6 @@ const CreateAccount = props => {
       state.phoneNumber.value.length === 0
     ) {
       console.log("check 8");
-      //console.log("PHONE NUM FAILED...");
       setInputPhoneFocus();
     } else {
       console.log("ALL GOOD...");
@@ -484,45 +416,14 @@ const CreateAccount = props => {
         passwordConfirm: { ...state.passwordConfirm, status: false },
       });
     }
-    /*
-    if (
-      (!confirmStatus && password.length >= config.passwordLength) ||
-      (!confirmStatus && !onBlur && !nextDisabled)
-    ) {
-      //setState({...state.password,})
-      setState({
-        accountPassword: { ...state.accountPassword, status: true },
-        passwordConfirm: { ...state.passwordConfirm, status: true },
-      });
-
-      setNextDisabled(true);
-
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      checkResult = true;
-    } else if (confirmStatus) {
-      setState({
-        accountPassword: { ...state.accountPassword, status: false },
-        passwordConfirm: { ...state.passwordConfirm, status: false },
-      });
-
-      setNextDisabled(false);
-    }
-
-    if (!confirmStatus && onBlur) {
-      setInputPasswordFocus();
-    }
-    */
 
     return checkResult;
   };
   const checkInputPassword = (password, updateVerification = true) => {
-    //console.log(password);
     const checkResult = checkPassword(password, config.passwordLength, [
       state.firstName.value,
       state.lastName.value,
       state.username.value,
-      /* state.email.value, */
     ]);
     console.log("PASS CHECK ", checkResult);
     setPasswordVerification(checkResult);
@@ -530,7 +431,6 @@ const CreateAccount = props => {
   };
 
   const checkPasswordQuality = verifications => {
-    //checkInputPassword(password);
     console.log(
       "Checking password quality... ",
       passwordVerification,
@@ -548,13 +448,10 @@ const CreateAccount = props => {
     if (!icons && isLoading) selectOptions.current = [];
     if (!icons && !isLoading) selectOptions.current = [];
     if (isLoading && icons) {
-      //console.log("ITEMS ", icons);
       let items = [];
       cList.forEach(item => {
-        //console.log(item);
         const l = Object.keys(item)[0];
         if (item[l].length > 0) {
-          //console.log(l, item[l].length);
           if (l !== "XX") {
             items.push({
               key: "XX",
@@ -613,24 +510,6 @@ const CreateAccount = props => {
   useEffect(() => {
     async function onLoad() {
       try {
-        /*
-        selectOptions.current = countryList().map(cc => {
-          return {
-            key: "+" + cc.countryCode,
-            value: cc.regionName,
-            regionCode: cc.regionCode,
-            searchValue: cc.regionName + " +" + cc.countryCode,
-            component: (
-              <React.Fragment>
-                <Text as="span">{cc.regionName}</Text>
-                <Text as="span" color={colors.textMuted} fontSize={"xs"} pl={4}>
-                  (+{cc.countryCode})
-                </Text>
-              </React.Fragment>
-            ),
-          };
-        });
-        */
         if (flags) {
           const userCountry = await getCountryCodeQuery(API);
           console.log("COUNTRY ", userCountry.data.getCountryCode);
@@ -638,9 +517,7 @@ const CreateAccount = props => {
             const cIndex = selectOptions.current.findIndex(
               c => c.regionCode === userCountry.data.getCountryCode,
             );
-            //console.log("INDEX ", cIndex);
             if (cIndex > -1) {
-              //console.log(selectOptions[cIndex]);
               setState({ regionCode: selectOptions.current[cIndex].key });
             }
           }
@@ -667,7 +544,6 @@ const CreateAccount = props => {
         (document.activeElement.id === "accountPassword" ||
           document.activeElement.id === "passwordConfirm")
       ) {
-        //console.log("SPECIAL ", state.phoneNumber);
       } else {
         let id = event.target.id;
 
@@ -685,26 +561,6 @@ const CreateAccount = props => {
           fld.status = event.target.value.length === 0;
         }
 
-        /*
-        if (id === "passwordConfirm") {
-          const cPassword = event.target.value;
-          const confirmStatus = state.accountPassword.value === cPassword;
-          if (
-            (!confirmStatus && cPassword.length >= config.passwordLength) ||
-            (!confirmStatus && !nextDisabled)
-          ) {
-            const errorMsg = i18n.__("invalidPassword");
-            setNextDisabled(true);
-            fld.status = true;
-
-            if (!alerts.check().some((alert) => alert.message === errorMsg))
-              alerts.error(errorMsg, {});
-          } else {
-            fld.status = false;
-            setNextDisabled(false);
-          }
-        }
-        */
         console.log("CHANGE ID ", id, fld);
         setState({
           [id]: fld,
@@ -720,10 +576,6 @@ const CreateAccount = props => {
     console.log("ACTION STEP ", step);
 
     if (step === 4) {
-      //await Auth.signOut();
-      //history.replace("/");
-      //setState({ phoneVerified: currentUser.phone_number });
-      //setRegisterStep(step);
       console.log("CURRENT USER ", currentUser);
       let _currentUser = Object.assign({}, state);
       _currentUser.phoneVerified = currentUser.phone_number;
@@ -798,7 +650,7 @@ const CreateAccount = props => {
         false,
         false,
       );
-      //console.log("PHONE CHECKING RESULT ", checkingPhone);
+
       if (checkingPhone) {
         phoneChecked = true;
       } else {
@@ -834,17 +686,6 @@ const CreateAccount = props => {
       promises.push(Promise.resolve({}));
     }
     return promises;
-    /*
-    // async validations...
-    if (emailChecked) {
-      console.log("ASYNC EMAIL START");
-      await checkEmailAttr(state.email.value);
-      console.log("ASYNC EMAIL END");
-    } else {
-      console.log("NEXT BUTTON CLICK ", valuesChecked);
-      return valuesChecked;
-    }
-*/
   };
 
   const passwordCheck = password => {
@@ -854,10 +695,8 @@ const CreateAccount = props => {
       const errorMsg = i18n.__("passwordQuality");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
-      //e.preventDefault();
       return false;
     } else {
-      //setAddPopper(false);
       return true;
     }
   };
@@ -877,7 +716,11 @@ const CreateAccount = props => {
       )}
       {registerStep === 1 && <TermsOfUse />}
       {registerStep === 0 && (
-        <ProgressContainer title={i18n.__("createAccountTitle")} progress={33}>
+        <ProgressContainer
+          id="createAccountContainer"
+          title={i18n.__("createAccountTitle")}
+          progress={33}
+        >
           <Box mt={40} display="inline-flex">
             <Flex width={"168px"}>
               <Input
@@ -935,8 +778,6 @@ const CreateAccount = props => {
             <PasswordField
               placeholder={i18n.__("passwordPlaceholder")}
               onFocus={e => {
-                //console.log("PASSWORD FOCUES ", state);
-                //console.log("PASS ", e.target.id, document.activeElement.id);
                 const passwordCheckStatus = isPasswordPossible();
                 if (!passwordCheckStatus) {
                   e.preventDefault();
@@ -957,18 +798,6 @@ const CreateAccount = props => {
                 handleChange(e);
                 /* check password popup */
                 checkInputPassword(e.target.value);
-                /*
-                console.log(
-                  "PASSWORD CHANGE ",
-                  state,
-                  document.getElementById("phoneNumber").value
-                );
-                console.log(
-                  "PASS CHANGE",
-                  e.target.id,
-                  document.activeElement.id
-                );
-                */
                 if (
                   state.phoneNumber.value !==
                   document.getElementById("phoneNumber").value
@@ -1035,26 +864,6 @@ const CreateAccount = props => {
               onKeyDown={e => {
                 if (e.key === "Enter" && e.target.value.length > 4) {
                   checkConfirmPassword(e.target.value, false);
-                  /*
-                  const cPassword = e.target.value;
-                  const confirmStatus =
-                    state.accountPassword.value === cPassword;  
-                  if (
-                    (!confirmStatus &&
-                      cPassword.length >= config.passwordLength) ||
-                    (!confirmStatus && !nextDisabled)
-                  ) {
-                    const errorMsg = i18n.__("invalidPassword");
-                    setNextDisabled(true);
-
-                    if (
-                      !alerts.check().some(alert => alert.message === errorMsg)
-                    )
-                      alerts.error(errorMsg, {});
-                  } else {
-                    setNextDisabled(false);
-                  }
-                  */
                 }
               }}
               autoComplete="new-password"
@@ -1101,8 +910,6 @@ const CreateAccount = props => {
                 ref={inputSelect}
                 /* id="select-search" */
                 onChange={(e, code) => {
-                  //console.log("REGION", e);
-                  //console.log("REGION", code);
                   console.log("REGION SELECT ", e, code);
                   handleChange({
                     target: {
@@ -1129,15 +936,6 @@ const CreateAccount = props => {
                 ref={inputPhone}
                 defaultValue={state.phoneNumber.value}
                 onBlur={e => {
-                  /*
-                    console.log(
-                      "BLUR CHANGE ",
-                      e.target.id,
-                      e.target.value,
-                      document.activeElement.id,
-                      document.activeElement.value
-                    )
-                    */
                   // weird problem... password autofill changes phonenumber...
                   if (
                     !(
@@ -1146,7 +944,6 @@ const CreateAccount = props => {
                         document.activeElement.id === "passwordConfirm")
                     )
                   ) {
-                    //console.log("PHONE BLUR...");
                     if (e.target.value.length > 4) {
                       checkPhone(state.regionCode, e.target.value);
                     }
@@ -1164,9 +961,6 @@ const CreateAccount = props => {
                     }
                   }
                 }}
-                //onBlur={(e) => checkInputField("phone", e)}
-
-                /* disabled={regionCode === "000"} */
                 tabIndex="6"
               />
             </PhoneNumberField>
@@ -1174,6 +968,7 @@ const CreateAccount = props => {
 
           <Box mt={66} textAlign={"center"}>
             <Button
+              id="nextButton"
               disabled={nextDisabled}
               onClick={e => {
                 Promise.all(nextButtonClick()).then(res => {
@@ -1246,7 +1041,6 @@ const CreateAccount = props => {
                     setCurrentUser(_currentUser);
 
                     if (!state.termsAccepted) {
-                      //console.log("STEP 1");
                       setRegisterStep(1);
                     } else {
                       if (
@@ -1254,21 +1048,18 @@ const CreateAccount = props => {
                         !emailVerified
                       ) {
                         setRegisterStep(2);
-                        //console.log("STEP 2");
                       }
                       if (
                         state.phoneVerified !== _currentUser.phone_number ||
                         !phoneVerified
                       ) {
                         setRegisterStep(3);
-                        //console.log("STEP 3");
                       }
                       if (
                         state.emailVerified !== "" &&
                         state.phoneVerified !== ""
                       ) {
                         setRegisterStep(4);
-                        //console.log("STEP 4");
                       }
                     }
                   }
@@ -1284,7 +1075,8 @@ const CreateAccount = props => {
                     {i18n.__("existingAccount")}
                   </Text>
                   <Button
-                    className={"LoginLinkButton"}
+                    className="loginLinkButton"
+                    id="loginLinkButton"
                     variation={"link"}
                     fontSize={"10px"}
                     lineHeight={"normal"}

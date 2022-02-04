@@ -18,26 +18,12 @@ import {
   hasNonChars,
   digitChars,
 } from "@prifina-apps/utils";
-//import i18n from "../lib/i18n";
 
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxKey from "@iconify/icons-bx/bx-key";
 import PasswordField from "../components/PasswordField";
 
-import Amplify, { Auth } from "aws-amplify";
-//import { useAppContext } from "../lib/contextLib";
-import { useHistory } from "react-router-dom";
-//import { useFormFields } from "../lib/formFields";
-//import { useFocus } from "../lib/componentUtils";
 import { useToast } from "@blend-ui/toast";
-/*import {
-  validUsername,
-  lowerCaseChars,
-  upperCaseChars,
-  hasSpaces,
-  hasNonChars,
-  digitChars,
-} from "../lib/utils"; */
 
 import config from "../config";
 
@@ -67,7 +53,6 @@ const MobileLogin = props => {
   const [loginStep, setLoginStep] = useState(0);
 
   const checkUsername = (username, checkLength = false) => {
-    //const username = e.target.value;
     console.log("USERNAME ", username);
     let userMsg = "";
     if (username.length === 0) {

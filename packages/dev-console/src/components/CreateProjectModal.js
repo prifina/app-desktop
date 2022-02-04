@@ -1,21 +1,7 @@
 import React, { useState } from "react";
 
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-} from "@blend-ui/modal";
-import {
-  Box,
-  Button,
-  Text,
-  Flex,
-  useTheme,
-  Input,
-  Image,
-} from "@blend-ui/core";
+import { Modal, ModalContent, ModalBody, ModalFooter } from "@blend-ui/modal";
+import { Box, Button, Text, Flex, useTheme, Input } from "@blend-ui/core";
 
 import styled from "styled-components";
 
@@ -36,11 +22,9 @@ import {
   newAppVersionMutation,
 } from "@prifina-apps/utils";
 
-//import { newAppVersionMutation } from "../graphql/api";
 import { useHistory } from "react-router-dom";
 
 const short = require("short-uuid");
-//const appId = short.generate();
 
 i18n.init();
 
@@ -58,12 +42,6 @@ const StyledBox = styled(Box)`
   background-repeat: no-repeat;
   background-position: right center;
 `;
-
-// width = "331px";
-// height = "129px";
-// bg = "#61045F";
-// borderRadius = "5px";
-// alignItems = "center";
 
 const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
   const { currentUser } = useAppContext();
@@ -125,11 +103,6 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
           }}
           marginLeft="317px"
         >
-          {/* <ModalHeader>
-            <Text textStyle={"h5"} color={theme.colors.baseError}>
-              Title
-            </Text>
-          </ModalHeader> */}
           <ModalBody paddingLeft="36px" paddingRight="36px" paddingTop="37px">
             <Flex display="flex" flexDirection="row" justifyContent="center">
               <Box>
@@ -144,9 +117,8 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                     // checked
                     onChange={() => {}}
                     value="TABLE"
-                    fontSize="14px"
+                    fontSize="sm"
                     color="#AA1370"
-                    styl
                     textStyle={{ color: "white" }}
                   >
                     {i18n.__("widget")}
@@ -157,7 +129,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                     checked
                     value="TABLE"
                     color="#AA1370"
-                    fontSize="14px"
+                    fontSize="sm"
                   >
                     {i18n.__("app")}
                   </Radio>
@@ -213,7 +185,6 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                 </Text>
                 <Input
                   width="331px"
-                  // placeholder="App ID"
                   id={"appId"}
                   name={"appId"}
                   defaultValue={appFields.appId}

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-//import { useAppContext } from "../lib/contextLib";
-
 import { useHistory, useLocation } from "react-router-dom";
 
 import { ToastContextProvider } from "@blend-ui/toast";
@@ -12,7 +10,6 @@ import Home from "./Home";
 
 import { useAppContext, i18n } from "@prifina-apps/utils";
 
-//import i18n from "../lib/i18n";
 i18n.init();
 
 const Landing = props => {
@@ -44,5 +41,4 @@ const Landing = props => {
   );
 };
 
-//<img src={Plate} height={"920px"} width={"795px"} />
 export default Landing;
