@@ -431,7 +431,7 @@ const RemoteContent = ({ url, ...props }) => {
 
 //const Content = ({ appSyncClient, url, prifinaID, ...props }) => {
 const Content = forwardRef((props, ref) => {
-  const { appSyncClient, url, prifinaID, updateDebug } = props;
+  const { appSyncClient, url, prifinaID, updateDebug, appSettings } = props;
   const {
     check,
     currentUser,
@@ -448,6 +448,18 @@ const Content = forwardRef((props, ref) => {
   const { update } = useContext(SandboxContext);
 
   const athenaSubscription = useRef({});
+  let settingsInit = {};
+  if (appSettings.hasOwnProperty("settings")) {
+    //console.log("APP SETTINGS INIT ", appSettings);
+    let data = {};
+    appSettings.settings.forEach(s => {
+      if (s.field != "sizes" && s.field != "theme") {
+        data[s.field] = s.value;
+      }
+    });
+    console.log("APP SETTINGS INIT ", data);
+    settingsInit = data;
+  }
   /*
   // const debugUpdate = useCallback(content => {
   const debugUpdate = content => {
@@ -607,6 +619,7 @@ const Content = forwardRef((props, ref) => {
       }
     };
   }, []);
+
   if (props.widget) {
     return (
       <>
@@ -630,14 +643,14 @@ const Content = forwardRef((props, ref) => {
             }}
           >
             <WidgetWrapper>
-              <RemoteContent url={url} />
+              <RemoteContent url={url} {...settingsInit} />
             </WidgetWrapper>
           </div>
         </div>
       </>
     );
   } else {
-    return <RemoteContent url={url} ref={ref} />;
+    return <RemoteContent url={url} ref={ref} {...settingsInit} />;
   }
 });
 
@@ -668,7 +681,7 @@ const Sandbox = props => {
   const history = useHistory();
   const { AUTHConfig, APIConfig, userAuth, currentUser } = useAppContext();
   //const activeUser = useRef({});
-  const currentAppId = "866fscSq5Ae7bPgUtb6ffB";
+  const currentAppId = "3LSdcSs1kcPskBWBJvqGto";
   const componentProps = useRef({});
   const [ready, setReady] = useState(false);
   const [openSettings, setSettings] = useState(false);
@@ -1000,6 +1013,7 @@ const Sandbox = props => {
                     }}
                     updateDebug={updateDebugInfo}
                     {...componentProps.current}
+                    appSettings={currentAppRef.current}
                   />
                 )}
                 {!ready && (
