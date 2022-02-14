@@ -12,7 +12,8 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "test2": "jest --verbose ./__tests__/test.test.js"
   },
   "devDependencies": {
     "aws-amplify": "^4.1.1",
