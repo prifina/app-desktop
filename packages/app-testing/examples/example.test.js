@@ -50,6 +50,6 @@ describe("test out query functions in App Market", () => {
       url: "",
     }).encode();
 
-    expect(mockFunction).toEqual(MockFunction.from(require("./request.json")));
+    expect(mockFunction).toEqual(MockFunction.from(require("../__tests__/request.json")));
   });
 });
