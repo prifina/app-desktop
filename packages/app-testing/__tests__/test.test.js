@@ -40,12 +40,22 @@ describe("testing calling mutation", () => {
     });
   });
   // test("testing equal to", async () => {
-  //   const API = {};
+  // const API = {
+  //   graphql: {
+  //     url: "",
+  //     region: "eu-west-1",
+  //     auth: {
+  //       type: AUTH_TYPE.API_KEY,
+  //       apiKey: "",
+  //     },
+  //     disableOffline: true,
+  //   },
+  // };
 
-  //   const id = "";
+  //   const id = "prifinaID";
   //   const widget = {
-  //     id: id,
-  //     settings: "hehe",
+  //     id: 'sCUiMz2m9JsRSnRJ5favnP',
+  //     settings: [{"field":"size","value":"300x300"},{"field":"theme","value":"light"}],
   //     index: -1,
   //   };
   //   const result = await installWidgetMutation(API, id, widget);
