@@ -7,7 +7,7 @@ const { AUTH_TYPE } = require("aws-appsync");
 
 const gql = require("graphql-tag");
 
-const aws = require("aws-sdk");
+//const aws = require("aws-sdk");
 
 const fs = require("fs");
 //require("dotenv").config({ path: "../app-desktop/.env" });
@@ -132,7 +132,7 @@ async function main() {
 
   const client = createClient(
     APIConfig.aws_appsync_graphqlEndpoint,
-    APIConfig.aws_appsync_region
+    APIConfig.aws_appsync_region,
   );
 
   // get TEST tokens....
@@ -239,7 +239,7 @@ async function main() {
   const page = await browser.newPage();
   await page.goto("http://localhost:3000/");
 
-  await page.evaluate((tokens) => {
+  await page.evaluate(tokens => {
     for (const key in tokens) {
       localStorage.setItem(key, tokens[key]);
     }
@@ -251,6 +251,6 @@ async function main() {
   //browser.close();
 }
 
-main().catch((e) => {
+main().catch(e => {
   console.error(e);
 });
