@@ -30,6 +30,8 @@ async function main() {
 
     const user = await getItem(params);
 
+    user.Item.installedWidgets = [];
+    delete user.Item.dataSources;
     //console.log(user);
     await newTestUser(testUserID, user.Item);
 

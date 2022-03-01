@@ -1,7 +1,7 @@
 const { getUserSessions, deletePrifinaSession } = require("./testing-utils");
 
 async function main() {
-  const userID = "x4ffab59558a21401b6c1e9e560da28e3fd4a";
+  const userID = process.env.testUserID;
 
   try {
     const sessionData = await getUserSessions();

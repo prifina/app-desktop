@@ -16,4 +16,4 @@ export AWS_DEFAULT_REGION=$REGION
 export userID=4ffab59558a21401b6c1e9e560da28e3fd4a
 
 # prifina test user...
-export testUserID = x4ffab59558a21401b6c1e9e560da28e3fd4a
+export testUserID=5c919e5305ca12a9ecd621798d4b87bcca0d
