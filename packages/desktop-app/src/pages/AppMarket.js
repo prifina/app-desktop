@@ -68,7 +68,12 @@ const WidgetBox = ({
 }) => {
   console.log("PROPS ", id, installed, title, installedWidget, props);
   return (
-    <C.WidgetBase onClick={onClick} backgroundImage={bannerImage}>
+    <C.WidgetBase
+      onClick={onClick}
+      backgroundImage={bannerImage}
+      id="appMarket-widgetBase"
+      // id={`appmarket${title}`}
+    >
       <Flex flexDirection={"column"} justifyContent="space-between">
         <C.MarketBadge
           style={{
@@ -330,22 +335,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
     });
   };
 
-  const uninstallWidget = (e, id, settings) => {
-    console.log("CLICK ", id);
-
-    installWidgetMutation(GraphQLClient, prifinaID, {
-      id: id,
-      settings: settings,
-      index: -1,
-    }).then(res => {
-      console.log("INSTALL ", res);
-
-      widgets.current[id].installed = false;
-
-      setInstalledWidgets(...installedWidgets, id);
-    });
-  };
-
   const [selectedWidgetIndex, setSelectedWidgetIndex] = useState(-1);
 
   const [step, setStep] = useState(0);
@@ -523,7 +512,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
             flexDirection="column"
           >
             <Flex
-              height="316px"
+              minHeight="316px"
               bg="#EBF3FF"
               width="100%"
               justifyContent="space-between"
@@ -535,18 +524,17 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
               <Flex
                 flexDirection="column"
                 marginRight="143px"
-                paddingTop="62px"
+                justifyContent="center"
               >
-                <Text textStyle="h3" color="#639AED" marginBottom="24px">
+                <Text textStyle="h3" color="#639AED" mb="24px">
                   {i18n.__("dataOnYourSide")}
                 </Text>
                 <Text fontSize="md" color="#639AED">
                   {i18n.__("appMarketText")}
                 </Text>
               </Flex>
-              <Image src={appMarketBanner} />
+              <Image id="appMarket-banner" src={appMarketBanner} />
             </Flex>
-
             <Box mt={"40px"} ml={"64px"}>
               <Text textStyle={"h3"}> {i18n.__("category")}</Text>
               <Text textStyle={"h6"}>{i18n.__("categorySubText")}</Text>
@@ -589,6 +577,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
               paddingLeft="64px"
             >
               <C.TextButton
+                id="widgetsDirectoryButton"
                 onClick={() => {
                   setStep(0);
                 }}
@@ -655,7 +644,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                   </Flex>
                 </Flex>
                 <Flex alt="rightSide">
-                  <C.OutlineButton variation="outline">
+                  <C.OutlineButton variation="outline" id="reportBugButton">
                     {i18n.__("reportBug")}
                   </C.OutlineButton>
                   <C.OutlineButton variation="outline" marginLeft="16px">
@@ -663,6 +652,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                   </C.OutlineButton>
                   {widgets.current[selectedWidgetIndex].installed === false ? (
                     <Button
+                      id="installButton"
                       marginLeft="16px"
                       onClick={e => {
                         installWidget(
@@ -676,6 +666,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                     </Button>
                   ) : (
                     <Button
+                      id="viewButton"
                       marginLeft="16px"
                       onClick={() => {
                         window.location.replace(
@@ -844,6 +835,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
               paddingLeft="64px"
             >
               <C.TextButton
+                id="widgetsDirectoryButton"
                 onClick={() => {
                   setStep(0);
                 }}
@@ -919,6 +911,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                   </C.OutlineButton>
                   {widgets.current[selectedWidgetIndex].installed === false ? (
                     <Button
+                      id="installButton"
                       marginLeft="16px"
                       onClick={e => {
                         installWidget(
@@ -932,8 +925,15 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                     </Button>
                   ) : (
                     <Button
+                      id="viewButton"
                       marginLeft="16px"
-                      // onClick={() => history.push("/core/display-app")}
+                      onClick={() => {
+                        window.location.replace(
+                          config.APP_URL + "/core/display-app",
+                        );
+
+                        //history.replace("/core/display-app");
+                      }}
                     >
                       {i18n.__("view")}
                     </Button>
