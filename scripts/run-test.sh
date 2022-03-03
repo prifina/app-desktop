@@ -9,7 +9,7 @@ node testing-init-ddb.js
 pushd ../packages/app-testing
 
 export USERNAME=testing-1
-export PASSWORD=Testing12!#
+export PASSWORD='*********'
 
 export USERNAME_LENGTH=6
 
