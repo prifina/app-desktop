@@ -18,7 +18,7 @@ export TEST_URL='http://localhost:3000'
 
 # running jest script... 
 # node_modules/.bin/jest __tests__/2022-2-11/login.test.js 
-# node_modules/.bin/jest __tests__/2022-2-11/registration.test.js 
+# node_modules/.bin/jest __tests__/2022-2-11/register.test.js 
 # node_modules/.bin/jest __tests__/2022-2-11/home.test.js 
 node_modules/.bin/jest __tests__/2022-3-4/appMarket.test.js 
 # node_modules/.bin/jest __tests__/2022-3-4/userMenu.test.js 
