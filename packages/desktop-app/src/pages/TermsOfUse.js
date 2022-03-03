@@ -172,7 +172,7 @@ const texts = [
 ];
 const TermsOfUse = props => {
   console.log("Terms ", props);
-  // const { nextStepAction } = useAccountContext();
+  const { nextStepAction } = useAccountContext();
 
   const { colors } = useTheme();
 
