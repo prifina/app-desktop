@@ -9,7 +9,10 @@ import {
   Divider,
   useTheme,
 } from "@blend-ui/core";
+
 import { BlendIcon } from "@blend-ui/icons";
+
+import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import {
   getPrifinaUserQuery,
@@ -285,7 +288,7 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
         //dataConnectors: manifest.dataConnectors || [],
       };
 
-      console.log("MANIFEST HEHE", manifest);
+      console.log("MANIFEST", manifest);
       const screenshots = [`${s3path}/${manifest.id}/${manifest.screenshots}`];
       console.log("sreenshots", screenshots);
     });
@@ -339,17 +342,12 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
 
   const [step, setStep] = useState(0);
 
-  let menuItemColor = "baseWhite";
-
   switch (step) {
     case 0:
-      menuItemColor = "#d7eeff";
       break;
     case 1:
-      menuItemColor = "#d7eeff";
       break;
     case 2:
-      menuItemColor = "#d7eeff";
       break;
     case 3:
       break;
@@ -468,11 +466,19 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
     {
       label: "Apps",
       icon: bxMinusBack,
-      badge: "ComingSoon",
-      badgeColor: "yellow",
+      badgeText: "Soon",
       disabled: true,
     },
   ];
+
+  const [activeTab, setActiveTab] = useState(0);
+
+  const tabClick = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setActiveTab(tab);
+  };
+
   const [addingDataSource, setAddingDataSource] = useState(-1);
 
   const onDialogClose = e => {
@@ -562,6 +568,16 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
       )}
       {step === 1 && (
         <>
+          {addingDataSource > -1 && (
+            <DataSourceModal
+              onClose={onDialogClose}
+              onButtonClick={onDialogClick}
+              dataSourceItems={widgets.current[selectedWidgetIndex].dataSources}
+              selectedDataSourceIndex={addingDataSource}
+              GraphQLClient={GraphQLClient}
+              prifinaID={prifinaID}
+            />
+          )}
           <Flex
             width="100%"
             height="100%"
@@ -644,12 +660,16 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                   </Flex>
                 </Flex>
                 <Flex alt="rightSide">
-                  <C.OutlineButton variation="outline" id="reportBugButton">
+                  <Button variation="outline" id="reportBugButton">
                     {i18n.__("reportBug")}
-                  </C.OutlineButton>
-                  <C.OutlineButton variation="outline" marginLeft="16px">
+                  </Button>
+                  <Button
+                    variation="outline"
+                    id="supportButton"
+                    marginLeft="16px"
+                  >
                     {i18n.__("support")}
-                  </C.OutlineButton>
+                  </Button>
                   {widgets.current[selectedWidgetIndex].installed === false ? (
                     <Button
                       id="installButton"
@@ -672,8 +692,6 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                         window.location.replace(
                           config.APP_URL + "/core/display-app",
                         );
-
-                        //history.replace("/core/display-app");
                       }}
                     >
                       {i18n.__("view")}
@@ -681,389 +699,286 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                   )}
                 </Flex>
               </Flex>
-              <Flex alt="buttons" marginBottom="40px">
-                <C.UnderlineButton
-                  onClick={() => {
-                    setStep(1);
-                  }}
-                >
-                  {i18n.__("widgetDetails")}
-                </C.UnderlineButton>
-                <C.UnderlineButton
-                  style={{
-                    color: "#ADADAD",
-                    borderBottom: "2px solid #ADADAD",
-                  }}
-                  onClick={() => {
-                    setStep(2);
-                  }}
-                >
-                  {i18n.__("dataRequirements")}
-                </C.UnderlineButton>
-              </Flex>
-              <Flex alt="bottomContainer" justifyContent="space-between">
-                <Flex alt="leftSide" flexDirection="column" width="549px">
-                  <Flex alt="widgetInfo" alignItems="center">
-                    <Text marginRight="24px" fontSize="18px">
-                      {widgets.current[selectedWidgetIndex].title}
-                    </Text>
-                    {/* temproray */}
-                    <Box
-                      width="117px"
-                      height="30px"
-                      bg="#B2F5EA"
-                      textAlign="center"
-                      lineHeight="30px"
-                      fontSize="xxs"
-                      color="#00A3C4"
-                    >
-                      {i18n.__("userHeld")}
-                    </Box>
-                  </Flex>
-                  <Text fontSize="xs" color={colors.textMuted}>
-                    {widgets.current[selectedWidgetIndex].publisher}
-                  </Text>
-                  <Text fontSize="sm">
-                    {widgets.current[selectedWidgetIndex].shortDescription}
-                  </Text>
-                  <Flex
-                    alt="requirementCards"
-                    paddingTop="32px"
-                    marginBottom="40px"
-                    justifyContent="space-between"
-                  >
-                    <C.Card
-                      title={i18n.__("dataTypes")}
-                      value={widgets.current[selectedWidgetIndex].dataTypes}
-                    />
-                    <C.Card
-                      title={i18n.__("category")}
-                      value={widgets.current[selectedWidgetIndex].category}
-                    />
-                    <C.Card
-                      title={i18n.__("deviceSupport")}
-                      value={widgets.current[selectedWidgetIndex].deviceSupport}
-                    />
-                    <C.Card
-                      title={i18n.__("languages")}
-                      value={widgets.current[selectedWidgetIndex].languages}
-                    />
-                    <C.Card
-                      title={i18n.__("ageAppropriate")}
-                      value={widgets.current[selectedWidgetIndex].age}
-                    />
-                  </Flex>
-                  <Text
-                    color={colors.textMuted}
-                    fontSize="sm"
-                    marginBottom="16px"
-                  >
-                    {widgets.current[selectedWidgetIndex].longDescription}
-                  </Text>
-                  <Flex alt="features" flexDirection="column">
-                    <Text
-                      color={colors.textMuted}
-                      fontSize="sm"
-                      marginBottom="8px"
-                    >
-                      {i18n.__("features")}
-                    </Text>
-                    <C.OrderedList>
-                      {widgets.current[selectedWidgetIndex].keyFeatures.map(
-                        (item, index) => {
-                          return (
-                            <C.ListItem
-                              key={index}
-                              fontSize="sm"
-                              color={colors.textMuted}
-                            >
-                              {item}
-                            </C.ListItem>
-                          );
-                        },
-                      )}
-                    </C.OrderedList>
-                  </Flex>
-                </Flex>
-                <Flex alt="rightSide" flexDirection="column">
-                  {widgets.current[selectedWidgetIndex].screenshots.map(
-                    (item, i) => {
-                      return (
-                        <Box
-                          key={i}
-                          width="284px"
-                          height="213px"
-                          marginBottom="16px"
-                        >
-                          <Image
-                            src={`${s3path}/${widgets.current[selectedWidgetIndex].id}/${item}`}
-                          />
-                        </Box>
-                      );
-                    },
-                  )}
-                </Flex>
-              </Flex>
-            </Flex>
-          </Flex>
-        </>
-      )}
-      {step === 2 && (
-        <>
-          {addingDataSource > -1 && (
-            <DataSourceModal
-              onClose={onDialogClose}
-              onButtonClick={onDialogClick}
-              dataSourceItems={widgets.current[selectedWidgetIndex].dataSources}
-              selectedDataSourceIndex={addingDataSource}
-              GraphQLClient={GraphQLClient}
-              prifinaID={prifinaID}
-            />
-          )}
-          <Flex
-            width="100%"
-            height="100%"
-            paddingLeft="286px"
-            bg={colors.backgroundLight}
-            flexDirection="column"
-            alignItems="center"
-          >
-            <Flex
-              width="100%"
-              height="71px"
-              alignItems="center"
-              paddingLeft="64px"
-            >
-              <C.TextButton
-                id="widgetsDirectoryButton"
-                onClick={() => {
-                  setStep(0);
+              <div
+                style={{
+                  overflow: "hidden",
                 }}
               >
-                <BlendIcon iconify={lefArrow} size="12px" />
-                {i18n.__("widgetsDirectory")}
-              </C.TextButton>
-            </Flex>
-            <Image
-              src={widgets.current[selectedWidgetIndex].bannerImage}
-              alt={"Image"}
-              shape={"square"}
-              style={{ filter: "blur(1.5px)" }}
-            />
-            <Flex
-              alt="innerContainer"
-              marginTop={-120}
-              borderRadius="8px"
-              minWidth="1026px"
-              bg={colors.backgroundLight}
-              boxShadow="0px 0px 16px rgba(74, 77, 79, 0.25)"
-              flexDirection="column"
-              marginBottom="82px"
-              marginLeft="64px"
-              marginRight="64px"
-              paddingLeft="40px"
-              paddingRight="40px"
-              paddingBottom="30px"
-              zIndex={0}
-            >
-              <Flex
-                alt="topContainer"
-                justifyContent="space-between"
-                alignItems="center"
-                width="100%"
-                paddingTop="32px"
-                paddingBottom="24px"
-              >
-                <Flex alt="leftSide" alignItems="center">
-                  <Image
-                    src={widgets.current[selectedWidgetIndex].icon}
-                    alt={"Image"}
-                    shape={"square"}
-                    width={57}
-                  />
-                  <Flex flexDirection="column" marginLeft="16px">
-                    <Flex alignItems="center">
-                      <Text fontSize="xl" bold marginRight="24px">
-                        {widgets.current[selectedWidgetIndex].title}
-                      </Text>
-                      <C.Badge> {i18n.__("widget")}</C.Badge>
-                    </Flex>
-                    <Flex paddingTop="8px">
-                      <Text
-                        marginRight="18px"
-                        color={colors.textMuted}
-                        fontSize="xs"
+                <Tabs
+                  activeTab={activeTab}
+                  onClick={tabClick}
+                  style={{ height: "100%" }}
+                  variant={"line"}
+                >
+                  <TabList>
+                    <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
+                      <Text>{i18n.__("widgetDetails")}</Text>
+                    </Tab>
+                    <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
+                      <Text>{i18n.__("dataRequirements")}</Text>
+                    </Tab>
+                  </TabList>
+                  <TabPanelList style={{ backgroundColor: null }}>
+                    <TabPanel>
+                      <div
+                        style={{
+                          overflow: "auto",
+                          marginTop: 40,
+                          paddingBottom: "50px",
+                        }}
                       >
-                        {widgets.current[selectedWidgetIndex].publisher}
-                      </Text>
-                      <Text color={colors.textMuted} fontSize="xs">
-                        {widgets.current[selectedWidgetIndex].category}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                </Flex>
-                <Flex alt="rightSide">
-                  <C.OutlineButton variation="outline">
-                    {i18n.__("reportBug")}
-                  </C.OutlineButton>
-                  <C.OutlineButton variation="outline" marginLeft="16px">
-                    {i18n.__("support")}
-                  </C.OutlineButton>
-                  {widgets.current[selectedWidgetIndex].installed === false ? (
-                    <Button
-                      id="installButton"
-                      marginLeft="16px"
-                      onClick={e => {
-                        installWidget(
-                          e,
-                          widgets.current[selectedWidgetIndex].id,
-                          widgets.current[selectedWidgetIndex].settings,
-                        );
-                      }}
-                    >
-                      {i18n.__("install")}
-                    </Button>
-                  ) : (
-                    <Button
-                      id="viewButton"
-                      marginLeft="16px"
-                      onClick={() => {
-                        window.location.replace(
-                          config.APP_URL + "/core/display-app",
-                        );
-
-                        //history.replace("/core/display-app");
-                      }}
-                    >
-                      {i18n.__("view")}
-                    </Button>
-                  )}
-                </Flex>
-              </Flex>
-              <Flex alt="buttons" marginBottom="38px">
-                <C.UnderlineButton
-                  style={{
-                    color: "#ADADAD",
-                    borderBottom: "2px solid #ADADAD",
-                  }}
-                  onClick={() => {
-                    setStep(1);
-                  }}
-                >
-                  {i18n.__("widgetDetails")}
-                </C.UnderlineButton>
-                <C.UnderlineButton
-                  onClick={() => {
-                    setStep(2);
-                  }}
-                >
-                  {i18n.__("dataRequirements")}
-                </C.UnderlineButton>
-              </Flex>
-              <Flex
-                alt="dataRequirements"
-                paddingLeft="7px"
-                paddingRight="20px"
-                marginBottom="25px"
-                justifyContent="space-between"
-              >
-                <Flex alt="leftSide" flexDirection="column" width="480px">
-                  <Flex alignItems="center" marginBottom="13px">
-                    <Text marginRight="24px" fontSize="18px">
-                      {i18n.__("dataRequirements")}
-                    </Text>
-                    {/* temproray */}
-                    <Box
-                      width="117px"
-                      height="30px"
-                      bg="#B2F5EA"
-                      textAlign="center"
-                      lineHeight="30px"
-                      fontSize="xxs"
-                      color="#00A3C4"
-                    >
-                      {i18n.__("userHeld")}
-                    </Box>
-                  </Flex>
-                  <Text fontSize="sm" color={colors.textMuted}>
-                    {i18n.__("userHeldText")}
-                  </Text>
-                  <Flex
-                    justifyContent="space-between"
-                    paddingTop="32px"
-                    paddingBottom="31px"
-                  >
-                    <Flex flexDirection="column">
-                      <Text fontSize="sm" bold marginBottom="16px">
-                        {i18n.__("userDashHeld")}
-                      </Text>
-                      {userHeldData()}
-                    </Flex>
-                    <Flex flexDirection="column">
-                      <Text fontSize="sm" bold marginBottom="16px">
-                        {i18n.__("userDashGenerated")}
-                      </Text>
-                      {userGeneratedData()}
-                    </Flex>
-                    <Flex flexDirection="column">
-                      <Text fontSize="sm" bold marginBottom="16px">
-                        {i18n.__("public")}
-                      </Text>
-                      {publicData()}
-                    </Flex>
-                  </Flex>
-                </Flex>
-                <Flex alt="rightSide">
-                  <Image
-                    //this needs further imporvement
-                    src={useHeldDataImage}
-                    style={{
-                      width: "284px",
-                      height: "213px",
-                    }}
-                  />
-                </Flex>
-              </Flex>
-
-              <Divider as={"div"} color="#F2F4F5" height={"1px"} />
-              <Flex alt="addData" paddingTop="32px" paddingBottom="40px">
-                <Flex flexDirection="column" marginRight="190px">
-                  {widgets.current[selectedWidgetIndex].dataSources.length >
-                    0 && (
-                    <Text color={colors.textMuted}>
-                      {i18n.__("selectAvailableData")}
-                    </Text>
-                  )}
-                  <Flex paddingTop="31px">
-                    {widgets.current[selectedWidgetIndex].dataSources.map(
-                      (item, index) => {
-                        return (
-                          <C.DataSourceButton
-                            key={"ds-" + index}
-                            src={item.icon}
-                            title={item.title}
-                            installed={
-                              Object.keys(userDataSources.current).indexOf(
-                                item.id,
-                              ) > -1
-                            }
-                            onClick={() => {
-                              const dataSourceExists =
-                                Object.keys(userDataSources.current).indexOf(
-                                  item.id,
-                                ) > -1;
-
-                              if (item.sourceType == 1 && !dataSourceExists) {
-                                setAddingDataSource(index);
+                        <Flex
+                          alt="bottomContainer"
+                          justifyContent="space-between"
+                        >
+                          <Flex
+                            alt="leftSide"
+                            flexDirection="column"
+                            width="549px"
+                          >
+                            <Flex alt="widgetInfo" alignItems="center">
+                              <Text marginRight="24px" fontSize="18px">
+                                {widgets.current[selectedWidgetIndex].title}
+                              </Text>
+                              {/* temproray */}
+                              <Box
+                                width="117px"
+                                height="30px"
+                                bg="#B2F5EA"
+                                textAlign="center"
+                                lineHeight="30px"
+                                fontSize="xxs"
+                                color="#00A3C4"
+                              >
+                                {i18n.__("userHeld")}
+                              </Box>
+                            </Flex>
+                            <Text fontSize="xs" color={colors.textMuted}>
+                              {widgets.current[selectedWidgetIndex].publisher}
+                            </Text>
+                            <Text fontSize="sm">
+                              {
+                                widgets.current[selectedWidgetIndex]
+                                  .shortDescription
                               }
-                            }}
-                          />
-                        );
-                      },
-                    )}
-                  </Flex>
-                </Flex>
-              </Flex>
+                            </Text>
+                            <Flex
+                              alt="requirementCards"
+                              paddingTop="32px"
+                              marginBottom="40px"
+                              justifyContent="space-between"
+                            >
+                              <C.Card
+                                title={i18n.__("dataTypes")}
+                                value={
+                                  widgets.current[selectedWidgetIndex].dataTypes
+                                }
+                              />
+                              <C.Card
+                                title={i18n.__("category")}
+                                value={
+                                  widgets.current[selectedWidgetIndex].category
+                                }
+                              />
+                              <C.Card
+                                title={i18n.__("deviceSupport")}
+                                value={
+                                  widgets.current[selectedWidgetIndex]
+                                    .deviceSupport
+                                }
+                              />
+                              <C.Card
+                                title={i18n.__("languages")}
+                                value={
+                                  widgets.current[selectedWidgetIndex].languages
+                                }
+                              />
+                              <C.Card
+                                title={i18n.__("ageAppropriate")}
+                                value={widgets.current[selectedWidgetIndex].age}
+                              />
+                            </Flex>
+                            <Text
+                              color={colors.textMuted}
+                              fontSize="sm"
+                              marginBottom="16px"
+                            >
+                              {
+                                widgets.current[selectedWidgetIndex]
+                                  .longDescription
+                              }
+                            </Text>
+                            <Flex alt="features" flexDirection="column">
+                              <Text
+                                color={colors.textMuted}
+                                fontSize="sm"
+                                marginBottom="8px"
+                              >
+                                {i18n.__("features")}
+                              </Text>
+                              <C.OrderedList>
+                                {widgets.current[
+                                  selectedWidgetIndex
+                                ].keyFeatures.map((item, index) => {
+                                  return (
+                                    <C.ListItem
+                                      key={index}
+                                      fontSize="sm"
+                                      color={colors.textMuted}
+                                    >
+                                      {item}
+                                    </C.ListItem>
+                                  );
+                                })}
+                              </C.OrderedList>
+                            </Flex>
+                          </Flex>
+                          <Flex alt="rightSide" flexDirection="column">
+                            {widgets.current[
+                              selectedWidgetIndex
+                            ].screenshots.map((item, i) => {
+                              return (
+                                <Box
+                                  key={i}
+                                  width="284px"
+                                  height="213px"
+                                  marginBottom="16px"
+                                >
+                                  <Image
+                                    src={`${s3path}/${widgets.current[selectedWidgetIndex].id}/${item}`}
+                                  />
+                                </Box>
+                              );
+                            })}
+                          </Flex>
+                        </Flex>
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div
+                        style={{
+                          overflow: "auto",
+                        }}
+                      >
+                        <Flex
+                          alt="dataRequirements"
+                          paddingLeft="7px"
+                          paddingRight="20px"
+                          marginBottom="25px"
+                          justifyContent="space-between"
+                        >
+                          <Flex
+                            alt="leftSide"
+                            flexDirection="column"
+                            width="480px"
+                          >
+                            <Flex alignItems="center" marginBottom="13px">
+                              <Text marginRight="24px" fontSize="18px">
+                                {i18n.__("dataRequirements")}
+                              </Text>
+                              {/* temproray */}
+                              <Box
+                                width="117px"
+                                height="30px"
+                                bg="#B2F5EA"
+                                textAlign="center"
+                                lineHeight="30px"
+                                fontSize="xxs"
+                                color="#00A3C4"
+                              >
+                                {i18n.__("userHeld")}
+                              </Box>
+                            </Flex>
+                            <Text fontSize="sm" color={colors.textMuted}>
+                              {i18n.__("userHeldText")}
+                            </Text>
+                            <Flex
+                              justifyContent="space-between"
+                              paddingTop="32px"
+                              paddingBottom="31px"
+                            >
+                              <Flex flexDirection="column">
+                                <Text fontSize="sm" bold marginBottom="16px">
+                                  {i18n.__("userDashHeld")}
+                                </Text>
+                                {userHeldData()}
+                              </Flex>
+                              <Flex flexDirection="column">
+                                <Text fontSize="sm" bold marginBottom="16px">
+                                  {i18n.__("userDashGenerated")}
+                                </Text>
+                                {userGeneratedData()}
+                              </Flex>
+                              <Flex flexDirection="column">
+                                <Text fontSize="sm" bold marginBottom="16px">
+                                  {i18n.__("public")}
+                                </Text>
+                                {publicData()}
+                              </Flex>
+                            </Flex>
+                          </Flex>
+                          <Flex alt="rightSide">
+                            <Image
+                              //this needs further imporvement
+                              src={useHeldDataImage}
+                              style={{
+                                width: "284px",
+                                height: "213px",
+                              }}
+                            />
+                          </Flex>
+                        </Flex>
+                        <Divider as={"div"} color="#F2F4F5" height={"1px"} />
+                        <Flex
+                          alt="addData"
+                          paddingTop="32px"
+                          paddingBottom="40px"
+                        >
+                          <Flex flexDirection="column" marginRight="190px">
+                            {widgets.current[selectedWidgetIndex].dataSources
+                              .length > 0 && (
+                              <Text color={colors.textMuted}>
+                                {i18n.__("selectAvailableData")}
+                              </Text>
+                            )}
+                            <Flex paddingTop="31px">
+                              {widgets.current[
+                                selectedWidgetIndex
+                              ].dataSources.map((item, index) => {
+                                return (
+                                  <C.DataSourceButton
+                                    key={"ds-" + index}
+                                    src={item.icon}
+                                    title={item.title}
+                                    installed={
+                                      Object.keys(
+                                        userDataSources.current,
+                                      ).indexOf(item.id) > -1
+                                    }
+                                    onClick={() => {
+                                      const dataSourceExists =
+                                        Object.keys(
+                                          userDataSources.current,
+                                        ).indexOf(item.id) > -1;
+
+                                      if (
+                                        item.sourceType == 1 &&
+                                        !dataSourceExists
+                                      ) {
+                                        setAddingDataSource(index);
+                                      }
+                                    }}
+                                  />
+                                );
+                              })}
+                            </Flex>
+                          </Flex>
+                        </Flex>
+                      </div>
+                    </TabPanel>
+                  </TabPanelList>
+                </Tabs>
+              </div>
             </Flex>
           </Flex>
         </>
