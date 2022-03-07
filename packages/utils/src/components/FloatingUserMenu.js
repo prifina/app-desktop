@@ -478,6 +478,7 @@ const UserMenuContextProvider = ({
                         }}
                       >
                         <BlendIcon
+                          className="userMenu-bell"
                           iconify={bxBell}
                           color={"#00847A"}
                           onClick={e => iconClick(e, 1)}
@@ -498,6 +499,7 @@ const UserMenuContextProvider = ({
                         }}
                       >
                         <BlendIcon
+                          className="userMenu-history"
                           iconify={bxHistory}
                           color={"#00847A"}
                           onClick={e => iconClick(e, 2)}
@@ -514,6 +516,7 @@ const UserMenuContextProvider = ({
                         }}
                       >
                         <BlendIcon
+                          className="userMenu-home"
                           iconify={bxHome}
                           color={"#00847A"}
                           onClick={e => iconClick(e, 3)}

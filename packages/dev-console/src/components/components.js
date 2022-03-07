@@ -153,7 +153,7 @@ export const ListItemIconLink = ({
 
 ListItemIconLink.propTypes = {
   children: PropTypes.node,
-  icon: PropTypes.string,
+  icon: PropTypes.instanceOf(Object),
   onClick: PropTypes.func,
   label: PropTypes.string,
   color: PropTypes.string,

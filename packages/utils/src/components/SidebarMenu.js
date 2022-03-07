@@ -8,7 +8,6 @@ import { BlendIcon } from "@blend-ui/icons";
 import PropTypes from "prop-types";
 
 import styled from "styled-components";
-import { backgroundColor } from "styled-system";
 
 const SidebarContainer = styled(Flex)`
   width: 286px;
@@ -115,13 +114,14 @@ export const MarketBadge = styled.span`
 `;
 
 const MenuBadge = styled.span`
-  width: 91px;
-  height: 34px;
-  opacity: 0.35;
+  height: 26px;
   display: flex;
   border-radius: 100px;
   justify-content: center;
   align-items: center;
+  padding-right: 16px;
+  padding-left: 16px;
+  border: 1px solid #f6ad55;
 `;
 
 export const ListItemIconLink = ({
@@ -132,18 +132,25 @@ export const ListItemIconLink = ({
   color,
   ...props
 }) => (
-  <Flex flexDirection="row" alignItems="center" height="50px">
-    <BlendIcon size="18px" iconify={icon} className="icon" />
-    <Text
-      className="text"
-      color={color}
-      ml="16px"
-      fontSize="14px"
-      textStyle="h7"
-      {...props}
-    >
-      {label}
-    </Text>
+  <Flex
+    alignItems="center"
+    height="50px"
+    width="198px"
+    justifyContent="space-between"
+  >
+    <Flex>
+      <BlendIcon size="18px" iconify={icon} className="icon" />
+      <Text
+        className="text"
+        color={color}
+        ml="16px"
+        fontSize="14px"
+        textStyle="h7"
+        {...props}
+      >
+        {label}
+      </Text>
+    </Flex>
     <Flex ml="16px">{children}</Flex>
   </Flex>
 );
@@ -170,30 +177,30 @@ const SidebarMenu = ({
     <SidebarContainer bg="baseWhite">
       <ListMenu {...props}>
         {items.map(
-          ({
-            id,
-            label,
-            onClick,
-            icon,
-            badge,
-            badgeColor,
-            disabled,
-            ...rest
-          }) => (
+          ({ id, label, onClick, icon, badgeText, disabled, ...rest }) => (
             <ListMenuItem
               key={label}
               onClick={onClick}
               backgroundColor={backgroundColor}
-              style={disabled ? { pointerEvents: "none" } : null}
+              style={
+                disabled
+                  ? {
+                      pointerEvents: "none",
+                      opacity: 0.5,
+                    }
+                  : null
+              }
               pointerBackground={pointerBackground}
               pointerIconColor={pointerIconColor}
               pointerTextColor={pointerTextColor}
               {...rest}
             >
               <ListItemIconLink icon={icon} label={label}>
-                {badge ? (
-                  <MenuBadge style={{ background: badgeColor }}>
-                    <Text fontSize="xs">{badge}</Text>
+                {badgeText ? (
+                  <MenuBadge>
+                    <Text fontSize="xs" style={{ color: "#f6ad55" }}>
+                      {badgeText}
+                    </Text>
                   </MenuBadge>
                 ) : null}
               </ListItemIconLink>

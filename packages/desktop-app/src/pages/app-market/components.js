@@ -357,36 +357,6 @@ export const TextButton = styled(Button)`
   }
 `;
 
-//not on blend theme
-export const OutlineButton = styled(Button)`
-  background: white; // not on theme
-  border: 1px solid #4295e1;
-  color: #4295e1;
-  line-height: 23px;
-  &:hover {
-    border: 1px solid #4295e1 !important;
-    background: white !important;
-    color: #4295e1 !important;
-  }
-`;
-
-//not on blend theme
-export const UnderlineButton = styled(Button)`
-  background: white; // not on theme
-  border-radius: 0;
-  border: 0;
-  border-bottom: 2px solid #4295e1;
-  color: #4295e1;
-  line-height: 23px;
-  font-size: 14px;
-  &:hover {
-    border: 0 !important;
-    border-bottom: 2px solid #4295e1 !important;
-    background: white !important;
-    color: #4295e1 !important;
-  }
-`;
-
 export const DataSourceButton = styled.img`
   width: 44px;
   height: 44px;

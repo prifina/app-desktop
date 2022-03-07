@@ -197,6 +197,7 @@ const DataConsole = props => {
     {
       label: "All Files",
       icon: mdiFileDocumentOutline,
+      badgeText: "Soon",
       disabled: true,
     },
   ];
