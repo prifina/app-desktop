@@ -18,6 +18,7 @@ import { createGlobalStyle } from "styled-components";
 
 import {
   listDataSourcesQuery,
+  listNotificationsByDate,
   SidebarMenu,
   Navbar,
   i18n,
@@ -52,6 +53,8 @@ import mdiCached from "@iconify/icons-mdi/cached";
 import mdiFileEditOutline from "@iconify/icons-mdi/file-edit-outline";
 import mdiTrashCanOutline from "@iconify/icons-mdi/trashcan-outline";
 
+import gql from "graphql-tag";
+
 const GlobalStyle = createGlobalStyle`
 .data-cloud path {
   fill: #F15F79;
@@ -63,18 +66,58 @@ const DataConsole = props => {
 
   const { colors } = useTheme();
 
-  const { GraphQLClient, prifinaID } = props;
+  const { GraphQLClient, appSyncClient, prifinaID } = props;
 
   const dataSources = useRef({});
+  const userNotifications = useRef({});
+
   const [installedDataSources, setInstalledDataSources] = useState([]);
 
   useEffect(() => {
-    listDataSourcesQuery(GraphQLClient, {
-      filter: { sourceType: { lt: 3 } },
-    }).then(res => {
-      const dataSources = res.data.listDataSources.items;
-      console.log("DATA SOURCES ", dataSources);
-    });
+    async function fetchData() {
+      try {
+        const res = await listDataSourcesQuery(GraphQLClient, {
+          filter: { sourceType: { lt: 3 } },
+        });
+
+        const dataSources = res.data.listDataSources.items;
+        console.log("DATA SOURCES ", dataSources);
+
+        const notifications = await appSyncClient.query({
+          query: gql(listNotificationsByDate),
+          variables: {
+            owner: prifinaID,
+            sortDirection: "DESC",
+            limit: 200,
+          },
+        });
+        //console.log("NOTIFICATIONS ", notifications);
+        if (
+          notifications.data.listNotificationsByDate.items !== null &&
+          notifications.data.listNotificationsByDate.items.length > 0
+        ) {
+          notifications.data.listNotificationsByDate.items.forEach(n => {
+            if (userNotifications.current.hasOwnProperty(n.type)) {
+              const d = n.createdAt.split("T")[0];
+              if (!userNotifications.current[n.type].hasOwnProperty(d)) {
+                userNotifications.current[n.type][d] = [];
+              }
+              userNotifications.current[n.type][d].push({
+                createdAt: n.createdAt,
+                body: JSON.parse(n.body),
+              });
+            } else {
+              userNotifications.current[n.type] = {};
+            }
+          });
+        }
+        console.log("NOTIFICATIONS ", userNotifications.current);
+      } catch (err) {
+        console.log("ERR ", err);
+      }
+    }
+
+    fetchData();
   }, []);
 
   const data = [
