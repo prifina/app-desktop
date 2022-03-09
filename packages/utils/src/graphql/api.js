@@ -34,6 +34,7 @@ import {
   addSystemNotification,
   createSystemNotification,
   updatePrifinaUser,
+  addUserToCognitoGroup,
 } from "./mutations";
 
 // until the amplify identitypoolregion bug is fixed...
@@ -549,6 +550,13 @@ export const getAppVersionQuery = (API, id) => {
   return API.graphql({
     query: getAppVersion,
     variables: { id: id },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
+export const addUserToCognitoGroupMutation = (API, id, group) => {
+  return API.graphql({
+    query: addUserToCognitoGroup,
+    variables: { id: id, group: group },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };

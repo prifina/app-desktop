@@ -149,3 +149,8 @@ export const updatePrifinaUser = `mutation updatePrifinaUser($input: UpdatePrifi
     installedWidgets
   }
 }`;
+
+export const addUserToCognitoGroup = `mutation addUserToCognitoGroup($id: String!,$group: String!) {
+ 
+  addUserToCognitoGroup( id: $id,group: $group)
+}`;
