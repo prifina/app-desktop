@@ -10,7 +10,7 @@ import {
   useAppContext,
   useIsMountedRef,
   listAppsQuery,
-  addAppVersionMutation,
+  updateAppVersionMutation,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   useUserMenu,
@@ -245,7 +245,7 @@ const Main = ({ data, currentUser }) => {
 
   const closeClick = (fileUploaded = false, version) => {
     if (fileUploaded) {
-      addAppVersionMutation(GRAPHQL, {
+      updateAppVersionMutation(GRAPHQL, {
         id: selectedRow.current.id,
         nextVersion: version,
         status: 1, //received

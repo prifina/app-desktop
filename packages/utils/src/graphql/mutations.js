@@ -84,6 +84,10 @@ export const deletePrifinaSession = `mutation deleteSession($tracker: String!) {
   deleteSession(tracker: $tracker) 
 }`;
 
+export const deleteAppVersion = `mutation deleteApp($id: String!) {
+  deleteApp(id: $id) 
+}`;
+
 export const newAppVersion = `mutation newAppVersion($id:String!, $prifinaId:String!,$name:String,$title:String, $version:String,$appType:Int!,$identity:String,$identityPool:String) {
   newAppVersion(id:$id,prifinaId:$prifinaId,name:$name,title:$title,version:$version,appType:$appType,identity:$identity,identityPool:$identityPool) {
     appType
@@ -95,7 +99,7 @@ export const newAppVersion = `mutation newAppVersion($id:String!, $prifinaId:Str
   }
 }`;
 
-export const addAppVersion = `mutation addAppVersion($input:AppVersionInput) {
+export const updateAppVersion = `mutation addAppVersion($input:AppVersionInput) {
   addAppVersion(input: $input) {
     appType
     id

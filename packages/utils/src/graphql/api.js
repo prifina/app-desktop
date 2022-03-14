@@ -30,11 +30,12 @@ import {
   updateUserProfile,
   deletePrifinaSession,
   newAppVersion,
-  addAppVersion,
+  updateAppVersion,
   addSystemNotification,
   createSystemNotification,
   updatePrifinaUser,
   addUserToCognitoGroup,
+  deleteAppVersion,
 } from "./mutations";
 
 // until the amplify identitypoolregion bug is fixed...
@@ -415,6 +416,13 @@ export const deletePrifinaSessionMutation = (API, tracker) => {
   });
 };
 
+export const deleteAppVersionMutation = (API, id) => {
+  return API.graphql({
+    query: deleteAppVersion,
+    variables: { id: id },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
+  });
+};
 export const listDataSourcesQuery = (API, opts) => {
   // AMAZON_COGNITO_USER_POOLS
   return API.graphql({
@@ -468,9 +476,9 @@ export const newAppVersionMutation = (API, id, prifinaId, opts) => {
   });
 };
 
-export const addAppVersionMutation = (API, input) => {
+export const updateAppVersionMutation = (API, input) => {
   return API.graphql({
-    query: addAppVersion,
+    query: updateAppVersion,
     variables: { input: input },
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
