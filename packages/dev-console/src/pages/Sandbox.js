@@ -25,7 +25,7 @@ import {
   getAthenaResults,
   useFormFields,
   getAppVersionQuery,
-  addAppVersionMutation,
+  updateAppVersionMutation,
 } from "@prifina-apps/utils";
 import { useLocation, useHistory } from "react-router-dom";
 
@@ -952,7 +952,7 @@ const Sandbox = props => {
 
       console.log(currentAppRef.current);
 
-      addAppVersionMutation(GRAPHQL, {
+      updateAppVersionMutation(GRAPHQL, {
         id: currentAppRef.current.appID,
         settings: currentAppRef.current.settings,
       }).then(res => {
