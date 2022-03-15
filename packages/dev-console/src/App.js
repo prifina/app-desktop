@@ -21,6 +21,8 @@ import {
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
 
+import { default as newTheme } from "./theme/theme";
+
 const GlobalStyle = createGlobalStyle`
   body {
    ${baseStyles};
@@ -284,7 +286,7 @@ function App() {
         Auth,
       }}
     >
-      <ThemeProvider>
+      <ThemeProvider theme={newTheme}>
         <React.Fragment>
           <GlobalStyle />
           {!isAuthenticating && <Routes />}
