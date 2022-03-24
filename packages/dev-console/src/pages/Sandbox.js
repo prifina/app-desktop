@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
+/* eslint-disable react/prop-types */
 import React, {
   useRef,
   useState,
