@@ -10,6 +10,7 @@ const Logout = React.lazy(() => import("../pages/Logout"));
 const Admin = React.lazy(() => import("../pages/Admin"));
 const Sandbox = React.lazy(() => import("../pages/Sandbox"));
 const NewApp = React.lazy(() => import("../pages/NewApp"));
+const Register = React.lazy(() => import("../pages/Register"));
 
 const UploadApp = React.lazy(() => import("../components/UploadApp"));
 
@@ -39,18 +40,21 @@ export default props => (
       <AuthenticatedRoute path="/" exact>
         <Home />
       </AuthenticatedRoute>
+      <AuthenticatedRoute path="/register" exact>
+        <Register />
+      </AuthenticatedRoute>
       <UnauthenticatedRoute path="/" exact>
         <Landing />
       </UnauthenticatedRoute>
-      <UnauthenticatedRoute path="/login" exact>
+      {/* <UnauthenticatedRoute path="/login" exact>
         <Landing />
-      </UnauthenticatedRoute>
-      <UnauthenticatedRoute path="/register" exact>
+      </UnauthenticatedRoute> */}
+      {/* <UnauthenticatedRoute path="/register" exact>
         <Landing />
-      </UnauthenticatedRoute>
-      <AuthenticatedRoute path="/logout" exact>
+      </UnauthenticatedRoute> */}
+      {/* <AuthenticatedRoute path="/logout" exact>
         <Logout />
-      </AuthenticatedRoute>
+      </AuthenticatedRoute> */}
       <Route component={NotFoundPage} />
     </Switch>
   </React.Suspense>
