@@ -810,7 +810,10 @@ const Main = ({ data, currentUser }) => {
                         defaultValue={allValues.version || "undefined"}
                         onChange={handleVersionChange}
                         color={colors.textPrimary}
-                        style={{ background: "transparent" }}
+                        style={{
+                          background: "transparent",
+                          border: "1px solid #ADADAD",
+                        }}
                       />
                     </Box>
                     <Text fontSize="xs" ml={25}>

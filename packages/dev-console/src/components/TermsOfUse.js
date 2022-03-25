@@ -12,7 +12,7 @@ i18n.init();
 
 const Container = styled(Flex)`
   flex-direction: column;
-  height: 535px;
+  height: 534px;
   width: 421px;
 `;
 

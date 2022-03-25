@@ -132,7 +132,7 @@ const Register = props => {
             <Flex
               alt="form-container"
               bg="baseTertiary"
-              width="534px"
+              width="490px"
               flexDirection="column"
               alignItems="center"
               flexGrow={1}
