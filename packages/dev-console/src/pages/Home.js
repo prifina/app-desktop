@@ -349,7 +349,7 @@ const Main = ({ data, currentUser }) => {
     });
   };
 
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
 
   switch (step) {
     case 0:
