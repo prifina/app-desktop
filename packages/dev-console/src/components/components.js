@@ -1,27 +1,29 @@
 import React from "react";
 
-import { Box, Flex, Text, Image, Input } from "@blend-ui/core";
+import { Box, Flex, Text, Image, Input, Button } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
 import { BlendIcon } from "@blend-ui/icons";
 
-import mdiSitemap from "@iconify/icons-mdi/sitemap";
 import lock from "@iconify/icons-fe/lock";
 
 import styled from "styled-components";
 
+import { i18n } from "@prifina-apps/utils";
+
 const SidebarContainer = styled(Flex)`
   width: 286px;
   height: 100%;
-
+  z-index: 1;
+  padding-left: 64px;
+  padding-right: 24px;
   padding-top: 130px;
   position: fixed;
   border-radius: 0 40px -40px 0;
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
-
   ::before,
   ::after {
     position: absolute;
@@ -46,39 +48,37 @@ const SidebarContainer = styled(Flex)`
     border: 1px solid !transparent;
     transform: rotate(-270deg);
   }
-  ::before {
-  }
+
   ::after {
-    box-shadow: -6px 5px 0 #f6f7f9;
+    box-shadow: -6px 5px 0 ${props => props.theme.colors.basePrimary};
   }
 `;
 
 export const ListMenuItem = styled.li`
   /* */
-  color: #969595;
   list-style: none;
   width: 100%;
+  color: #8c80a0;
   &:hover {
-    background: #c3c2c2;
-    border-left: 4px solid #00847a;
-
+    background: ${props => props.theme.colors.baseMuted};
     .icon {
-      color: #9fcde3;
+      color: ${props => props.theme.colors.brandAccent};
     }
     .text {
-      color: #9fcde3;
+      color: white;
     }
   }
+
   background-color: ${props => props.backgroundColor};
 
-  font-size: 14px;
   height: 50px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-
+  border-radius: 8px;
   padding-left: 16px;
+  cursor: pointer;
 `;
 
 export const ListMenu = styled.ul`
@@ -101,22 +101,22 @@ export const MarketBadge = styled.span`
 `;
 
 const MenuBadge = styled.span`
-  width: 91px;
-  height: 34px;
-  opacity: 0.15;
+  height: 26px;
   display: flex;
   border-radius: 100px;
   justify-content: center;
   align-items: center;
+  padding-right: 16px;
+  padding-left: 16px;
+  border: 1px solid #f6ad55;
 `;
-
 export const PublisherCard = styled(Flex)`
-  width: 246px;
-  height: 107px;
+  width: 198px;
+  height: 123px;
   border-radius: 5px;
-  border-left: 4px solid #00847a;
+  border-left: 4px solid ${props => props.theme.colors.brandAccent};
   justify-content: center;
-  padding-left: 24px;
+  padding-left: 16px;
   flex-direction: column;
   position: relative;
 `;
@@ -139,7 +139,7 @@ export const ListItemIconLink = ({
     <BlendIcon size="18px" iconify={icon} className="icon" />
     <Text
       className="text"
-      color={color}
+      color="##8C80A0"
       ml="16px"
       fontSize="14px"
       textStyle="h7"
@@ -147,7 +147,7 @@ export const ListItemIconLink = ({
     >
       {label}
     </Text>
-    <Flex ml="16px">{children}</Flex>
+    <Flex ml="10px">{children}</Flex>
   </Flex>
 );
 
@@ -161,67 +161,65 @@ ListItemIconLink.propTypes = {
 
 export const DevConsoleSidebar = ({
   // theme,
+
   items,
+  pointerBackground,
+  pointerIconColor,
+  pointerTextColor,
+  backgroundColor,
   ...props
 }) => {
   console.log("SIDEBAR ", props);
 
   return (
-    <SidebarContainer bg="baseWhite">
-      <Text fontSize="xs" ml="24px" mb="16px">
+    <SidebarContainer bg="basePrimary">
+      <Text fontSize="xs" ml="16px" mb="16px">
         Developer Account
       </Text>
       <ListMenu {...props}>
         {items.map(
-          ({
-            id,
-            label,
-            onClick,
-            icon,
-            backgroundColor,
-            badge,
-            badgeColor,
-            disabled,
-            ...rest
-          }) => (
+          ({ id, label, onClick, icon, badgeText, disabled, ...rest }) => (
             <ListMenuItem
-              key={id}
+              key={label}
               onClick={onClick}
               backgroundColor={backgroundColor}
+              style={
+                disabled
+                  ? {
+                      pointerEvents: "none",
+                      opacity: 0.5,
+                    }
+                  : null
+              }
+              pointerBackground={pointerBackground}
+              pointerIconColor={pointerIconColor}
+              pointerTextColor={pointerTextColor}
+              {...rest}
             >
-              <ListItemIconLink icon={icon}>{label}</ListItemIconLink>
+              <ListItemIconLink icon={icon} label={label}>
+                {badgeText ? (
+                  <MenuBadge ml={0}>
+                    <Text fontSize="xs" style={{ color: "#f6ad55" }}>
+                      {badgeText}
+                    </Text>
+                  </MenuBadge>
+                ) : null}
+              </ListItemIconLink>
             </ListMenuItem>
           ),
         )}
-
-        <ListMenuItem
-          //temporary needs update
-          style={{ pointerEvents: "none" }}
-        >
-          <ListItemIconLink icon={mdiSitemap} color="gray">
-            Data Model
-          </ListItemIconLink>
-          <MenuBadge style={{ background: "cyan" }}>
-            <Text fontSize="xs" color="blue">
-              Next Up
-            </Text>
-          </MenuBadge>
-        </ListMenuItem>
       </ListMenu>
-      <Text fontSize="xs" ml="24px" mt="120px" mb="16px">
-        Publisher Account
+      <Text fontSize="xs" ml="16px" mt="120px" mb="16px">
+        {i18n.__("createPubAccCTATitle")}
       </Text>
-      <PublisherCard bg="baseMuted" ml="24px">
+      <PublisherCard bg="baseMuted">
         <Flex position="absolute" right="6px" top="6px" color="brandAccent">
           <BlendIcon size="18px" iconify={lock} />
         </Flex>
-        <Text textStyle="h7" fontWeight="semiBold">
+        <Text fontSize="sm" fontWeight="semiBold">
           Publisher Accounts
         </Text>
-        <Text fontSize="xs">
-          Lore issue dolor sit met, ConnectEDU advising elite, used do also
-          temper incident UT
-        </Text>
+        <Text fontSize="xs">{i18n.__("createPubAccCTAText")}</Text>
       </PublisherCard>
     </SidebarContainer>
   );
@@ -229,6 +227,10 @@ export const DevConsoleSidebar = ({
 
 DevConsoleSidebar.propTypes = {
   items: PropTypes.instanceOf(Array),
+  pointerBackground: PropTypes.string,
+  pointerIconColor: PropTypes.string,
+  pointerTextColor: PropTypes.string,
+  backgroundColor: PropTypes.string,
 };
 
 export const NavbarContainer = styled(Flex)`
@@ -244,24 +246,21 @@ export const ResourceCard = ({ title, description, src }) => {
   return (
     <Flex
       width="221px"
-      height="120px"
-      bg="baseMuted"
+      height="117px"
+      bg="basePrimary"
       borderRadius="5px"
       alignItems="center"
+      paddingTop="23px"
+      paddingBottom="23px"
     >
-      <Box position="relative" left={-18} marginRight={0} width="100%">
-        <Image src={src} />
+      <Box position="relative" left={-18} marginRight={0} width="60%">
+        <Image src={src} size={30} />
       </Box>
-      <Box
-        paddingLeft="-21px"
-        alignItems="center"
-        paddingTop="23px"
-        paddingBottom="23px"
-      >
-        <Text color="white" fontSize={16} paddingBottom="5px">
+      <Box alignItems="center">
+        <Text fontSize="sm" paddingBottom="5px">
           {title}
         </Text>
-        <Text color="#ADADAD" fontSize={12}>
+        <Text color="#ADADAD" fontSize="xxs">
           {description}
         </Text>
       </Box>
@@ -274,3 +273,118 @@ ResourceCard.propTypes = {
   description: PropTypes.string,
   src: PropTypes.node,
 };
+
+///================================================================================================================
+
+export const MenuButton = styled(Button)`
+  height: 57px;
+  width: 100%;
+  border-radius: 0;
+  background: transparent;
+  border: 0 !important;
+  color: ${props => props.color};
+
+  &:hover {
+    color: transparent;
+    background-color: transparent !important;
+    text-decoration: 0;
+    border-bottom: 2px solid ${props => props.borderColor} !important;
+  }
+  &:focus {
+    border-bottom: 2px solid ${props => props.borderColor} !important;
+  }
+  &:active {
+    border-bottom: 2px solid ${props => props.borderColor} !important;
+  }
+  font-size: 16px;
+  text-align: left;
+  padding-left: 14px;
+`;
+
+export const StyledButton = styled(Button)`
+  width: 361px;
+  border: 0;
+`;
+
+export const Card = styled(Box)`
+  width: 361px;
+  height: 107px;
+  border-radius: 5px;
+  border-left: 4px solid ${props => props.leftbordercolor};
+`;
+
+export const DevCard = styled(Flex)`
+  width: 361px;
+  height: 107px;
+  border-radius: 5px;
+  align-items: center;
+  padding-left: 26px;
+`;
+
+export const DeveloperCard = ({ currentUser, avatar, text }) => {
+  return (
+    <DevCard bg="baseMuted">
+      <Image src={avatar} width="58px" height="58px" />
+      <Box ml="26px">
+        <Text>{currentUser}</Text>
+        <Text fontSize="xs">
+          {text} {currentUser}
+        </Text>
+      </Box>
+    </DevCard>
+  );
+};
+
+DeveloperCard.propTypes = {
+  currentUser: PropTypes.string,
+  avatar: PropTypes.node,
+  text: PropTypes.string,
+};
+
+export const ActionContainer = styled(Flex)`
+  width: 1008px;
+  min-height: 90px;
+  border-radius: 15px;
+  background: ${props => props.theme.colors.baseMuted};
+  position: sticky;
+  top: 65px;
+  // z-index: 1;
+  align-items: center;
+  padding-right: 25px;
+  padding-left: 25px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+  justify-content: space-between;
+`;
+
+export const ProjectContainer = styled(Box)`
+  width: 1008px;
+  min-height: 491px;
+  border-radius: 15px;
+  background: ${props => props.theme.colors.baseMuted};
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+`;
+
+export const DataContainer = styled(Box)`
+  width: 1008px;
+  min-height: 405px;
+  border-radius: 15px;
+  background: ${props => props.theme.colors.baseMuted};
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+`;
+
+export const CustomShape = styled(Box)`
+  width: 5px;
+  height: 60px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background: ${props => props.bg};
+  position: absolute;
+  left: 0;
+`;
