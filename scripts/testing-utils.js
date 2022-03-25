@@ -39,6 +39,9 @@ const {
   AdminAddUserToGroupCommand,
   AdminUpdateUserAttributesCommand,
   AddCustomAttributesCommand,
+  AdminRemoveUserFromGroupCommand,
+  ListUsersInGroupCommand,
+  ListUsersCommand,
 } = require("@aws-sdk/client-cognito-identity-provider");
 
 const {
@@ -53,9 +56,16 @@ const clientCredentials = {
   credentials: defaultCredentials,
   region: process.env.AWS_DEFAULT_REGION,
 };
+
+const cognitoClientCredentials = {
+  credentials: defaultCredentials,
+  region: "us-east-1",
+};
 const ddbClient = new DynamoDBClient(clientCredentials);
 
-const cognitoClient = new CognitoIdentityProviderClient(clientCredentials);
+const cognitoClient = new CognitoIdentityProviderClient(
+  cognitoClientCredentials,
+);
 
 // Create an Amazon S3 service client object.
 const s3Client = new S3Client(clientCredentials);
@@ -93,7 +103,84 @@ console.log(
 function deleteBucket(params) {
   return s3Client.send(new DeleteBucketCommand(params));
 }
+
+GroupName
+Limit
+NextToken
+UserPoolId
+ const params = Object.assign({}, query, {
+      "UserPoolId": userPool,
+      "PaginationToken": lastKey,
+      "Filter":"cognito:user_status = \"UNCONFIRMED\"",
+      "Limit": 20
+  });
+
 */
+
+function cognitoListUsersInGroup(payload) {
+  const params = {
+    GroupName: payload.group,
+    UserPoolId: payload.pool_id,
+  };
+  if (
+    (process.env.hasOwnProperty("DEBUG") && process.env.DEBUG) ||
+    process.env.hasOwnProperty("JEST_WORKER_ID")
+  ) {
+    console.log("PARAMS", params);
+  }
+  /*
+  console.log(
+    cognitoClient.config.credentials().then((res) => {
+      console.log("RES ", res);
+    })
+  );
+  */
+  return cognitoClient.send(new ListUsersInGroupCommand(params));
+}
+
+function cognitoRemoveUserToGroup(payload) {
+  const params = {
+    GroupName: payload.group,
+    UserPoolId: payload.pool_id,
+    Username: payload.user_id,
+  };
+  if (
+    (process.env.hasOwnProperty("DEBUG") && process.env.DEBUG) ||
+    process.env.hasOwnProperty("JEST_WORKER_ID")
+  ) {
+    console.log("PARAMS", params);
+  }
+  /*
+  console.log(
+    cognitoClient.config.credentials().then((res) => {
+      console.log("RES ", res);
+    })
+  );
+  */
+  return cognitoClient.send(new AdminRemoveUserFromGroupCommand(params));
+}
+function cognitoAddUserToGroup(payload) {
+  const params = {
+    GroupName: payload.group,
+    UserPoolId: payload.pool_id,
+    Username: payload.user_id,
+  };
+  if (
+    (process.env.hasOwnProperty("DEBUG") && process.env.DEBUG) ||
+    process.env.hasOwnProperty("JEST_WORKER_ID")
+  ) {
+    console.log("PARAMS", params);
+  }
+  /*
+  console.log(
+    cognitoClient.config.credentials().then((res) => {
+      console.log("RES ", res);
+    })
+  );
+  */
+  return cognitoClient.send(new AdminAddUserToGroupCommand(params));
+}
+
 function updateItem(params) {
   /*
     Convert the attribute JavaScript object you are updating to the required
@@ -640,4 +727,7 @@ module.exports = {
   newUserDataSource,
   getS3Objects,
   copyS3Objects,
+  cognitoAddUserToGroup,
+  cognitoRemoveUserToGroup,
+  cognitoListUsersInGroup,
 };
