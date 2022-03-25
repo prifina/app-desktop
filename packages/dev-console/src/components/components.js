@@ -346,8 +346,8 @@ export const ActionContainer = styled(Flex)`
   min-height: 90px;
   border-radius: 15px;
   background: ${props => props.theme.colors.baseMuted};
-  position: sticky;
-  top: 65px;
+  // position: sticky;
+  // top: 65px;
   // z-index: 1;
   align-items: center;
   padding-right: 25px;

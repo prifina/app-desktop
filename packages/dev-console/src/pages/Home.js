@@ -274,7 +274,7 @@ const Main = ({ data, currentUser }) => {
     // },
     {
       Header: () => null, // No header
-      Header: "Edit",
+      id: "edit",
       Cell: props => {
         return (
           <Button
@@ -283,9 +283,10 @@ const Main = ({ data, currentUser }) => {
               setStep(3);
               setAllValues({
                 ...allValues,
-                name: props.cell.value,
+
+                name: props.row.values.name,
                 id: props.row.values.id,
-                newName: props.cell.value,
+                newName: props.row.values.name,
                 appType: props.row.values.appType,
                 newType: props.row.values.appType,
                 version: props.row.values.version,
@@ -617,7 +618,7 @@ const Main = ({ data, currentUser }) => {
         width="100vw"
         minHeight="100vh"
         paddingLeft="286px"
-        paddingBottom="1286px"
+        paddingBottom="100px"
         bg="baseTertiary"
         flexDirection="column"
         alignItems="center"
@@ -740,7 +741,11 @@ const Main = ({ data, currentUser }) => {
         {step === 3 && (
           <>
             <Flex flexDirection="column">
-              <C.ActionContainer mt={10} mb={32}>
+              <C.ActionContainer
+                mt={10}
+                mb={32}
+                style={{ top: 65, position: "sticky" }}
+              >
                 <C.CustomShape bg="brandAccent" />
                 <BlendIcon
                   style={{ cursor: "pointer" }}

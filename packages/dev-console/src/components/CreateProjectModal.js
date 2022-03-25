@@ -71,7 +71,8 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
         version: appFields.version,
         appType: appType,
       });
-      history.push("/");
+      // history.push("/");
+      location.reload();
     } catch (e) {
       console.log("error ", e);
     }
