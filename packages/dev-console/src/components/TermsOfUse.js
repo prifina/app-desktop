@@ -185,16 +185,14 @@ const TermsOfUse = props => {
               <Text fontSize="xxs">{i18n.__("devTermsText1")}</Text>
               <Text fontSize="xxs">{i18n.__("devTermsText2")}</Text>
               {texts.map((t, i) => (
-                <>
-                  <React.Fragment key={"text-" + i}>
-                    <Text textStyle={"h6"} mt={5}>
-                      {t.title}
-                    </Text>
-                    <Text as={"p"} textStyle={"caption"} mt={3}>
-                      {t.text}
-                    </Text>
-                  </React.Fragment>
-                </>
+                <div key={i}>
+                  <Text textStyle={"h6"} mt={5}>
+                    {t.title}
+                  </Text>
+                  <Text as={"p"} textStyle={"caption"} mt={3}>
+                    {t.text}
+                  </Text>
+                </div>
               ))}
             </>
           </StyledBox>
