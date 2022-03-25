@@ -1,42 +1,58 @@
-import colors from "./colors";
-import createColorStyles from "./createColorStyles";
+const basePrimary = "#08011C";
+const baseSecondary = "#AA076B";
+const baseTertiary = "#141020";
 
-// const theme = {
-//   colors: {
-//     listDividerColor: "EBEFF2",
-//     activeListItemColor: "#109CF1",
-//     listItemColor: "#334D6E",
-//     disabledListItemColor: "#C2CFE0",
-//     headerTitleColor: "#3C64B1",
-//     logoColor: "#E436AB",
-//   },
-//   //   dashboard: {
-//   //     backgroundColor: "#FFFFFF",
-//   //     header: { height: "65px" },
-//   //     footer: { height: "65px" },
-//   //     sidebar: {
-//   //       left: {
-//   //         width: "230px",
-//   //       },
-//   //       right: {
-//   //         width: "230px",
-//   //       },
-//   //     },
-//   //   },
-//   //   table: {
-//   //     borderColor: "#ededed",
-//   //     evenRowColor: "#fafafa",
-//   //     hoverRowColor: "#f5f5f5",
-//   //   },
-// };
-// export default theme;
+const brandAccent = "#AA1370";
 
-export const colorStyles = createColorStyles({
-  colors,
-});
+const baseWhite = "#F5F8F7DE";
+const baseHover = "#c91684";
+const baseMuted = "#1D152C";
+
+const textMuted = "#ADADAD";
+
+const gradientPurple = "linear-gradient(180deg, #AA076B 0%, #61045F 100%)";
+
+const colors = {
+  textPrimary: baseWhite,
+  textMuted: textMuted,
+  brandAccent,
+  brandAccentGradient: gradientPurple,
+  basePrimary,
+  baseSecondary,
+  baseTertiary,
+  baseMuted,
+  baseWhite,
+  componentPrimary: brandAccent,
+  componentAccent: brandAccent,
+  backroundAccent: brandAccent,
+  baseHover,
+};
+
+const componentStyles = {
+  button: {
+    fill: {
+      backgroundColor: brandAccent,
+      color: "#F5F8F7",
+      border: "0.0625rem solid #c91684",
+    },
+    outline: {
+      backgroundColor: baseWhite,
+      color: "#F5F8F7",
+      border: "0.0625rem solid #c91684",
+    },
+    link: {
+      color: brandAccent,
+    },
+    input: {
+      base: {
+        border: "1px solid red",
+      },
+    },
+  },
+};
 
 const theme = {
   colors,
+  componentStyles,
 };
-
 export default theme;

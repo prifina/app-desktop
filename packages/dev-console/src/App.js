@@ -6,7 +6,11 @@ import { withRouter, useLocation, useHistory } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
 
 import { API, Auth } from "aws-amplify";
-import { ThemeProvider, baseStyles } from "@blend-ui/core";
+import {
+  ThemeProvider,
+  baseStyles,
+  theme as defaultTheme,
+} from "@blend-ui/core";
 import { createGlobalStyle } from "styled-components";
 
 import sha512 from "crypto-js/sha512";
@@ -20,6 +24,8 @@ import {
 } from "@prifina-apps/utils";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
+
+// import { default as newTheme } from "./theme/theme";
 
 import { default as newTheme } from "./theme/theme";
 
@@ -274,6 +280,29 @@ function App() {
 
   const { currentUser, isAuthenticating, isAuthenticated } = state;
 
+  function mergeDeep(...objects) {
+    const isObject = obj => obj && typeof obj === "object";
+
+    return objects.reduce((prev, obj) => {
+      Object.keys(obj).forEach(key => {
+        const pVal = prev[key];
+        const oVal = obj[key];
+
+        if (Array.isArray(pVal) && Array.isArray(oVal)) {
+          prev[key] = pVal.concat(...oVal);
+        } else if (isObject(pVal) && isObject(oVal)) {
+          prev[key] = mergeDeep(pVal, oVal);
+        } else {
+          prev[key] = oVal;
+        }
+      });
+
+      return prev;
+    }, {});
+  }
+
+  const mergedTheme = mergeDeep(defaultTheme, newTheme);
+
   return (
     <AppContext.Provider
       value={{
@@ -286,7 +315,7 @@ function App() {
         Auth,
       }}
     >
-      <ThemeProvider theme={newTheme}>
+      <ThemeProvider theme={mergedTheme}>
         <React.Fragment>
           <GlobalStyle />
           {!isAuthenticating && <Routes />}
