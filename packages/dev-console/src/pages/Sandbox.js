@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-multi-comp */
+/* eslint-disable react/prop-types */
 import React, {
   useRef,
   useState,
@@ -25,7 +26,7 @@ import {
   getAthenaResults,
   useFormFields,
   getAppVersionQuery,
-  addAppVersionMutation,
+  updateAppVersionMutation,
 } from "@prifina-apps/utils";
 import { useLocation, useHistory } from "react-router-dom";
 
@@ -952,7 +953,7 @@ const Sandbox = props => {
 
       console.log(currentAppRef.current);
 
-      addAppVersionMutation(GRAPHQL, {
+      updateAppVersionMutation(GRAPHQL, {
         id: currentAppRef.current.appID,
         settings: currentAppRef.current.settings,
       }).then(res => {

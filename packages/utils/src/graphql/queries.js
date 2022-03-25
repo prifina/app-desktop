@@ -175,6 +175,29 @@ export const listApps = `query appsList($filter:TableAppsFilterInput,$sortDirect
       status
       appType
       version
+      settings {
+        field
+        label
+        type
+        value
+      }
+  dataSources
+  icon
+  dataTypes
+  longDescription
+  publisher
+  shortDescription
+  screenshots
+  deviceSupport
+  age
+  userGenerated
+  languages
+  category
+  keyFeatures
+  userHeld
+  bannerImage
+  public
+
     }
     nextToken
   }
@@ -242,5 +265,22 @@ export const getAppVersion = `query appVerion($id: String!) {
       sub
       title
       version
+      dataSources
+      icon
+      dataTypes
+      longDescription
+      publisher
+      shortDescription
+      screenshots
+      deviceSupport
+      age
+      userGenerated
+      languages
+      category
+      keyFeatures
+      userHeld
+      bannerImage
+      public
+      
     }
 }`;

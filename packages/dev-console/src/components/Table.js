@@ -22,7 +22,8 @@ const Styles = styled(Box)`
 display: block;
 // max-width: 100%;
 width:1000px;
-
+color: ${props => props.theme.colors.textPrimary};
+font-size: 12px;
 
 /* This will make the table scrollable when it gets too small */
 .tableWrap {
@@ -45,19 +46,24 @@ table {
         border-bottom: 0;
       }
     }
+cursor: pointer;
+    
   }
   th {
     padding-left: 16px;
     padding-right: 16px;
-    text-align: left;
+    text-align: center;
     height: 55px;
     border-bottom: 1px solid #4b4b4b;
+
   },
   td {
     height:40px;
     margin: 0;
     //   padding: 0.5rem;
     border-bottom: 1px solid #4b4b4b;
+    text-align: center;
+
 
     :last-child {
       border-right: 0;
@@ -169,24 +175,36 @@ function Table({ columns, data }) {
           </div>
           <div>
             <BlendIcon
+              style={{
+                cursor: "pointer",
+              }}
               iconify={feDropLeft}
               onClick={() => gotoPage(0)}
-              color={!canPreviousPage ? "black" : "white"}
+              color={!canPreviousPage ? "#ADADAD" : "white"}
             />
             <BlendIcon
+              style={{
+                cursor: "pointer",
+              }}
               iconify={feArrowLeft}
               onClick={() => previousPage()}
-              color={!canPreviousPage ? "black" : "white"}
+              color={!canPreviousPage ? "#ADADAD" : "white"}
             />
             <BlendIcon
+              style={{
+                cursor: "pointer",
+              }}
               iconify={feArrowRight}
               onClick={() => nextPage()}
-              color={!canNextPage ? "black" : "white"}
+              color={!canNextPage ? "#ADADAD" : "white"}
             />
             <BlendIcon
+              style={{
+                cursor: "pointer",
+              }}
               iconify={feDropRight}
               onClick={() => gotoPage(pageCount - 1)}
-              color={!canNextPage ? "black" : "white"}
+              color={!canNextPage ? "#ADADAD" : "white"}
             />
           </div>
         </div>
