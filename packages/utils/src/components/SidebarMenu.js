@@ -92,6 +92,7 @@ export const ListMenuItem = styled.li`
   justify-content: space-between;
   border-radius: 8px;
   padding-left: 16px;
+  cursor: pointer;
 `;
 
 export const ListMenu = styled.ul`

@@ -6,7 +6,7 @@ import { i18n } from "@prifina-apps/utils";
 i18n.init();
 
 const DevConsoleIcon = () => (
-  <AppIcon title={i18n.__("Dev Console")} icon={DevConsole} />
+  <AppIcon title={i18n.__("App Studio")} icon={DevConsole} />
 );
 
 DevConsoleIcon.displayName = "DevConsole";

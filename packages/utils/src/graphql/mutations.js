@@ -99,8 +99,8 @@ export const newAppVersion = `mutation newAppVersion($id:String!, $prifinaId:Str
   }
 }`;
 
-export const updateAppVersion = `mutation addAppVersion($input:AppVersionInput) {
-  addAppVersion(input: $input) {
+export const updateAppVersion = `mutation updateAppVersion($input:AppVersionInput) {
+  updateAppVersion(input: $input) {
     appType
     id
     name

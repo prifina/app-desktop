@@ -38,7 +38,7 @@ export const Card = styled(Box)`
   width: 361px;
   height: 107px;
   border-radius: 5px;
-  border-left: 4px solid ${props => props.leftBorderColor};
+  border-left: 4px solid ${props => props.leftbordercolor};
 `;
 
 export const DevCard = styled(Flex)`
@@ -64,7 +64,7 @@ export const DeveloperCard = ({ currentUser, avatar, text }) => {
 };
 
 DeveloperCard.propTypes = {
-  currentUser: PropTypes.instanceOf(Object),
+  currentUser: PropTypes.string,
   avatar: PropTypes.node,
   text: PropTypes.string,
 };

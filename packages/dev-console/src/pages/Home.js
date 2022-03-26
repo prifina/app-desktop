@@ -1,22 +1,43 @@
 /* global localStorage */
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  version,
+} from "react";
 
-import { Box, Flex, Text, Button, Image, Link, useTheme } from "@blend-ui/core";
+import {
+  Box,
+  Flex,
+  Text,
+  Button,
+  Image,
+  Link,
+  Divider,
+  Input,
+  Radio,
+  useTheme,
+} from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
+
+import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
 import {
   useAppContext,
   useIsMountedRef,
   listAppsQuery,
   updateAppVersionMutation,
+  deleteAppVersionMutation,
   getPrifinaUserQuery,
   updateUserProfileMutation,
   useUserMenu,
   withUsermenu,
   i18n,
   createClient,
+  SidebarMenu,
 } from "@prifina-apps/utils";
 
 i18n.init();
@@ -65,8 +86,12 @@ import baselineWeb from "@iconify/icons-mdi/table";
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";
 import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
+import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
+
+import hazardSymbol from "@iconify/icons-mdi/warning";
+import successTick from "@iconify/icons-mdi/tick-circle";
 
 import {
   AddRemoveDataSources,
@@ -80,13 +105,11 @@ const defaultPropGetter = () => ({});
 
 const Content = ({
   Component,
-
   initials,
   notificationCount,
   updateNotificationHandler,
   appSyncClient,
   activeUser,
-
   ...props
 }) => {
   const userMenu = useUserMenu();
@@ -135,6 +158,8 @@ const Main = ({ data, currentUser }) => {
 
   const { colors } = useTheme();
 
+  const toast = useToast();
+
   const versionStatus = [
     "init",
     "received",
@@ -144,18 +169,20 @@ const Main = ({ data, currentUser }) => {
     "published",
   ];
 
-  const appTypes = ["Widget", "App"];
+  // const appTypes = ["Widget", "App"];
+  const [saved, setSaved] = useState(false);
+
+  console.log("SAVEd", saved);
 
   const [allValues, setAllValues] = useState({
     name: "",
     id: "",
+    appType: "",
+    newType: "",
+    newName: "",
+    version: "",
+    newVersion: "",
   });
-
-  const onRowClick = (state, rowInfo, column, instance) => {
-    return {
-      onClick: e => {},
-    };
-  };
 
   const Columns = [
     {
@@ -168,9 +195,14 @@ const Main = ({ data, currentUser }) => {
               setStep(3);
               setAllValues({
                 ...allValues,
-                // title: widgets.current[w].title,
+
                 name: props.cell.value,
                 id: props.row.values.id,
+                newName: props.cell.value,
+                appType: props.row.values.appType,
+                newType: props.row.values.appType,
+                version: props.row.values.version,
+                newVersion: props.row.values.version,
               });
             }}
           >
@@ -190,7 +222,9 @@ const Main = ({ data, currentUser }) => {
       Header: "Type",
       accessor: "appType",
       className: "appType",
-      // Cell: cellProp => appTypes[cellProp.row.values.appType],
+      Cell: props => {
+        return props.cell.value === 1 ? "App" : "Widget";
+      },
     },
 
     {
@@ -209,6 +243,11 @@ const Main = ({ data, currentUser }) => {
       className: "version",
     },
     {
+      Header: "Next Version",
+      accessor: "nextVersion",
+      className: "nextVersion",
+    },
+    {
       Header: "Modified",
       accessor: "modifiedAt",
       className: "date",
@@ -216,19 +255,46 @@ const Main = ({ data, currentUser }) => {
         return <Text>{props.cell.value}</Text>;
       },
     },
+    // {
+    //   Header: () => null, // No header
+    //   id: "sendApp", // It needs an ID
+    //   Cell: cellProp => {
+    //     return (
+    //       <Button
+    //         size="xs"
+    //         onClick={e => {
+    //           console.log(cellProp.row.values);
+    //           sendClick(cellProp.row.values);
+    //         }}
+    //       >
+    //         {i18n.__("submit")}
+    //       </Button>
+    //     );
+    //   },
+    // },
     {
       Header: () => null, // No header
-      id: "sendApp", // It needs an ID
-      Cell: cellProp => {
+      id: "edit",
+      Cell: props => {
         return (
           <Button
             size="xs"
-            onClick={e => {
-              console.log(cellProp.row.values);
-              sendClick(cellProp.row.values);
+            onClick={() => {
+              setStep(3);
+              setAllValues({
+                ...allValues,
+
+                name: props.row.values.name,
+                id: props.row.values.id,
+                newName: props.row.values.name,
+                appType: props.row.values.appType,
+                newType: props.row.values.appType,
+                version: props.row.values.version,
+                newVersion: props.row.values.version,
+              });
             }}
           >
-            {i18n.__("submit")}
+            Edit
           </Button>
         );
       },
@@ -257,92 +323,33 @@ const Main = ({ data, currentUser }) => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState(0);
+  const saveChanges = (id, newAppType, newName, newVersion) => {
+    console.log("CLICK ", id);
 
-  const tabClick = (e, tab) => {
-    console.log("Click", e);
-    console.log("TAB", tab);
-    setActiveTab(tab);
+    updateAppVersionMutation(GRAPHQL, {
+      id: id,
+      appType: newAppType,
+      name: newName,
+      nextVersion: newVersion,
+    }).then(res => {
+      console.log("SUCCESS", res);
+      toast.success("Project name updated successfully", {});
+      location.reload();
+      setStep(2);
+    });
   };
 
-  const [activeTab2, setActiveTab2] = useState(0);
-
-  const tabClick2 = (e, tab) => {
-    console.log("Click", e);
-    console.log("TAB", tab);
-    setActiveTab2(tab);
+  const deleteApp = () => {
+    deleteAppVersionMutation(GRAPHQL, {
+      id: allValues.id,
+    }).then(res => {
+      console.log("SUCCESS", res);
+      // location.reload();
+      toast.success("Deleted project successfully", {});
+    });
   };
 
-  const [activeTab3, setActiveTab3] = useState(0);
-
-  const tabClick3 = (e, tab) => {
-    console.log("Click", e);
-    console.log("TAB", tab);
-    setActiveTab3(tab);
-  };
-
-  const [dataSource, setDataSource] = useState([]);
-  const [apiData, setApiData] = useState([]);
-
-  console.log("CLOUD DATA", dataSource);
-  console.log("API DATA", apiData);
-
-  let addedDataSources = dataSource
-    .concat(apiData)
-    .filter(key => key.isAdded == true);
-  console.log("ADDED DATA", addedDataSources);
-
-  const [addedDataSources2, setAddedDataSources2] = useState([]);
-
-  const [editControled, setEditControled] = useState(false);
-
-  ///Prifina user cloud
-
-  const addDataSource = (text, func, url) => {
-    const newSourceData = [...dataSource, { text, func, url }];
-    setDataSource(newSourceData);
-  };
-
-  const removeDataSource = index => {
-    const newSourceData = [...dataSource];
-    newSourceData.splice(index, 1);
-    setDataSource(newSourceData);
-  };
-
-  const completeDataSource = index => {
-    const newSourceData = [...dataSource];
-    newSourceData[index].isAdded = true;
-    setDataSource(newSourceData);
-  };
-
-  //////API
-
-  const addApiSource = text => {
-    const newSourceData = [...apiData, { text }];
-    setApiData(newSourceData);
-  };
-
-  const removeApiSource = index => {
-    const newSourceData = [...apiData];
-    newSourceData.splice(index, 1);
-    setApiData(newSourceData);
-  };
-
-  const completeApiSource = index => {
-    const newSourceData = [...apiData];
-    newSourceData[index].isAdded = true;
-    setApiData(newSourceData);
-  };
-
-  ////common data sources
-
-  const uncompleteDataSource = index => {
-    const newSourceData = [...addedDataSources];
-    newSourceData[index].isAdded = false;
-    setAddedDataSources2(newSourceData);
-  };
-
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
 
   switch (step) {
     case 0:
@@ -362,23 +369,18 @@ const Main = ({ data, currentUser }) => {
 
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 
-  console.log("projectdialog", projectDialogOpen);
-
   const onDialogClose = e => {
     setProjectDialogOpen(false);
     e.preventDefault();
   };
 
   const onDialogClick = async e => {
-    ///...further logic on adding data source data
     setProjectDialogOpen(false);
-
     e.preventDefault();
   };
 
-  const items = [
+  const menuItems = [
     {
-      id: 0,
       label: i18n.__("dashboard"),
       icon: viewDashboard,
       onClick: () => {
@@ -386,7 +388,6 @@ const Main = ({ data, currentUser }) => {
       },
     },
     {
-      id: 1,
       label: i18n.__("projects"),
       icon: mdiWidget,
       onClick: () => {
@@ -394,801 +395,481 @@ const Main = ({ data, currentUser }) => {
       },
     },
     {
-      id: 2,
       label: i18n.__("resources"),
       icon: mdiBookOpenVariant,
+      disabled: true,
+    },
+    {
+      label: "Data Model",
+      icon: mdiSitemap,
+      badgeText: "Soon",
+      disabled: true,
     },
   ];
 
+  const resourceCardItems = [
+    {
+      src: docs,
+      title: i18n.__("prifinaDocsResourcesCardHeading"),
+      description: i18n.__("docsResourcesCardPara"),
+    },
+    {
+      src: starterResources,
+      title: i18n.__("gitResourcesResourcesCardHeading"),
+      description: i18n.__("gitResourcesCardPara"),
+    },
+    {
+      src: zendeskResources,
+      title: i18n.__("zenDeskResourcesCardHeading"),
+      description: i18n.__("zenResourcesCardPara"),
+    },
+    {
+      src: slackResources,
+      title: i18n.__("slackResourcesCardHeading"),
+      description: i18n.__("slackResourcesCardPara"),
+    },
+  ];
+
+  const radioButtons = () => {
+    if (allValues.appType === 1) {
+      return (
+        <Flex flexDirection="row" alignItems="center" mr="20px">
+          <Flex flexDirection="row" alignItems="center" mr="15px">
+            <Radio
+              fontSize="8px"
+              onChange={() => {}}
+              onClick={() => {
+                setAllValues({ ...allValues, newType: 2 });
+              }}
+            />
+            <Text fontSize="xs">{i18n.__("widget")}</Text>
+          </Flex>
+          <Flex flexDirection="row" alignItems="center">
+            <Radio
+              fontSize="10px"
+              onChange={() => {}}
+              checked
+              onClick={() => {
+                setAllValues({ ...allValues, newType: 1 });
+              }}
+            />
+            <Text fontSize="xs">Application</Text>
+          </Flex>
+        </Flex>
+      );
+    } else if (allValues.appType === 2) {
+      return (
+        <Flex flexDirection="row" alignItems="center" mr="20px">
+          <Flex flexDirection="row" alignItems="center" mr="15px">
+            <Radio
+              checked
+              fontSize="10px"
+              onChange={() => {}}
+              value="1"
+              onClick={() => {
+                setAllValues({ ...allValues, newType: 2 });
+              }}
+            />
+            <Text fontSize="xs">{i18n.__("widget")}</Text>
+          </Flex>
+          <Flex flexDirection="row" alignItems="center">
+            <Radio
+              fontSize="10px"
+              onChange={() => {}}
+              value="2"
+              onClick={() => {
+                setAllValues({ ...allValues, newType: 1 });
+              }}
+            />
+            <Text fontSize="xs">Application</Text>
+          </Flex>
+        </Flex>
+      );
+    }
+  };
+
+  const detailsSaveStatus = () => {
+    if (
+      allValues.name !== allValues.newName ||
+      allValues.appType !== allValues.newType
+    ) {
+      return (
+        <Flex alignItems="center">
+          <BlendIcon
+            size="18px"
+            iconify={hazardSymbol}
+            className="icon"
+            color="orange"
+          />
+          <Text fontSize="xs" ml={5} color="#EDA436">
+            Unsaved Changes
+          </Text>
+          <Button
+            ml="15px"
+            onClick={() => {
+              saveChanges(
+                allValues.id,
+                allValues.appType,
+                allValues.newName,
+                allValues.newVersion,
+              );
+              setSaved(true);
+            }}
+          >
+            Save Changes
+          </Button>
+        </Flex>
+      );
+    } else {
+      return (
+        <Flex alignItems="center">
+          <Text fontSize="xs">No Unsaved Changes</Text>
+          <Button disabled colorStyle="red" ml="15px">
+            Save Changes
+          </Button>
+        </Flex>
+      );
+    }
+  };
+
+  console.log("all", allValues);
+
+  const versionSaveStatus = () => {
+    if (allValues.version !== allValues.newVersion) {
+      return (
+        <Flex alignItems="center">
+          <BlendIcon
+            size="18px"
+            iconify={hazardSymbol}
+            className="icon"
+            color="orange"
+          />
+          <Text fontSize="xs" ml={5} color="#EDA436">
+            Unsaved Changes
+          </Text>
+          <Button
+            ml="15px"
+            onClick={() => {
+              saveChanges(
+                allValues.id,
+                allValues.appType,
+                allValues.newName,
+                allValues.newVersion,
+              );
+              setSaved(true);
+            }}
+          >
+            Save Changes
+          </Button>
+        </Flex>
+      );
+    } else {
+      return (
+        <Flex alignItems="center">
+          <Text fontSize="xs">No Unsaved Changes</Text>
+          <Button disabled colorStyle="red" ml="15px">
+            Save Changes
+          </Button>
+        </Flex>
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (allValues.version !== allValues.newVersion) {
+      return console.log("true");
+    } else {
+      return console.log("false");
+    }
+  }, [allValues.newVersion]);
+
+  useEffect(() => {
+    if (
+      allValues.name !== allValues.newName ||
+      allValues.type !== allValues.newType
+    ) {
+      return console.log("true");
+    } else {
+      return console.log("false");
+    }
+  }, [allValues.newName, allValues.newType]);
+
+  const handleNameChange = event =>
+    setAllValues({
+      ...allValues,
+      newName: event.target.value,
+    });
+
+  const handleVersionChange = event =>
+    setAllValues({
+      ...allValues,
+      newVersion: event.target.value,
+    });
+
   return (
     <React.Fragment>
-      <DevConsoleSidebar items={items} />
-      <C.NavbarContainer bg="baseWhite">
+      <DevConsoleSidebar items={menuItems} />
+      <C.NavbarContainer bg="basePrimary">
         <DevConsoleLogo className="appStudio" />
       </C.NavbarContainer>
-      <StyledBox>
-        <Flex
-          width="100vw"
-          height="100vh"
-          paddingLeft="286px"
-          bg="white"
-          flexDirection="column"
-        >
-          {step === 0 && (
-            <>
-              {projectDialogOpen && (
-                <CreateProjectModal
-                  onClose={onDialogClose}
-                  onButtonClick={onDialogClick}
-                  // isOpen={projectDialogOpen}
-                />
-              )}
-              <Flex flexDirection="column" alignItems="center" mt="42px">
-                <Image src={dashboardBanner} style={{ position: "relative" }} />
-                <Flex
-                  textAlign="center"
-                  width="506px"
-                  height="196px"
-                  flexDirection="column"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  position="absolute"
-                  top="243px"
-                >
-                  <Text fontSize="xl">{i18n.__("createYourFirstProject")}</Text>
-                  <Text color={colors.baseMuted} fontSize={20}>
-                    {i18n.__("dashboardText")}
-                  </Text>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setProjectDialogOpen(true);
-                    }}
-                  >
-                    {i18n.__("newProject")}
-                    {/* <BlendIcon iconify={bxsPlusCircle} size="12px" paddingLeft="10px" /> */}
-                  </Button>
-                </Flex>
-              </Flex>
-              <Box paddingLeft="62px" paddingTop="100px">
-                <Text color="textPrimary" fontSize="xl">
-                  {i18n.__("keyResources")}
+
+      {/* <StyledBox> */}
+      <Flex
+        width="100vw"
+        minHeight="100vh"
+        paddingLeft="286px"
+        paddingBottom="100px"
+        bg="baseTertiary"
+        flexDirection="column"
+        alignItems="center"
+      >
+        {step === 0 && (
+          <>
+            {projectDialogOpen && (
+              <CreateProjectModal
+                onClose={onDialogClose}
+                onButtonClick={onDialogClick}
+                // isOpen={projectDialogOpen}
+              />
+            )}
+            <Flex flexDirection="column" alignItems="center" mt="42px">
+              <Image src={dashboardBanner} style={{ position: "relative" }} />
+              <Flex
+                textAlign="center"
+                width="506px"
+                height="196px"
+                flexDirection="column"
+                justifyContent="space-between"
+                alignItems="center"
+                position="absolute"
+                top="243px"
+              >
+                <Text fontSize="xl">{i18n.__("createYourFirstProject")}</Text>
+                <Text color={colors.textMuted} fontSize={20}>
+                  {i18n.__("dashboardText")}
                 </Text>
-                <Text color="baseMuted" fontSize="md" paddingTop="8px">
-                  {i18n.__("resourcesText")}
-                </Text>
-                <Flex paddingTop="35px">
-                  <Box paddingRight="42px">
-                    <C.ResourceCard
-                      src={docs}
-                      title={i18n.__("prifinaDocs")}
-                      description={i18n.__("cardText")}
-                    />
-                  </Box>
-                  <Box paddingRight="42px">
-                    <C.ResourceCard
-                      src={starterResources}
-                      title={i18n.__("appStarter")}
-                      description={i18n.__("cardText")}
-                    />
-                  </Box>
-                  <Box paddingRight="42px">
-                    <C.ResourceCard
-                      src={zendeskResources}
-                      title={i18n.__("zendesk")}
-                      description={i18n.__("cardText")}
-                    />
-                  </Box>
-                  <Box>
-                    <C.ResourceCard
-                      src={slackResources}
-                      title={i18n.__("ledSlack")}
-                      description={i18n.__("cardText")}
-                    />
-                  </Box>
-                </Flex>
-              </Box>
-            </>
-          )}
-          {/* PROJECTS */}
-          {step === 2 && (
-            <>
-              {projectDialogOpen && (
-                <CreateProjectModal
-                  onClose={onDialogClose}
-                  onButtonClick={onDialogClick}
-                  // isOpen={projectDialogOpen}
-                />
-              )}
-              <Flex paddingTop="48px" paddingLeft="65px">
-                <Flex
-                  bg="baseMuted"
-                  flexDirection="column"
-                  borderRadius="10px"
-                  padding="16px"
-                >
-                  {upload && (
-                    <UploadApp row={selectedRow.current} close={closeClick} />
-                  )}
-                  {!upload && (
-                    <>
-                      <Flex
-                        alignItems="center"
-                        justifyContent="space-between"
-                        marginBottom="40px"
-                      >
-                        <Text textStyle="h3">{i18n.__("projects")}</Text>
-                        <Button
-                          onClick={() => {
-                            setProjectDialogOpen(true);
-                          }}
-                        >
-                          {i18n.__("newProject")}
-                        </Button>
-                      </Flex>
-                      <div className="tableWrap">
-                        {data.length === 0 && (
-                          <div
-                            style={{
-                              //same as table
-                              width: 1000,
-                            }}
-                          >
-                            <Text m={2}>{i18n.__("noApps")}</Text>
-                          </div>
-                        )}
-                        {data.length > 0 && (
-                          <Table columns={Columns} data={data} />
-                        )}
-                      </div>
-                    </>
-                  )}
-                </Flex>
-              </Flex>
-            </>
-          )}
-          {step === 3 && (
-            <>
-              <Flex flexDirection="column">
-                <Flex
-                  justifyContent="space-between"
-                  alignItems="center"
-                  paddingLeft="22px"
-                  paddingRight="24px"
-                  height="64px"
-                  bg="baseMuted"
-                >
-                  <Flex alignItems="center">
-                    <BlendIcon
-                      iconify={mdiArrowLeft}
-                      width="24px"
-                      onClick={() => {
-                        setStep(2);
-                      }}
-                    />
-                    <Text ml="16px">{allValues.name}</Text>
-                  </Flex>
-                  <Flex alignItems="center">
-                    <Button mr="17px">{i18n.__("launchSandbox")}</Button>
-                    <BlendIcon
-                      iconify={bxsInfoCircle}
-                      width="13px"
-                      color={colors.baseMuted}
-                    />
-                  </Flex>
-                </Flex>
-                <Flex bg="brandAccent" height="95px" />
-                <div
-                  style={{
-                    overflow: "hidden",
-                    paddingTop: 38,
-                    paddingLeft: 65,
-                    paddingRight: 30,
+                <Button
+                  size="sm"
+                  bg={colors.baseAccent}
+                  onClick={() => {
+                    setProjectDialogOpen(true);
                   }}
                 >
-                  <Tabs
-                    activeTab={activeTab}
-                    onClick={tabClick}
-                    variant={"line"}
-                  >
-                    <TabList>
-                      <Tab
-                        style={{
-                          height: 37,
-                          justifyContent: "center",
-                          borderTopLeftRadius: 10,
-                          borderTopRightRadius: 10,
+                  {i18n.__("newProject")}
+                </Button>
+              </Flex>
+            </Flex>
+            <Box paddingLeft="62px" paddingTop="100px">
+              <Text fontSize="xl">{i18n.__("keyResourcesHeading")}</Text>
+              <Text fontSize="md" mt="12px">
+                {i18n.__("keyResourcesPara")}
+              </Text>
+              <Flex
+                paddingTop="35px"
+                width="1027px"
+                justifyContent="space-between"
+              >
+                {resourceCardItems.map(item => (
+                  <C.ResourceCard
+                    marginRight="42px"
+                    src={item.src}
+                    title={item.title}
+                    description={item.description}
+                  />
+                ))}
+              </Flex>
+            </Box>
+          </>
+        )}
+        {/* PROJECTS */}
+        {step === 2 && (
+          <>
+            {projectDialogOpen && (
+              <CreateProjectModal
+                onClose={onDialogClose}
+                onButtonClick={onDialogClick}
+                // isOpen={projectDialogOpen}
+              />
+            )}
+            <Flex paddingTop="48px">
+              <Flex
+                bg="baseMuted"
+                flexDirection="column"
+                borderRadius="10px"
+                padding="16px"
+              >
+                {upload && (
+                  <UploadApp row={selectedRow.current} close={closeClick} />
+                )}
+                {!upload && (
+                  <>
+                    <Flex
+                      alignItems="center"
+                      justifyContent="space-between"
+                      marginBottom="40px"
+                    >
+                      <Text textStyle="h3">{i18n.__("projects")}</Text>
+                      <Button
+                        onClick={() => {
+                          setProjectDialogOpen(true);
                         }}
                       >
-                        <Flex alignItems="center">
-                          <BlendIcon iconify={mdiPowerPlug} />
-                          <Text ml="8px">{i18n.__("sandboxTesting")}</Text>
-                        </Flex>
-                      </Tab>
-                      <Tab
-                        style={{
-                          height: 37,
-                          justifyContent: "center",
-                          borderTopLeftRadius: 10,
-                          borderTopRightRadius: 10,
-                        }}
-                      >
-                        <Flex alignItems="center">
-                          <BlendIcon iconify={baselineWeb} />
-                          <Text ml="8px">{i18n.__("buildAssets")}</Text>
-                        </Flex>
-                      </Tab>
-                      <Tab
-                        style={{
-                          height: 37,
-                          justifyContent: "center",
-                          borderTopLeftRadius: 10,
-                          borderTopRightRadius: 10,
-                        }}
-                      >
-                        <Flex alignItems="center">
-                          <BlendIcon iconify={mdiZipBoxOutline} />
-                          <Text ml="8px">{i18n.__("uploads")}</Text>
-                        </Flex>
-                      </Tab>
-                    </TabList>
-                    <TabPanelList>
-                      <TabPanel>
+                        {i18n.__("newProject")}
+                      </Button>
+                    </Flex>
+                    <div className="tableWrap">
+                      {data.length === 0 && (
                         <div
                           style={{
-                            overflow: "auto",
-                            background: colors.baseMuted,
-                            borderRadius: 10,
+                            //same as table
+                            width: 1000,
                           }}
                         >
-                          <Flex
-                            ml="41px"
-                            flexDirection="column"
-                            paddingTop="30px"
-                          >
-                            <Text color="textPrimary" fontSize="xl">
-                              {i18n.__("sandboxTesting")}
-                            </Text>
-                            <Box mt="21px" width="493px" mb="49px">
-                              <Text color="textPrimary">
-                                {i18n.__("sandboxTestingText")}
-                              </Text>
-                            </Box>
-                          </Flex>
-
-                          <Flex
-                            style={{
-                              border: "1px solid #3F3A4F",
-                              width: 999,
-                              borderTopRightRadius: 10,
-                              borderTopLeftRadius: 10,
-                              borderBottom: 0,
-                              marginRight: 16,
-                              marginLeft: 16,
-                              paddingLeft: 32,
-                              paddingRight: 34,
-                              position: "relative",
-                            }}
-                            flexDirection="column"
-                          >
-                            <Text color="textPrimary" mt="35px">
-                              {i18n.__("launchSandboxSession")}
-                            </Text>
-                            <Flex
-                              alt="cards"
-                              flexDirection="column"
-                              style={{
-                                position: "absolute",
-                                right: 84,
-                                top: -28,
-                              }}
-                            >
-                              <Flex
-                                width="403px"
-                                height="35px"
-                                bg="brandAccent"
-                                borderRadius="5px"
-                                alignItems="center"
-                                mb="4px"
-                              >
-                                <Text ml="16px" mr="18px" fontSize="xs">
-                                  1
-                                </Text>
-                                <Text fontSize="xs">
-                                  {i18n.__("copyYourAppId")}
-                                </Text>
-                              </Flex>
-                              <Flex
-                                width="403px"
-                                height="35px"
-                                bg="brandAccent"
-                                borderRadius="5px"
-                                alignItems="center"
-                                mb="4px"
-                              >
-                                <Text ml="16px" mr="18px" fontSize="xs">
-                                  2
-                                </Text>
-                                <Text fontSize="xs">
-                                  {i18n.__("addToLocalBuild")}
-                                </Text>
-                              </Flex>
-                              <Flex
-                                width="403px"
-                                height="35px"
-                                bg="brandAccent"
-                                borderRadius="5px"
-                                alignItems="center"
-                                mb="4px"
-                              >
-                                <Text ml="16px" mr="18px" fontSize="xs">
-                                  3
-                                </Text>
-                                <Text fontSize="xs">
-                                  {i18n.__("getRemoteLink")}
-                                </Text>
-                              </Flex>
-                              <Flex
-                                width="403px"
-                                height="35px"
-                                bg="brandAccent"
-                                borderRadius="5px"
-                                alignItems="center"
-                              >
-                                <Text ml="16px" mr="18px" fontSize="xs">
-                                  4
-                                </Text>
-                                <Text fontSize="xs">
-                                  {i18n.__("fillOutForm")}
-                                </Text>
-                              </Flex>
-                              <Flex alignItems="baseline">
-                                <Text
-                                  mt="11px"
-                                  color="textPrimary"
-                                  fontSize="xs"
-                                  mr="2px"
-                                >
-                                  {i18n.__("readMoreGuide")}
-                                </Text>
-                                <Button variation="link">
-                                  {i18n.__("prfinaDocsButton")}
-                                </Button>
-                              </Flex>
-                            </Flex>
-                            <Flex mt="42px" alignItems="center" mb="19px">
-                              <Text color="textPrimary" fontSize="xs" mr="8px">
-                                {i18n.__("appId")}
-                              </Text>
-                              <BlendIcon
-                                iconify={bxsInfoCircle}
-                                width="13px"
-                                color={colors.baseMuted}
-                              />
-                            </Flex>
-                            <C.StyledInput value={allValues.id} disabled />
-                            <Flex
-                              justifyContent="space-between"
-                              mt="43px"
-                              width="748px"
-                            >
-                              <Flex flexDirection="column">
-                                <Text mb="16px" fontSize="xs">
-                                  {i18n.__("projectName")}
-                                </Text>
-                                <C.StyledInput placeholder={allValues.name} />
-                              </Flex>
-                              <Flex flexDirection="column">
-                                <Text mb="16px" fontSize="xs">
-                                  {i18n.__("remoteLink")}
-                                </Text>
-                                <C.StyledInput
-                                  placeholder={i18n.__("remoteLink")}
-                                />
-                              </Flex>
-                            </Flex>
-                            <Flex position="absolute" right="32px" bottom="0px">
-                              <Button size="sm">
-                                {i18n.__("launchSandbox")}
-                              </Button>
-                            </Flex>
-                          </Flex>
+                          <Text m={2}>{i18n.__("noApps")}</Text>
                         </div>
-                      </TabPanel>
-                      <TabPanel>
-                        {/* SECOND TABS */}
-                        <div style={{ overflow: "hidden" }}>
-                          <Tabs
-                            activeTab={activeTab2}
-                            onClick={tabClick2}
-                            style={{ height: "100%" }}
-                            variant={"line"}
-                          >
-                            <TabList>
-                              <Tab>
-                                <Text>{i18n.__("dataUsage")}</Text>
-                              </Tab>
-                              <Tab>
-                                <Text>{i18n.__("buildFiles")}</Text>
-                              </Tab>
-                            </TabList>
-                            <TabPanelList style={{ backgroundColor: null }}>
-                              <TabPanel
-                                style={{
-                                  height: "100vh",
-                                  paddingBottom: "50px",
-                                  overflow: "auto",
-                                }}
-                              >
-                                <div style={{ overflow: "auto" }}>
-                                  <Text textStyle="h3" mb="15px">
-                                    {i18n.__("dataUsage")}
-                                  </Text>
-                                  <Box width="470px">
-                                    <Text textStyle="h6" mb="15px">
-                                      {i18n.__("dataUsageText")}
-                                    </Text>
-                                  </Box>
-                                  {/* THIRD TABS */}
-                                  <div
-                                    style={{
-                                      overflow: "hidden",
-                                      background: colors.baseMuted,
-                                      paddingTop: 16,
-                                      paddingBottom: 16,
-                                      paddingLeft: 40,
-                                      paddingRight: 40,
-                                      borderRadius: 10,
-                                    }}
-                                  >
-                                    <Tabs
-                                      activeTab={activeTab3}
-                                      onClick={tabClick3}
-                                      style={{ height: "100%" }}
-                                      variant={"line"}
-                                    >
-                                      <TabList>
-                                        <Tab>
-                                          <Text>{i18n.__("publicApi")}</Text>
-                                        </Tab>
-                                        <Tab>
-                                          <Text>
-                                            {i18n.__("prifinaUserCloud")}
-                                          </Text>
-                                        </Tab>
-                                        <Tab>
-                                          <Text>{i18n.__("noData")}</Text>
-                                        </Tab>
-                                      </TabList>
-                                      <TabPanelList
-                                        style={{ backgroundColor: null }}
-                                      >
-                                        <TabPanel
-                                          style={{
-                                            height: "100vh",
-                                            paddingBottom: "50px",
-                                            overflow: "auto",
-                                          }}
-                                        >
-                                          <div style={{ overflow: "auto" }}>
-                                            <Flex>
-                                              <ApiForm addApi={addApiSource} />
-                                            </Flex>
-
-                                            {/* Box with state change */}
-                                            <Flex>
-                                              {apiData.length > 0 && (
-                                                <Flex
-                                                  width="100%"
-                                                  flexDirection="column"
-                                                  padding="10px"
-                                                  style={{
-                                                    marginTop: 15,
-                                                    borderRadius: 10,
-                                                  }}
-                                                >
-                                                  <Text
-                                                    textStyle="h6"
-                                                    mb="10px"
-                                                  >
-                                                    {i18n.__(
-                                                      "chooseToAddSources",
-                                                    )}
-                                                  </Text>
-                                                  <Flex>
-                                                    <Flex flexDirection="column">
-                                                      {apiData.map(
-                                                        (event, index) => (
-                                                          <AddRemoveDataSources
-                                                            key={index}
-                                                            index={index}
-                                                            dataSource={event}
-                                                            removeDataSource={
-                                                              removeApiSource
-                                                            }
-                                                            completeDataSource={
-                                                              completeApiSource
-                                                            }
-                                                          />
-                                                        ),
-                                                      )}
-                                                    </Flex>
-                                                  </Flex>
-                                                </Flex>
-                                              )}
-                                            </Flex>
-                                          </div>
-                                        </TabPanel>
-                                        <TabPanel>
-                                          <div style={{ overflow: "auto" }}>
-                                            <Flex>
-                                              <DataSourceForm
-                                                addDataSource={addDataSource}
-                                                // addFunctions={addFunction}
-                                              />
-                                            </Flex>
-                                            {/* Box with state change */}
-                                            <Flex>
-                                              {dataSource.length > 0 && (
-                                                <Flex
-                                                  width="100%"
-                                                  flexDirection="column"
-                                                  padding="10px"
-                                                  style={{
-                                                    backgroundColor:
-                                                      colors.baseMuted,
-                                                    marginTop: 15,
-                                                    borderRadius: 10,
-                                                  }}
-                                                >
-                                                  <Text
-                                                    textStyle="h6"
-                                                    mt="10px"
-                                                    mb="10px"
-                                                  >
-                                                    {i18n.__(
-                                                      "dataConectorResults",
-                                                    )}
-                                                  </Text>
-
-                                                  <Flex>
-                                                    <Flex flexDirection="column">
-                                                      {dataSource.map(
-                                                        (event, index) => (
-                                                          <>
-                                                            <AddRemoveDataSources
-                                                              key={index}
-                                                              index={index}
-                                                              dataSource={event}
-                                                              removeDataSource={
-                                                                removeDataSource
-                                                              }
-                                                              completeDataSource={
-                                                                completeDataSource
-                                                              }
-                                                            />
-                                                            <div>
-                                                              {event.functions}
-                                                            </div>
-                                                          </>
-                                                        ),
-                                                      )}
-                                                    </Flex>
-                                                  </Flex>
-                                                </Flex>
-                                              )}
-                                            </Flex>
-                                          </div>
-                                        </TabPanel>
-                                        <TabPanel>
-                                          <div style={{ overflow: "auto" }}>
-                                            <Flex>
-                                              <Box
-                                                width="426px"
-                                                height="76px"
-                                                borderRadius="6px"
-                                                paddingLeft="10px"
-                                                bg={colors.baseLinkHover}
-                                                style={{
-                                                  border: `2px solid ${colors.baseLink}`,
-                                                }}
-                                              >
-                                                <Text>
-                                                  {i18n.__("noDataText")}
-                                                </Text>
-                                                <Link>
-                                                  {i18n.__("learnMoreHere")}
-                                                </Link>
-                                              </Box>
-                                              <Flex ml="10px">
-                                                {/* <CheckboxStateful /> */}
-                                              </Flex>
-                                            </Flex>
-                                          </div>
-                                        </TabPanel>
-                                      </TabPanelList>
-                                    </Tabs>
-                                  </div>
-                                  <Flex
-                                    flexDirection="column"
-                                    width="100%"
-                                    justifyContent="center"
-                                    padding="15px"
-                                    paddingLeft="40px"
-                                    paddingRight="40px"
-                                    style={{
-                                      backgroundColor: colors.baseMuted,
-                                      marginTop: 15,
-                                      borderRadius: 10,
-                                    }}
-                                  >
-                                    {addedDataSources.length > 0 ? (
-                                      <>
-                                        <Flex justifyContent="space-between">
-                                          <Text textStyle="h6" mb="10px">
-                                            {i18n.__("dataSourcesUsed")}
-                                          </Text>
-                                          {!editControled ? (
-                                            <>
-                                              <button
-                                                style={{
-                                                  position: "absolute",
-                                                  right: 45,
-                                                  width: 40,
-                                                  height: 40,
-                                                  border: 0,
-                                                  background: "transparent",
-                                                }}
-                                                onClick={() => {
-                                                  setEditControled(true);
-                                                }}
-                                              >
-                                                <BlendIcon iconify={bxsEdit} />
-                                              </button>
-                                            </>
-                                          ) : (
-                                            <Flex>
-                                              <Button
-                                                variation="outline"
-                                                onClick={() => {
-                                                  setEditControled(false);
-                                                }}
-                                                size="xs"
-                                              >
-                                                {i18n.__("cancelButton")}
-                                              </Button>
-                                              <Button
-                                                onClick={() => {
-                                                  setEditControled(false);
-                                                }}
-                                                size="xs"
-                                                ml="5px"
-                                              >
-                                                {i18n.__("saveButton")}
-                                              </Button>
-                                            </Flex>
-                                          )}
-                                        </Flex>
-                                        <Flex
-                                          width="100%"
-                                          flexDirection="column"
-                                          style={{
-                                            backgroundColor: colors.baseMuted,
-                                            marginTop: 15,
-                                            borderRadius: 10,
-                                          }}
-                                        >
-                                          <Flex>
-                                            <Flex
-                                              flexDirection="column"
-                                              justifyContent="center"
-                                            >
-                                              {addedDataSources.map(
-                                                (event, index) => (
-                                                  <ControlAddedDataSources
-                                                    key={index}
-                                                    index={index}
-                                                    dataSource={event}
-                                                    uncompleteDataSource={
-                                                      uncompleteDataSource
-                                                    }
-                                                    editControled={
-                                                      editControled
-                                                    }
-                                                  />
-                                                ),
-                                              )}
-                                            </Flex>
-                                          </Flex>
-                                          <Flex
-                                            flexDirection="column"
-                                            alignSelf="flex-start"
-                                            mt="20px"
-                                          >
-                                            <Text mb="10px">
-                                              {!editControled
-                                                ? i18n.__(
-                                                    "pressEditToAddDetails",
-                                                  )
-                                                : i18n.__("addYourComment")}
-                                            </Text>
-                                            <textarea
-                                              style={{
-                                                resize: "none",
-                                                width: 750,
-                                                height: 100,
-                                              }}
-                                              disabled={
-                                                !editControled ? true : false
-                                              }
-                                            />
-                                          </Flex>
-                                        </Flex>
-                                      </>
-                                    ) : (
-                                      <Flex
-                                        flexDirection="column"
-                                        alignItems="center"
-                                        justifyContent="center"
-                                      >
-                                        <Flex justifyContent="space-between">
-                                          <Text textStyle="h6" mb="10px">
-                                            {i18n.__("dataSourcesUsed")}
-                                          </Text>
-                                        </Flex>
-                                        <Flex
-                                          width="100%"
-                                          flexDirection="column"
-                                          alignItems="center"
-                                          justifyContent="center"
-                                          style={{
-                                            border: "1px dashed white",
-                                            marginTop: 15,
-                                            borderRadius: 10,
-                                          }}
-                                        >
-                                          <Text textStyle="h6" mt="10px">
-                                            {i18n.__("selectSources")}
-                                          </Text>
-                                          <Text textStyle="h6" mt="10px">
-                                            {i18n.__("dataSourcesYouAdd")}
-                                          </Text>
-                                        </Flex>
-                                      </Flex>
-                                    )}
-                                  </Flex>
-                                </div>
-                              </TabPanel>
-                              <TabPanel>
-                                <div style={{ overflow: "auto" }}>
-                                  <Text textStyle="h3" mb="15px">
-                                    {i18n.__("buildFiles")}
-                                  </Text>
-                                  <Box width="470px">
-                                    <Text textStyle="h6" mb="15px">
-                                      {i18n.__("buildFilesText")}
-                                    </Text>
-                                  </Box>
-                                </div>
-                              </TabPanel>
-                              <TabPanel>{/* Work panel 3 */}</TabPanel>
-                            </TabPanelList>
-                          </Tabs>
-                        </div>
-                      </TabPanel>
-                      <TabPanel>
-                        <Text mb="16px" color="textPriamry" fontSize="xs">
-                          {/* In progress...*/}
-                        </Text>
-                      </TabPanel>
-                    </TabPanelList>
-                  </Tabs>
-                </div>
+                      )}
+                      {data.length > 0 && (
+                        <Table columns={Columns} data={data} />
+                      )}
+                    </div>
+                  </>
+                )}
               </Flex>
-            </>
-          )}
-        </Flex>
-      </StyledBox>
+            </Flex>
+          </>
+        )}
+        {step === 3 && (
+          <>
+            <Flex flexDirection="column">
+              <C.ActionContainer
+                mt={10}
+                mb={32}
+                style={{ top: 65, position: "sticky" }}
+              >
+                <C.CustomShape bg="brandAccent" />
+                <BlendIcon
+                  style={{ cursor: "pointer" }}
+                  color={colors.textPrimary}
+                  iconify={mdiArrowLeft}
+                  width="24px"
+                  onClick={() => {
+                    setStep(2);
+                  }}
+                />
+                <Input
+                  width="200px"
+                  defaultValue={allValues.name}
+                  onChange={handleNameChange}
+                />
+                <Flex>
+                  {radioButtons()}
+                  {detailsSaveStatus()}
+                </Flex>
+                <Button disabled>Launch Sandbox</Button>
+              </C.ActionContainer>
+              <C.ProjectContainer mb={24}>
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Text style={{ textTransform: "uppercase" }}>
+                    Project resources
+                  </Text>
+                  {versionSaveStatus()}
+                </Flex>
+                <Box width="584px">
+                  <Text fontSize="xs">
+                    Add your .Zip build deployment package and information
+                    regarding your apps data useage here to prepare for handoff
+                    to a nominated publisher account.
+                  </Text>
+                </Box>
+                <Divider mb={24} mt={24} color={colors.textMuted} />
+                <Text mb={24}>Build deployment</Text>
+                <Box>
+                  <Flex mb={16}>
+                    <Box>
+                      <Text fontSize="sm" mb={5}>
+                        App ID
+                      </Text>
+                      <Input
+                        disabled
+                        width="451px"
+                        label="text"
+                        value={allValues.id}
+                        color={colors.textPrimary}
+                        style={{ background: "transparent" }}
+                      />
+                    </Box>
+                  </Flex>
+                  <Flex alignItems="flex-end" mb={16}>
+                    <Box>
+                      <Text fontSize="sm" mb={5}>
+                        Version number
+                      </Text>
+                      <Input
+                        width="451px"
+                        label="text"
+                        defaultValue={allValues.version || "undefined"}
+                        onChange={handleVersionChange}
+                        color={colors.textPrimary}
+                        style={{
+                          background: "transparent",
+                          border: "1px solid #ADADAD",
+                        }}
+                      />
+                    </Box>
+                    <Text fontSize="xs" ml={25}>
+                      This version number is for your internal use so can follow
+                      whatever logic you choose.
+                    </Text>
+                  </Flex>
+                  <Flex alignItems="center" justifyContent="center">
+                    <Box ml="5px">
+                      <Text fontSize="sm" mb={5}>
+                        Build deployment package
+                      </Text>
+                      <div
+                        style={{
+                          border: "1px dashed lightgray",
+                          width: 451,
+                          height: 132,
+                          borderRadius: 4,
+                          background: "transparent",
+                        }}
+                      />
+                    </Box>
+                    <Box ml={25}>
+                      <Text fontSize="xs">
+                        The build deployment package is a package version of
+                        your local build. It must include:
+                      </Text>
+                      <Text fontSize="xs">1. Your Prifina App ID</Text>
+                      <Text fontSize="xs">
+                        2. Come in a .zip with a maximum file size of 5MB
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Box>
+              </C.ProjectContainer>
+
+              {/* <C.DataContainer /> */}
+              <C.ActionContainer mt={10} mb={32} justifyContent="space-between">
+                <C.CustomShape bg="baseError" />
+                <Box width="530px">
+                  <Text>DELETE PROJECT</Text>
+                  <Text mt={5} fontSize="xs">
+                    Choose this to delete your project and all data associated
+                    with your account. This operation is final and all data will
+                    be permanently lost.
+                  </Text>
+                </Box>
+                <Button colorStyle="error" onClick={deleteApp} disabled>
+                  Delete
+                </Button>
+              </C.ActionContainer>
+            </Flex>
+          </>
+        )}
+      </Flex>
+      {/* </StyledBox> */}
     </React.Fragment>
   );
 };
@@ -1321,12 +1002,16 @@ const Home = props => {
 
   return (
     <>
-      {initClient && (
-        <Content Component={AppComponent} {...componentProps.current} />
-      )}
-      {!initClient && (
-        <div>Home {isAuthenticated ? "Authenticated" : "Unauthenticated"} </div>
-      )}
+      <ToastContextProvider>
+        {initClient && (
+          <Content Component={AppComponent} {...componentProps.current} />
+        )}
+        {!initClient && (
+          <div>
+            Home {isAuthenticated ? "Authenticated" : "Unauthenticated"}{" "}
+          </div>
+        )}
+      </ToastContextProvider>
     </>
   );
 };

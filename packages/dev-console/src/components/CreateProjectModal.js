@@ -48,12 +48,16 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
   const history = useHistory();
   console.log("NEW APP ", currentUser);
 
+  const { colors } = useTheme();
+
   const [appFields, handleChange] = useFormFields({
     appId: short.generate(),
     name: "",
     title: "",
-    //version: "",
+    version: 1,
   });
+
+  const [appType, setAppType] = useState(1);
 
   const createApp = async e => {
     try {
@@ -64,9 +68,11 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
         title: appFields.title,
         identity: currentUser.identity,
         identityPool: currentUser.identityPool,
-        //version: appFields.version,
+        version: appFields.version,
+        appType: appType,
       });
-      history.push("/");
+      // history.push("/");
+      location.reload();
     } catch (e) {
       console.log("error ", e);
     }
@@ -96,7 +102,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
       >
         <ModalContent
           style={{
-            background: "white",
+            background: "#1D152C",
             width: "806px",
             height: "412px",
             borderRadius: 5,
@@ -106,33 +112,33 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
           <ModalBody paddingLeft="36px" paddingRight="36px" paddingTop="37px">
             <Flex display="flex" flexDirection="row" justifyContent="center">
               <Box>
-                <Text textStyle={"semiBold"} fontSize="xl" color="textPrimary">
+                <Text textStyle={"semiBold"} fontSize="xl">
                   {i18n.__("createProject")}
                 </Text>
-                <Text paddingTop="36px" color="#ADADAD">
+                <Text paddingTop="36px" color={colors.textMuted}>
                   {i18n.__("projectType")}
                 </Text>
                 <Flex width="268px">
-                  <Radio
-                    // checked
-                    onChange={() => {}}
-                    value="TABLE"
-                    fontSize="sm"
-                    color="#AA1370"
-                    textStyle={{ color: "white" }}
-                  >
-                    {i18n.__("widget")}
-                  </Radio>
-                  <Radio
-                    disabled
-                    onChange={() => {}}
-                    checked
-                    value="TABLE"
-                    color="#AA1370"
-                    fontSize="sm"
-                  >
-                    {i18n.__("app")}
-                  </Radio>
+                  <Flex flexDirection="row" alignItems="center" mr="15px">
+                    <Radio
+                      fontSize="8px"
+                      onChange={() => {}}
+                      onClick={() => {
+                        setAppType(1);
+                      }}
+                    />
+                    <Text fontSize="xs">{i18n.__("application")}</Text>
+                  </Flex>
+                  <Flex flexDirection="row" alignItems="center" mr="15px">
+                    <Radio
+                      fontSize="8px"
+                      onChange={() => {}}
+                      onClick={() => {
+                        setAppType(2);
+                      }}
+                    />
+                    <Text fontSize="xs">{i18n.__("widget")}</Text>
+                  </Flex>
                 </Flex>
                 <Text paddingTop="10px" paddingBottom="16px" color="#ADADAD">
                   {i18n.__("projectName")}
@@ -159,7 +165,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Box paddingLeft="16px" paddingTop="10px">
                     <Flex>
                       <BlendIcon
-                        iconify={bxsInfoCircle}
+                        // iconify={bxsInfoCircle}
                         color={"#580F57"}
                         size={"20"}
                       />

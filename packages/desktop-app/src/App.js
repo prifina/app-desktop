@@ -136,6 +136,7 @@ function App() {
             /* given_name: token["given_name"],*/
             client: token["aud"],
             prifinaID: token["custom:prifina"],
+            group: token["cognito:groups"],
           };
 
           if (
