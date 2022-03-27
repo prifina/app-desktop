@@ -68,6 +68,14 @@ const DevConsole = props => {
   const { currentUser } = useAppContext();
   console.log("USER GROUP", currentUser.group);
 
+  function setCookie(cname, cvalue) {
+    let d = new Date();
+    d.setTime(d.getTime() + 1 * 3600 * 1000);
+    let expires = "expires=" + d.toUTCString();
+
+    document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
+  }
+
   function getCookie(cname) {
     let name = cname + "=";
     let ca = document.cookie.split(";");
@@ -121,6 +129,7 @@ const DevConsole = props => {
               </Button>
               <Button
                 onClick={() => {
+                  setCookie("developerAccount", "true");
                   window.location.href = config.DEV_URL + "/register";
                 }}
               >

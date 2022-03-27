@@ -43,7 +43,7 @@ const Register = props => {
   const prifinaID = currentUser.prifinaID;
 
   const newGroup = "DEV";
-
+  /*
   const addUserRole = async () => {
     try {
       await addUserToCognitoGroupMutation(GRAPHQL, prifinaID, newGroup);
@@ -51,7 +51,7 @@ const Register = props => {
       console.log("error ", e);
     }
   };
-
+*/
   useEffect(async () => {
     const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
 
@@ -67,23 +67,20 @@ const Register = props => {
 
   const [step, setStep] = useState(0);
 
-  switch (step) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      break;
-    default:
-  }
-
   const nextStepAction = step => {
     if (step === 2) {
-      addUserRole();
-      setCookie("developerAccount", "true");
-      window.location.href = "/home"; // browser-back is /core/dev-console
+      // all these were "visible" here...
+      //console.log("ADD GROUP ", GRAPHQL, prifinaID, newGroup);
+      addUserToCognitoGroupMutation(GRAPHQL, prifinaID, newGroup)
+        .then(res => {
+          window.location.href = "/home"; // browser-back is /core/dev-console
+        })
+        .catch(err => {
+          console.log("ADD GROUP ERROR ", err);
+        });
+      //addUserRole();
+      //setCookie("developerAccount", "true");
+      //window.location.href = "/home"; // browser-back is /core/dev-console
     } else if (step === 0) {
       // terms declined...
       // toast.info(i18n.__("acceptTerms"), {});
