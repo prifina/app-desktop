@@ -14,7 +14,6 @@
   "scripts": {
     "start": "cross-env PORT=3001 react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
     "storybook": "start-storybook"
   },
   "devDependencies": {
