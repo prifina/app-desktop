@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "start": "cross-env PORT=3000 react-app-rewired start",
+    "start": "GENERATE_SOURCEMAP=false && cross-env PORT=3000 react-app-rewired start",
     "build": "react-app-rewired build",
     "storybook": "start-storybook"
   },
