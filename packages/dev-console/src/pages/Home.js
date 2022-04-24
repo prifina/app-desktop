@@ -100,6 +100,9 @@ import {
   ApiForm,
 } from "../components/helper";
 
+import UploadAsset from "../components/UploadAsset";
+import UploadFile from "../components/UploadFile";
+
 // Create a default prop getter
 const defaultPropGetter = () => ({});
 
@@ -170,10 +173,8 @@ const Main = ({ data, currentUser }) => {
   ];
 
   // const appTypes = ["Widget", "App"];
-  const [saved, setSaved] = useState(false);
 
-  console.log("SAVEd", saved);
-
+  console.log("is it saved", data);
   const [allValues, setAllValues] = useState({
     name: "",
     id: "",
@@ -182,6 +183,30 @@ const Main = ({ data, currentUser }) => {
     newName: "",
     version: "",
     newVersion: "",
+    publisher: "",
+    newPublisher: "",
+    category: "",
+    newCategory: "",
+    deviceSupport: "",
+    newDeviceSupport: "",
+    languages: "",
+    newLanguages: "",
+    age: "",
+    newAge: "",
+    keyFeatures: "",
+    newKeyFeatures: "",
+    shortDescription: "",
+    newShortDescription: "",
+    longDescription: "",
+    newLongDescription: "",
+    userHeld: "",
+    newUserHeld: "",
+    userGenerated: "",
+    newUserGenerated: "",
+    public: "",
+    newPublic: "",
+    icon: "",
+    newIcon: "",
   });
 
   const Columns = [
@@ -189,13 +214,14 @@ const Main = ({ data, currentUser }) => {
       Header: "Name",
       accessor: "name",
       Cell: props => {
+        console.log("props", props);
+
         return (
           <Text
             onClick={() => {
               setStep(3);
               setAllValues({
                 ...allValues,
-
                 name: props.cell.value,
                 id: props.row.values.id,
                 newName: props.cell.value,
@@ -203,6 +229,30 @@ const Main = ({ data, currentUser }) => {
                 newType: props.row.values.appType,
                 version: props.row.values.version,
                 newVersion: props.row.values.version,
+                publisher: props.row.original.publisher,
+                newPublisher: props.row.original.publisher,
+                category: props.row.original.category,
+                newCategory: props.row.original.category,
+                deviceSupport: props.row.original.deviceSupport,
+                newDeviceSupport: props.row.original.newDeviceSupport,
+                languages: props.row.original.languages,
+                newLanguages: props.row.original.newLanguages,
+                age: props.row.original.age,
+                newAge: props.row.original.newAge,
+                keyFeatures: props.row.original.keyFeatures,
+                newKeyFeatures: props.row.original.newKeyFeatures,
+                shortDescription: props.row.original.shortDescription,
+                newShortDescription: props.row.original.newShortDescription,
+                longDescription: props.row.original.longDescription,
+                newLongDescription: props.row.original.newLongDescription,
+                userHeld: props.row.original.userHeld,
+                newUserHeld: props.row.original.newUserHeld,
+                userGenerated: props.row.original.userGenerated,
+                newUserGenerated: props.row.original.newUserGenerated,
+                public: props.row.original.public,
+                newPublic: props.row.original.newPublic,
+                icon: props.row.original.icon,
+                newIcon: props.row.original.newIcon,
               });
             }}
           >
@@ -323,19 +373,61 @@ const Main = ({ data, currentUser }) => {
     }
   };
 
-  const saveChanges = (id, newAppType, newName, newVersion) => {
-    console.log("CLICK ", id);
-
+  const saveChanges = (
+    id,
+    newAppType,
+    newName,
+    newVersion,
+    newPublisher,
+    newCategory,
+    newDeviceSupport,
+    newLanguages,
+    newAge,
+    newKeyFeatures,
+    newShortDescription,
+    newLongDescription,
+    newUserHeld,
+    newUserGenerated,
+    newPublic,
+    newIcon,
+  ) => {
     updateAppVersionMutation(GRAPHQL, {
       id: id,
       appType: newAppType,
       name: newName,
       nextVersion: newVersion,
+      publisher: newPublisher,
+      category: newCategory,
+      deviceSupport: newDeviceSupport,
+      languages: newLanguages,
+      age: newAge,
+      keyFeatures: newKeyFeatures,
+      shortDescription: newShortDescription,
+      longDescription: newLongDescription,
+      userHeld: newUserHeld,
+      userGenerated: newUserGenerated,
+      public: newPublic,
+      icon: newIcon,
     }).then(res => {
       console.log("SUCCESS", res);
       toast.success("Project name updated successfully", {});
-      location.reload();
+      // location.reload();
       setStep(2);
+    });
+  };
+
+  const testing = (id, dataSources) => {
+    console.log("CLICK ", id);
+
+    updateAppVersionMutation(GRAPHQL, {
+      id: id,
+      // category: newCategory,
+      dataSources: dataSources,
+    }).then(res => {
+      console.log("SUCCESS", res);
+      toast.success("Project name updated successfully", {});
+      // location.reload();
+      // setStep(2);
     });
   };
 
@@ -509,11 +601,10 @@ const Main = ({ data, currentUser }) => {
             onClick={() => {
               saveChanges(
                 allValues.id,
-                allValues.appType,
+                allValues.newType,
                 allValues.newName,
                 allValues.newVersion,
               );
-              setSaved(true);
             }}
           >
             Save Changes
@@ -534,8 +625,21 @@ const Main = ({ data, currentUser }) => {
 
   console.log("all", allValues);
 
-  const versionSaveStatus = () => {
-    if (allValues.version !== allValues.newVersion) {
+  const resourcesSaveStatus = () => {
+    if (
+      allValues.version !== allValues.newVersion ||
+      allValues.publisher !== allValues.newPublisher ||
+      allValues.category !== allValues.newCategory ||
+      allValues.deviceSupport !== allValues.newDeviceSupport ||
+      allValues.languages !== allValues.newLanguages ||
+      allValues.age !== allValues.newAge ||
+      allValues.keyFeatures !== allValues.newKeyFeatures ||
+      allValues.shortDescription !== allValues.newShortDescription ||
+      allValues.longDescription !== allValues.newLongDescription ||
+      allValues.userHeld !== allValues.newUserHeld ||
+      allValues.userGenerated !== allValues.newUserGenerated ||
+      allValues.public !== allValues.newPublic
+    ) {
       return (
         <Flex alignItems="center">
           <BlendIcon
@@ -555,8 +659,19 @@ const Main = ({ data, currentUser }) => {
                 allValues.appType,
                 allValues.newName,
                 allValues.newVersion,
+                allValues.newPublisher,
+                allValues.newCategory,
+                allValues.newDeviceSupport,
+                allValues.newLanguages,
+                allValues.newAge,
+                allValues.newKeyFeatures,
+                allValues.newShortDescription,
+                allValues.newLongDescription,
+                allValues.newUserHeld,
+                allValues.newUserGenerated,
+                allValues.newPublic,
+                allValues.newIcon,
               );
-              setSaved(true);
             }}
           >
             Save Changes
@@ -600,11 +715,63 @@ const Main = ({ data, currentUser }) => {
       newName: event.target.value,
     });
 
-  const handleVersionChange = event =>
+  const handleValueChange = event => {
+    let value = event.target.value;
+    let name = event.target.name;
+
+    setAllValues(prevalue => {
+      return {
+        ...prevalue, // Spread Operator
+        [name]: value,
+      };
+    });
+  };
+
+  var pullParams = {
+    type: "slotPull",
+    message: "RequestResponse",
+    LogType: "None",
+  };
+
+  let jsonWord = JSON.stringify(pullParams);
+
+  console.log("json word", jsonWord);
+
+  const InputSection = ({ title, valueName, defaultValue, onChange, text }) => {
+    return (
+      <Flex alignItems="flex-end" mb={16}>
+        <Box>
+          <Text fontSize="sm" mb={5}>
+            {title}
+          </Text>
+          <Input
+            width="451px"
+            label="text"
+            name={valueName}
+            defaultValue={defaultValue}
+            onChange={onChange}
+            color={colors.textPrimary}
+            style={{
+              background: "transparent",
+              border: "1px solid #ADADAD",
+            }}
+          />
+        </Box>
+        <Text fontSize="xs" ml={25}>
+          {text}
+        </Text>
+      </Flex>
+    );
+  };
+
+  const passAssetInfo = title => {
+    console.log("pass", title); // LOGS DATA FROM CHILD (My name is Dean Winchester... &)
+
     setAllValues({
       ...allValues,
-      newVersion: event.target.value,
+      newIcon: allValues.id + "-" + "icon" + "-" + title,
     });
+  };
 
   return (
     <React.Fragment>
@@ -758,8 +925,9 @@ const Main = ({ data, currentUser }) => {
                 />
                 <Input
                   width="200px"
+                  name="newName"
                   defaultValue={allValues.name}
-                  onChange={handleNameChange}
+                  onChange={handleValueChange}
                 />
                 <Flex>
                   {radioButtons()}
@@ -772,7 +940,7 @@ const Main = ({ data, currentUser }) => {
                   <Text style={{ textTransform: "uppercase" }}>
                     Project resources
                   </Text>
-                  {versionSaveStatus()}
+                  {resourcesSaveStatus()}
                 </Flex>
                 <Box width="584px">
                   <Text fontSize="xs">
@@ -783,71 +951,245 @@ const Main = ({ data, currentUser }) => {
                 </Box>
                 <Divider mb={24} mt={24} color={colors.textMuted} />
                 <Text mb={24}>Build deployment</Text>
-                <Box>
-                  <Flex mb={16}>
-                    <Box>
-                      <Text fontSize="sm" mb={5}>
-                        App ID
-                      </Text>
-                      <Input
-                        disabled
-                        width="451px"
-                        label="text"
-                        value={allValues.id}
-                        color={colors.textPrimary}
-                        style={{ background: "transparent" }}
-                      />
-                    </Box>
-                  </Flex>
-                  <Flex alignItems="flex-end" mb={16}>
-                    <Box>
-                      <Text fontSize="sm" mb={5}>
-                        Version number
-                      </Text>
-                      <Input
-                        width="451px"
-                        label="text"
-                        defaultValue={allValues.version || "undefined"}
-                        onChange={handleVersionChange}
-                        color={colors.textPrimary}
-                        style={{
-                          background: "transparent",
-                          border: "1px solid #ADADAD",
-                        }}
-                      />
-                    </Box>
-                    <Text fontSize="xs" ml={25}>
-                      This version number is for your internal use so can follow
-                      whatever logic you choose.
+
+                <Flex mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      App ID
                     </Text>
-                  </Flex>
-                  <Flex alignItems="center" justifyContent="center">
-                    <Box ml="5px">
-                      <Text fontSize="sm" mb={5}>
-                        Build deployment package
-                      </Text>
-                      <div
-                        style={{
-                          border: "1px dashed lightgray",
-                          width: 451,
-                          height: 132,
-                          borderRadius: 4,
-                          background: "transparent",
-                        }}
-                      />
-                    </Box>
-                    <Box ml={25}>
-                      <Text fontSize="xs">
-                        The build deployment package is a package version of
-                        your local build. It must include:
-                      </Text>
-                      <Text fontSize="xs">1. Your Prifina App ID</Text>
-                      <Text fontSize="xs">
-                        2. Come in a .zip with a maximum file size of 5MB
-                      </Text>
-                    </Box>
-                  </Flex>
-                </Box>
+                    <Input
+                      disabled
+                      width="451px"
+                      label="text"
+                      value={allValues.id}
+                      color={colors.textPrimary}
+                      style={{ background: "transparent" }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Version number
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newVersion"
+                      defaultValue={allValues.version || "undefined"}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                  <Text fontSize="xs" ml={25}>
+                    This version number is for your internal use so can follow
+                    whatever logic you choose.
+                  </Text>
+                </Flex>
+                <Flex alignItems="center" justifyContent="center" mb={16}>
+                  <Box ml="5px">
+                    <Text fontSize="sm" mb={5}>
+                      Build deployment package
+                    </Text>
+                    {/* <div
+                      style={{
+                        border: "1px dashed lightgray",
+                        width: 451,
+                        height: 132,
+                        borderRadius: 4,
+                        background: "transparent",
+                      }}
+                    /> */}
+                    <UploadFile />
+                  </Box>
+                  <Box ml={25}>
+                    <Text fontSize="xs">
+                      The build deployment package is a package version of your
+                      local build. It must include:
+                    </Text>
+                    <Text fontSize="xs">1. Your Prifina App ID</Text>
+                    <Text fontSize="xs">
+                      2. Come in a .zip with a maximum file size of 5MB
+                    </Text>
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Publisher
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newPublisher"
+                      defaultValue={allValues.publisher}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Category
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newCategory"
+                      defaultValue={allValues.category}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Device support
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newDeviceSupport"
+                      defaultValue={allValues.deviceSupport}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Languages
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newLanguages"
+                      defaultValue={allValues.languages}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Age
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newAge"
+                      defaultValue={allValues.age}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Key Features
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newKeyFeatures"
+                      defaultValue={allValues.keyFeatures}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Short Description
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newShortDescription"
+                      defaultValue={allValues.shortDescription}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Long Description
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="newLongDescription"
+                      defaultValue={allValues.longDescription}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #ADADAD",
+                      }}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5}>
+                      Icon
+                    </Text>
+                  </Box>
+                  <UploadAsset
+                    id={allValues.id}
+                    type="icon"
+                    numId="1"
+                    passAssetInfo={passAssetInfo}
+                  />
+                </Flex>
+              </C.ProjectContainer>
+              <C.ProjectContainer alt="dataSources">
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Text style={{ textTransform: "uppercase" }}>
+                    Data sources
+                  </Text>
+                  {/* {resourcesSaveStatus()} */}
+                </Flex>
               </C.ProjectContainer>
 
               {/* <C.DataContainer /> */}
