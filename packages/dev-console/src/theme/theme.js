@@ -36,12 +36,15 @@ const componentStyles = {
       border: "0.0625rem solid #c91684",
     },
     outline: {
-      backgroundColor: baseWhite,
+      backgroundColor: baseTertiary,
       color: "#F5F8F7",
       border: "0.0625rem solid #c91684",
     },
     link: {
       color: brandAccent,
+    },
+    file: {
+      backgroundColor: "transparent",
     },
     input: {
       base: {
