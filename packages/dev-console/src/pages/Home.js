@@ -1,12 +1,6 @@
 /* global localStorage */
 
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  version,
-} from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import {
   Box,
@@ -20,8 +14,6 @@ import {
   Radio,
   useTheme,
 } from "@blend-ui/core";
-
-import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
@@ -88,20 +80,7 @@ import mdiWidget from "@iconify/icons-mdi/widgets";
 import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
-import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
-
-import hazardSymbol from "@iconify/icons-mdi/warning";
-import successTick from "@iconify/icons-mdi/tick-circle";
-
-import {
-  AddRemoveDataSources,
-  ControlAddedDataSources,
-  DataSourceForm,
-  ApiForm,
-} from "../components/helper";
-
-import UploadAsset from "../components/UploadAsset";
-import UploadFile from "../components/UploadFile";
+import ProjectDetails from "../components/ProjectDetails";
 
 // Create a default prop getter
 const defaultPropGetter = () => ({});
@@ -193,8 +172,8 @@ const Main = ({ data, currentUser }) => {
     newLanguages: "",
     age: "",
     newAge: "",
-    keyFeatures: "",
-    newKeyFeatures: "",
+    keyFeatures: [],
+    newKeyFeatures: [],
     shortDescription: "",
     newShortDescription: "",
     longDescription: "",
@@ -207,6 +186,8 @@ const Main = ({ data, currentUser }) => {
     newPublic: "",
     icon: "",
     newIcon: "",
+    dataSources: [],
+    newDataSources: [],
   });
 
   const Columns = [
@@ -240,7 +221,7 @@ const Main = ({ data, currentUser }) => {
                 age: props.row.original.age,
                 newAge: props.row.original.newAge,
                 keyFeatures: props.row.original.keyFeatures,
-                newKeyFeatures: props.row.original.newKeyFeatures,
+                newKeyFeatures: props.row.original.keyFeatures,
                 shortDescription: props.row.original.shortDescription,
                 newShortDescription: props.row.original.newShortDescription,
                 longDescription: props.row.original.longDescription,
@@ -253,6 +234,8 @@ const Main = ({ data, currentUser }) => {
                 newPublic: props.row.original.newPublic,
                 icon: props.row.original.icon,
                 newIcon: props.row.original.newIcon,
+                dataSources: props.row.original.dataSources,
+                newDataSources: props.row.original.dataSources,
               });
             }}
           >
@@ -373,74 +356,6 @@ const Main = ({ data, currentUser }) => {
     }
   };
 
-  const saveChanges = (
-    id,
-    newAppType,
-    newName,
-    newVersion,
-    newPublisher,
-    newCategory,
-    newDeviceSupport,
-    newLanguages,
-    newAge,
-    newKeyFeatures,
-    newShortDescription,
-    newLongDescription,
-    newUserHeld,
-    newUserGenerated,
-    newPublic,
-    newIcon,
-  ) => {
-    updateAppVersionMutation(GRAPHQL, {
-      id: id,
-      appType: newAppType,
-      name: newName,
-      nextVersion: newVersion,
-      publisher: newPublisher,
-      category: newCategory,
-      deviceSupport: newDeviceSupport,
-      languages: newLanguages,
-      age: newAge,
-      keyFeatures: newKeyFeatures,
-      shortDescription: newShortDescription,
-      longDescription: newLongDescription,
-      userHeld: newUserHeld,
-      userGenerated: newUserGenerated,
-      public: newPublic,
-      icon: newIcon,
-    }).then(res => {
-      console.log("SUCCESS", res);
-      toast.success("Project name updated successfully", {});
-      // location.reload();
-      setStep(2);
-    });
-  };
-
-  const testing = (id, dataSources) => {
-    console.log("CLICK ", id);
-
-    updateAppVersionMutation(GRAPHQL, {
-      id: id,
-      // category: newCategory,
-      dataSources: dataSources,
-    }).then(res => {
-      console.log("SUCCESS", res);
-      toast.success("Project name updated successfully", {});
-      // location.reload();
-      // setStep(2);
-    });
-  };
-
-  const deleteApp = () => {
-    deleteAppVersionMutation(GRAPHQL, {
-      id: allValues.id,
-    }).then(res => {
-      console.log("SUCCESS", res);
-      // location.reload();
-      toast.success("Deleted project successfully", {});
-    });
-  };
-
   const [step, setStep] = useState(0);
 
   switch (step) {
@@ -522,256 +437,23 @@ const Main = ({ data, currentUser }) => {
     },
   ];
 
-  const radioButtons = () => {
-    if (allValues.appType === 1) {
-      return (
-        <Flex flexDirection="row" alignItems="center" mr="20px">
-          <Flex flexDirection="row" alignItems="center" mr="15px">
-            <Radio
-              fontSize="8px"
-              onChange={() => {}}
-              onClick={() => {
-                setAllValues({ ...allValues, newType: 2 });
-              }}
-            />
-            <Text fontSize="xs">{i18n.__("widget")}</Text>
-          </Flex>
-          <Flex flexDirection="row" alignItems="center">
-            <Radio
-              fontSize="10px"
-              onChange={() => {}}
-              checked
-              onClick={() => {
-                setAllValues({ ...allValues, newType: 1 });
-              }}
-            />
-            <Text fontSize="xs">Application</Text>
-          </Flex>
-        </Flex>
-      );
-    } else if (allValues.appType === 2) {
-      return (
-        <Flex flexDirection="row" alignItems="center" mr="20px">
-          <Flex flexDirection="row" alignItems="center" mr="15px">
-            <Radio
-              checked
-              fontSize="10px"
-              onChange={() => {}}
-              value="1"
-              onClick={() => {
-                setAllValues({ ...allValues, newType: 2 });
-              }}
-            />
-            <Text fontSize="xs">{i18n.__("widget")}</Text>
-          </Flex>
-          <Flex flexDirection="row" alignItems="center">
-            <Radio
-              fontSize="10px"
-              onChange={() => {}}
-              value="2"
-              onClick={() => {
-                setAllValues({ ...allValues, newType: 1 });
-              }}
-            />
-            <Text fontSize="xs">Application</Text>
-          </Flex>
-        </Flex>
-      );
-    }
-  };
+  const [updatedData, setUpdatedData] = useState(data);
 
-  const detailsSaveStatus = () => {
-    if (
-      allValues.name !== allValues.newName ||
-      allValues.appType !== allValues.newType
-    ) {
-      return (
-        <Flex alignItems="center">
-          <BlendIcon
-            size="18px"
-            iconify={hazardSymbol}
-            className="icon"
-            color="orange"
-          />
-          <Text fontSize="xs" ml={5} color="#EDA436">
-            Unsaved Changes
-          </Text>
-          <Button
-            ml="15px"
-            onClick={() => {
-              saveChanges(
-                allValues.id,
-                allValues.newType,
-                allValues.newName,
-                allValues.newVersion,
-              );
-            }}
-          >
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    } else {
-      return (
-        <Flex alignItems="center">
-          <Text fontSize="xs">No Unsaved Changes</Text>
-          <Button disabled colorStyle="red" ml="15px">
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    }
-  };
+  const fetchDataManually = useCallback(async () => {
+    const prifinaApps = await listAppsQuery(GRAPHQL, {
+      filter: { prifinaId: { eq: currentUser.prifinaID } },
+    });
+    let updatedApps = prifinaApps.data.listApps.items;
 
-  console.log("all", allValues);
-
-  const resourcesSaveStatus = () => {
-    if (
-      allValues.version !== allValues.newVersion ||
-      allValues.publisher !== allValues.newPublisher ||
-      allValues.category !== allValues.newCategory ||
-      allValues.deviceSupport !== allValues.newDeviceSupport ||
-      allValues.languages !== allValues.newLanguages ||
-      allValues.age !== allValues.newAge ||
-      allValues.keyFeatures !== allValues.newKeyFeatures ||
-      allValues.shortDescription !== allValues.newShortDescription ||
-      allValues.longDescription !== allValues.newLongDescription ||
-      allValues.userHeld !== allValues.newUserHeld ||
-      allValues.userGenerated !== allValues.newUserGenerated ||
-      allValues.public !== allValues.newPublic
-    ) {
-      return (
-        <Flex alignItems="center">
-          <BlendIcon
-            size="18px"
-            iconify={hazardSymbol}
-            className="icon"
-            color="orange"
-          />
-          <Text fontSize="xs" ml={5} color="#EDA436">
-            Unsaved Changes
-          </Text>
-          <Button
-            ml="15px"
-            onClick={() => {
-              saveChanges(
-                allValues.id,
-                allValues.appType,
-                allValues.newName,
-                allValues.newVersion,
-                allValues.newPublisher,
-                allValues.newCategory,
-                allValues.newDeviceSupport,
-                allValues.newLanguages,
-                allValues.newAge,
-                allValues.newKeyFeatures,
-                allValues.newShortDescription,
-                allValues.newLongDescription,
-                allValues.newUserHeld,
-                allValues.newUserGenerated,
-                allValues.newPublic,
-                allValues.newIcon,
-              );
-            }}
-          >
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    } else {
-      return (
-        <Flex alignItems="center">
-          <Text fontSize="xs">No Unsaved Changes</Text>
-          <Button disabled colorStyle="red" ml="15px">
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    }
-  };
+    setUpdatedData(updatedApps);
+    console.log("updated apps", updatedApps);
+  }, []);
 
   useEffect(() => {
-    if (allValues.version !== allValues.newVersion) {
-      return console.log("true");
-    } else {
-      return console.log("false");
-    }
-  }, [allValues.newVersion]);
+    console.log("updated apps triggered");
 
-  useEffect(() => {
-    if (
-      allValues.name !== allValues.newName ||
-      allValues.type !== allValues.newType
-    ) {
-      return console.log("true");
-    } else {
-      return console.log("false");
-    }
-  }, [allValues.newName, allValues.newType]);
-
-  const handleNameChange = event =>
-    setAllValues({
-      ...allValues,
-      newName: event.target.value,
-    });
-
-  const handleValueChange = event => {
-    let value = event.target.value;
-    let name = event.target.name;
-
-    setAllValues(prevalue => {
-      return {
-        ...prevalue, // Spread Operator
-        [name]: value,
-      };
-    });
-  };
-
-  var pullParams = {
-    type: "slotPull",
-    message: "RequestResponse",
-    LogType: "None",
-  };
-
-  let jsonWord = JSON.stringify(pullParams);
-
-  console.log("json word", jsonWord);
-
-  const InputSection = ({ title, valueName, defaultValue, onChange, text }) => {
-    return (
-      <Flex alignItems="flex-end" mb={16}>
-        <Box>
-          <Text fontSize="sm" mb={5}>
-            {title}
-          </Text>
-          <Input
-            width="451px"
-            label="text"
-            name={valueName}
-            defaultValue={defaultValue}
-            onChange={onChange}
-            color={colors.textPrimary}
-            style={{
-              background: "transparent",
-              border: "1px solid #ADADAD",
-            }}
-          />
-        </Box>
-        <Text fontSize="xs" ml={25}>
-          {text}
-        </Text>
-      </Flex>
-    );
-  };
-
-  const passAssetInfo = title => {
-    console.log("pass", title); // LOGS DATA FROM CHILD (My name is Dean Winchester... &)
-
-    setAllValues({
-      ...allValues,
-      newIcon: allValues.id + "-" + "icon" + "-" + title,
-    });
-  };
+    fetchDataManually().catch("COULD NOT FETCH DATA", console.error);
+  }, [step]);
 
   return (
     <React.Fragment>
@@ -781,15 +463,7 @@ const Main = ({ data, currentUser }) => {
       </C.NavbarContainer>
 
       {/* <StyledBox> */}
-      <Flex
-        width="100vw"
-        minHeight="100vh"
-        paddingLeft="286px"
-        paddingBottom="100px"
-        bg="baseTertiary"
-        flexDirection="column"
-        alignItems="center"
-      >
+      <C.ContentContainer>
         {step === 0 && (
           <>
             {projectDialogOpen && (
@@ -885,7 +559,7 @@ const Main = ({ data, currentUser }) => {
                       </Button>
                     </Flex>
                     <div className="tableWrap">
-                      {data.length === 0 && (
+                      {updatedData.length === 0 && (
                         <div
                           style={{
                             //same as table
@@ -895,8 +569,8 @@ const Main = ({ data, currentUser }) => {
                           <Text m={2}>{i18n.__("noApps")}</Text>
                         </div>
                       )}
-                      {data.length > 0 && (
-                        <Table columns={Columns} data={data} />
+                      {updatedData.length > 0 && (
+                        <Table columns={Columns} data={updatedData} />
                       )}
                     </div>
                   </>
@@ -907,310 +581,14 @@ const Main = ({ data, currentUser }) => {
         )}
         {step === 3 && (
           <>
-            <Flex flexDirection="column">
-              <C.ActionContainer
-                mt={10}
-                mb={32}
-                style={{ top: 65, position: "sticky" }}
-              >
-                <C.CustomShape bg="brandAccent" />
-                <BlendIcon
-                  style={{ cursor: "pointer" }}
-                  color={colors.textPrimary}
-                  iconify={mdiArrowLeft}
-                  width="24px"
-                  onClick={() => {
-                    setStep(2);
-                  }}
-                />
-                <Input
-                  width="200px"
-                  name="newName"
-                  defaultValue={allValues.name}
-                  onChange={handleValueChange}
-                />
-                <Flex>
-                  {radioButtons()}
-                  {detailsSaveStatus()}
-                </Flex>
-                <Button disabled>Launch Sandbox</Button>
-              </C.ActionContainer>
-              <C.ProjectContainer mb={24}>
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Text style={{ textTransform: "uppercase" }}>
-                    Project resources
-                  </Text>
-                  {resourcesSaveStatus()}
-                </Flex>
-                <Box width="584px">
-                  <Text fontSize="xs">
-                    Add your .Zip build deployment package and information
-                    regarding your apps data useage here to prepare for handoff
-                    to a nominated publisher account.
-                  </Text>
-                </Box>
-                <Divider mb={24} mt={24} color={colors.textMuted} />
-                <Text mb={24}>Build deployment</Text>
-
-                <Flex mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      App ID
-                    </Text>
-                    <Input
-                      disabled
-                      width="451px"
-                      label="text"
-                      value={allValues.id}
-                      color={colors.textPrimary}
-                      style={{ background: "transparent" }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Version number
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newVersion"
-                      defaultValue={allValues.version || "undefined"}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                  <Text fontSize="xs" ml={25}>
-                    This version number is for your internal use so can follow
-                    whatever logic you choose.
-                  </Text>
-                </Flex>
-                <Flex alignItems="center" justifyContent="center" mb={16}>
-                  <Box ml="5px">
-                    <Text fontSize="sm" mb={5}>
-                      Build deployment package
-                    </Text>
-                    {/* <div
-                      style={{
-                        border: "1px dashed lightgray",
-                        width: 451,
-                        height: 132,
-                        borderRadius: 4,
-                        background: "transparent",
-                      }}
-                    /> */}
-                    <UploadFile />
-                  </Box>
-                  <Box ml={25}>
-                    <Text fontSize="xs">
-                      The build deployment package is a package version of your
-                      local build. It must include:
-                    </Text>
-                    <Text fontSize="xs">1. Your Prifina App ID</Text>
-                    <Text fontSize="xs">
-                      2. Come in a .zip with a maximum file size of 5MB
-                    </Text>
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Publisher
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newPublisher"
-                      defaultValue={allValues.publisher}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Category
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newCategory"
-                      defaultValue={allValues.category}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Device support
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newDeviceSupport"
-                      defaultValue={allValues.deviceSupport}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Languages
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newLanguages"
-                      defaultValue={allValues.languages}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Age
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newAge"
-                      defaultValue={allValues.age}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Key Features
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newKeyFeatures"
-                      defaultValue={allValues.keyFeatures}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Short Description
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newShortDescription"
-                      defaultValue={allValues.shortDescription}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Long Description
-                    </Text>
-                    <Input
-                      width="451px"
-                      label="text"
-                      name="newLongDescription"
-                      defaultValue={allValues.longDescription}
-                      onChange={handleValueChange}
-                      color={colors.textPrimary}
-                      style={{
-                        background: "transparent",
-                        border: "1px solid #ADADAD",
-                      }}
-                    />
-                  </Box>
-                </Flex>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5}>
-                      Icon
-                    </Text>
-                  </Box>
-                  <UploadAsset
-                    id={allValues.id}
-                    type="icon"
-                    numId="1"
-                    passAssetInfo={passAssetInfo}
-                  />
-                </Flex>
-              </C.ProjectContainer>
-              <C.ProjectContainer alt="dataSources">
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Text style={{ textTransform: "uppercase" }}>
-                    Data sources
-                  </Text>
-                  {/* {resourcesSaveStatus()} */}
-                </Flex>
-              </C.ProjectContainer>
-
-              {/* <C.DataContainer /> */}
-              <C.ActionContainer mt={10} mb={32} justifyContent="space-between">
-                <C.CustomShape bg="baseError" />
-                <Box width="530px">
-                  <Text>DELETE PROJECT</Text>
-                  <Text mt={5} fontSize="xs">
-                    Choose this to delete your project and all data associated
-                    with your account. This operation is final and all data will
-                    be permanently lost.
-                  </Text>
-                </Box>
-                <Button colorStyle="error" onClick={deleteApp} disabled>
-                  Delete
-                </Button>
-              </C.ActionContainer>
-            </Flex>
+            <ProjectDetails
+              allValues={allValues}
+              setAllValues={setAllValues}
+              setStep={setStep}
+            />
           </>
         )}
-      </Flex>
+      </C.ContentContainer>
       {/* </StyledBox> */}
     </React.Fragment>
   );
