@@ -1,6 +1,6 @@
 {
   "name": "@prifina-apps/dev-console",
-  "version": "0.0.9-beta.0",
+  "version": "0.0.8-beta.0",
   "description": "Developer Console",
   "author": "Tero <tero@prifina.com>",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "@blend-ui/tabs": "1.0.13-alpha.0",
     "@blend-ui/toast": "0.0.12-alpha.0",
     "@floating-ui/react-dom": "^0.4.3",
-    "@prifina-apps/utils": "^0.0.8-beta.0",
+    "@prifina-apps/utils": "^0.0.7-beta.0",
     "@prifina/hooks": "^0.0.62",
     "@styled-system/theme-get": "^5.1.2",
     "@svgr/webpack": "^6.2.1",
