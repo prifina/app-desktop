@@ -281,6 +281,6 @@ export const getAppVersion = `query appVerion($id: String!) {
       userHeld
       bannerImage
       public
-      
+      remoteUrl
     }
 }`;

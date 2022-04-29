@@ -380,7 +380,7 @@ export const CustomShape = styled(Box)`
 export const ContentContainer = styled(Flex)`
   width: 100vw;
   min-height: 100vh;
-  padding-left: 286px;
+  padding-left: 306px;
   padding-right: 100px;
   background: ${props => props.theme.colors.baseTertiary};
   flex-direction: column;
