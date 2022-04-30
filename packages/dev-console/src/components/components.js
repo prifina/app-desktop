@@ -352,25 +352,13 @@ export const ActionContainer = styled(Flex)`
   align-items: center;
   padding-right: 25px;
   padding-left: 25px;
-  margin-top: 10px;
-  margin-bottom: 25px;
   justify-content: space-between;
 `;
 
 export const ProjectContainer = styled(Box)`
   width: 1008px;
   min-height: 491px;
-  border-radius: 15px;
-  background: ${props => props.theme.colors.baseMuted};
-  padding-right: 40px;
-  padding-left: 40px;
-  padding-top: 24px;
-  padding-bottom: 24px;
-`;
 
-export const DataContainer = styled(Box)`
-  width: 1008px;
-  min-height: 405px;
   border-radius: 15px;
   background: ${props => props.theme.colors.baseMuted};
   padding-right: 40px;
@@ -387,4 +375,14 @@ export const CustomShape = styled(Box)`
   background: ${props => props.bg};
   position: absolute;
   left: 0;
+`;
+
+export const ContentContainer = styled(Flex)`
+  width: 100vw;
+  min-height: 100vh;
+  padding-left: 306px;
+  padding-right: 100px;
+  background: ${props => props.theme.colors.baseTertiary};
+  flex-direction: column;
+  align-items: center;
 `;

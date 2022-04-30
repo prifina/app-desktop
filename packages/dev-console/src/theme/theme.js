@@ -1,3 +1,5 @@
+import { color } from "styled-system";
+
 const basePrimary = "#08011C";
 const baseSecondary = "#AA076B";
 const baseTertiary = "#141020";
@@ -36,20 +38,45 @@ const componentStyles = {
       border: "0.0625rem solid #c91684",
     },
     outline: {
-      backgroundColor: baseWhite,
+      backgroundColor: baseTertiary,
       color: "#F5F8F7",
       border: "0.0625rem solid #c91684",
     },
     link: {
       color: brandAccent,
     },
+    file: {
+      color: brandAccent,
+    },
+
     input: {
       base: {
         border: "1px solid red",
       },
     },
   },
+  textarea: {
+    base: {
+      backgroundColor: "transparent",
+      border: `1px solid ${baseWhite}`,
+      color: colors.textPrimary,
+    },
+  },
 };
+
+// const baseProps = {
+//   fontSize: fontSizes["xs"],
+//   /*lineHeight: sizeOptions[29], */
+//   lineHeight: sizeOptions[17],
+//   border: borders.input.base,
+//   borderRadius: borders.input.borderRadius,
+//   paddingLeft: sizeOptions[10],
+//   paddingRight: sizeOptions[10],
+//   paddingTop: sizeOptions[7],
+//   paddingBottom: sizeOptions[7],
+//   backgroundColor: colors.baseWhite,
+//   color: colors.text.primary,
+// };
 
 const theme = {
   colors,
