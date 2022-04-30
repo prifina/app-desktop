@@ -67,8 +67,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
   console.log("REAL VALUES", allValues);
 
-  const features = ["feature", "feature1", "feature2"];
-
   const saveChanges = (
     id,
     newAppType,
@@ -106,7 +104,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
       icon: newIcon,
     }).then(res => {
       console.log("SUCCESS", res);
-      toast.success("Project name updated successfully", {});
+      toast.success("Project details updated successfully", {});
       // location.reload();
       //   setStep(2);
     });
@@ -245,12 +243,12 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
       allValues.deviceSupport !== allValues.newDeviceSupport ||
       allValues.languages !== allValues.newLanguages ||
       allValues.age !== allValues.newAge ||
-      allValues.keyFeatures !== allValues.newKeyFeatures ||
+      allValues.keyFeatures !== newKeyFeatures ||
       allValues.shortDescription !== allValues.newShortDescription ||
       allValues.longDescription !== allValues.newLongDescription ||
-      allValues.userHeld !== allValues.newUserHeld ||
-      allValues.userGenerated !== allValues.newUserGenerated ||
-      allValues.public !== allValues.newPublic ||
+      allValues.userHeld !== newUserHeld ||
+      allValues.userGenerated !== newUserGenerated ||
+      allValues.public !== newPublic ||
       allValues.icon !== allValues.newIcon
     ) {
       return (
@@ -279,13 +277,12 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 allValues.newDeviceSupport,
                 allValues.newLanguages,
                 allValues.newAge,
-                // allValues.newKeyFeatures,
-                newFeaturesList,
+                newKeyFeatures,
                 allValues.newShortDescription,
                 allValues.newLongDescription,
-                allValues.newUserHeld,
-                allValues.newUserGenerated,
-                allValues.newPublic,
+                newUserHeld,
+                newUserGenerated,
+                newPublic,
                 allValues.newIcon,
               );
             }}
@@ -371,6 +368,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     }
   }, [allValues.newName, allValues.newType]);
 
+  //custom input component
   const InputSection = ({ title, valueName, defaultValue, onChange, text }) => {
     return (
       <Flex alignItems="flex-end" mb={16}>
@@ -398,16 +396,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     );
   };
 
-  var pullParams = {
-    type: "slotPull",
-    message: "RequestResponse",
-    LogType: "None",
-  };
-
-  let jsonWord = JSON.stringify(pullParams);
-
-  console.log("json word", jsonWord);
-
   const [activeTab3, setActiveTab3] = useState(0);
 
   const tabClick3 = (e, tab) => {
@@ -428,7 +416,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     // declare the async data fetching function
     const fetchConnectors = async () => {
       const data = await listDataSourcesQuery(GRAPHQL, {
-        filter: { sourceType: { eq: 1 } },
+        filter: { sourceType: { lt: 3 } },
       });
       let filteredData = data.data.listDataSources.items;
 
@@ -466,7 +454,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   const [editControled, setEditControled] = useState(false);
 
   ///Prifina user cloud
-
+  //can make them reusable
   const addDataSource = (name, sourceType) => {
     const newSourceData = [...dataSourcePreview, { name, sourceType }];
     setDataSourcePreview(newSourceData);
@@ -511,35 +499,106 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   };
 
   //==============//==============//==============//==============//==============//==============//==============
-  const [value, setValue] = useState("");
+  const [keyFeaturesValue, setKeyFeaturesValue] = useState("");
+  const [userHeldValue, setUserHeldValue] = useState("");
+  const [userGeneratedValue, setUserGeneratedValue] = useState("");
+  const [publicValue, setPublicValue] = useState("");
 
-  const [newFeaturesList, setNewFeaturesList] = useState(allValues.keyFeatures);
+  const [newKeyFeatures, setNewKeyFeatures] = useState(
+    allValues.keyFeatures === null || undefined ? [] : allValues.keyFeatures,
+  );
+  const [newUserHeld, setNewUserHeld] = useState(
+    allValues.userHeld === null || undefined ? [] : allValues.userHeld,
+  );
+  const [newUserGenerated, setNewUserGenerated] = useState(
+    allValues.userGenerated === null || undefined
+      ? []
+      : allValues.userGenerated,
+  );
+  const [newPublic, setNewPublic] = useState(
+    allValues.public === null || undefined ? [] : allValues.public,
+  );
+
+  //need to make them reusable
+
   const handleChange = event => {
-    setValue(event.target.value);
+    setKeyFeaturesValue(event.target.value);
   };
-
   const handleSubmit = event => {
-    if (value) {
-      setNewFeaturesList(newFeaturesList.concat(value));
+    if (keyFeaturesValue) {
+      setNewKeyFeatures(newKeyFeatures.concat(keyFeaturesValue));
     }
-    setValue("");
+    setKeyFeaturesValue("");
+    event.preventDefault();
+  };
+  const handleDel = index => {
+    newKeyFeatures.splice(index, 1);
+    setNewKeyFeatures([...newKeyFeatures]);
+  };
+  const handleUserHeldChange = event => {
+    setUserHeldValue(event.target.value);
+  };
+  const handleUserHeldSubmit = event => {
+    if (userHeldValue) {
+      setNewUserHeld(newUserHeld.concat(userHeldValue));
+    }
+    setUserHeldValue("");
     event.preventDefault();
   };
 
-  const handleDel = index => {
-    newFeaturesList.splice(index, 1);
-    setNewFeaturesList([...newFeaturesList]);
+  const handleUserHeldDel = index => {
+    newUserHeld.splice(index, 1);
+    setUserHeldValue([...newUserHeld]);
+  };
+  const handleUserGeneratedChange = event => {
+    setUserGeneratedValue(event.target.value);
   };
 
-  console.log("features value", newFeaturesList);
+  const handleUserGeneratedSubmit = event => {
+    if (userGeneratedValue) {
+      setNewUserGenerated(newUserGenerated.concat(userGeneratedValue));
+    }
+    setUserGeneratedValue("");
+    event.preventDefault();
+  };
 
-  ///
+  const handleUserGeneratedDel = index => {
+    newUserGenerated.splice(index, 1);
+    setNewUserGenerated([...newUserGenerated]);
+  };
+  const handlePublicChange = event => {
+    setPublicValue(event.target.value);
+  };
+
+  const handlePublicSubmit = event => {
+    if (publicValue) {
+      setNewPublic(newPublic.concat(publicValue));
+    }
+    setPublicValue("");
+    event.preventDefault();
+  };
+
+  const handlePublicDel = index => {
+    newPublic.splice(index, 1);
+    setNewPublic([...newPublic]);
+  };
+
+  ///changing attribute name
   dataConnectors.forEach(function (obj) {
     obj.value = obj.name;
   });
   publicSources.forEach(function (obj) {
     obj.value = obj.name;
   });
+
+  function checkJson(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
 
   return (
     <>
@@ -640,7 +699,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                         background: "transparent",
                       }}
                     /> */}
-              <UploadFile />
+              <UploadFile widgetId={allValues.id} />
             </Box>
             <Box ml={25}>
               <Text fontSize="xs">
@@ -756,25 +815,21 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <form onSubmit={handleSubmit}>
                 <Flex>
                   <Input
-                    value={value}
+                    value={keyFeaturesValue}
                     onChange={handleChange}
                     width="451px"
                     label="text"
-                    name="newKeyFeatures"
-                    // defaultValue={allValues.keyFeatures}
-                    // onChange={handleValueChange}
                     color={colors.textPrimary}
                     style={{
                       background: "transparent",
                       border: "1px solid #ADADAD",
                     }}
                   />
-                  <button type="submit">Add Item</button>
+                  <Button size="xs">Add Item</Button>
                 </Flex>
               </form>
-
               <Flex>
-                {newFeaturesList.map((item, index) => (
+                {newKeyFeatures.map((item, index) => (
                   <Flex>
                     <Text color="white">{item}</Text>
                     <button type="button" onClick={() => handleDel(index)}>
@@ -790,17 +845,14 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <Text fontSize="sm" mb={5}>
                 Short Description
               </Text>
-              <Input
+              <TextArea
+                expand
+                height={50}
                 width="451px"
                 label="text"
                 name="newShortDescription"
                 defaultValue={allValues.shortDescription}
                 onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
               />
             </Box>
           </Flex>
@@ -809,19 +861,15 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <Text fontSize="sm" mb={5}>
                 Long Description
               </Text>
-              <Input
+              <TextArea
+                expand
+                height={100}
                 width="451px"
                 label="text"
                 name="newLongDescription"
                 defaultValue={allValues.longDescription}
                 onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
               />
-              <TextArea expand />
             </Box>
           </Flex>
           <Flex alignItems="flex-end" mb={16}>
@@ -861,6 +909,114 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               numId="3"
               // passAssetInfo={passAssetInfo}
             />
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                User Held
+              </Text>
+              <form onSubmit={handleUserHeldSubmit}>
+                <Flex>
+                  <Input
+                    value={userHeldValue}
+                    onChange={handleUserHeldChange}
+                    width="451px"
+                    label="text"
+                    color={colors.textPrimary}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #ADADAD",
+                    }}
+                  />
+                  <Button size="xs">Add Item</Button>
+                </Flex>
+              </form>
+              <Flex>
+                {newUserHeld.map((item, index) => (
+                  <Flex>
+                    <Text color="white">{item}</Text>
+                    <button
+                      type="button"
+                      onClick={() => handleUserHeldDel(index)}
+                    >
+                      x
+                    </button>
+                  </Flex>
+                ))}
+              </Flex>
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                User Generated
+              </Text>
+              <form onSubmit={handleUserGeneratedSubmit}>
+                <Flex>
+                  <Input
+                    value={userGeneratedValue}
+                    onChange={handleUserGeneratedChange}
+                    width="451px"
+                    label="text"
+                    color={colors.textPrimary}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #ADADAD",
+                    }}
+                  />
+                  <Button size="xs">Add Item</Button>
+                </Flex>
+              </form>
+              <Flex>
+                {newUserGenerated.map((item, index) => (
+                  <Flex>
+                    <Text color="white">{item}</Text>
+                    <button
+                      type="button"
+                      onClick={() => handleUserGeneratedDel(index)}
+                    >
+                      x
+                    </button>
+                  </Flex>
+                ))}
+              </Flex>
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Public
+              </Text>
+              <form onSubmit={handlePublicSubmit}>
+                <Flex>
+                  <Input
+                    value={publicValue}
+                    onChange={handlePublicChange}
+                    width="451px"
+                    label="text"
+                    color={colors.textPrimary}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #ADADAD",
+                    }}
+                  />
+                  <Button size="xs">Add Item</Button>
+                </Flex>
+              </form>
+              <Flex>
+                {newPublic.map((item, index) => (
+                  <Flex>
+                    <Text color="white">{item}</Text>
+                    <button
+                      type="button"
+                      onClick={() => handlePublicDel(index)}
+                    >
+                      x
+                    </button>
+                  </Flex>
+                ))}
+              </Flex>
+            </Box>
           </Flex>
         </C.ProjectContainer>
         <C.ProjectContainer alt="dataSources" mb={24}>
@@ -956,7 +1112,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                           selectOptions={dataConnectors}
                         />
                       </Flex>
-                      {/* Box with state change */}
                       <Flex>
                         {dataSourcePreview.length > 0 && (
                           <Flex
@@ -975,12 +1130,12 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
                             <Flex>
                               <Flex flexDirection="column">
-                                {dataSourcePreview.map((event, index) => (
+                                {dataSourcePreview.map((item, index) => (
                                   <>
                                     <AddRemoveDataSources
                                       key={index}
                                       index={index}
-                                      dataSource={event}
+                                      dataSource={item}
                                       removeDataSource={removeDataSource}
                                       completeDataSource={completeDataSource}
                                     />
@@ -1028,16 +1183,27 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             </Box>
           </Flex>
 
-          {newDataSources !== null && newDataSources[0] !== "[]" ? (
+          {newDataSources !== null &&
+          newDataSources[0] !== "[]" &&
+          newDataSources.length !== 0 ? (
             <Flex flexDirection="column" justifyContent="center">
-              {JSON.parse(newDataSources).map((item, index) => (
-                <ControlAddedDataSources
-                  key={index}
-                  dataSource={item}
-                  uncompleteDataSource={uncompleteDataSource}
-                  editControled={editControled}
-                />
-              ))}
+              {checkJson(newDataSources)
+                ? JSON.parse(newDataSources).map((item, index) => (
+                    <ControlAddedDataSources
+                      key={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))
+                : newDataSources.map((item, index) => (
+                    <ControlAddedDataSources
+                      key={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))}
             </Flex>
           ) : (
             <Flex flexDirection="column" justifyContent="center">

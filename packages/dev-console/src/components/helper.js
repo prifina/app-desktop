@@ -82,7 +82,7 @@ export function AddRemoveDataSources({
     >
       {dataSource.url !== undefined ? (
         <Flex paddingTop="5px">
-          <Text mr="5px">{dataSource.text}</Text>
+          <Text mr="5px">{dataSource.name}</Text>
 
           <Link href={dataSource.url} target="_blank">
             {i18n.__("fullSpecHere")}
@@ -90,7 +90,7 @@ export function AddRemoveDataSources({
         </Flex>
       ) : (
         <Flex paddingTop="5px" flexDirection="column">
-          <Text mr="5px">{dataSource.text}</Text>
+          <Text mr="5px">{dataSource.name}</Text>
           {/* temoporary */}
           <Link href="" target="_blank">
             URL of this API
@@ -299,7 +299,7 @@ export function ControlAddedDataSources({
                 <Flex display="flex" flexDirection="column">
                   <Text>{i18n.__("tellUsWhatDataYourAppUses")}</Text>
                   <Text mt="20px">{i18n.__("publicApiAdress")}</Text>
-                  <Input value={dataSource.text} disabled />
+                  <Input value={dataSource.name} disabled />
                   <Text mt="20px">{i18n.__("listDataAttributesUsed")}</Text>
                   <textarea style={{ height: 100 }} />
                 </Flex>
@@ -372,7 +372,6 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
     if (!value) return;
     addDataSource(value, sourceType);
     setValue("");
-    setFunctions("");
   };
 
   const handleChange = event => {
@@ -471,12 +470,12 @@ export function ApiForm({ addApi, selectOptions }) {
           onChange={handleChange}
         />
 
-        <button
+        {/* <button
           style={{ width: 48, height: 48, marginLeft: 4 }}
           onChange={e => setValue(e.currentTarget.value)}
         >
           +
-        </button>
+        </button> */}
       </Box>
     </form>
   );

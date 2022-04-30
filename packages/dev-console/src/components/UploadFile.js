@@ -24,7 +24,7 @@ const style = {
   justifyContent: "center",
 };
 
-const UploadFile = ({ props, widgetId, type, numId }) => {
+const UploadFile = ({ props, widgetId }) => {
   const [droppedFiles, setDroppedFiles] = useState([]);
 
   const [uploaded, setUploaded] = useState("");
@@ -75,7 +75,13 @@ const UploadFile = ({ props, widgetId, type, numId }) => {
           <Flex width="167px" alignItems="center" flexDirection="column">
             <Text fontSize="xs">Upload a .zip file of your build</Text>
             <Text fontSize="xs">Drag and drop a file here or</Text>
-            <Button variation="link">Click to upload</Button>
+            <Button
+              accept={".zip"}
+              onChange={buttonUploadFile}
+              variation={"file"}
+            >
+              Click to upload
+            </Button>
           </Flex>
         )}
       </Flex>
@@ -111,19 +117,45 @@ const UploadFile = ({ props, widgetId, type, numId }) => {
     [setDroppedFiles],
   );
 
-  useEffect(async () => {
-    //   if (droppedFiles.length > 0) {
+  const s3Key = "apps/uploaded/assets/" + widgetId + "-" + "package" + ".zip";
+  const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+
+  const currentCredentials = JSON.parse(
+    localStorage.getItem("PrifinaClientCredentials"),
+  );
+
+  console.log("CREDS ", currentCredentials);
+
+  const buttonUploadFile = async e => {
     try {
-      const s3Key =
-        "apps/uploaded/assets/" + widgetId + "-" + type + "-" + numId + ".png";
+      //check file info
+      const file = e.target.files[0];
+      console.log("Upload ", file);
 
-      const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+      S3Storage.configure({
+        bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+        region: userRegion,
+      });
 
-      const currentCredentials = JSON.parse(
-        localStorage.getItem("PrifinaClientCredentials"),
-      );
+      const s3Status = await S3Storage.put(s3Key, file, {
+        level: "public", // private doesn't work
+        metadata: { created: new Date().toISOString(), "alt-name": file.name },
 
-      //   console.log("CREDS ", currentCredentials);
+        progressCallback(progress) {
+          setUploaded(`Uploaded: ${progress.loaded}/${progress.total}`);
+        },
+        customPrefix: {},
+      });
+      console.log("success ");
+
+      console.log(s3Status);
+    } catch (e) {
+      console.log("OOPS ", e);
+    }
+  };
+
+  const uploadFile = async e => {
+    try {
       S3Storage.configure({
         bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
         region: userRegion,
@@ -149,6 +181,10 @@ const UploadFile = ({ props, widgetId, type, numId }) => {
     } catch (e) {
       console.log("OOPS ", e);
     }
+  };
+
+  useEffect(async () => {
+    uploadFile();
     //   }
   }, [droppedFiles]);
 
