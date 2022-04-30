@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Box,
   Flex,
   Text,
   Button,
@@ -7,6 +8,7 @@ import {
   SearchSelect,
   useTheme,
   Link,
+  AutoComplete,
 } from "@blend-ui/core";
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -73,14 +75,14 @@ export function AddRemoveDataSources({
       height="72px"
       border="1px solid gray"
       borderRadius="10px"
-      width="834px"
+      width="438px"
       paddingLeft="15px"
       paddingRight="15px"
       marginTop="5px"
     >
       {dataSource.url !== undefined ? (
         <Flex paddingTop="5px">
-          <Text mr="5px">{dataSource.text}</Text>
+          <Text mr="5px">{dataSource.name}</Text>
 
           <Link href={dataSource.url} target="_blank">
             {i18n.__("fullSpecHere")}
@@ -88,7 +90,7 @@ export function AddRemoveDataSources({
         </Flex>
       ) : (
         <Flex paddingTop="5px" flexDirection="column">
-          <Text mr="5px">{dataSource.text}</Text>
+          <Text mr="5px">{dataSource.name}</Text>
           {/* temoporary */}
           <Link href="" target="_blank">
             URL of this API
@@ -192,14 +194,14 @@ export function ControlAddedDataSources({
       height="72px"
       border="1px solid gray"
       borderRadius="10px"
-      width="834px"
+      width="438px"
       paddingLeft="15px"
       paddingRight="15px"
       marginTop="5px"
     >
       {dataSource.url !== undefined ? (
         <Flex paddingTop="5px">
-          <Text mr="5px">{dataSource.text}</Text>
+          <Text mr="5px">{dataSource.name}</Text>
 
           <Link href={dataSource.url} target="_blank">
             {i18n.__("fullSpecHere")}
@@ -207,7 +209,7 @@ export function ControlAddedDataSources({
         </Flex>
       ) : (
         <Flex paddingTop="5px" flexDirection="column">
-          <Text mr="5px">{dataSource.text}</Text>
+          <Text mr="5px">{dataSource.name}</Text>
 
           <Link href="" target="_blank">
             URL of this API
@@ -297,7 +299,7 @@ export function ControlAddedDataSources({
                 <Flex display="flex" flexDirection="column">
                   <Text>{i18n.__("tellUsWhatDataYourAppUses")}</Text>
                   <Text mt="20px">{i18n.__("publicApiAdress")}</Text>
-                  <Input value={dataSource.text} disabled />
+                  <Input value={dataSource.name} disabled />
                   <Text mt="20px">{i18n.__("listDataAttributesUsed")}</Text>
                   <textarea style={{ height: 100 }} />
                 </Flex>
@@ -331,24 +333,24 @@ export function ControlAddedDataSources({
             </ModalContent>
           </Modal>
         </>
-        {editControled ? (
-          <>
-            <button
-              onClick={() => setDialogOpen(true)}
-              style={{ width: 50, height: 50, marginRight: 5 }}
-            >
-              <BlendIcon iconify={bxsEdit} />
-            </button>
-            <button
-              onClick={() => uncompleteDataSource(index)}
-              style={{ width: 50, height: 50 }}
-            >
-              <Text textStyle="h3" colorStyle="error">
-                x
-              </Text>
-            </button>
-          </>
-        ) : null}
+        {/* {editControled ? ( */}
+        <>
+          {/* <button
+            onClick={() => setDialogOpen(true)}
+            style={{ width: 50, height: 50, marginRight: 5 }}
+          >
+            <BlendIcon iconify={bxsEdit} />
+          </button> */}
+          <button
+            onClick={() => uncompleteDataSource(index)}
+            style={{ width: 50, height: 50 }}
+          >
+            <Text textStyle="h3" colorStyle="error">
+              x
+            </Text>
+          </button>
+        </>
+        {/* ) : null} */}
       </Flex>
     </Flex>
   );
@@ -361,17 +363,71 @@ ControlAddedDataSources.propTypes = {
   editControled: PropTypes.bool,
 };
 
-export function DataSourceForm({ addDataSource }) {
+export function DataSourceForm({ addDataSource, selectOptions }) {
   const [value, setValue] = useState("");
-  const [functions, setFunctions] = useState("");
-  const [url, setUrl] = useState("");
+  const [sourceType, setSourceType] = useState("");
 
   const handleSubmit = e => {
     e.preventDefault();
     if (!value) return;
-    addDataSource(value, functions, url);
+    addDataSource(value, sourceType);
     setValue("");
-    setFunctions("");
+  };
+
+  const handleChange = event => {
+    const bySourceType = selectOptions.reduce(
+      (result, currentSelectOption) => ({
+        ...result,
+        [currentSelectOption.value]: currentSelectOption.sourceType,
+      }),
+      {},
+    );
+    console.log("SELECT", event.target.value);
+    setValue(event.target.value);
+    setSourceType(bySourceType[event.target.value]);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Flex>
+        <SearchSelect
+          variation="outline"
+          options={selectOptions}
+          defaultValue
+          searchLength={1}
+          showList={true}
+          selectOption="value"
+          size="sm"
+          width="438px"
+          onChange={handleChange}
+        />
+        <button
+          style={{ width: 48, height: 48, marginLeft: 4 }}
+          onChange={e => {
+            console.log("CLICK ", e.target.value);
+
+            setValue(e.target.value);
+          }}
+        >
+          +
+        </button>
+      </Flex>
+    </form>
+  );
+}
+
+DataSourceForm.propTypes = {
+  addDataSource: PropTypes.instanceOf(Array),
+};
+
+export function ApiForm({ addApi, selectOptions }) {
+  const [value, setValue] = useState("");
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (!value) return;
+    addApi(value);
+    setValue("");
   };
 
   const handleChange = event => {
@@ -397,65 +453,30 @@ export function DataSourceForm({ addDataSource }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex>
-        <SearchSelect
-          variation="outline"
-          options={selectOptions}
-          defaultValue
-          searchLength={1}
-          showList={true}
-          selectOption="value"
-          size="sm"
-          width="834px"
-          onChange={handleChange}
-        />
-        <button
-          style={{ width: 48, height: 48, marginLeft: 4 }}
-          onChange={e => {
-            console.log("CLICK ", e.target.value);
-
-            setValue(e.target.value);
-          }}
-        >
-          +
-        </button>
-      </Flex>
-    </form>
-  );
-}
-
-DataSourceForm.propTypes = {
-  addDataSource: PropTypes.instanceOf(Array),
-};
-
-export function ApiForm({ addApi }) {
-  const [value, setValue] = useState("");
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (!value) return;
-    addApi(value);
-    setValue("");
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Flex alignItems="center">
-        <C.StyledInput
-          width="834px"
+      <Box alignItems="center" width="438px">
+        {/* <C.StyledInput
+          width="438px"
           type="text"
           className="input"
           value={value}
           onChange={e => setValue(e.target.value)}
+        /> */}
+
+        <AutoComplete
+          suggestions={selectOptions}
+          // showList={true}
+          // activeItem={2}
+          // onChange={e => setValue(e.target.value)}
+          onChange={handleChange}
         />
 
-        <button
+        {/* <button
           style={{ width: 48, height: 48, marginLeft: 4 }}
           onChange={e => setValue(e.currentTarget.value)}
         >
           +
-        </button>
-      </Flex>
+        </button> */}
+      </Box>
     </form>
   );
 }
