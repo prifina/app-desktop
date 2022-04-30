@@ -682,7 +682,7 @@ const Sandbox = props => {
   const history = useHistory();
   const { AUTHConfig, APIConfig, userAuth, currentUser } = useAppContext();
   //const activeUser = useRef({});
-  const currentAppId = "3LSdcSs1kcPskBWBJvqGto";
+  const currentAppId = "866fscSq5Ae7bPgUtb6ffB";
   const componentProps = useRef({});
   const [ready, setReady] = useState(false);
   const [openSettings, setSettings] = useState(false);
@@ -770,6 +770,7 @@ const Sandbox = props => {
   */
   useEffect(async () => {
     const remoteAppUrl = localStorage.getItem("remoteWidget");
+    // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
     //componentProps.current = { url: remoteApp };
 
     const session = await Auth.currentSession();
