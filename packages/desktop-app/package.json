@@ -1,6 +1,6 @@
 {
   "name": "@prifina-apps/desktop-app",
-  "version": "0.0.8-beta.0",
+  "version": "0.0.9-beta.0",
   "description": "Desktop App",
   "author": "Tero <tero@prifina.com>",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "@iconify/icons-bx": "^1.2.3",
     "@iconify/react": "^3.2.1",
     "@paciolan/remote-component": "^2.12.1",
-    "@prifina-apps/utils": "^0.0.8-beta.0",
+    "@prifina-apps/utils": "^0.0.9-beta.0",
     "@prifina/hooks": "^0.0.62",
     "@reach/auto-id": "^0.16.0",
     "@react-spring/web": "^9.4.4",

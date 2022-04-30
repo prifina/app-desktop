@@ -1,6 +1,6 @@
 {
   "name": "@prifina-apps/app-testing",
-  "version": "0.0.13-beta.0",
+  "version": "0.0.14-beta.0",
   "description": "Prifina app testing package",
   "author": "hamza <hamzahalilovic.12@gmail.com>",
   "license": "MIT",
@@ -25,6 +25,6 @@
     "puppeteer": "^10.0.0"
   },
   "dependencies": {
-    "@prifina-apps/utils": "^0.0.8-beta.0"
+    "@prifina-apps/utils": "^0.0.9-beta.0"
   }
 }
