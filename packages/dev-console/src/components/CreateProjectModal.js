@@ -203,7 +203,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
             <Flex paddingTop="54px">
               <Button
                 variation={"outline"}
-                colorStyle={"error"}
+                // colorStyle={"error"}
                 onClick={e => {
                   setDialogOpen(false);
                   onButtonClick(e, "cancel");

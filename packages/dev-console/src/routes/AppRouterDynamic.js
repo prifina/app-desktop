@@ -5,6 +5,7 @@ import NotFoundPage from "../components/NotFoundPage";
 
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import UnauthenticatedRoute from "./UnauthenticatedRoute";
+import AppliedRoute from "./AppliedRoute";
 const Home = React.lazy(() => import("../pages/Home"));
 const Logout = React.lazy(() => import("../pages/Logout"));
 const Admin = React.lazy(() => import("../pages/Admin"));
@@ -37,15 +38,17 @@ export default props => (
       <AuthenticatedRoute path="/home" exact>
         <Home />
       </AuthenticatedRoute>
-      <AuthenticatedRoute path="/" exact>
+      <AppliedRoute path="/" exact>
         <Home />
-      </AuthenticatedRoute>
+      </AppliedRoute>
       <AuthenticatedRoute path="/register" exact>
         <Register />
       </AuthenticatedRoute>
+      {/* 
       <UnauthenticatedRoute path="/" exact>
         <Landing />
       </UnauthenticatedRoute>
+      */}
       {/* <UnauthenticatedRoute path="/login" exact>
         <Landing />
       </UnauthenticatedRoute> */}
