@@ -117,6 +117,8 @@ const UploadFile = ({ props, widgetId }) => {
     [setDroppedFiles],
   );
 
+  
+
   const s3Key = "apps/uploaded/assets/" + widgetId + "-" + "package" + ".zip";
   const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
 

@@ -14,6 +14,9 @@ const textMuted = "#ADADAD";
 
 const gradientPurple = "linear-gradient(180deg, #AA076B 0%, #61045F 100%)";
 
+const sandboxGradient =
+  "linear-gradient(90deg, #83205D 9.68%, #B21F7A 26.87%, rgba(53, 5, 131, 0.73) 100%)";
+
 const colors = {
   textPrimary: baseWhite,
   textMuted: textMuted,
@@ -28,6 +31,7 @@ const colors = {
   componentAccent: brandAccent,
   backroundAccent: brandAccent,
   baseHover,
+  sandboxGradient,
 };
 
 const componentStyles = {
