@@ -27,51 +27,32 @@ import {
   useFormFields,
   getAppVersionQuery,
   updateAppVersionMutation,
+  i18n,
+  checkUrl,
 } from "@prifina-apps/utils";
 import { useLocation, useHistory } from "react-router-dom";
 
-import { Box, Flex, Text, Button, useTheme } from "@blend-ui/core";
+import { Box, Flex, Text, Button, Input, useTheme } from "@blend-ui/core";
+
+import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
+
+import { useToast } from "@blend-ui/toast";
 
 import { useRemoteComponent } from "../useRemoteComponent";
 import styled, { keyframes } from "styled-components";
 import ReactJson from "react-json-view";
 
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-} from "@blend-ui/modal";
-import { List, ListDivider, ListItem } from "@blend-ui/list-item";
-import { useFloating, shift, arrow } from "@floating-ui/react-dom";
-import { computePosition, offset } from "@floating-ui/dom";
 import PropTypes from "prop-types";
 
+import { BlendIcon } from "@blend-ui/icons";
+
+import SystemSettingsSandbox from "../components/SystemSettingsSandbox";
+
+import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
+import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
+import SettingsSandbox from "../components/SettingsSandbox";
+
 const SandboxContext = createContext(null);
-
-const OptionListItem = styled(ListItem)`
-  /* */
-`;
-const Options = styled.div`
-  width: 100px;
-  background: white;
-  color: white;
-  font-weight: bold;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 90%;
-  /* pointer-events: none; */
-  box-shadow: 0px 4px 8px rgba(91, 92, 91, 0.2);
-`;
-
-const Arrow = styled.div`
-  position: absolute;
-  background: white;
-  width: 8px;
-  height: 8px;
-  transform: rotate(45deg);
-`;
 
 const BottomContainer = styled.div`
   position: absolute;
@@ -79,40 +60,13 @@ const BottomContainer = styled.div`
   bottom: 0;
   width: 100%;
   height: ${props => props.height}px;
-  background-color: red;
-`;
-
-const SetupButton = styled.div`
-  position: absolute;
-  bottom: 80px;
-  right: 80px;
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  border: solid 1px #555;
-  background-color: #eed;
-  box-shadow: 2px 2px 10px 2px rgb(0 0 0 / 60%);
-
-  span {
-    color: #424242;
-    font-size: 50px;
-    position: absolute;
-    line-height: 80px;
-    text-align: center;
-    width: 80px;
-  }
-  &:hover {
-    span {
-      color: black;
-    }
-    cursor: pointer;
-  }
+  background-color: ${props => props.theme.colors.baseMuted};
 `;
 
 const WidgetWrapper = styled.div`
   width: 100%;
   height: 100%;
-  border: 2px outset;
+  // border: 2px outset;
   border-radius: 8px;
 `;
 
@@ -143,257 +97,38 @@ const IconDiv = styled.div`
   z-index: 10;
 `;
 
-const SettingsModal = ({ onClose, onButtonClick, appSettings, ...props }) => {
-  const theme = useTheme();
+const StatusCircle = styled.div`
+  width: 8px;
+  height: 8px;
+  background-color: ${props => (props.status === true ? "#62bd19" : "red")};
+  border-radius: 50%;
+`;
 
-  const { colors } = useTheme();
-
-  const [dialogOpen, setDialogOpen] = useState(true);
-
-  const onCloseCheck = e => {
-    console.log("MODAL CLOSE ", e);
-    onClose(e);
-    e.preventDefault();
-  };
-  /*
-  "settings": [
-    { "field": "year", "value": "2020", "label": "Year", "type": "text" },
-    { "field": "month", "value": "1", "label": "Month", "type": "text" },
-    {"field":"sizes","value":"[{\"option\":\"300x300\",\"value\":\"300x300\"}]","label":"Sizes","type":"select"},
-      {"field":"theme","value": "[{\"option\":\"Light\",\"value\":\"light\"}]","label":"Theme","type":"select"}
-  ],
-*/
-
-  console.log("MODAL SETTINGS ", appSettings);
-  let defaultTheme = "light";
-  let defaultSize = "300x300";
-  let defaultSettings = [];
-  if (
-    appSettings.hasOwnProperty("settings") &&
-    appSettings.settings.length > 0
-  ) {
-    appSettings.settings.forEach(s => {
-      if (s.field === "theme") {
-        const themeValues = JSON.parse(s.value);
-        defaultTheme = themeValues[0].value;
-      } else if (s.field === "sizes") {
-        const sizeValues = JSON.parse(s.value);
-        defaultSize = sizeValues[0].value;
-      } else {
-        defaultSettings.push(s);
-      }
-    });
-  }
-
-  console.log("THEME DEFAULT ", defaultTheme);
-  const [themeFields, handleThemeChange] = useFormFields({
-    theme: defaultTheme,
-    size: defaultSize,
-  });
-
-  const [settingsFields, handleSettingsChange] = useFormFields({
-    type: "text",
-    label: "",
-    field: "",
-    value: "",
-  });
-  //const settingsListRef = useRef();
-  const [settingsList, setSettings] = useState(defaultSettings);
-
+const EmptyContainer = () => {
   return (
-    <>
-      <Modal
-        isOpen={dialogOpen}
-        onClose={onCloseCheck}
-        scrollBehavior={"inside"}
-        theme={theme}
-        size={"3xl"}
-        {...props}
-      >
-        <ModalContent>
-          <ModalHeader>TITLE</ModalHeader>
-          <ModalBody>
-            <div style={{ margin: "10px" }}>
-              <div>
-                <select
-                  id={"theme"}
-                  name={"theme"}
-                  onChange={handleThemeChange}
-                  defaultValue={defaultTheme}
-                >
-                  <option value="light">Light</option>
-                  <option value="dark">Dark</option>
-                </select>
-              </div>
-              <div>
-                <select
-                  id={"size"}
-                  name={"size"}
-                  onChange={handleThemeChange}
-                  defaultValue={defaultSize}
-                >
-                  <option value="300x300">300x300</option>
-                  <option value="300x600">300x600</option>
-                  <option value="600x300">600x300</option>
-                  <option value="600x600">600x600</option>
-                </select>
-              </div>
-              <div>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Type</th>
-                      <th>Label</th>
-                      <th>Field</th>
-                      <th>Value</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <select
-                          id={"type"}
-                          name={"type"}
-                          onChange={handleSettingsChange}
-                        >
-                          <option value="text">Input</option>
-                        </select>
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={"label"}
-                          name={"label"}
-                          onChange={handleSettingsChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={"field"}
-                          name={"field"}
-                          onChange={handleSettingsChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={"value"}
-                          name={"value"}
-                          onChange={handleSettingsChange}
-                        />
-                      </td>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          width: "40px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <div
-                          onClick={e => {
-                            console.log("SETTINGS ", settingsFields);
-                            setSettings([...settingsList, settingsFields]);
-
-                            e.preventDefault();
-                          }}
-                        >
-                          {"<Add>"}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div>
-                <ul>
-                  {settingsList.map((s, i) => {
-                    let setting = `Type=${s.type}, Label=${s.label}, Field=${s.field}, DefaultValue=${s.value}`;
-
-                    return (
-                      <li key={"set-" + i}>
-                        {setting}
-                        <span
-                          style={{ marginLeft: "5px", cursor: "pointer" }}
-                          data-li={i}
-                          onClick={e => {
-                            const itemIndex = parseInt(
-                              e.currentTarget.dataset["li"],
-                            );
-                            const temp = [...settingsList];
-                            temp.splice(itemIndex, 1);
-
-                            setSettings(temp);
-                            e.preventDefault();
-                          }}
-                        >
-                          {"<Delete>"}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
-          </ModalBody>
-          <ModalFooter m={0}>
-            <div style={{ width: "100%", textAlign: "center" }}>
-              <button
-                onClick={e => {
-                  //setDialogOpen(false);
-                  onButtonClick(e, "cancel", {});
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={e => {
-                  // setDialogOpen(false);
-                  const settings = [...settingsList];
-                  /*  
-                  "settings": [
-                    { "field": "year", "value": "2020", "label": "Year", "type": "text" },
-                    { "field": "month", "value": "1", "label": "Month", "type": "text" },
-                    {"field":"sizes","value":"[{\"option\":\"300x300\",\"value\":\"300x300\"}]","label":"Sizes","type":"select"},
-                      {"field":"theme","value": "[{\"option\":\"Light\",\"value\":\"light\"}]","label":"Theme","type":"select"}
-                  ],
-                  */
-                  console.log("CLICK ", settings);
-                  console.log("CLICK2 ", themeFields);
-
-                  settings.push({
-                    field: "sizes",
-                    label: "Sizes",
-                    type: "select",
-                    value: JSON.stringify([
-                      { option: themeFields.size, value: themeFields.size },
-                    ]),
-                  });
-
-                  settings.push({
-                    field: "theme",
-                    label: "Theme",
-                    type: "select",
-                    value: JSON.stringify([
-                      { option: themeFields.theme, value: themeFields.theme },
-                    ]),
-                  });
-
-                  onButtonClick(e, "update", settings);
-                }}
-              >
-                Update
-              </button>
-            </div>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+    <Flex
+      alignItems="center"
+      style={{ border: "1px dashed grey" }}
+      mt={50}
+      height="358px"
+      width="676px"
+      textAlign="center"
+      borderRadius="8px"
+      bg="#373436"
+    >
+      <Text>
+        This area will contain content to help the developer complete the task
+        in the left panelContent will be locked in as part of a later user story
+      </Text>
+    </Flex>
   );
 };
+
 const RemoteContent = ({ url, ...props }) => {
   console.log("COMPONENT URL ", url);
+  // const [loading, err, Component] = useRemoteComponent(
+  //   "https://raw.githubusercontent.com/prifina/widgets/master/packages/dry-run/dist/main.bundle.js",
+  // );
   const [loading, err, Component] = useRemoteComponent(url);
 
   /*
@@ -448,9 +183,11 @@ const Content = forwardRef((props, ref) => {
   } = usePrifina();
   const { update } = useContext(SandboxContext);
 
+  console.log("appsett", appSettings);
+
   const athenaSubscription = useRef({});
   let settingsInit = {};
-  if (appSettings.hasOwnProperty("settings")) {
+  if (appSettings.hasOwnProperty("settings") || appSettings.settings != null) {
     //console.log("APP SETTINGS INIT ", appSettings);
     let data = {};
     appSettings.settings.forEach(s => {
@@ -460,6 +197,8 @@ const Content = forwardRef((props, ref) => {
     });
     console.log("APP SETTINGS INIT ", data);
     settingsInit = data;
+  } else {
+    appSettings.settings = {};
   }
   /*
   // const debugUpdate = useCallback(content => {
@@ -662,31 +401,28 @@ Content.propTypes = {
   prifinaID: PropTypes.string.isRequired,
 };
 
-const mergeRefs = (...refs) => {
-  const filteredRefs = refs.filter(Boolean);
-  if (!filteredRefs.length) return null;
-  if (filteredRefs.length === 0) return filteredRefs[0];
-  return inst => {
-    for (const ref of filteredRefs) {
-      if (typeof ref === "function") {
-        ref(inst);
-      } else if (ref) {
-        ref.current = inst;
-      }
-    }
-  };
-};
-
 const Sandbox = props => {
   console.log("SANDBOX --->", props, props.hasOwnProperty("app"));
-  const history = useHistory();
+
+  const { colors } = useTheme();
+
+  const toast = useToast();
+
   const { AUTHConfig, APIConfig, userAuth, currentUser } = useAppContext();
   //const activeUser = useRef({});
-  const currentAppId = "3LSdcSs1kcPskBWBJvqGto";
+
+  const history = useHistory();
+
+  const location = useLocation();
+
+  let allValues = location.state.allValues;
+
+  console.log("hist", allValues);
+
+  // const currentAppId = "866fscSq5Ae7bPgUtb6ffB";
+  const currentAppId = allValues.id;
   const componentProps = useRef({});
   const [ready, setReady] = useState(false);
-  const [openSettings, setSettings] = useState(false);
-  const [openOptions, setOptions] = useState(false);
   const [asyncContent, setAsyncContent] = useState([]);
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -696,80 +432,38 @@ const Sandbox = props => {
       updated: new Date().toString(),
     },
   );
-  /*
-  const { x, y, reference, floating, strategy } = useFloating({
-    placement: "left",
-    middleware: [shift()],
-  });
-  */
-
-  const arrowRef = useRef(null);
-  const {
-    x,
-    y,
-    reference,
-    floating,
-    strategy,
-    middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
-  } = useFloating({
-    placement: "left",
-    middleware: [offset(10), arrow({ element: arrowRef })],
-  });
-  //console.log("OFF ", offset);
-
-  /*
-  const update = opts => {
-    console.log("FLOATING REF UPDATE ", opts);
-    //console.log("MOUNT33 ", typeof reference.getBoundingClientRect);
-    if (arrowRef.current) {
-      computePosition(reference, floating, {
-        middleware: [
-          arrow({
-            element: arrowRef,
-          }),
-        ],
-      }).then(({ middlewareData }) => {
-        console.log("MIDDLE ", middlewareData);
-      });
-    }
-  };
-  */
 
   const remoteRef = useRef();
   const currentAppRef = useRef({});
 
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [optionsElement, setOptionsElement] = useState(null);
-  /*
-  const optionsRef = useRef(null);
+  const [validUrl, setValidUrl] = useState();
 
-  useLayoutEffect(() => {
-    console.log("OPTIONS ", optionsRef);
-    floating(optionsRef.current);
-  }, [optionsRef]);
-*/
-  /*
+  // checkUrl(
+  //   "https://raw.githubusercontent.com/prifina/widgets/master/packages/dry-run/dist/main.bundle.js",
+  // )
+  //   .then(result => setValidUrl(result))
+  //   .catch(err => console.log(err));
+
+  const [remoteLink, setRemoteLink] = useState("");
+
+  function handleCheckUrl(event) {
+    checkUrl(event.target.value)
+      .then(result => setValidUrl(result))
+      .then(setRemoteLink(event.target.value))
+      .catch(err => console.log("errror", err));
+  }
+
+  console.log("check url valid", validUrl);
+  console.log("check remote link valid", remoteLink);
+
   useEffect(async () => {
-    if (openOptions) {
-      console.log("REF UPDATE ", reference.current);
-      console.log("FLOAT UPDATE ", floating.current);
-      const { middlewareData } = await computePosition(
-        reference.current,
-        floating.current,
-        {
-          middleware: [
-            arrow({
-              element: arrowRef.current,
-            }),
-          ],
-        },
-      );
-      console.log("MIDDLE ", middlewareData);
-    }
-  }, [openOptions]);
-  */
-  useEffect(async () => {
-    const remoteAppUrl = localStorage.getItem("remoteWidget");
+    // const remoteAppUrl = localStorage.getItem("remoteWidget");
+    // const remoteAppUrl =
+    //   "https://raw.githubusercontent.com/prifina/widgets/master/packages/dry-run/dist/main.bundle.js";
+
+    const remoteAppUrl = allValues.remoteUrl;
+
+    // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
     //componentProps.current = { url: remoteApp };
 
     const session = await Auth.currentSession();
@@ -801,19 +495,7 @@ const Sandbox = props => {
     }
     clientEndpoint = appProfile.endpoint;
     clientRegion = appProfile.region;
-    /*
-    activeUser.current = {
-      name: appProfile.name,
-      uuid: prifinaID,
-      endpoint: clientEndpoint,
-      region: clientRegion,
-      dataSources: currentPrifinaUser.data.getPrifinaUser.dataSources
-        ? JSON.parse(currentPrifinaUser.data.getPrifinaUser.dataSources)
-        : {},
-    };
-    */
 
-    //const _currentSession = await Auth.currentSession();
     const client = await createClient(clientEndpoint, clientRegion, session);
     componentProps.current.appSyncClient = client;
     componentProps.current.prifinaID = prifinaID;
@@ -821,97 +503,10 @@ const Sandbox = props => {
     componentProps.current.url = remoteAppUrl;
     componentProps.current.widget = true;
 
-    //componentProps.current.Component = RemoteContent({ url: remoteAppUrl });
     console.log("COMPONENT PROPS....", componentProps);
-    //console.log("ACTIVEUSER ....", activeUser);
+
     setReady(true);
   }, []);
-
-  useEffect(async () => {
-    console.log("REFS ", reference, floating);
-    if (openOptions && optionsElement) {
-      //reference(referenceElement);
-      //floating(optionsElement);
-      reference(referenceElement);
-      const placement = "left";
-      const { x, y } = await computePosition(referenceElement, optionsElement, {
-        placement: placement,
-        middleware: [offset(10), arrow({ element: arrowRef.current })],
-      });
-      console.log("FLOATING...", x, y);
-      Object.assign(optionsElement.style, {
-        left: x != null ? `${x}px` : "",
-        top: y != null ? `${y}px` : "",
-      });
-
-      floating(optionsElement);
-
-      const staticSide = {
-        top: "bottom",
-        right: "left",
-        bottom: "top",
-        left: "right",
-      }[placement.split("-")[0]];
-
-      const { middlewareData } = await computePosition(
-        referenceElement,
-        optionsElement,
-        {
-          placement: "left",
-          middleware: [
-            offset(10),
-            arrow({
-              element: arrowRef.current,
-            }),
-          ],
-        },
-      );
-      console.log("MIDDLE ", middlewareData);
-      Object.assign(arrowRef.current.style, {
-        left:
-          middlewareData.arrow.x != null ? `${middlewareData.arrow.x}px` : "",
-        top:
-          middlewareData.arrow.y != null ? `${middlewareData.arrow.y}px` : "",
-        right: "",
-        bottom: "",
-        [staticSide]: "-4px",
-      });
-
-      /*
-      const { x, y } = await computePosition(referenceElement, optionsElement, {
-        placement: "left",
-        middleware: [offset(10), arrow({ element: arrowRef })],
-      });
-
-      //console.log("REF ELEM ", referenceElement.getBoundingClientRect());
-      Object.assign(optionsElement.style, {
-        left: x != null ? `${x}px` : "",
-        top: y != null ? `${y}px` : "",
-      });
-
-      floating(optionsElement);
-     */
-      /*
-       Object.assign(arrowEl.style, {
-    left: x != null ? `${x}px` : '',
-    top: y != null ? `${y}px` : '',
-  });
-      const { middlewareData } = await computePosition(
-        referenceElement,
-        optionsElement,
-        {
-          middleware: [
-            arrow({
-              element: arrowRef,
-            }),
-          ],
-        },
-      );
-      */
-
-      //console.log("REFS ELEMS ", referenceElement, optionsElement);
-    }
-  }, [optionsElement, openOptions]);
 
   // const debugUpdate = useCallback(content => {
   const debugUpdate = data => {
@@ -939,32 +534,39 @@ const Sandbox = props => {
     setAsyncContent(newContent);
     setState({ updated: new Date().toString() });
   };
-  const onDialogClose = e => {
-    setOptions(false);
-    setSettings(false);
+
+  const onSubmitSystemSettings = (e, data) => {
+    currentAppRef.current = {
+      appID: currentAppId,
+      settings: data,
+    };
+
+    console.log("currentappref", currentAppRef.current);
+
+    updateAppVersionMutation(GRAPHQL, {
+      id: currentAppRef.current.appID,
+      settings: currentAppRef.current.settings,
+    }).then(res => {
+      console.log("UPDATE ", res);
+      toast.info("System settings updated successfully", {});
+    });
+
     e.preventDefault();
   };
-  const onDialogClick = (e, action, data) => {
-    if (action === "update") {
-      currentAppRef.current = {
-        appID: currentAppId,
-        settings: data,
-      };
 
-      console.log(currentAppRef.current);
+  const onUpdateSettings = (e, data) => {
+    currentAppRef.current = {
+      appID: currentAppId,
+      settings: JSON.parse(data),
+    };
+    updateAppVersionMutation(GRAPHQL, {
+      id: currentAppRef.current.appID,
+      settings: currentAppRef.current.settings,
+    }).then(res => {
+      console.log("UPDATE ", res);
+      toast.info("Settings updated successfully", {});
+    });
 
-      updateAppVersionMutation(GRAPHQL, {
-        id: currentAppRef.current.appID,
-        settings: currentAppRef.current.settings,
-      }).then(res => {
-        console.log("UPDATE ", res);
-        setOptions(false);
-        setSettings(false);
-      });
-    } else {
-      setOptions(false);
-      setSettings(false);
-    }
     e.preventDefault();
   };
 
@@ -973,6 +575,28 @@ const Sandbox = props => {
   };
   const remoteClient = async (endpoint, region) => {
     return Promise.resolve({});
+  };
+
+  const [activetab, setactivetab] = useState(0);
+
+  const tabClick = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setactivetab(tab);
+    // if (state.isOpen) {
+    //   setState({ size: { y: 35 }, isOpen: false });
+    //   setactivetab(tab);
+    // } else {
+    //   const remoteContainer = remoteRef.current.getBoundingClientRect();
+    //   // const testingJSON = [{ testing: "OK" }];
+    //   // const newSize = window.innerHeight - remoteContainer.bottom - 5;
+    //   const newSize = "416px";
+    //   setState({
+    //     size: { y: 416 },
+    //     isOpen: true,
+    //     // content: testingJSON,
+    //   });
+    // }
   };
 
   return (
@@ -991,14 +615,52 @@ const Sandbox = props => {
               update: debugUpdate,
             }}
           >
-            <Box width={"100vw"} height={"100vh"}>
-              {openSettings && (
-                <SettingsModal
-                  onClose={onDialogClose}
-                  onButtonClick={onDialogClick}
-                  appSettings={currentAppRef.current}
+            <Flex
+              flexDirection="column"
+              width={"100vw"}
+              height={"100vh"}
+              bg="basePrimary"
+            >
+              <Flex
+                height="42px"
+                alignItems="center"
+                justifyContent="center"
+                style={{ background: colors.sandboxGradient }}
+              >
+                <BlendIcon
+                  size="18px"
+                  iconify={mdiPowerPlug}
+                  className="icon"
+                  color={colors.textPrimary}
                 />
-              )}
+                <Text ml={20}>
+                  This is a live Sandbox session you are seeing how your project
+                  will render on Prifina
+                </Text>
+              </Flex>
+              <Flex
+                height="64px"
+                bg="baseMuted"
+                alignItems="center"
+                paddingLeft="16px"
+              >
+                <BlendIcon
+                  size="18px"
+                  iconify={mdiArrowLeft}
+                  className="icon"
+                  color={colors.textPrimary}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    history.goBack();
+                  }}
+                />
+                <Text ml={16}>{allValues.name}</Text>
+                <Text ml={100}>{allValues.appType}</Text>
+                <Text ml={16} mr={8}>
+                  Session Status
+                </Text>
+                <StatusCircle status={validUrl} />
+              </Flex>
               <Flex
                 justifyContent={"center"}
                 alignItems={"center"}
@@ -1023,60 +685,6 @@ const Sandbox = props => {
                   </Text>
                 )}
               </Flex>
-              <SetupButton
-                ref={setReferenceElement}
-                onClick={() => {
-                  //setSettings(true);
-                  setOptions(true);
-                }}
-              >
-                <span>+</span>
-              </SetupButton>
-              {openOptions && (
-                <Options
-                  ref={setOptionsElement}
-                  style={{
-                    position: strategy,
-                    top: y ?? "",
-                    left: x ?? "",
-                  }}
-                >
-                  <div>
-                    <List spacing={3}>
-                      <OptionListItem
-                        onClick={e => {
-                          e.preventDefault();
-                          setSettings(true);
-                        }}
-                      >
-                        Settings
-                      </OptionListItem>
-                      <OptionListItem>QueryBuilder</OptionListItem>
-                      <OptionListItem>SQL</OptionListItem>
-                      <OptionListItem
-                        onClick={e => {
-                          e.preventDefault();
-                        }}
-                      >
-                        Remote URL
-                      </OptionListItem>
-                    </List>
-                  </div>
-                  <Arrow ref={arrowRef} />
-                </Options>
-              )}
-              {/* 
-              <div
-                ref={floating}
-                style={{
-                  position: strategy,
-                  top: y ?? "",
-                  left: x ?? "",
-                }}
-              >
-                Tooltip
-              </div>
-              */}
               <BottomContainer height={state.size.y}>
                 <div
                   style={{
@@ -1099,7 +707,7 @@ const Sandbox = props => {
                       const newSize =
                         window.innerHeight - remoteContainer.bottom - 5;
                       setState({
-                        size: { y: newSize },
+                        size: { y: 416 },
                         isOpen: true,
                         // content: testingJSON,
                       });
@@ -1108,22 +716,155 @@ const Sandbox = props => {
                 >
                   {state.isOpen ? "\u21F2" : "\u21F1"}
                 </div>
-                {state.isOpen && (
-                  <>
-                    <div
-                      style={{
-                        backgroundColor: "white",
-                        padding: "5px",
-                        marginTop: "35px",
-                        height: "100%",
-                      }}
+                <Flex>
+                  <div
+                    style={{
+                      overflow: "scroll",
+                      height: state.size.y,
+                      width: "100%",
+                      marginLeft: 30,
+                    }}
+                  >
+                    <Tabs
+                      activeTab={activetab}
+                      onClick={tabClick}
+                      variant={"line"}
                     >
-                      <ReactJson key={state.updated} src={asyncContent} />
-                    </div>
-                  </>
-                )}
+                      <TabList
+                        style={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 1,
+                          background: colors.baseMuted,
+                          paddingBottom: 10,
+                        }}
+                      >
+                        <Tab>
+                          <Text>Test settings</Text>
+                        </Tab>
+                        <Tab>
+                          <Text>System settings</Text>
+                        </Tab>
+                        <Tab>
+                          <Text>Settings</Text>
+                        </Tab>
+                        <Tab>
+                          <Text>Debugger</Text>
+                        </Tab>
+                        <Tab>
+                          <Text>Support</Text>
+                        </Tab>
+                      </TabList>
+                      <TabPanelList>
+                        <TabPanel
+                          style={{
+                            height: "100%",
+                            paddingBottom: "50px",
+                          }}
+                        >
+                          <div style={{ overflow: "clip" }}>
+                            <Flex>
+                              <div>
+                                <Flex mb={16}>
+                                  <Box>
+                                    <Text fontSize="sm" mb={5}>
+                                      App ID
+                                    </Text>
+                                    <Input
+                                      disabled
+                                      width="661px"
+                                      label="text"
+                                      value={allValues.id}
+                                      color={colors.textPrimary}
+                                      style={{ background: "transparent" }}
+                                    />
+                                    <Text fontSize="sm" mt={5}>
+                                      Unique Prifina project identifier
+                                    </Text>
+                                  </Box>
+                                </Flex>
+                                <Flex mb={16}>
+                                  <Box>
+                                    <Text fontSize="sm" mb={5}>
+                                      Remote link
+                                    </Text>
+                                    <Input
+                                      width="661px"
+                                      label="text"
+                                      defaultValue={allValues.remoteUrl}
+                                      color={colors.textPrimary}
+                                      style={{ background: "transparent" }}
+                                      onChange={handleCheckUrl}
+                                    />
+                                    {validUrl ? null : (
+                                      <Text fontSize="xxs" color="red">
+                                        Your remote link is not valid
+                                      </Text>
+                                    )}
+                                    {remoteLink !=
+                                    allValues.remoteUrl ? null : (
+                                      <Text fontSize="xxs" color="red">
+                                        This remote link already exists
+                                      </Text>
+                                    )}
+                                    <Text fontSize="sm" mt={5}>
+                                      Links to your build
+                                    </Text>
+                                  </Box>
+                                </Flex>
+
+                                <Button
+                                  disabled={
+                                    validUrl &&
+                                    remoteLink.length > 0 &&
+                                    remoteLink != allValues.remoteUrl
+                                      ? false
+                                      : true
+                                  }
+                                >
+                                  Update
+                                </Button>
+                                <Button
+                                  ml={25}
+                                  onClick={() => window.location.reload()}
+                                >
+                                  Refresh
+                                </Button>
+                              </div>
+                              {/* <EmptyContainer /> */}
+                            </Flex>
+                          </div>
+                        </TabPanel>
+                        <TabPanel>
+                          <div style={{ overflow: "auto" }}>
+                            <SystemSettingsSandbox
+                              onClick={onSubmitSystemSettings}
+                              appSettings={currentAppRef.current}
+                            />
+                          </div>
+                        </TabPanel>
+                        <TabPanel>
+                          <div>
+                            <SettingsSandbox
+                              onClick={onUpdateSettings}
+                              appSettings={currentAppRef.current}
+                            />
+                          </div>
+                        </TabPanel>
+                        <TabPanel>
+                          <div>
+                            <ReactJson key={state.updated} src={asyncContent} />
+                          </div>
+                        </TabPanel>
+                        <TabPanel>
+                          <div style={{ overflow: "auto" }}></div>
+                        </TabPanel>
+                      </TabPanelList>
+                    </Tabs>
+                  </div>
+                </Flex>
               </BottomContainer>
-            </Box>
+            </Flex>
           </SandboxContext.Provider>
         </React.Suspense>
       </PrifinaProvider>

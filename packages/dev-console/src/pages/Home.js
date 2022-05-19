@@ -184,6 +184,8 @@ const Main = ({ data, currentUser }) => {
     newIcon: "",
     dataSources: [],
     newDataSources: [],
+    remoteUrl: "",
+    newRemoteUrl: "",
   });
 
   const Columns = [
@@ -228,6 +230,8 @@ const Main = ({ data, currentUser }) => {
                 newIcon: props.row.original.newIcon,
                 dataSources: props.row.original.dataSources,
                 newDataSources: props.row.original.dataSources,
+                remoteUrl: props.row.original.remoteUrl,
+                newRemoteUrl: props.row.original.remoteUrl,
               });
             }}
           >

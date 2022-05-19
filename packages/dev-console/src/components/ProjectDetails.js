@@ -27,8 +27,10 @@ import {
 
 import { API as GRAPHQL } from "aws-amplify";
 
+import { useLocation, useHistory } from "react-router-dom";
+
 import PropTypes from "prop-types";
-import BlendIcon from "@blend-ui/icons/dist/esm/BlendIcon";
+import { BlendIcon } from "@blend-ui/icons";
 
 import * as C from "./components";
 
@@ -50,6 +52,9 @@ import {
 
 const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   const { colors } = useTheme();
+
+  const history = useHistory();
+  const location = useLocation();
 
   const toast = useToast();
 
@@ -84,6 +89,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     newUserGenerated,
     newPublic,
     newIcon,
+    newRemoteUrl,
   ) => {
     updateAppVersionMutation(GRAPHQL, {
       id: id,
@@ -102,6 +108,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
       userGenerated: newUserGenerated,
       public: newPublic,
       icon: newIcon,
+      remoteUrl: newRemoteUrl,
     }).then(res => {
       console.log("SUCCESS", res);
       toast.success("Project details updated successfully", {});
@@ -284,6 +291,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 newUserGenerated,
                 newPublic,
                 allValues.newIcon,
+                allValues.newRemoteUrl,
               );
             }}
           >
@@ -628,7 +636,17 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             {radioButtons()}
             {detailsSaveStatus()}
           </Flex>
-          <Button disabled>Launch Sandbox</Button>
+          <Button
+            // disabled
+            onClick={() => {
+              history.push({
+                pathname: "/sandbox",
+                state: { allValues: allValues },
+              });
+            }}
+          >
+            Launch Sandbox
+          </Button>
         </C.ActionContainer>
         <C.ProjectContainer mb={24}>
           <Flex justifyContent="space-between" alignItems="center">
@@ -690,15 +708,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <Text fontSize="sm" mb={5}>
                 Build deployment package
               </Text>
-              {/* <div
-                      style={{
-                        border: "1px dashed lightgray",
-                        width: 451,
-                        height: 132,
-                        borderRadius: 4,
-                        background: "transparent",
-                      }}
-                    /> */}
               <UploadFile widgetId={allValues.id} />
             </Box>
             <Box ml={25}>
@@ -710,6 +719,25 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <Text fontSize="xs">
                 2. Come in a .zip with a maximum file size of 5MB
               </Text>
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Remote Link
+              </Text>
+              <Input
+                width="451px"
+                label="text"
+                name="newRemoteUrl"
+                defaultValue={allValues.remoteUrl}
+                onChange={handleValueChange}
+                color={colors.textPrimary}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #ADADAD",
+                }}
+              />
             </Box>
           </Flex>
           <Flex alignItems="flex-end" mb={16}>
@@ -1028,12 +1056,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             <div
               style={{
                 overflow: "hidden",
-                // background: colors.baseMuted,
-                // paddingTop: 16,
-                // paddingBottom: 16,
-                // paddingLeft: 40,
-                // paddingRight: 40,
-                // borderRadius: 10,
                 width: 600,
               }}
             >
