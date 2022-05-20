@@ -7,15 +7,13 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
 
   const { colors } = useTheme();
 
-  // const filter = appSettings.filter(item => item !== value)
-
-  const fields = ["sizes", "theme"];
-
   const defaultSettings = appSettings.settings.filter(element => {
     return element.field === "theme" || element.label === "Sizes";
   });
 
   console.log("def", defaultSettings);
+
+  ////need better control lose the theme and size and remove the array brackets
 
   const filter = appSettings.settings
     .filter(el => el.field !== "sizes")
@@ -23,15 +21,11 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
 
   const [settings, setSettings] = useState(appSettings.settings);
 
-  const prettySettings = JSON.stringify(filter, undefined, 4);
-
-  const prettyDefaultSettings = JSON.stringify(defaultSettings, undefined, 4);
+  const prettySettings = JSON.stringify(settings, undefined, 4);
 
   function handleChange(event) {
     setSettings(event.target.value);
   }
-
-  let combinedSettings = [...settings, ...defaultSettings];
 
   return (
     <div>

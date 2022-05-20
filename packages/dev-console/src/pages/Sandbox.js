@@ -47,10 +47,11 @@ import PropTypes from "prop-types";
 import { BlendIcon } from "@blend-ui/icons";
 
 import SystemSettingsSandbox from "../components/SystemSettingsSandbox";
+import SettingsSandbox from "../components/SettingsSandbox";
 
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
-import SettingsSandbox from "../components/SettingsSandbox";
+import mdiArrowExpand from "@iconify/icons-mdi/arrow-expand";
 
 const SandboxContext = createContext(null);
 
@@ -61,6 +62,8 @@ const BottomContainer = styled.div`
   width: 100%;
   height: ${props => props.height}px;
   background-color: ${props => props.theme.colors.baseMuted};
+  border-radius: 16px 16px 0px 0px;
+  border-top: 1px solid #4b484a;
 `;
 
 const WidgetWrapper = styled.div`
@@ -104,25 +107,18 @@ const StatusCircle = styled.div`
   border-radius: 50%;
 `;
 
-const EmptyContainer = () => {
-  return (
-    <Flex
-      alignItems="center"
-      style={{ border: "1px dashed grey" }}
-      mt={50}
-      height="358px"
-      width="676px"
-      textAlign="center"
-      borderRadius="8px"
-      bg="#373436"
-    >
-      <Text>
-        This area will contain content to help the developer complete the task
-        in the left panelContent will be locked in as part of a later user story
-      </Text>
-    </Flex>
-  );
-};
+const TypeBadge = styled.span`
+  height: 18px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 8px;
+  padding-left: 8px;
+  font-size: 10px;
+  border: 1px solid ${props => (props.type === 2 ? "#FC62C1" : "#CB8E12")};
+  color: ${props => (props.type === 2 ? "#FC62C1" : "#CB8E12")};
+`;
 
 const RemoteContent = ({ url, ...props }) => {
   console.log("COMPONENT URL ", url);
@@ -436,13 +432,8 @@ const Sandbox = props => {
   const remoteRef = useRef();
   const currentAppRef = useRef({});
 
-  const [validUrl, setValidUrl] = useState();
-
-  // checkUrl(
-  //   "https://raw.githubusercontent.com/prifina/widgets/master/packages/dry-run/dist/main.bundle.js",
-  // )
-  //   .then(result => setValidUrl(result))
-  //   .catch(err => console.log(err));
+  const [validUrl, setValidUrl] = useState(allValues.remoteUrl);
+  const [validStatus, setValidStatus] = useState();
 
   const [remoteLink, setRemoteLink] = useState("");
 
@@ -450,21 +441,22 @@ const Sandbox = props => {
     checkUrl(event.target.value)
       .then(result => setValidUrl(result))
       .then(setRemoteLink(event.target.value))
-      .catch(err => console.log("errror", err));
+      .catch(err => console.log("error", err));
   }
+
+  checkUrl(validUrl)
+    .then(result => setValidStatus(result))
+    .catch(err => console.log("error validStatus", err));
 
   console.log("check url valid", validUrl);
   console.log("check remote link valid", remoteLink);
 
   useEffect(async () => {
-    // const remoteAppUrl = localStorage.getItem("remoteWidget");
-    // const remoteAppUrl =
-    //   "https://raw.githubusercontent.com/prifina/widgets/master/packages/dry-run/dist/main.bundle.js";
-
-    const remoteAppUrl = allValues.remoteUrl;
-
+    // const remoteAppUrl = localStorage.getItem("remoteWidget")
     // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
     //componentProps.current = { url: remoteApp };
+
+    const remoteAppUrl = allValues.remoteUrl;
 
     const session = await Auth.currentSession();
     const prifinaID = session.idToken.payload["custom:prifina"];
@@ -480,6 +472,10 @@ const Sandbox = props => {
       appID: currentAppId,
       settings: currentApp.data.getAppVersion.settings,
     };
+    if (currentAppRef.current.settings === null) {
+      currentAppRef.current.settings = [];
+    }
+
     console.log("APP INFO", currentAppRef.current);
     let clientEndpoint = "";
     let clientRegion = "";
@@ -505,7 +501,11 @@ const Sandbox = props => {
 
     console.log("COMPONENT PROPS....", componentProps);
 
-    setReady(true);
+    if (remoteAppUrl === null) {
+      setReady(false);
+    } else {
+      setReady(true);
+    }
   }, []);
 
   // const debugUpdate = useCallback(content => {
@@ -570,6 +570,21 @@ const Sandbox = props => {
     e.preventDefault();
   };
 
+  const onUpdateRemoteLink = () => {
+    currentAppRef.current = {
+      appID: currentAppId,
+      remoteUrl: remoteLink,
+    };
+    updateAppVersionMutation(GRAPHQL, {
+      id: currentAppRef.current.appID,
+      remoteUrl: currentAppRef.current.remoteUrl,
+    }).then(res => {
+      console.log("UPDATE ", res);
+      toast.info("Remote link updated successfully", {});
+      history.push("/");
+    });
+  };
+
   const remoteUser = opts => {
     return Promise.resolve({});
   };
@@ -583,20 +598,6 @@ const Sandbox = props => {
     console.log("Click", e);
     console.log("TAB", tab);
     setactivetab(tab);
-    // if (state.isOpen) {
-    //   setState({ size: { y: 35 }, isOpen: false });
-    //   setactivetab(tab);
-    // } else {
-    //   const remoteContainer = remoteRef.current.getBoundingClientRect();
-    //   // const testingJSON = [{ testing: "OK" }];
-    //   // const newSize = window.innerHeight - remoteContainer.bottom - 5;
-    //   const newSize = "416px";
-    //   setState({
-    //     size: { y: 416 },
-    //     isOpen: true,
-    //     // content: testingJSON,
-    //   });
-    // }
   };
 
   return (
@@ -654,12 +655,16 @@ const Sandbox = props => {
                     history.goBack();
                   }}
                 />
-                <Text ml={16}>{allValues.name}</Text>
-                <Text ml={100}>{allValues.appType}</Text>
+                <Text ml={16} mr={100}>
+                  {allValues.name}
+                </Text>
+                <TypeBadge type={allValues.appType}>
+                  {allValues.appType === 1 ? "APPLICATION" : "WIDGET"}
+                </TypeBadge>
                 <Text ml={16} mr={8}>
                   Session Status
                 </Text>
-                <StatusCircle status={validUrl} />
+                <StatusCircle status={validUrl != null ? validStatus : false} />
               </Flex>
               <Flex
                 justifyContent={"center"}
@@ -686,43 +691,33 @@ const Sandbox = props => {
                 )}
               </Flex>
               <BottomContainer height={state.size.y}>
-                <div
+                <BlendIcon
+                  iconify={mdiArrowExpand}
+                  color={colors.textPrimary}
                   style={{
                     position: "absolute",
                     left: "5px",
-                    fontSize: "35px",
+                    top: "5px",
                     cursor: "pointer",
                   }}
-                  onClick={e => {
-                    //console.log(remoteRef);
-                    //console.log(remoteRef.current.getBoundingClientRect());
-                    // bottom
-                    //window.innerHeight;
+                  onClick={() => {
                     if (state.isOpen) {
                       setState({ size: { y: 35 }, isOpen: false });
                     } else {
-                      const remoteContainer =
-                        remoteRef.current.getBoundingClientRect();
-                      // const testingJSON = [{ testing: "OK" }];
-                      const newSize =
-                        window.innerHeight - remoteContainer.bottom - 5;
                       setState({
                         size: { y: 416 },
                         isOpen: true,
-                        // content: testingJSON,
                       });
                     }
                   }}
-                >
-                  {state.isOpen ? "\u21F2" : "\u21F1"}
-                </div>
+                />
                 <Flex>
                   <div
                     style={{
                       overflow: "scroll",
                       height: state.size.y,
                       width: "100%",
-                      marginLeft: 30,
+                      marginLeft: 65,
                     }}
                   >
                     <Tabs
@@ -735,7 +730,7 @@ const Sandbox = props => {
                           position: "sticky",
                           top: 0,
                           zIndex: 1,
-                          background: colors.baseMuted,
+
                           paddingBottom: 10,
                         }}
                       >
@@ -775,10 +770,14 @@ const Sandbox = props => {
                                       width="661px"
                                       label="text"
                                       value={allValues.id}
-                                      color={colors.textPrimary}
+                                      color={colors.textMuted}
                                       style={{ background: "transparent" }}
                                     />
-                                    <Text fontSize="sm" mt={5}>
+                                    <Text
+                                      fontSize="xs"
+                                      mt={5}
+                                      color={colors.textMuted}
+                                    >
                                       Unique Prifina project identifier
                                     </Text>
                                   </Box>
@@ -807,7 +806,11 @@ const Sandbox = props => {
                                         This remote link already exists
                                       </Text>
                                     )}
-                                    <Text fontSize="sm" mt={5}>
+                                    <Text
+                                      fontSize="xs"
+                                      mt={5}
+                                      color={colors.textSecondary}
+                                    >
                                       Links to your build
                                     </Text>
                                   </Box>
@@ -821,6 +824,7 @@ const Sandbox = props => {
                                       ? false
                                       : true
                                   }
+                                  onClick={onUpdateRemoteLink}
                                 >
                                   Update
                                 </Button>
