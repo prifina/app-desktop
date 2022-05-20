@@ -28,6 +28,7 @@ import config, { REFRESH_TOKEN_EXPIRY } from "./config";
 // import { default as newTheme } from "./theme/theme";
 
 import { default as newTheme } from "./theme/theme";
+import { ToastContextProvider } from "@blend-ui/toast";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -317,9 +318,11 @@ function App() {
     >
       <ThemeProvider theme={mergedTheme}>
         <React.Fragment>
-          <GlobalStyle />
-          {!isAuthenticating && <Routes />}
-          {isAuthenticating && <div>Loading...</div>}
+          <ToastContextProvider>
+            <GlobalStyle />
+            {!isAuthenticating && <Routes />}
+            {isAuthenticating && <div>Loading...</div>}
+          </ToastContextProvider>
         </React.Fragment>
       </ThemeProvider>
     </AppContext.Provider>

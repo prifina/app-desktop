@@ -27,8 +27,10 @@ const UploadAsset = ({ id, type, numId, ...props }) => {
       // check project appId is same as selected file
       // remove apps when private upload works
       // const s3Key = "apps/uploaded/assets/" + "name";
-      const s3Key =
-        "apps/uploaded/assets/" + id + "-" + type + "-" + numId + ".png";
+      // const s3Key =
+      //   "apps/uploaded/assets/" + id + "-" + type + "-" + numId + ".png";
+
+      const s3Key = id + "/assets/" + type + "-" + numId + ".png";
 
       //add assets to path
       //for id unique id

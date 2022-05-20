@@ -197,6 +197,8 @@ export const listApps = `query appsList($filter:TableAppsFilterInput,$sortDirect
   userHeld
   bannerImage
   public
+  remoteUrl
+
 
     }
     nextToken

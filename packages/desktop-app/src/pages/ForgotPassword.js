@@ -430,7 +430,6 @@ const ForgotPassword = props => {
         <Box mt={40}>
           <ProgressContainer
             title={i18n.__("resetPasswordTitle")}
-            progress={50}
             pr={19}
             minHeight={580}
             progress={stepProgress}
@@ -587,7 +586,6 @@ const ForgotPassword = props => {
         <Box mt={120}>
           <ProgressContainer
             title={i18n.__("resetPasswordTitle")}
-            progress={50}
             pr={19}
             minHeight={406}
             progress={stepProgress}
