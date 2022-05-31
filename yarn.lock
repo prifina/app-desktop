@@ -4127,10 +4127,15 @@
     "@reach/auto-id" "^0.12.1"
     react-popper "^2.2.5"
 
-"@blend-ui/css-grid@1.0.6-alpha.0":
-  version "1.0.6-alpha.0"
-  resolved "https://registry.yarnpkg.com/@blend-ui/css-grid/-/css-grid-1.0.6-alpha.0.tgz#7ca39ecf101689e1313b13718915e9b209b7e66b"
-  integrity sha512-BSPB0CDreZJqefbaBz5cznPYJWxlrBoomnnOaxZ9HFtGTUwH+urPtgF2tOygEqF6Y1dRCBiY2Ip/tfo+9Nus1w==
+"@blend-ui/core@1.1.67-alpha.0":
+  version "1.1.67-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.67-alpha.0.tgz#c50149cca607494be536abcf362d551c903977f3"
+  integrity sha512-LQhzCD6emmo3sobtbMYBr9CearMaIfFMNjoA4amcO6dbRu8IkxlAoP+kiZLJr9BBNkJop8FKeSJHzIOW9quDag==
+
+"@blend-ui/css-grid@1.0.7-alpha.0":
+  version "1.0.7-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/css-grid/-/css-grid-1.0.7-alpha.0.tgz#4cf72120b6f5d44d72eb2be9f7c059edafde57c9"
+  integrity sha512-qDrfOUEvI8B8e6QEp2AFWam3l/X/2por3otezpCi6sS6Wg73NHwhng7vMEcwjvW+3RtVdRFvUkxxNx646a7xZw==
   dependencies:
     styled-css-grid "^1.2.1"
 
@@ -4143,6 +4148,13 @@
     "@iconify/icons-fe" "^1.1.0"
     "@iconify/icons-mdi" "^1.1.11"
     "@iconify/react" "^1.1.3"
+
+"@blend-ui/icons@1.1.9-alpha.0":
+  version "1.1.9-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/icons/-/icons-1.1.9-alpha.0.tgz#df2e48bfed7d151c15584e5a2fd1ef6bcc724438"
+  integrity sha512-9+HWyo35I7qaRws/j6IN4Ge8uKkkIzlbyeM65fYdey9OpUVQ4knK9suqqnDXsR97e0HEdgK+JQ18+24y7vrbCQ==
+  dependencies:
+    "@iconify/react" "^3.2.1"
 
 "@blend-ui/list-item@^0.0.6-alpha.0":
   version "0.0.6-alpha.0"
@@ -4159,6 +4171,16 @@
     body-scroll-lock "^3.1.5"
     exenv "^1.2.2"
 
+"@blend-ui/modal@1.0.13-alpha.0":
+  version "1.0.13-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/modal/-/modal-1.0.13-alpha.0.tgz#9041b961e1d9aa06b98be84ab49e6465ae4aceb2"
+  integrity sha512-sqyKwo94FQTqP7aQNxuMwZ/N+cS7PKyG3s7l9gGHZxSlzd88mmotppFjSnP5CkQUzHiqUZDrF5psrghyyPYsqw==
+
+"@blend-ui/progress@1.0.11-alpha.0":
+  version "1.0.11-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/progress/-/progress-1.0.11-alpha.0.tgz#a6afa91c6bd9a2b49427bdeb353d586c4e01ca3a"
+  integrity sha512-xi5o8ZpS5k30lawtpNCTnA2Yn3Dmocb5gnoonFtvJGP82OLNClF1IRpbZ0ro1DqbsjzcfJSjrQ0KkmwaQHg1uw==
+
 "@blend-ui/progress@1.0.7-alpha.0":
   version "1.0.7-alpha.0"
   resolved "https://registry.yarnpkg.com/@blend-ui/progress/-/progress-1.0.7-alpha.0.tgz#d301b109eba8d404c3596038874218b02d0d6526"
@@ -4169,6 +4191,11 @@
   resolved "https://registry.yarnpkg.com/@blend-ui/tabs/-/tabs-1.0.13-alpha.0.tgz#adb482f1f2d395dce68ec1d5fd6484da7e6175fb"
   integrity sha512-NnHmUwy3sgOFwXUbEDNpvRiSAbZj7jt03s3SvDZ7w42vugX4uOjHAOAi9yFAsQxrH7xClI0re4YhJNfrYkvlsQ==
 
+"@blend-ui/tabs@1.0.16-alpha.0":
+  version "1.0.16-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/tabs/-/tabs-1.0.16-alpha.0.tgz#eedfc47189051d3a4a9ccf424a628d473e69a2bd"
+  integrity sha512-68StnIFvovQnxenYpJRhw9c47zC9W54Xw8Cj/9eL0UdvCCK5ynkZVfJLRUKjXtV6Udy/G+Gujw1NwOaTKRg21A==
+
 "@blend-ui/toast@0.0.12-alpha.0":
   version "0.0.12-alpha.0"
   resolved "https://registry.yarnpkg.com/@blend-ui/toast/-/toast-0.0.12-alpha.0.tgz#78683a31fe7b83c81244006dd4455336c2ecb25a"
@@ -4177,6 +4204,11 @@
     "@reach/auto-id" "^0.12.1"
     aria-hidden "^1.1.1"
     exenv "^1.2.2"
+
+"@blend-ui/toast@0.0.15-alpha.0":
+  version "0.0.15-alpha.0"
+  resolved "https://registry.yarnpkg.com/@blend-ui/toast/-/toast-0.0.15-alpha.0.tgz#860997fc2bece2514657cbadde6a9465bc832609"
+  integrity sha512-dAfWH8MmrqDCLSQZMWlYIKuC7ATAOSBWoQS1aJ0NtIHR6mNlznN0YeC6ziL5yyYx5SBGokrtGNBfzFVwPl7K8g==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -4447,7 +4479,7 @@
   dependencies:
     "@iconify/types" "^1.0.12"
 
-"@iconify/icons-fe@^1.1.0":
+"@iconify/icons-fe@^1.1.0", "@iconify/icons-fe@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@iconify/icons-fe/-/icons-fe-1.2.1.tgz#48bccc3ee55c98fabfc5a8175db355510e6053a1"
   integrity sha512-BaRtSImQdRTgJpRpSLQFeq6WNfGWfqMQ6rq+x/r7FEc5MlgtrW2/4IA6XtYC9FFRlxRBajU0/SGtOhe1yPC/xw==
@@ -4461,6 +4493,13 @@
   dependencies:
     "@iconify/types" "^1.0.12"
 
+"@iconify/icons-mdi@^1.2.17":
+  version "1.2.17"
+  resolved "https://registry.yarnpkg.com/@iconify/icons-mdi/-/icons-mdi-1.2.17.tgz#85c706c5d0a7ade4c9694ab9423722a7c962fab5"
+  integrity sha512-5Wa1RDhwdoX3ZSH9vCg2UQLqWfqftnmMjWaNl/j+NLtr+uN4ZUGD+SSLf/4cFk7ZfQ8HGeTGWoV2/xxcZUB1xw==
+  dependencies:
+    "@iconify/types" "^1.1.0"
+
 "@iconify/react@^1.1.3":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@iconify/react/-/react-1.1.4.tgz#c778eddbaf196e55705d0bedff00d039dc1de8d3"
@@ -4471,7 +4510,7 @@
   resolved "https://registry.yarnpkg.com/@iconify/react/-/react-3.2.1.tgz#d18da31cec58c1aa8fdf4def451cc7e3196d88de"
   integrity sha512-yKzixjC9ct9RC/aSGo1OGxkG2rpfhlr/urRz6k2YZlIBzn92PBTlqtSx8o8dFYEorr3eUFSCBZFzBy1yw5jsAA==
 
-"@iconify/types@^1.0.12":
+"@iconify/types@^1.0.12", "@iconify/types@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@iconify/types/-/types-1.1.0.tgz#dc15fc988b1b3fd558dd140a24ede7e0aac11280"
   integrity sha512-Jh0llaK2LRXQoYsorIH8maClebsnzTcve+7U3rQUSnC11X4jtPnFuyatqFLvMxZ8MLG8dB4zfHsbPfuvxluONw==
@@ -5649,7 +5688,7 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@paciolan/remote-component@^2.11.0", "@paciolan/remote-component@^2.12.1":
+"@paciolan/remote-component@^2.12.1":
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/@paciolan/remote-component/-/remote-component-2.12.1.tgz#5d286349f3796cc10e0d4ee54de19e410643749b"
   integrity sha512-UPU2ApOo2nYaFE9+uPJQXLzQizMGPcwP559c7iK5tJaaI5SHKtfBqh45bFWsQzJB8mOKxUv+REZe8qxa4eqcYw==
@@ -5680,13 +5719,6 @@
   version "2.11.5"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
   integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
-
-"@prifina/hooks@^0.0.62":
-  version "0.0.62"
-  resolved "https://registry.yarnpkg.com/@prifina/hooks/-/hooks-0.0.62.tgz#bd02571d40566c9d0a8cb00d75862bf94e38eaca"
-  integrity sha512-Cs9VSZDXT7yf3HyRnerrbd9dKMUe9/hXWaUoEecjVXJQfqzN7+uutwf+jEX/YI/2MArMmbvMFJi0UuVM4tVb/Q==
-  dependencies:
-    "@paciolan/remote-component" "^2.11.0"
 
 "@prifina/hooks@^0.0.63":
   version "0.0.63"
