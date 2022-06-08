@@ -11,11 +11,11 @@ import {
   Input,
   Radio,
   TextArea,
-  SearchSelect,
-  AutoComplete,
   useTheme,
 } from "@blend-ui/core";
 
+//import SearchSelect  from "@blend-ui/search-select";
+//import AutoComplete from "@blend-ui/auto-complete";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import {

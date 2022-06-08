@@ -66,14 +66,14 @@ import { DevConsoleLogo } from "../components/DevConsoleLogo";
 import CreateProjectModal from "../components/CreateProjectModal";
 
 import Table from "../components/Table";
-import BlendIcon from "@blend-ui/icons/dist/esm/BlendIcon";
 
+/*
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
 import baselineWeb from "@iconify/icons-mdi/table";
-
+*/
 //sidebar icons
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";

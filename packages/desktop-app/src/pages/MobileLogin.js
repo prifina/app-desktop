@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Box, Flex, Button, Text, Image, IconField } from "@blend-ui/core";
+import { Box, Flex, Button, Text, Image } from "@blend-ui/core";
+import { IconField } from "@blend-ui/icon-field";
+
 import { StyledBox } from "../components/DefaultBackground";
 import Background from "../assets/mobile-background.png";
 

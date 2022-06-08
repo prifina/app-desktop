@@ -1,17 +1,8 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Input,
-  SearchSelect,
-  useTheme,
-  Link,
-  AutoComplete,
-} from "@blend-ui/core";
+import { Box, Flex, Text, Button, Input, useTheme, Link } from "@blend-ui/core";
 import { BlendIcon } from "@blend-ui/icons";
-
+import { AutoComplete } from "@blend-ui/auto-complete";
+import { SearchSelect } from "@blend-ui/search-select";
 import {
   Modal,
   ModalContent,

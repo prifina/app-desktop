@@ -1,5 +1,6 @@
 import React, { useState, forwardRef } from "react";
-import { IconField, Text, Box, useTheme } from "@blend-ui/core";
+import { Text, Box, useTheme } from "@blend-ui/core";
+import { IconField } from "@blend-ui/icon-field";
 
 import { default as eyeIcon } from "@iconify/icons-bx/bx-show";
 import bxLockAlt from "@iconify/icons-bx/bx-lock-alt";
