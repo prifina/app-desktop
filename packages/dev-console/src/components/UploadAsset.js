@@ -2,15 +2,29 @@ import React, { useState } from "react";
 
 import { Storage as S3Storage } from "aws-amplify";
 
-import { Box, Flex, Button, Text, Input } from "@blend-ui/core";
+import { Box, Flex, Button, Text, Input, colors } from "@blend-ui/core";
 import config from "../config";
 import { useFormFields } from "@prifina-apps/utils";
 
+import { useToast } from "@blend-ui/toast";
+
+import styled from "styled-components";
+
 import PropTypes from "prop-types";
 
-const UploadAsset = ({ id, type, numId, ...props }) => {
+const StyledButton = styled(Button)`
+  &:hover {
+    color: ${props => props.theme.colors.baseHover}!important;
+    background-color: transparent !important;
+    border: 0 !important;
+  }
+`;
+
+const UploadAsset = ({ id, type, numId, variant, ...props }) => {
   const [uploaded, setUploaded] = useState("");
   console.log("PROPS ", props);
+
+  const toast = useToast();
 
   const [appFields, handleChange] = useFormFields({
     version: "",
@@ -21,16 +35,18 @@ const UploadAsset = ({ id, type, numId, ...props }) => {
     try {
       //check file info
       const file = e.target.files[0];
-      props.passAssetInfo(file.name);
+      // props.passAssetInfo(file.name);
 
       console.log("Upload ", file);
       // check project appId is same as selected file
       // remove apps when private upload works
       // const s3Key = "apps/uploaded/assets/" + "name";
       // const s3Key =
-      //   "apps/uploaded/assets/" + id + "-" + type + "-" + numId + ".png";
 
-      const s3Key = id + "/assets/" + type + "-" + numId + ".png";
+      const regularPath = id + "/assets/" + type + "-" + numId + ".png";
+      const nativePath = id + "/native-assets/" + file.name;
+
+      const s3Key = variant === "native" ? nativePath : regularPath;
 
       //add assets to path
       //for id unique id
@@ -57,7 +73,7 @@ const UploadAsset = ({ id, type, numId, ...props }) => {
 
         progressCallback(progress) {
           //console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
-          setUploaded(`Uploaded: ${progress.loaded}/${progress.total}`);
+          setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
         },
         customPrefix: {
           // private: "apps/",
@@ -65,34 +81,36 @@ const UploadAsset = ({ id, type, numId, ...props }) => {
       });
       // props.close(true, file.name);
       console.log("success ");
+      toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
 
       console.log(s3Status);
     } catch (e) {
       console.log("OOPS ", e);
+      toast.error("Upload failed", {});
     }
   };
 
   return (
-    <Flex>
-      {/* <Input
-        placeholder={"Version"}
-        id={"version"}
-        name={"version"}
-        onChange={handleChange}
-      /> */}
-      <Button
-        id={"file_upload"}
-        name={"file_upload"}
-        accept={".png"}
-        onChange={uploadFile}
-        variation={"file"}
-      >
-        Upload file
-      </Button>
+    <Flex alignItems="center">
+      {variant === "native" ? (
+        <StyledButton onChange={uploadFile} variation={"file"}>
+          Upload file
+        </StyledButton>
+      ) : (
+        <StyledButton accept={".png"} onChange={uploadFile} variation={"file"}>
+          Upload file
+        </StyledButton>
+      )}
 
-      <Text ml={20}>{uploaded}</Text>
+      <Text ml={20} fontSize="xs" color={colors.baseSuccess}>
+        {uploaded}
+      </Text>
     </Flex>
   );
+};
+
+UploadAsset.defaultProps = {
+  variant: "",
 };
 
 UploadAsset.propTypes = {

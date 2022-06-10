@@ -1,16 +1,20 @@
-import { color } from "styled-system";
+import { theme as defaultTheme } from "@blend-ui/core";
 
-const basePrimary = "#08011C";
+const basePrimary = "#1E1D1D";
 const baseSecondary = "#AA076B";
-const baseTertiary = "#141020";
+const baseTertiary = "#272727";
 
-const brandAccent = "#AA1370";
+const brandAccent = "#E33FA4";
 
 const baseWhite = "#F5F8F7DE";
 const baseHover = "#c91684";
-const baseMuted = "#1D152C";
+const baseMuted = "#292828";
 
-const textMuted = "#ADADAD";
+const baseBright = "#4B4B4B";
+
+const subtleHiover = "#373436";
+
+const textMuted = "#969595";
 
 const gradientPurple = "linear-gradient(180deg, #AA076B 0%, #61045F 100%)";
 
@@ -32,17 +36,66 @@ const colors = {
   backroundAccent: brandAccent,
   baseHover,
   sandboxGradient,
+  baseBright,
+  subtleHiover,
+  text: {
+    muted: baseBright,
+  },
+};
+
+console.log("default theme", defaultTheme);
+
+const sizeOptions = defaultTheme.sizeOptions;
+const radii = defaultTheme.radii;
+const fontSizes = defaultTheme.fontSizes;
+
+const borderWidths = { ...sizeOptions.borderWidths };
+
+const borders = {
+  input: {
+    base: `${borderWidths["2xs"]} solid ${colors.baseBright}`,
+    borderRadius: radii["input"],
+    disabled: `${borderWidths["2xs"]} solid ${colors.baseWhite}`,
+    error: `${borderWidths["2xs"]} solid ${colors.baseError}`,
+    hover: `${borderWidths["2xs"]} solid ${colors.baseSecondary}`,
+    active: `${borderWidths["2xs"]} solid ${colors.baseSecondary}`,
+  },
+  select: {
+    base: `${borderWidths["2xs"]} solid ${colors.baseMuted}`,
+    borderRadius: radii["input"],
+  },
+  button: {
+    base: `${borderWidths["2xs"]} solid ${colors.baseSecondary}`,
+    disabled: `${borderWidths["2xs"]} solid ${colors.baseMuted}`,
+    hover: `${borderWidths["2xs"]} solid ${colors.baseHover}`,
+    hoverError: `${borderWidths["2xs"]} solid ${colors.baseErrorHover}`,
+    borderRadius: radii["input"],
+  },
+};
+
+const baseProps = {
+  fontSize: fontSizes["xs"],
+  /*lineHeight: sizeOptions[29], */
+  lineHeight: sizeOptions[17],
+  border: borders.input.base,
+  borderRadius: borders.input.borderRadius,
+  paddingLeft: sizeOptions[10],
+  paddingRight: sizeOptions[10],
+  paddingTop: sizeOptions[7],
+  paddingBottom: sizeOptions[7],
+  backgroundColor: "transparent",
+  color: colors.textPrimary,
 };
 
 const componentStyles = {
   button: {
     fill: {
       backgroundColor: brandAccent,
-      color: "#F5F8F7",
+      color: colors.textPrimary,
       border: "0.0625rem solid #c91684",
     },
     outline: {
-      backgroundColor: baseTertiary,
+      backgroundColor: "transparent",
       color: "#F5F8F7",
       border: "0.0625rem solid #c91684",
     },
@@ -52,38 +105,22 @@ const componentStyles = {
     file: {
       color: brandAccent,
     },
-
-    input: {
-      base: {
-        border: "1px solid red",
-      },
-    },
+  },
+  input: {
+    base: { ...baseProps, height: sizeOptions.componentSizes["base"].height },
   },
   textarea: {
     base: {
       backgroundColor: "transparent",
-      border: `1px solid ${baseWhite}`,
+      border: `1px solid ${baseBright}`,
       color: colors.textPrimary,
     },
   },
 };
 
-// const baseProps = {
-//   fontSize: fontSizes["xs"],
-//   /*lineHeight: sizeOptions[29], */
-//   lineHeight: sizeOptions[17],
-//   border: borders.input.base,
-//   borderRadius: borders.input.borderRadius,
-//   paddingLeft: sizeOptions[10],
-//   paddingRight: sizeOptions[10],
-//   paddingTop: sizeOptions[7],
-//   paddingBottom: sizeOptions[7],
-//   backgroundColor: colors.baseWhite,
-//   color: colors.text.primary,
-// };
-
 const theme = {
   colors,
   componentStyles,
+  borders,
 };
 export default theme;

@@ -24,6 +24,8 @@ import {
 
 import { useHistory } from "react-router-dom";
 
+import * as C from "./components";
+
 const short = require("short-uuid");
 
 i18n.init();
@@ -102,7 +104,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
       >
         <ModalContent
           style={{
-            background: "#1D152C",
+            background: colors.baseTertiary,
             width: "806px",
             height: "412px",
             borderRadius: 5,
@@ -201,7 +203,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
           </ModalBody>
           <ModalFooter>
             <Flex paddingTop="54px">
-              <Button
+              <C.OutlineButton
                 variation={"outline"}
                 // colorStyle={"error"}
                 onClick={e => {
@@ -212,7 +214,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                 marginLeft="36px"
               >
                 <Text>{i18n.__("cancelButton")}</Text>
-              </Button>
+              </C.OutlineButton>
               <Button
                 onClick={e => {
                   setDialogOpen(false);

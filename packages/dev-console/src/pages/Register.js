@@ -147,7 +147,7 @@ const Register = props => {
               <C.Card
                 mt={42}
                 mb={140}
-                bg="baseMuted"
+                bg={colors.basePrimary}
                 leftbordercolor={colors.brandAccent}
               >
                 <Box ml={23} mt={13} mr={23} mb={13}>

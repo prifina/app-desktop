@@ -1,6 +1,15 @@
 import React from "react";
 
-import { Box, Flex, Text, Image, Input, Button } from "@blend-ui/core";
+import {
+  Box,
+  Flex,
+  Text,
+  Image,
+  Input,
+  Button,
+  Divider,
+  useTheme,
+} from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
@@ -18,12 +27,14 @@ const SidebarContainer = styled(Flex)`
   z-index: 1;
   padding-left: 64px;
   padding-right: 24px;
-  padding-top: 130px;
+  padding-top: 80px;
   position: fixed;
   border-radius: 0 40px -40px 0;
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
+  border-right: 1px solid #343233;
+
   ::before,
   ::after {
     position: absolute;
@@ -58,7 +69,7 @@ export const ListMenuItem = styled.li`
   /* */
   list-style: none;
   width: 100%;
-  color: #8c80a0;
+  color: ${props => props.theme.colors.textPrimary};
   &:hover {
     background: ${props => props.theme.colors.baseMuted};
     .icon {
@@ -83,7 +94,7 @@ export const ListMenuItem = styled.li`
 
 export const ListMenu = styled.ul`
   margin: 0;
-  width: 100%;
+  width: 209px;
   list-style-position: outside;
   align-items: center;
   margin-block-start: 0px;
@@ -171,8 +182,12 @@ export const DevConsoleSidebar = ({
 }) => {
   console.log("SIDEBAR ", props);
 
+  const { colors } = useTheme();
+
   return (
     <SidebarContainer bg="basePrimary">
+      <Divider mb={41} color="#343233" />
+
       <Text fontSize="xs" ml="16px" mb="16px">
         Developer Account
       </Text>
@@ -209,7 +224,9 @@ export const DevConsoleSidebar = ({
           ),
         )}
       </ListMenu>
-      <Text fontSize="xs" ml="16px" mt="120px" mb="16px">
+      <Divider mt={106} color="#343233" />
+
+      <Text fontSize="xs" ml="16px" mt="41px" mb="16px">
         {i18n.__("createPubAccCTATitle")}
       </Text>
       <PublisherCard bg="baseMuted">
@@ -247,7 +264,7 @@ export const ResourceCard = ({ title, description, src }) => {
     <Flex
       width="221px"
       height="117px"
-      bg="basePrimary"
+      bg="baseTertiary"
       borderRadius="5px"
       alignItems="center"
       paddingTop="23px"
@@ -323,7 +340,7 @@ export const DevCard = styled(Flex)`
 
 export const DeveloperCard = ({ currentUser, avatar, text }) => {
   return (
-    <DevCard bg="baseMuted">
+    <DevCard bg="basePrimary">
       <Image src={avatar} width="58px" height="58px" />
       <Box ml="26px">
         <Text>{currentUser}</Text>
@@ -380,9 +397,19 @@ export const CustomShape = styled(Box)`
 export const ContentContainer = styled(Flex)`
   width: 100vw;
   min-height: 100vh;
-  padding-left: 306px;
+  padding-left: 348px;
   padding-right: 100px;
-  background: ${props => props.theme.colors.baseTertiary};
+  background: ${props => props.theme.colors.basePrimary};
   flex-direction: column;
   align-items: center;
+`;
+
+export const OutlineButton = styled(Button)`
+  &:not([disabled]):hover {
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+
+    background-color: transparent;
+  }
 `;
