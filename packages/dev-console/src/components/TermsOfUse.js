@@ -6,6 +6,8 @@ import styled from "styled-components";
 
 import { i18n, useAccountContext } from "@prifina-apps/utils";
 
+import * as C from "./components";
+
 i18n.init();
 //  width={"421px"}
 // minHeight={"437px"}
@@ -199,13 +201,13 @@ const TermsOfUse = props => {
         </Box>
         <Box mt={24} display={"inline-flex"} justifyContent="center">
           <Flex>
-            <Button
+            <C.OutlineButton
               variation={"outline"}
               colorStyle={"error"}
               onClick={declineTerms}
             >
               {i18n.__("declineButton")}
-            </Button>
+            </C.OutlineButton>
           </Flex>
 
           <Flex ml={99}>

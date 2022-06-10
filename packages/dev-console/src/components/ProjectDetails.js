@@ -14,9 +14,9 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
-//import SearchSelect  from "@blend-ui/search-select";
-//import AutoComplete from "@blend-ui/auto-complete";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
+
+import { TagInput } from "@blend-ui/tag-input";
 
 import {
   updateAppVersionMutation,
@@ -111,7 +111,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
       remoteUrl: newRemoteUrl,
     }).then(res => {
       console.log("SUCCESS", res);
-      toast.success("Project details updated successfully", {});
+      toast.success("Project details updated", {});
       // location.reload();
       //   setStep(2);
     });
@@ -123,7 +123,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
       dataSources: JSON.stringify(newDataSources),
     }).then(res => {
       console.log("SUCCESS", res);
-      toast.success("Project data sources updated successfully", {});
+      toast.success("Project data sources updated", {});
       // location.reload();
       //   setStep(2);
     });
@@ -135,7 +135,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     }).then(res => {
       console.log("SUCCESS", res);
       // location.reload();
-      toast.success("Deleted project successfully", {});
+      toast.success("Deleted project", {});
     });
   };
 
@@ -376,34 +376,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     }
   }, [allValues.newName, allValues.newType]);
 
-  //custom input component
-  const InputSection = ({ title, valueName, defaultValue, onChange, text }) => {
-    return (
-      <Flex alignItems="flex-end" mb={16}>
-        <Box>
-          <Text fontSize="sm" mb={5}>
-            {title}
-          </Text>
-          <Input
-            width="451px"
-            label="text"
-            name={valueName}
-            defaultValue={defaultValue}
-            onChange={onChange}
-            color={colors.textPrimary}
-            style={{
-              background: "transparent",
-              border: "1px solid #ADADAD",
-            }}
-          />
-        </Box>
-        <Text fontSize="xs" ml={25}>
-          {text}
-        </Text>
-      </Flex>
-    );
-  };
-
   const [activeTab3, setActiveTab3] = useState(0);
 
   const tabClick3 = (e, tab) => {
@@ -507,10 +479,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   };
 
   //==============//==============//==============//==============//==============//==============//==============
-  const [keyFeaturesValue, setKeyFeaturesValue] = useState("");
-  const [userHeldValue, setUserHeldValue] = useState("");
-  const [userGeneratedValue, setUserGeneratedValue] = useState("");
-  const [publicValue, setPublicValue] = useState("");
 
   const [newKeyFeatures, setNewKeyFeatures] = useState(
     allValues.keyFeatures === null || undefined ? [] : allValues.keyFeatures,
@@ -526,70 +494,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   const [newPublic, setNewPublic] = useState(
     allValues.public === null || undefined ? [] : allValues.public,
   );
-
-  //need to make them reusable
-
-  const handleChange = event => {
-    setKeyFeaturesValue(event.target.value);
-  };
-  const handleSubmit = event => {
-    if (keyFeaturesValue) {
-      setNewKeyFeatures(newKeyFeatures.concat(keyFeaturesValue));
-    }
-    setKeyFeaturesValue("");
-    event.preventDefault();
-  };
-  const handleDel = index => {
-    newKeyFeatures.splice(index, 1);
-    setNewKeyFeatures([...newKeyFeatures]);
-  };
-  const handleUserHeldChange = event => {
-    setUserHeldValue(event.target.value);
-  };
-  const handleUserHeldSubmit = event => {
-    if (userHeldValue) {
-      setNewUserHeld(newUserHeld.concat(userHeldValue));
-    }
-    setUserHeldValue("");
-    event.preventDefault();
-  };
-
-  const handleUserHeldDel = index => {
-    newUserHeld.splice(index, 1);
-    setUserHeldValue([...newUserHeld]);
-  };
-  const handleUserGeneratedChange = event => {
-    setUserGeneratedValue(event.target.value);
-  };
-
-  const handleUserGeneratedSubmit = event => {
-    if (userGeneratedValue) {
-      setNewUserGenerated(newUserGenerated.concat(userGeneratedValue));
-    }
-    setUserGeneratedValue("");
-    event.preventDefault();
-  };
-
-  const handleUserGeneratedDel = index => {
-    newUserGenerated.splice(index, 1);
-    setNewUserGenerated([...newUserGenerated]);
-  };
-  const handlePublicChange = event => {
-    setPublicValue(event.target.value);
-  };
-
-  const handlePublicSubmit = event => {
-    if (publicValue) {
-      setNewPublic(newPublic.concat(publicValue));
-    }
-    setPublicValue("");
-    event.preventDefault();
-  };
-
-  const handlePublicDel = index => {
-    newPublic.splice(index, 1);
-    setNewPublic([...newPublic]);
-  };
 
   ///changing attribute name
   dataConnectors.forEach(function (obj) {
@@ -607,6 +511,15 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     }
     return true;
   }
+
+  const [fontColor, setFontColor] = useState(colors.textMuted);
+
+  const handleFocusColor = () => {
+    setFontColor(colors.brandAccent);
+  };
+  const handleBlurColor = () => {
+    setFontColor(colors.textMuted);
+  };
 
   return (
     <>
@@ -637,7 +550,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             {detailsSaveStatus()}
           </Flex>
           <Button
-            // disabled
             onClick={() => {
               history.push({
                 pathname: "/sandbox",
@@ -680,13 +592,14 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               />
             </Box>
           </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Version number
-              </Text>
+          <Box mb={16}>
+            <Text fontSize="sm" mb={5}>
+              Version number
+            </Text>
+            <Flex alignItems="center">
               <Input
-                width="451px"
+                onFocus={handleFocusColor}
+                onBlur={handleBlurColor}
                 label="text"
                 name="newVersion"
                 defaultValue={allValues.version || "undefined"}
@@ -694,15 +607,17 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 color={colors.textPrimary}
                 style={{
                   background: "transparent",
-                  border: "1px solid #ADADAD",
+                  minWidth: "451px",
+                  width: 451,
                 }}
               />
-            </Box>
-            <Text fontSize="xs" ml={25}>
-              This version number is for your internal use so can follow
-              whatever logic you choose.
-            </Text>
-          </Flex>
+              <Text fontSize="xs" ml={25} color={fontColor}>
+                This version number is for your internal use so can follow
+                whatever logic you choose.
+              </Text>
+            </Flex>
+          </Box>
+
           <Flex alignItems="center" justifyContent="center" mb={16}>
             <Box ml="5px">
               <Text fontSize="sm" mb={5}>
@@ -711,12 +626,14 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <UploadFile widgetId={allValues.id} />
             </Box>
             <Box ml={25}>
-              <Text fontSize="xs">
+              <Text fontSize="xs" color={colors.textMuted}>
                 The build deployment package is a package version of your local
                 build. It must include:
               </Text>
-              <Text fontSize="xs">1. Your Prifina App ID</Text>
-              <Text fontSize="xs">
+              <Text fontSize="xs" color={colors.textMuted}>
+                1. Your Prifina App ID
+              </Text>
+              <Text fontSize="xs" color={colors.textMuted}>
                 2. Come in a .zip with a maximum file size of 5MB
               </Text>
             </Box>
@@ -733,12 +650,16 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 defaultValue={allValues.remoteUrl}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
               />
             </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Native Assets
+              </Text>
+            </Box>
+            <UploadAsset variant="native" id={allValues.id} />
           </Flex>
           <Flex alignItems="flex-end" mb={16}>
             <Box>
@@ -752,10 +673,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 defaultValue={allValues.publisher}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
               />
             </Box>
           </Flex>
@@ -771,101 +688,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 defaultValue={allValues.category}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
               />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Device support
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newDeviceSupport"
-                defaultValue={allValues.deviceSupport}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Languages
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newLanguages"
-                defaultValue={allValues.languages}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Age
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newAge"
-                defaultValue={allValues.age}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  border: "1px solid #ADADAD",
-                }}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Key Features
-              </Text>
-              <form onSubmit={handleSubmit}>
-                <Flex>
-                  <Input
-                    value={keyFeaturesValue}
-                    onChange={handleChange}
-                    width="451px"
-                    label="text"
-                    color={colors.textPrimary}
-                    style={{
-                      background: "transparent",
-                      border: "1px solid #ADADAD",
-                    }}
-                  />
-                  <Button size="xs">Add Item</Button>
-                </Flex>
-              </form>
-              <Flex>
-                {newKeyFeatures.map((item, index) => (
-                  <Flex>
-                    <Text color="white">{item}</Text>
-                    <button type="button" onClick={() => handleDel(index)}>
-                      x
-                    </button>
-                  </Flex>
-                ))}
-              </Flex>
             </Box>
           </Flex>
           <Flex alignItems="flex-end" mb={16}>
@@ -903,6 +726,107 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
           <Flex alignItems="flex-end" mb={16}>
             <Box>
               <Text fontSize="sm" mb={5}>
+                Key Features
+              </Text>
+              <TagInput
+                tags={newKeyFeatures}
+                setTags={setNewKeyFeatures}
+                style={{
+                  background: colors.baseTertiary,
+                }}
+              />
+            </Box>
+          </Flex>
+
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                User Held
+              </Text>
+              <TagInput
+                tags={newUserHeld}
+                setTags={setNewUserHeld}
+                style={{ backgroundColor: colors.baseTertiary }}
+              />
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                User Generated
+              </Text>
+              <TagInput
+                tags={newUserGenerated}
+                setTags={setNewUserGenerated}
+                style={{ backgroundColor: colors.baseTertiary }}
+              />
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Public
+              </Text>
+              <TagInput
+                tags={newPublic}
+                setTags={setNewPublic}
+                style={{ backgroundColor: colors.baseTertiary }}
+              />
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Device support
+              </Text>
+              <Input
+                width="451px"
+                label="text"
+                name="newDeviceSupport"
+                defaultValue={allValues.deviceSupport}
+                onChange={handleValueChange}
+                color={colors.textPrimary}
+                style={
+                  {
+                    // background: "transparent",
+                  }
+                }
+              />
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Languages
+              </Text>
+              <Input
+                width="451px"
+                label="text"
+                name="newLanguages"
+                defaultValue={allValues.languages}
+                onChange={handleValueChange}
+                color={colors.textPrimary}
+              />
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
+                Age
+              </Text>
+              <Input
+                width="451px"
+                label="text"
+                name="newAge"
+                defaultValue={allValues.age}
+                onChange={handleValueChange}
+                color={colors.textPrimary}
+              />
+            </Box>
+          </Flex>
+          <Flex alignItems="flex-end" mb={16}>
+            <Box>
+              <Text fontSize="sm" mb={5}>
                 Icon
               </Text>
             </Box>
@@ -930,7 +854,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               type="screenshot"
               numId="2"
               // passAssetInfo={passAssetInfo}
-            />{" "}
+            />
             <UploadAsset
               id={allValues.id}
               type="screenshot"
@@ -938,321 +862,12 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               // passAssetInfo={passAssetInfo}
             />
           </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                User Held
-              </Text>
-              <form onSubmit={handleUserHeldSubmit}>
-                <Flex>
-                  <Input
-                    value={userHeldValue}
-                    onChange={handleUserHeldChange}
-                    width="451px"
-                    label="text"
-                    color={colors.textPrimary}
-                    style={{
-                      background: "transparent",
-                      border: "1px solid #ADADAD",
-                    }}
-                  />
-                  <Button size="xs">Add Item</Button>
-                </Flex>
-              </form>
-              <Flex>
-                {newUserHeld.map((item, index) => (
-                  <Flex>
-                    <Text color="white">{item}</Text>
-                    <button
-                      type="button"
-                      onClick={() => handleUserHeldDel(index)}
-                    >
-                      x
-                    </button>
-                  </Flex>
-                ))}
-              </Flex>
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                User Generated
-              </Text>
-              <form onSubmit={handleUserGeneratedSubmit}>
-                <Flex>
-                  <Input
-                    value={userGeneratedValue}
-                    onChange={handleUserGeneratedChange}
-                    width="451px"
-                    label="text"
-                    color={colors.textPrimary}
-                    style={{
-                      background: "transparent",
-                      border: "1px solid #ADADAD",
-                    }}
-                  />
-                  <Button size="xs">Add Item</Button>
-                </Flex>
-              </form>
-              <Flex>
-                {newUserGenerated.map((item, index) => (
-                  <Flex>
-                    <Text color="white">{item}</Text>
-                    <button
-                      type="button"
-                      onClick={() => handleUserGeneratedDel(index)}
-                    >
-                      x
-                    </button>
-                  </Flex>
-                ))}
-              </Flex>
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Public
-              </Text>
-              <form onSubmit={handlePublicSubmit}>
-                <Flex>
-                  <Input
-                    value={publicValue}
-                    onChange={handlePublicChange}
-                    width="451px"
-                    label="text"
-                    color={colors.textPrimary}
-                    style={{
-                      background: "transparent",
-                      border: "1px solid #ADADAD",
-                    }}
-                  />
-                  <Button size="xs">Add Item</Button>
-                </Flex>
-              </form>
-              <Flex>
-                {newPublic.map((item, index) => (
-                  <Flex>
-                    <Text color="white">{item}</Text>
-                    <button
-                      type="button"
-                      onClick={() => handlePublicDel(index)}
-                    >
-                      x
-                    </button>
-                  </Flex>
-                ))}
-              </Flex>
-            </Box>
-          </Flex>
         </C.ProjectContainer>
         <C.ProjectContainer alt="dataSources" mb={24}>
-          <Flex justifyContent="space-between" alignItems="center" mb={45}>
+          <Flex justifyContent="space-between" alignItems="center" mb={25}>
             <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
             {dataSourcesSaveStatus()}
           </Flex>
-          <Flex>
-            <div
-              style={{
-                overflow: "hidden",
-                width: 600,
-              }}
-            >
-              <Tabs
-                activeTab={activeTab3}
-                onClick={tabClick3}
-                style={{ height: "100%" }}
-                variant={"line"}
-              >
-                <TabList>
-                  <Tab>
-                    <Text>{i18n.__("publicApi")}</Text>
-                  </Tab>
-                  <Tab>
-                    <Text>{i18n.__("prifinaUserCloud")}</Text>
-                  </Tab>
-                  <Tab>
-                    <Text>{i18n.__("noData")}</Text>
-                  </Tab>
-                </TabList>
-                <TabPanelList style={{ backgroundColor: null }}>
-                  <TabPanel
-                    style={{
-                      height: "100vh",
-                      paddingBottom: "50px",
-                      overflow: "auto",
-                    }}
-                  >
-                    <div style={{ overflow: "auto" }}>
-                      <Flex>
-                        <ApiForm
-                          addApi={addApiSource}
-                          selectOptions={publicSources}
-                        />
-                      </Flex>
-
-                      {/* Box with state change */}
-                      <Flex>
-                        {apiDataPreview.length > 0 && (
-                          <Flex
-                            width="100%"
-                            flexDirection="column"
-                            padding="10px"
-                            style={{
-                              marginTop: 15,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <Text textStyle="h6" mb="10px">
-                              {i18n.__("chooseToAddSources")}
-                            </Text>
-                            <Flex>
-                              <Flex flexDirection="column">
-                                {apiDataPreview.map((event, index) => (
-                                  <AddRemoveDataSources
-                                    key={index}
-                                    index={index}
-                                    dataSource={event}
-                                    removeDataSource={removeApiSource}
-                                    completeDataSource={completeApiSource}
-                                  />
-                                ))}
-                              </Flex>
-                            </Flex>
-                          </Flex>
-                        )}
-                      </Flex>
-                    </div>
-                  </TabPanel>
-                  <TabPanel>
-                    <div style={{ overflow: "auto" }}>
-                      <Flex>
-                        <DataSourceForm
-                          addDataSource={addDataSource}
-                          // addFunctions={addFunction}
-                          selectOptions={dataConnectors}
-                        />
-                      </Flex>
-                      <Flex>
-                        {dataSourcePreview.length > 0 && (
-                          <Flex
-                            width="100%"
-                            flexDirection="column"
-                            padding="10px"
-                            style={{
-                              backgroundColor: colors.baseMuted,
-                              marginTop: 15,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <Text textStyle="h6" mt="10px" mb="10px">
-                              {i18n.__("dataConectorResults")}
-                            </Text>
-
-                            <Flex>
-                              <Flex flexDirection="column">
-                                {dataSourcePreview.map((item, index) => (
-                                  <>
-                                    <AddRemoveDataSources
-                                      key={index}
-                                      index={index}
-                                      dataSource={item}
-                                      removeDataSource={removeDataSource}
-                                      completeDataSource={completeDataSource}
-                                    />
-                                  </>
-                                ))}
-                              </Flex>
-                            </Flex>
-                          </Flex>
-                        )}
-                      </Flex>
-                    </div>
-                  </TabPanel>
-                  <TabPanel>
-                    <div style={{ overflow: "auto" }}>
-                      <Flex>
-                        <Box
-                          width="426px"
-                          height="76px"
-                          borderRadius="6px"
-                          paddingLeft="10px"
-                          bg={colors.baseLinkHover}
-                          style={{
-                            border: `2px solid ${colors.baseLink}`,
-                          }}
-                        >
-                          <Text>{i18n.__("noDataText")}</Text>
-                          <Link>{i18n.__("learnMoreHere")}</Link>
-                        </Box>
-                        <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
-                      </Flex>
-                    </div>
-                  </TabPanel>
-                </TabPanelList>
-              </Tabs>
-            </div>
-            <Box width="320px">
-              <Text fontSize="13px">
-                Let us know how your application uses data by logging your
-                sources (or lack of) here.
-              </Text>
-              <Text mt="15px" fontSize="13px">
-                This information helps us provide quality support and helps
-                direct our product roadmap.
-              </Text>
-            </Box>
-          </Flex>
-
-          {newDataSources !== null &&
-          newDataSources[0] !== "[]" &&
-          newDataSources.length !== 0 ? (
-            <Flex flexDirection="column" justifyContent="center">
-              {checkJson(newDataSources)
-                ? JSON.parse(newDataSources).map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))
-                : newDataSources.map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))}
-            </Flex>
-          ) : (
-            <Flex flexDirection="column" justifyContent="center">
-              <Text mt="20px" mb="20px">
-                Data sources used in your project
-              </Text>
-              <Flex
-                style={{
-                  border: "1px dashed #BC31EA",
-                  width: 684,
-                  height: 132,
-                  borderRadius: 4,
-                  background: "#F7DEFF",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text fontSize="lg" color="#BC31EA">
-                  Search and select data sources
-                </Text>
-                <Text mt="10px" color="#BC31EA">
-                  Data sources you add will show up here
-                </Text>
-              </Flex>
-            </Flex>
-          )}
         </C.ProjectContainer>
 
         <C.ActionContainer mb={32} justifyContent="space-between">

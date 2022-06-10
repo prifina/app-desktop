@@ -231,7 +231,7 @@ const Main = ({ data, currentUser }) => {
                 dataSources: props.row.original.dataSources,
                 newDataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
-                newRemoteUrl: props.row.original.remoteUrl,
+                newRemoteUrl: props.row.original.newRemoteUrl,
               });
             }}
           >
@@ -312,9 +312,9 @@ const Main = ({ data, currentUser }) => {
               setStep(3);
               setAllValues({
                 ...allValues,
-                name: props.cell.value,
+                name: props.row.values.name,
                 id: props.row.values.id,
-                newName: props.cell.value,
+                newName: props.row.values.name,
                 appType: props.row.values.appType,
                 newType: props.row.values.appType,
                 version: props.row.values.version,
@@ -342,7 +342,7 @@ const Main = ({ data, currentUser }) => {
                 dataSources: props.row.original.dataSources,
                 newDataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
-                newRemoteUrl: props.row.original.remoteUrl,
+                newRemoteUrl: props.row.original.newRemoteUrl,
               });
             }}
           >
