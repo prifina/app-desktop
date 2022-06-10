@@ -85,6 +85,7 @@ const UploadApp = props => {
           setUploaded(`Uploaded: ${progress.loaded}/${progress.total}`);
         },
         customPrefix: {
+          public: "uploads/",
           // private: "apps/",
         },
       });

@@ -76,6 +76,7 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
           setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
         },
         customPrefix: {
+          public: "uploads/",
           // private: "apps/",
         },
       });

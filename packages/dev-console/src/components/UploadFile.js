@@ -165,7 +165,9 @@ const UploadFile = ({ props, widgetId }) => {
         progressCallback(progress) {
           setUploaded(`${progress.loaded}/${progress.total}`);
         },
-        customPrefix: {},
+        customPrefix: {
+          public: "uploads/",
+        },
       });
       console.log("success ");
       toast.success(`Package uploaded - Progress: ${uploaded}`, {});
@@ -195,7 +197,9 @@ const UploadFile = ({ props, widgetId }) => {
         progressCallback(progress) {
           setUploaded(`${progress.loaded}/${progress.total}`);
         },
-        customPrefix: {},
+        customPrefix: {
+          public: "uploads/",
+        },
       });
       // props.close(true, appFields.version);
       console.log("success");
