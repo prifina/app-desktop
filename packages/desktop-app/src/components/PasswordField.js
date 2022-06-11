@@ -182,12 +182,22 @@ const PasswordField = forwardRef(
             onClick={onHide}
             className={"PasswordRightIcon"}
           >
-            <IconField.RightIcon
-              iconify={hidePassword ? bxHide : eyeIcon}
-              color={"componentPrimary"}
-              size={"17"}
-              className={hidePassword ? "EyeIcon" : "HideIcon"}
-            />
+            {hidePassword && (
+              <IconField.RightIcon
+                iconify={bxHide}
+                color={"componentPrimary"}
+                size={"17"}
+                className={hidePassword ? "EyeIcon" : "HideIcon"}
+              />
+            )}
+            {!hidePassword && (
+              <IconField.RightIcon
+                iconify={eyeIcon}
+                color={"componentPrimary"}
+                size={"17"}
+                className={hidePassword ? "EyeIcon" : "HideIcon"}
+              />
+            )}
           </Box>
         </IconField>
       </React.Fragment>
