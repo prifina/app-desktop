@@ -66,14 +66,14 @@ import { DevConsoleLogo } from "../components/DevConsoleLogo";
 import CreateProjectModal from "../components/CreateProjectModal";
 
 import Table from "../components/Table";
-import BlendIcon from "@blend-ui/icons/dist/esm/BlendIcon";
 
+/*
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
 import baselineWeb from "@iconify/icons-mdi/table";
-
+*/
 //sidebar icons
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";
@@ -231,7 +231,7 @@ const Main = ({ data, currentUser }) => {
                 dataSources: props.row.original.dataSources,
                 newDataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
-                newRemoteUrl: props.row.original.remoteUrl,
+                newRemoteUrl: props.row.original.newRemoteUrl,
               });
             }}
           >
@@ -312,9 +312,9 @@ const Main = ({ data, currentUser }) => {
               setStep(3);
               setAllValues({
                 ...allValues,
-                name: props.cell.value,
+                name: props.row.values.name,
                 id: props.row.values.id,
-                newName: props.cell.value,
+                newName: props.row.values.name,
                 appType: props.row.values.appType,
                 newType: props.row.values.appType,
                 version: props.row.values.version,
@@ -342,7 +342,7 @@ const Main = ({ data, currentUser }) => {
                 dataSources: props.row.original.dataSources,
                 newDataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
-                newRemoteUrl: props.row.original.remoteUrl,
+                newRemoteUrl: props.row.original.newRemoteUrl,
               });
             }}
           >

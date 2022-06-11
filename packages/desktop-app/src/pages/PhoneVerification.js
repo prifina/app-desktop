@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Box, Flex, Button, Text, IconField, Link } from "@blend-ui/core";
+import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
+import { IconField } from "@blend-ui/icon-field";
 
 import bxKey from "@iconify/icons-bx/bx-key";
 import { ReactComponent as Phone } from "../assets/phone.svg";

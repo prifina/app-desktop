@@ -462,12 +462,14 @@ const DisplayApp = ({
         let dataSourceModules = {};
 
         Object.keys(dataSources).forEach(s => {
-          for (let m = 0; m < dataSources[s].modules.length; m++) {
-            const moduleName = dataSources[s].modules[m];
-            dataSourceModules[moduleName] = {
-              source: s,
-              sourceType: dataSources[s].sourceType,
-            };
+          if (dataSources[s].modules !== null) {
+            for (let m = 0; m < dataSources[s].modules.length; m++) {
+              const moduleName = dataSources[s].modules[m];
+              dataSourceModules[moduleName] = {
+                source: s,
+                sourceType: dataSources[s].sourceType,
+              };
+            }
           }
         });
         console.log("MODULES ", dataSourceModules);

@@ -190,9 +190,17 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
     let dataSourceModules = {};
     Object.keys(availableDataSources.current).forEach(s => {
-      for (let m = 0; m < availableDataSources.current[s].modules.length; m++) {
-        const moduleName = availableDataSources.current[s].modules[m];
-        dataSourceModules[moduleName] = { ...availableDataSources.current[s] };
+      if (availableDataSources.current[s].modules !== null) {
+        for (
+          let m = 0;
+          m < availableDataSources.current[s].modules.length;
+          m++
+        ) {
+          const moduleName = availableDataSources.current[s].modules[m];
+          dataSourceModules[moduleName] = {
+            ...availableDataSources.current[s],
+          };
+        }
       }
     });
 

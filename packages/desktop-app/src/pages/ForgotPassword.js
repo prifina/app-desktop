@@ -20,7 +20,9 @@ import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
 
 import Login from "./Login";
 
-import { Box, Flex, Button, Text, IconField, useTheme } from "@blend-ui/core";
+import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
+import { IconField } from "@blend-ui/icon-field";
+
 import { useToast } from "@blend-ui/toast";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";

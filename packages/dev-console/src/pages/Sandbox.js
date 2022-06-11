@@ -55,6 +55,53 @@ import mdiArrowExpand from "@iconify/icons-mdi/arrow-expand";
 
 const SandboxContext = createContext(null);
 
+const breatheAnimation = keyframes`
+0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
+50% {opacity: 1.0;}
+100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
+webkit-animation: pulsate 0.03 ease-out;
+webkit-animation-iteration-count: infinite; 
+`;
+const Circle = styled.div`
+width: 8px;
+height: 8px;
+background-color: #62bd19;
+border-radius: 50%;
+position: absolute;
+
+}
+`;
+
+const Ring = styled.div`
+border: 3px solid #62bd19;
+-webkit-border-radius: 30px;
+height: 25px;
+width: 25px;
+position: absolute;
+left: -8.5px;
+top: -8.5px;
+-webkit-animation: pulsate 2s ease-out;
+-webkit-animation-iteration-count: infinite; 
+opacity: 0.0
+}
+animation-name: ${breatheAnimation};
+`;
+
+const Container = styled.div`
+  position: relative;
+  margin-bottom: 5px;
+  margin-left: 10px;
+`;
+
+const Breathe = () => {
+  return (
+    <Container>
+      <Circle />
+      <Ring />
+    </Container>
+  );
+};
+
 const BottomContainer = styled.div`
   position: absolute;
   left: 0;
@@ -100,10 +147,10 @@ const IconDiv = styled.div`
   z-index: 10;
 `;
 
-const StatusCircle = styled.div`
+const RedStatusCircle = styled.div`
   width: 8px;
   height: 8px;
-  background-color: ${props => (props.status === true ? "#62bd19" : "red")};
+  background-color: red;
   border-radius: 50%;
 `;
 
@@ -150,9 +197,15 @@ const RemoteContent = ({ url, ...props }) => {
     console.log("REMOTE ERROR ", err);
     return (
       <React.Fragment>
-        <div>Unknown Error: {err.toString()}</div>
-        <div>Invalid URL {url} or Possible CORS problem.</div>
-        <div>Check Browser console for more informations...</div>
+        <Text fontSize="xs" colorStyle="error">
+          Unknown Error: {err.toString()}
+        </Text>
+        <Text fontSize="xs" colorStyle="error">
+          Invalid URL {url} or Possible CORS problem.
+        </Text>
+        <Text fontSize="xs" colorStyle="error">
+          Check Browser console for more informations...
+        </Text>
       </React.Fragment>
     );
   }
@@ -450,6 +503,7 @@ const Sandbox = props => {
 
   console.log("check url valid", validUrl);
   console.log("check remote link valid", remoteLink);
+  console.log("check valid status", validStatus);
 
   useEffect(async () => {
     // const remoteAppUrl = localStorage.getItem("remoteWidget")
@@ -468,9 +522,11 @@ const Sandbox = props => {
     );
 
     const currentApp = await getAppVersionQuery(GRAPHQL, currentAppId);
+    console.log("currentApp", currentApp);
     currentAppRef.current = {
       appID: currentAppId,
       settings: currentApp.data.getAppVersion.settings,
+      remoteUrl: currentApp.data.getAppVersion.remoteUrl,
     };
     if (currentAppRef.current.settings === null) {
       currentAppRef.current.settings = [];
@@ -548,7 +604,7 @@ const Sandbox = props => {
       settings: currentAppRef.current.settings,
     }).then(res => {
       console.log("UPDATE ", res);
-      toast.info("System settings updated successfully", {});
+      toast.info("System settings updated", {});
     });
 
     e.preventDefault();
@@ -564,7 +620,7 @@ const Sandbox = props => {
       settings: currentAppRef.current.settings,
     }).then(res => {
       console.log("UPDATE ", res);
-      toast.info("Settings updated successfully", {});
+      toast.info("Settings updated", {});
     });
 
     e.preventDefault();
@@ -580,8 +636,8 @@ const Sandbox = props => {
       remoteUrl: currentAppRef.current.remoteUrl,
     }).then(res => {
       console.log("UPDATE ", res);
-      toast.info("Remote link updated successfully", {});
-      history.push("/");
+      toast.info("Remote link updated", {});
+      window.location.reload();
     });
   };
 
@@ -599,6 +655,8 @@ const Sandbox = props => {
     console.log("TAB", tab);
     setactivetab(tab);
   };
+
+  const settingsArray = currentAppRef.current.settings;
 
   return (
     <>
@@ -664,7 +722,13 @@ const Sandbox = props => {
                 <Text ml={16} mr={8}>
                   Session Status
                 </Text>
-                <StatusCircle status={validUrl != null ? validStatus : false} />
+                {ready && validUrl !== "" && validUrl !== null ? (
+                  <Breathe />
+                ) : (
+                  <RedStatusCircle />
+                )}
+                {/* <StatusCircle status={validUrl != null ? validStatus : false} /> */}
+                {/* <Breathe /> */}
               </Flex>
               <Flex
                 justifyContent={"center"}
@@ -672,21 +736,35 @@ const Sandbox = props => {
                 width={"100%"}
                 height={"100%"}
               >
-                {ready && (
-                  <Content
-                    ref={ref => {
-                      if (ref) {
-                        remoteRef.current = ref;
-                      }
-                    }}
-                    updateDebug={updateDebugInfo}
-                    {...componentProps.current}
-                    appSettings={currentAppRef.current}
-                  />
-                )}
-                {!ready && (
-                  <Text textAlign={"center"} textStyle={"h3"}>
-                    Sandbox
+                {currentAppRef.current.remoteUrl !== null ||
+                currentAppRef.current.remoteUrl !== "" ||
+                settingsArray.length > 3 ? (
+                  <>
+                    {ready && (
+                      <Content
+                        ref={ref => {
+                          if (ref) {
+                            remoteRef.current = ref;
+                          }
+                        }}
+                        updateDebug={updateDebugInfo}
+                        {...componentProps.current}
+                        appSettings={currentAppRef.current}
+                      />
+                    )}
+                    {!ready && (
+                      <Text textAlign={"center"} textStyle={"h3"}>
+                        Sandbox
+                      </Text>
+                    )}
+                  </>
+                ) : (
+                  <Text
+                    textAlign={"center"}
+                    textStyle={"h3"}
+                    colorStyle="error"
+                  >
+                    Remote link unavailable
                   </Text>
                 )}
               </Flex>
@@ -790,7 +868,9 @@ const Sandbox = props => {
                                     <Input
                                       width="661px"
                                       label="text"
-                                      defaultValue={allValues.remoteUrl}
+                                      defaultValue={
+                                        currentAppRef.current.remoteUrl
+                                      }
                                       color={colors.textPrimary}
                                       style={{ background: "transparent" }}
                                       onChange={handleCheckUrl}

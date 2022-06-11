@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "start": "cross-env PORT=3000 react-app-rewired start",
+    "start": "GENERATE_SOURCEMAP=false && cross-env PORT=3000 react-app-rewired start",
     "build": "react-app-rewired build",
     "storybook": "start-storybook"
   },
@@ -37,20 +37,22 @@
     "react-app-rewired": "^2.2.1"
   },
   "dependencies": {
-    "@blend-ui/core": "1.1.64-alpha.0",
-    "@blend-ui/css-grid": "1.0.6-alpha.0",
-    "@blend-ui/icons": "1.1.8-alpha.0",
-    "@blend-ui/modal": "1.0.10-alpha.0",
-    "@blend-ui/progress": "1.0.7-alpha.0",
-    "@blend-ui/tabs": "1.0.13-alpha.0",
-    "@blend-ui/toast": "0.0.12-alpha.0",
+    "@blend-ui/icon-field":"^1.0.1-alpha.0",
+    "@blend-ui/search-select":"^1.0.1-alpha.0",
+    "@blend-ui/auto-complete":"^1.0.1-alpha.0",
+    "@blend-ui/core": "1.1.68-alpha.0",
+    "@blend-ui/css-grid": "1.0.7-alpha.0",
+    "@blend-ui/icons": "1.1.9-alpha.0",
+    "@blend-ui/modal": "1.0.14-alpha.0",
+    "@blend-ui/progress": "1.0.12-alpha.0",
+    "@blend-ui/tabs": "1.0.17-alpha.0",
+    "@blend-ui/toast": "0.0.16-alpha.0",
     "@iconify-icons/emojione-v1": "^1.2.2",
-    "@iconify/icons-bx": "^1.2.3",
     "@iconify/react": "^3.2.1",
     "@paciolan/remote-component": "^2.12.1",
     "@prifina-apps/utils": "^0.0.10-beta.0",
-    "@prifina/hooks": "^0.0.62",
-    "@reach/auto-id": "^0.16.0",
+    
+    "@prifina/hooks": "^0.0.63",
     "@react-spring/web": "^9.4.4",
     "@styled-system/theme-get": "^5.1.2",
     "@svgr/webpack": "^6.2.1",
@@ -77,7 +79,17 @@
     "styled-components": "^5.3.5",
     "styled-system": "^5.1.5",
     "url-loader": "^4.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+
+    "@iconify/icons-bx": "^1.2.3",
+    "@iconify/icons-fe": "^1.2.1",
+    "@iconify/icons-mdi": "^1.2.17",
+    "@popperjs/core": "^2.9.2",
+    "@reach/auto-id": "^0.16.0",
+    "styled-css-grid": "^1.2.1",
+    "aria-hidden": "^1.1.1",
+    "body-scroll-lock": "^3.1.5",
+    "exenv": "^1.2.2"
   },
   "browserslist": {
     "production": [

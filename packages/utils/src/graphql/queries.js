@@ -198,8 +198,7 @@ export const listApps = `query appsList($filter:TableAppsFilterInput,$sortDirect
   bannerImage
   public
   remoteUrl
-
-
+  assets
     }
     nextToken
   }
@@ -284,5 +283,6 @@ export const getAppVersion = `query appVerion($id: String!) {
       bannerImage
       public
       remoteUrl
+      assets
     }
 }`;

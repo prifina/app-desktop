@@ -8,10 +8,10 @@ import {
   Input,
   Button,
   Divider,
-  IconField,
   Label,
   Select,
 } from "@blend-ui/core";
+import { IconField } from "@blend-ui/icon-field";
 
 import bxSearchAlt2 from "@iconify/icons-bx/bx-search-alt-2";
 import bxChevronUp from "@iconify/icons-bx/bx-chevron-up";

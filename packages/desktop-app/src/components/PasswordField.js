@@ -1,5 +1,6 @@
 import React, { useState, forwardRef } from "react";
-import { IconField, Text, Box, useTheme } from "@blend-ui/core";
+import { Text, Box, useTheme } from "@blend-ui/core";
+import { IconField } from "@blend-ui/icon-field";
 
 import { default as eyeIcon } from "@iconify/icons-bx/bx-show";
 import bxLockAlt from "@iconify/icons-bx/bx-lock-alt";
@@ -181,12 +182,22 @@ const PasswordField = forwardRef(
             onClick={onHide}
             className={"PasswordRightIcon"}
           >
-            <IconField.RightIcon
-              iconify={hidePassword ? bxHide : eyeIcon}
-              color={"componentPrimary"}
-              size={"17"}
-              className={hidePassword ? "EyeIcon" : "HideIcon"}
-            />
+            {hidePassword && (
+              <IconField.RightIcon
+                iconify={bxHide}
+                color={"componentPrimary"}
+                size={"17"}
+                className={hidePassword ? "EyeIcon" : "HideIcon"}
+              />
+            )}
+            {!hidePassword && (
+              <IconField.RightIcon
+                iconify={eyeIcon}
+                color={"componentPrimary"}
+                size={"17"}
+                className={hidePassword ? "EyeIcon" : "HideIcon"}
+              />
+            )}
           </Box>
         </IconField>
       </React.Fragment>
