@@ -659,6 +659,8 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 Native Assets
               </Text>
             </Box>
+
+            {/*  Only one asset??? */}
             <UploadAsset variant="native" id={allValues.id} />
           </Flex>
           <Flex alignItems="flex-end" mb={16}>

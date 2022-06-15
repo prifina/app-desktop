@@ -141,11 +141,13 @@ const UploadFile = ({ props, widgetId }) => {
 
   const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
 
+  /*
   const currentCredentials = JSON.parse(
     localStorage.getItem("PrifinaClientCredentials"),
   );
 
   console.log("CREDS ", currentCredentials);
+  */
 
   const buttonUploadFile = async e => {
     try {
@@ -214,7 +216,9 @@ const UploadFile = ({ props, widgetId }) => {
   };
 
   useEffect(async () => {
-    uploadFile();
+    if (droppedFiles.length > 0) {
+      uploadFile();
+    }
     //   }
   }, [droppedFiles]);
 

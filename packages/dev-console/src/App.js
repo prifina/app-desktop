@@ -21,6 +21,7 @@ import {
   getPrifinaSessionQuery,
   deletePrifinaSessionMutation,
   AppContext,
+  cognitoCredentials,
 } from "@prifina-apps/utils";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
@@ -29,6 +30,8 @@ import config, { REFRESH_TOKEN_EXPIRY } from "./config";
 
 import { default as newTheme } from "./theme/theme";
 import { ToastContextProvider } from "@blend-ui/toast";
+
+import { S3Client } from "@aws-sdk/client-s3";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -91,6 +94,7 @@ function App() {
       isAuthenticating: true,
       currentUser: {},
       isAuthenticated: false,
+      s3UploadClient: {},
     },
   );
 
@@ -128,6 +132,8 @@ function App() {
         const _currentSession = await Auth.currentSession();
 
         console.log("APP AUTH ", _currentSession, Auth._config);
+        let _s3Client = {};
+
         if (_currentSession) {
           const currentCredentials = await Auth.currentCredentials();
           const token = _currentSession.getIdToken().payload;
@@ -140,6 +146,16 @@ function App() {
             identity: currentCredentials.identityId,
             identityPool: Auth._config.identityPoolId,
           };
+
+          const currentCognitoCredentials = await cognitoCredentials(
+            _currentSession,
+          );
+          const region = currentCognitoCredentials.identityId.split(":")[0];
+
+          _s3Client = new S3Client({
+            credentials: currentCognitoCredentials,
+            region: region,
+          });
 
           if (
             refreshSession.current ||
@@ -205,6 +221,7 @@ function App() {
           isAuthenticating: false,
           currentUser: _currentUser,
           isAuthenticated: _currentSession ? true : false,
+          s3UploadClient: _s3Client,
         });
       } catch (e) {
         console.log("ERR ", e);
@@ -257,6 +274,7 @@ function App() {
           isAuthenticating: false,
           currentUser: _currentUser,
           isAuthenticated: false,
+          s3UploadClient: {},
         });
       }
     }
@@ -279,7 +297,8 @@ function App() {
     }
   };
 
-  const { currentUser, isAuthenticating, isAuthenticated } = state;
+  const { currentUser, isAuthenticating, isAuthenticated, s3UploadClient } =
+    state;
 
   function mergeDeep(...objects) {
     const isObject = obj => obj && typeof obj === "object";
@@ -314,6 +333,7 @@ function App() {
         userAuth,
         mobileApp,
         Auth,
+        s3UploadClient,
       }}
     >
       <ThemeProvider theme={mergedTheme}>
