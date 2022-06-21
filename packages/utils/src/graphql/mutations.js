@@ -158,3 +158,8 @@ export const addUserToCognitoGroup = `mutation addUserToCognitoGroup($id: String
  
   addUserToCognitoGroup( id: $id,group: $group)
 }`;
+
+export const changeUserPassword = `mutation changeUserCognitoPassword($code: String!,$pass: String!) {
+ 
+  changeUserPassword( user_code: $code,password: $pass)
+}`;
