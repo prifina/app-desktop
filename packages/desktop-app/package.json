@@ -37,13 +37,14 @@
     "react-app-rewired": "^2.2.1"
   },
   "dependencies": {
+    "@blend-ui/icon-field": "^1.0.1-alpha.0",
+    "@blend-ui/search-select": "^1.0.1-alpha.0",
+    "@blend-ui/auto-complete": "^1.0.1-alpha.0",
     "@blend-ui/core": "1.1.68-alpha.0",
     "@blend-ui/css-grid": "1.0.7-alpha.0",
-    "@blend-ui/icon-field": "^1.0.1-alpha.0",
     "@blend-ui/icons": "1.1.9-alpha.0",
     "@blend-ui/modal": "1.0.14-alpha.0",
     "@blend-ui/progress": "1.0.12-alpha.0",
-    "@blend-ui/search-select": "^1.0.1-alpha.0",
     "@blend-ui/tabs": "1.0.17-alpha.0",
     "@blend-ui/toast": "0.0.16-alpha.0",
     "@iconify-icons/emojione-v1": "^1.2.2",
