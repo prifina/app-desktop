@@ -370,6 +370,7 @@ export function countryList(continentList = {}, popularList = []) {
   */
 
   const countryList = getCountries();
+  //const countryList = [];
   /*
   "continents": {
     "AF": "Africa",

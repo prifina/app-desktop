@@ -32,11 +32,9 @@
     "react-dom": "^17.0.2"
   },
   "peerDependencies": {
-    
     "@blend-ui/core": "1.1.68-alpha.0",
     "@blend-ui/icons": "1.1.9-alpha.0",
     "@blend-ui/modal": "1.0.14-alpha.0",
-     
     "@iconify/icons-bx": "^1.1.2",
     "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",
@@ -48,13 +46,13 @@
     "styled-system": "^5.1.5"
   },
   "dependencies": {
-    "@blend-ui/avatar":"^1.0.1-alpha.0",
     "@aws-sdk/client-appsync": "^3.43.0",
+    "@blend-ui/avatar": "^1.0.1-alpha.0",
     "apollo-link": "^1.2.14",
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
     "countries-list": "^2.6.1",
     "cross-env": "^7.0.3",
-    "libphonenumber-js": "^1.9.32"
+    "libphonenumber-js": "1.9.51"
   }
 }
