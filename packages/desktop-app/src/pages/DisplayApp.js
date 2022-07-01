@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
 
 import {
+  Spring,
   useSprings,
   animated,
   config as SpringConfig,
@@ -17,35 +18,15 @@ import gql from "graphql-tag";
 
 import * as C from "./display-app/components";
 
-import {
-  addSearchResult,
-  addSearchKey,
-  i18n,
-  getAthenaResults,
-} from "@prifina-apps/utils";
+import { i18n, getAthenaResults, Navbar } from "@prifina-apps/utils";
 
-import { PrifinaLogo } from "../components/PrifinaLogo";
+import { ReactComponent as DisplayAppLogo } from "../assets/display-app-logo.svg";
+
 import PropTypes from "prop-types";
 
 import { Text, Button } from "@blend-ui/core";
-const short = require("short-uuid");
+
 i18n.init();
-
-const APIConfig = {
-  aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
-  aws_appsync_region: config.main_region,
-  aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
-};
-
-const AUTHConfig = {
-  // To get the aws credentials, you need to configure
-  // the Auth module with your Cognito Federated Identity Pool
-  mandatorySignIn: false,
-  userPoolId: config.cognito.USER_POOL_ID,
-  identityPoolId: config.cognito.IDENTITY_POOL_ID,
-  userPoolWebClientId: config.cognito.APP_CLIENT_ID,
-  region: config.main_region,
-};
 
 const S3Config = {
   AWSS3: {
@@ -53,8 +34,6 @@ const S3Config = {
     region: config.S3.region, //OPTIONAL -  Amazon service region
   },
 };
-
-const fn = animations => index => animations[index];
 
 function getSystemSettings(settings, currentSettings) {
   console.log("getSystemSettings ", settings, currentSettings);
@@ -122,15 +101,48 @@ const DisplayApp = ({
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const [searchHistory, setSearchHistory] = useState(false);
-  const searchBox = useRef();
-  const [searchKey, setSearchKey] = useState("");
+  const [showBox, setShowBox] = useState(false);
+
+  const toggle = () => {
+    setShowBox(prevCheck => !prevCheck);
+  };
+
+  const BottomAnimation = ({ children, toggle }) => (
+    <Spring
+      hold={!toggle}
+      from={{
+        opacity: 0,
+        //top: -5000,
+        transform: "scale(0) rotate(0deg)",
+      }}
+      to={{
+        //top: toggle ? 0: -5000,
+        opacity: toggle ? 1.0 : 0,
+        transform: `scale(${toggle ? "1.0" : "0"}) rotate(${
+          toggle ? 180 : 0
+        }deg)`,
+      }}
+    >
+      {styles => (
+        <div style={{ overflow: "visible", width: 300, height: 300 }}>
+          <div
+            style={{
+              ...styles,
+              position: "relative",
+              border: "1px solid black",
+            }}
+          >
+            <div>{children}</div>
+          </div>
+        </div>
+      )}
+    </Spring>
+  );
 
   const [open, setOpen] = useState(false);
   const [flipped, setFlipped] = useState(false);
   const [finish, setFinish] = useState(false);
-  //const [imagesReady, setImagesReady] = useState(false);
-  //const widgetImage = useRef();
+
   const imageCache = useRef([]);
 
   const settings = useRef({
@@ -141,20 +153,11 @@ const DisplayApp = ({
     widget: -1,
   });
 
-  /*
-  const images = [
-    "https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/Clock.png",
-    "https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/Sunny.png",
-  ];
-*/
-  //const items = [{}, {}];
   const items = [
     {
-      //transform: `perspective(1000px) rotateY(360deg)`,  // right-to-left
       transform: `perspective(1000px) rotateY(0deg)`,
       backgroundColor: `currentColor`,
       background: null,
-      /* "https://prifina-apps-352681697435.s3.amazonaws.com/fNBCsuKbikFG7VahRjRNaN/assets/Sunny.png", */
     },
     {
       transform: null,
@@ -205,7 +208,6 @@ const DisplayApp = ({
     }),
   );
   console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
-  const roleKeys = ["", "work", "family", "hobbies"];
 
   const athenaSubscription = useRef(null);
 
@@ -231,35 +233,6 @@ const DisplayApp = ({
     });
   }, []);
 
-  const takeSnapshot = async w => {
-    const DEFAULT_PNG = {
-      fileName: "component.png",
-      type: "image/png",
-      html2CanvasOptions: {},
-    };
-    if (w !== -1) {
-      /*
-      const ww = document.querySelectorAll(
-        "[data-widget-index='" + w + "']",
-      )[0];
-
-      const element = ReactDOM.findDOMNode(ww);
-      const canvas = await html2canvas(element, {
-        scrollY: -window.scrollY,
-        useCORS: true,
-        //backgroundColor: null,
-        ...DEFAULT_PNG,
-      });
-      const f = canvas.toDataURL(DEFAULT_PNG.type, 1.0);
-      //console.log("FILE2 ", f);
-      console.log("NEW SNAPSHOT TAKEN...");
-      */
-      //widgetImage.current = f;
-      //widgetImage.current = "https://via.placeholder.com/400";
-      //setOpen(true);
-      //setWidgetImage(f);
-    }
-  };
   const openSettings = w => {
     if (!open) {
       console.log("CLICK...", w);
@@ -314,56 +287,6 @@ const DisplayApp = ({
     let ignore = false;
     console.log("OPEN CHANGE ", open);
     if (false) {
-      //if (open) {
-      //console.log("REFS....", document.querySelectorAll(".prifina-widget[data-widget-index='0']"));
-      //console.log("REFS....", document.querySelectorAll(".prifina-widget"));
-      /*
-      animationItems.current = [
-        {
-          opacity: 1,
-          transform: `perspective(1000px) rotateY(180deg)`,
-          width: settings.current.width,
-          height: settings.current.height,
-          visibility: "visible",
-          config: { mass: 5, tension: 500, friction: 80 },
-          reset: true,
-          onStart: () => {
-            // hide widget...
-            //refs.current[settings.widget].style.visibility = "hidden";
-          },
-        },
-        {
-          delay: 500,
-          reset: true,
-          from: {
-            transform: "none",
-            width: settings.current.width,
-            height: settings.current.height,
-            visibility: "visible",
-          },
-          to: {
-            transform: "none",
-            width: "400px",
-            height: "400px",
-            visibility: "visible",
-          },
-          onStart: () => {
-            if (settingsRef.current[0]) {
-              //console.log("ENDS...", settingsRef.current[0]);
-              setFlipped(true);
-              //settingsRef.current[0].style.display = "none";
-            }
-          },
-          onRest: () => {
-            if (settingsRef.current[1]) {
-              //console.log("ENDS...", settingsRef.current[1]);
-              // settingsRef.current[0].style.visibility = "hidden";
-            }
-          },
-        },
-      ];
-*/
-      //setSprings(fn(animationItems.current));
     } else {
       if (settings.current.widget != -1) {
         console.log("INIT SPRINGS....");
@@ -404,13 +327,7 @@ const DisplayApp = ({
       .subscribe({
         next: res => {
           console.log("ATHENA SUBS RESULTS ", res);
-          /*
-          data:
-          athenaResults:
-          appId: "866fscSq5Ae7bPgUtb6ffB"
-          content:
-          id
-          */
+
           const currentAppId = res.data.athenaResults.appId;
           console.log(currentAppId, widgetSettings.current);
           const widgetIndex = widgetSettings.current.findIndex(
@@ -792,48 +709,6 @@ const DisplayApp = ({
     }
   };
 
-  const saveSearchKey = async searchKey => {
-    if (searchKey.length > 0)
-      await appSyncClient.mutate({
-        mutation: gql(addSearchKey),
-        variables: {
-          input: {
-            owner: currentUser.uuid,
-            searchKey: searchKey,
-            role: activeTab === 0 ? "" : roleKey[activeTab],
-          },
-        },
-      });
-  };
-  const saveSearchResult = async (searchKey, searchResult) => {
-    if (searchKey.length > 0) {
-      const searchBuckeyKey = "search-results/" + short.generate() + ".json";
-
-      await appSyncClient.mutate({
-        mutation: gql(addSearchResult),
-        variables: {
-          input: {
-            owner: currentUser.uuid,
-            searchKey: searchKey,
-            role: activeTab === 0 ? "" : roleKey[activeTab],
-            selectedResult: searchBuckeyKey,
-          },
-        },
-      });
-
-      await Storage.put(searchBuckeyKey, JSON.stringify(searchResult), {
-        level: "public",
-        contentType: "application/json",
-
-        metadata: {
-          owner: currentUser.uuid,
-          searchKey: searchKey,
-          created: new Date().toISOString(),
-        },
-      });
-    }
-  };
-
   return (
     <>
       {open && (
@@ -900,8 +775,9 @@ const DisplayApp = ({
           })}
         </C.ModalBackground>
       )}
-
-      <PrifinaLogo title={"Display App"} />
+      <Navbar backgroundColor="white">
+        <DisplayAppLogo style={{ marginTop: 17 }} />
+      </Navbar>
       <C.PageContainer>
         <div
           style={{

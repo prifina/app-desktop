@@ -49,6 +49,8 @@ import { BlendIcon } from "@blend-ui/icons";
 import SystemSettingsSandbox from "../components/SystemSettingsSandbox";
 import SettingsSandbox from "../components/SettingsSandbox";
 
+import ErrorStateScreen from "../components/ErrorStateScreen";
+
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import mdiArrowExpand from "@iconify/icons-mdi/arrow-expand";
@@ -207,6 +209,7 @@ const RemoteContent = ({ url, ...props }) => {
           Check Browser console for more informations...
         </Text>
       </React.Fragment>
+      // <ErrorStateScreen />
     );
   }
   //console.log("COMPONENT ", Component);
@@ -737,8 +740,7 @@ const Sandbox = props => {
                 height={"100%"}
               >
                 {currentAppRef.current.remoteUrl !== null ||
-                currentAppRef.current.remoteUrl !== "" ||
-                settingsArray.length > 3 ? (
+                currentAppRef.current.remoteUrl !== "" ? (
                   <>
                     {ready && (
                       <Content
@@ -756,6 +758,7 @@ const Sandbox = props => {
                       <Text textAlign={"center"} textStyle={"h3"}>
                         Sandbox
                       </Text>
+                      // <ErrorStateScreen />
                     )}
                   </>
                 ) : (
