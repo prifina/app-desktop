@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Modal,
@@ -23,11 +23,9 @@ import {
 
 import { useHistory } from "react-router-dom";
 
-const short = require("short-uuid");
-
 i18n.init();
 
-const AddWidgetModal = ({ onClose, onButtonClick, widgetData, ...props }) => {
+const AddWidgetModal = ({ onClose, widgetData, viewID, ...props }) => {
   const { currentUser } = useAppContext();
   const history = useHistory();
   console.log("NEW APP ", currentUser);
@@ -35,7 +33,6 @@ const AddWidgetModal = ({ onClose, onButtonClick, widgetData, ...props }) => {
   const { colors } = useTheme();
 
   const [appFields, handleChange] = useFormFields({
-    appId: short.generate(),
     name: "",
     title: "",
     version: 1,
@@ -55,6 +52,28 @@ const AddWidgetModal = ({ onClose, onButtonClick, widgetData, ...props }) => {
     e.preventDefault();
   };
 
+  const [activeItem, setActiveItem] = useState(widgetData[0]);
+
+  const handleActiveItem = e => {
+    setActiveItem(widgetData[+e.target.value]);
+  };
+
+  const [activeViewArray, setActiveViewArray] = useState([]);
+
+  let id = viewID;
+
+  const handleAddToArray = e => {
+    setActiveViewArray(oldArray => [...oldArray, activeItem]);
+  };
+
+  console.log("active item", activeItem);
+  console.log("active array", activeViewArray);
+
+  useEffect(() => {
+    // storing input name
+    localStorage.setItem(`viewsContent-${id}`, JSON.stringify(activeViewArray));
+  }, [activeViewArray]);
+
   return (
     <React.Fragment>
       <Modal
@@ -64,7 +83,7 @@ const AddWidgetModal = ({ onClose, onButtonClick, widgetData, ...props }) => {
         onClose={onCloseCheck}
         scrollBehavior={"inside"}
         theme={theme}
-        size={"806px"}
+        size="640px"
         {...props}
       >
         <ModalContent
@@ -78,18 +97,31 @@ const AddWidgetModal = ({ onClose, onButtonClick, widgetData, ...props }) => {
         >
           <ModalHeader>Find Widgets</ModalHeader>
           <ModalBody paddingLeft="36px" paddingRight="36px" paddingTop="37px">
-            <Flex display="flex" flexDirection="row" justifyContent="center">
-              {/* {widgetData.map((w, i) => {
-                <div>{w.widget.title}</div>;
-              })} */}
-              {widgetData.map(function (e) {
-                return <ul>{e.widget.title}</ul>;
-              })}
+            <Flex>
+              <Flex
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="space-between"
+              >
+                <select onChange={handleActiveItem}>
+                  {widgetData.map((item, index) => (
+                    <option key={index} value={index}>
+                      {item.widget.title}
+                    </option>
+                  ))}
+                </select>
+              </Flex>
+              <Box>
+                {}
+                <Text>{activeItem.widget.title}</Text>
+                <Text>{activeItem.widget.shortDescription}</Text>
+                <Button onClick={handleAddToArray}>Add to</Button>
+                <Button>Learn More</Button>
+                <Button onClick={onClose}>Close</Button>
+              </Box>
             </Flex>
           </ModalBody>
-          <ModalFooter>
-            <Flex paddingTop="54px">Footer</Flex>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </React.Fragment>

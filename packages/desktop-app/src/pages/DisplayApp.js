@@ -1,18 +1,12 @@
 import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
 
-import {
-  Spring,
-  useSprings,
-  animated,
-  config as SpringConfig,
-} from "@react-spring/web";
+import { useTransition, animated } from "react-spring";
 
 import { RemoteComponent } from "../RemoteComponent";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
-import Amplify, { API as GRAPHQL, Storage } from "aws-amplify";
-import config from "../config";
+import { API as GRAPHQL, Storage } from "aws-amplify";
 
 import gql from "graphql-tag";
 
@@ -24,16 +18,10 @@ import { ReactComponent as DisplayAppLogo } from "../assets/display-app-logo.svg
 
 import PropTypes from "prop-types";
 
-import { Text, Button } from "@blend-ui/core";
+import { Flex, Box, Text, Button } from "@blend-ui/core";
+import AddWidgetModal from "../components/AddWidgetModal";
 
 i18n.init();
-
-const S3Config = {
-  AWSS3: {
-    bucket: config.S3.bucket, //REQUIRED -  Amazon S3 bucket name
-    region: config.S3.region, //OPTIONAL -  Amazon service region
-  },
-};
 
 function getSystemSettings(settings, currentSettings) {
   console.log("getSystemSettings ", settings, currentSettings);
@@ -61,29 +49,250 @@ const DisplayApp = ({
   dataSources,
 }) => {
   console.log("PROPS ", widgetConfigData, Object.keys(widgetConfigData));
+  console.log("WIDGET CONFIG DATA ", widgetConfigData);
   console.log("DISPLAY APP ", prifinaID);
-  const {
-    check,
-    currentUser,
-    getLocalization,
-    getSettings,
-    setSettings,
-    getCallbacks,
-    registerClient,
-    API,
-    Prifina,
-    activeRole,
-  } = usePrifina();
-
+  const { currentUser, setSettings, getCallbacks, registerClient, Prifina } =
+    usePrifina();
   console.log("DISPLAY APP ", currentUser);
   console.log("DISPLAY APP DATASOURCES", dataSources);
   const WidgetHooks = new Prifina({ appId: "WIDGETS" });
-  //console.log(check());
-  Amplify.configure(S3Config);
+  const athenaSubscription = useRef(null);
+
+  const short = require("short-uuid");
+
+  const [views, setViews] = useState(() => {
+    const defaultView = [
+      {
+        id: 0,
+        title: `${currentUser.name}'s home`,
+      },
+    ];
+
+    const savedViews = localStorage.getItem("views");
+
+    const parsedViews = JSON.parse(savedViews);
+
+    console.log("parsed views", parsedViews);
+
+    if (parsedViews === null) {
+      return defaultView;
+    } else if (parsedViews) {
+      return parsedViews;
+    } else {
+      return [];
+    }
+  });
+
+  const defaultViewID = 0;
+  console.log("default view id", defaultViewID);
+
+  const [viewID, setViewID] = useState(0);
+  console.log("viewID", viewID);
+
+  const [activeTab, setActiveTab] = useState(0);
+  console.log("active tab", activeTab);
+
+  const tabClick = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setActiveTab(tab);
+
+    console.log("view target value", e.currentTarget.id);
+    setViewID(Number(e.currentTarget.id));
+  };
+
+  const [defaultWidgetsToRender, setDefaultWidgetsToRender] = useState([
+    {
+      id: defaultViewID,
+      widgetConfig: [
+        {
+          url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/0.0.1/main.bundle.js",
+          settings: true,
+          currentSettings: {
+            city: "london",
+            size: "300x300",
+            theme: "dark",
+          },
+          dataSources: [],
+          widget: {
+            settings: [
+              {
+                value: "New York",
+                field: "city",
+                label: "City",
+                type: "text",
+              },
+              {
+                value: '[{"option":"300x300","value":"300x300"}]',
+                field: "sizes",
+                label: "Sizes",
+                type: "select",
+              },
+              {
+                value: '[{"option":"Dark","value":"dark"}]',
+                field: "theme",
+                label: "Theme",
+                type: "select",
+              },
+            ],
+            installCount: 0,
+            appID: "xkn9NGTH6eNyWUbaLxtMe1",
+            name: "weatherWidget",
+            title: "Weather",
+            shortDescription:
+              "Heads up widget for showing you the weather in relevant locations to you.",
+            version: "0.0.1",
+            image:
+              "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-ss-1.png",
+            publisher: "Prifina Inc",
+            userGenerated: ["Location input"],
+            userHeld: ["Session time", "Session duration"],
+            public: ["Weather data"],
+            category: "Weather",
+            icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-icon.png",
+          },
+        },
+        {
+          url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
+          settings: true,
+          currentSettings: {
+            size: "300x300",
+            theme: "dark",
+            city: "London",
+          },
+          dataSources: ["@prifina/oura"],
+          widget: {
+            settings: [
+              {
+                value: '[{"option":"300x300","value":"300x300"}]',
+                field: "sizes",
+                label: "Sizes",
+                type: "select",
+              },
+              {
+                value: '[{"option":"Dark","value":"dark"}]',
+                field: "theme",
+                label: "Theme",
+                type: "select",
+              },
+              {
+                value: "London",
+                field: "city",
+                label: "City",
+                type: "text",
+              },
+            ],
+            installCount: 0,
+            appID: "3LSdcSs1kcPskBWBJvqGto",
+            name: "dryRunWidget",
+            title: "Dry Run",
+            shortDescription:
+              "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
+            version: "0.0.1",
+            image:
+              "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
+            publisher: "Prifina Inc",
+            userGenerated: ["Location input"],
+            userHeld: ["Session time", "Session duration"],
+            public: ["Weather data"],
+            category: "Health & Fitness",
+            icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
+          },
+        },
+      ],
+    },
+    {
+      id: 2,
+      widgetConfig: [
+        {
+          url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
+          settings: true,
+          currentSettings: {
+            size: "300x300",
+            theme: "dark",
+            city: "London",
+          },
+          dataSources: ["@prifina/oura"],
+          widget: {
+            settings: [
+              {
+                value: '[{"option":"300x300","value":"300x300"}]',
+                field: "sizes",
+                label: "Sizes",
+                type: "select",
+              },
+              {
+                value: '[{"option":"Dark","value":"dark"}]',
+                field: "theme",
+                label: "Theme",
+                type: "select",
+              },
+              {
+                value: "London",
+                field: "city",
+                label: "City",
+                type: "text",
+              },
+            ],
+            installCount: 0,
+            appID: "3LSdcSs1kcPskBWBJvqGto",
+            name: "dryRunWidget",
+            title: "Dry Run",
+            shortDescription:
+              "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
+            version: "0.0.1",
+            image:
+              "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
+            publisher: "Prifina Inc",
+            userGenerated: ["Location input"],
+            userHeld: ["Session time", "Session duration"],
+            public: ["Weather data"],
+            category: "Health & Fitness",
+            icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
+          },
+        },
+      ],
+    },
+  ]);
+
+  const [widgetsToRender, setWidgetsToRender] = useState(() => {
+    const savedViews = localStorage.getItem(`viewsContent-${0}`);
+
+    const parsedViews = JSON.parse(savedViews);
+
+    console.log("views content", parsedViews);
+
+    return parsedViews;
+  });
+
+  useEffect(() => {
+    // setCart(JSON.parse(localStorage.getItem("myCart")) || []);
+    const savedViews = localStorage.getItem(`viewsContent-${0}`);
+
+    const parsedViews = JSON.parse(savedViews);
+    console.log("views content", parsedViews);
+
+    setWidgetsToRender(parsedViews);
+  }, [activeTab, viewID]);
+
+  // const [widgetsToRender, setWidgetsToRender] = useState(
+  //   defaultWidgetsToRender,
+  // );
+
+  // console.log("WIDGETS TO RENDER", widgetsToRender);
+
+  useEffect(() => {
+    console.log("Something happened");
+
+    activeTab;
+  }, [viewID]);
+
+  console.log("widgets to render", widgetsToRender);
 
   const [widgetList, setWidgetList] = useState([]);
   const [widgetConfig, setWidgetConfig] = useState(
-    widgetConfigData.map((w, i) => {
+    // widgetsToRender.map((w, i) => {
+    defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
       //parse theme and sizes....
       const { theme, size } = getSystemSettings(
         w.widget.settings,
@@ -95,55 +304,10 @@ const DisplayApp = ({
         url: w.url,
         settings: w.settings,
         widget: { theme: theme, size: size, ...w.widget },
+        version: w.version,
       };
     }),
   );
-
-  const [activeTab, setActiveTab] = useState(0);
-
-  const [showBox, setShowBox] = useState(false);
-
-  const toggle = () => {
-    setShowBox(prevCheck => !prevCheck);
-  };
-
-  const BottomAnimation = ({ children, toggle }) => (
-    <Spring
-      hold={!toggle}
-      from={{
-        opacity: 0,
-        //top: -5000,
-        transform: "scale(0) rotate(0deg)",
-      }}
-      to={{
-        //top: toggle ? 0: -5000,
-        opacity: toggle ? 1.0 : 0,
-        transform: `scale(${toggle ? "1.0" : "0"}) rotate(${
-          toggle ? 180 : 0
-        }deg)`,
-      }}
-    >
-      {styles => (
-        <div style={{ overflow: "visible", width: 300, height: 300 }}>
-          <div
-            style={{
-              ...styles,
-              position: "relative",
-              border: "1px solid black",
-            }}
-          >
-            <div>{children}</div>
-          </div>
-        </div>
-      )}
-    </Spring>
-  );
-
-  const [open, setOpen] = useState(false);
-  const [flipped, setFlipped] = useState(false);
-  const [finish, setFinish] = useState(false);
-
-  const imageCache = useRef([]);
 
   const settings = useRef({
     left: "0px",
@@ -153,47 +317,15 @@ const DisplayApp = ({
     widget: -1,
   });
 
-  const items = [
-    {
-      transform: `perspective(1000px) rotateY(0deg)`,
-      backgroundColor: `currentColor`,
-      background: null,
-    },
-    {
-      transform: null,
-      background: "",
-      backgroundColor: `white`,
-    },
-  ];
-  const animationItems = useRef(items.map((_, index) => index));
-  console.log("ITEMS ", animationItems);
-  const [springs, setSprings] = useSprings(items.length, index => {
-    return {
-      from: {
-        transform: items[index].transform,
-        opacity: 1,
-        width: "300px",
-        height: "300px",
-      },
-      config: {
-        mass: 5,
-        tension: 400,
-        friction: 150,
-      },
-    };
-  });
-
-  console.log("SPRINGS ", springs);
-  const refs = useRef([]);
-  const settingsRef = useRef([]);
   const widgetSettings = useRef(
-    widgetConfigData.map((w, i) => {
+    // widgetsToRender.map((w, i) => {
+    defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
       //parse theme and sizes....
       const { theme, size } = getSystemSettings(
         w.widget.settings,
         w.currentSettings,
       );
-
+      console.log("w", w);
       return {
         theme: theme,
         size: size,
@@ -204,37 +336,38 @@ const DisplayApp = ({
         currentSettings: w.currentSettings,
         image: w.widget.image,
         dataSources: w.dataSources,
+        publisher: w.publisher,
+        version: w.version,
       };
     }),
   );
   console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
 
-  const athenaSubscription = useRef(null);
+  ///transition animation///////////////////////////////////
+  const [isVisible, setIsVisible] = useState(false);
 
-  const tabClick = (e, tab) => {
-    console.log("Click", e);
-    console.log("TAB", tab);
-    setActiveTab(tab);
-  };
-
-  useEffect(async () => {
-    // browser cache images....
-    const promises = widgetConfigData.map(src => {
-      return new Promise(function (resolve, reject) {
-        const img = new Image();
-        img.src = src.widget.image;
-        img.onload = resolve(img);
-        img.onerror = reject();
-        imageCache.current.push(src.widget.image);
-      });
-    });
-    await Promise.all(promises).then(cachedImages => {
-      console.log("Images loaded....", cachedImages);
-    });
-  }, []);
-
+  const transition = useTransition(isVisible, {
+    from: {
+      transform: "translateY(100%) rotateX(90deg)",
+      transition: "all 0.1s ease-out",
+      opacity: 0,
+    },
+    enter: {
+      transform: "translateY(0%) rotateX(0deg)",
+      opacity: 1,
+      width: 568,
+      height: 504,
+    },
+    leave: {
+      transform: "translateY(0%) rotateX(90deg)",
+      transition: "all 0.1s ease-out",
+      opacity: 0,
+    },
+  });
+  ///////////////////////////////////////////////////////
+  ///settings config
   const openSettings = w => {
-    if (!open) {
+    if (!isVisible) {
       console.log("CLICK...", w);
 
       const ww = document
@@ -251,79 +384,27 @@ const DisplayApp = ({
         widget: w,
       };
 
-      setSprings(index => {
-        if (index === 0) {
-          return {
-            transform: `perspective(1000px) rotateY(150deg)`,
-            onRest: () => {
-              setFlipped(true);
-              setFinish(true);
-            },
-          };
-        }
-
-        return {
-          transform: null,
-
-          opacity: 0,
-          from: {
-            width: "300px",
-            height: "300px",
-          },
-          to: {
-            width: "400px",
-            height: "400px",
-          },
-          config: { ...SpringConfig.molasses, duration: 3500 },
-          onRest: () => {},
-        };
-      });
-
-      setOpen(true);
+      setIsVisible(true);
     }
   };
 
   useEffect(() => {
     let ignore = false;
-    console.log("OPEN CHANGE ", open);
-    if (false) {
-    } else {
-      if (settings.current.widget != -1) {
-        console.log("INIT SPRINGS....");
+    console.log("OPEN CHANGE ", isVisible);
 
-        settingsRef.current = [];
-        if (flipped && finish) {
-          setSprings(index => {
-            return {
-              from: {
-                transform: items[index].transform,
-                opacity: 1,
-                width: "300px",
-                height: "300px",
-              },
-              config: {
-                mass: 5,
-                tension: 500,
-                friction: 220,
-              },
-            };
-          });
-        }
-
-        setFlipped(false);
-        setFinish(false);
-      }
-    }
     return () => {
       ignore = true;
     };
-  }, [open]);
+  }, [isVisible]);
 
   useEffect(() => {
     registerClient([appSyncClient, GRAPHQL, Storage]);
 
     athenaSubscription.current = appSyncClient
-      .subscribe({ query: gql(getAthenaResults), variables: { id: prifinaID } })
+      .subscribe({
+        query: gql(getAthenaResults),
+        variables: { id: prifinaID },
+      })
       .subscribe({
         next: res => {
           console.log("ATHENA SUBS RESULTS ", res);
@@ -369,10 +450,15 @@ const DisplayApp = ({
     };
   }, []);
 
+
+
   useEffect(() => {
     console.log("WIDGET CONFIG, create widgets... ");
+
+    console.log("widget config in use", widgetConfig);
     if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
+      // const widgets = widgetConfig.map((w, i) => {
       const widgets = widgetConfig.map((w, i) => {
         console.log("WIDGET COMPONENT ", w);
         //React.forwardRef((props, ref) =>
@@ -425,6 +511,12 @@ const DisplayApp = ({
         );
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
+
+
+          // if (w && w.widget.size) {
+          //   const size = w.widget.size.split("x");
+          //   setSize(size);
+          // }
           const size = w.widget.size.split("x");
           return (
             <React.Fragment>
@@ -595,7 +687,7 @@ const DisplayApp = ({
 
       setWidgetList(widgets);
     }
-  }, [widgetConfig]);
+  }, [widgetConfig, viewID]);
 
   const onUpdate = data => {
     console.log("Update settings ", data);
@@ -678,26 +770,6 @@ const DisplayApp = ({
       c[currentAppId][widgetInstallCount]({ settings: data });
     }
 
-    setSprings(index => {
-      return {
-        from: {
-          transform: items[index].transform,
-          opacity: 1,
-          width: "300px",
-          height: "300px",
-        },
-        config: {
-          mass: 5,
-          tension: 500,
-          friction: 220,
-        },
-      };
-    });
-
-    setOpen(false);
-    setFlipped(false);
-    setFinish(false);
-
     //widgetConfig...
     if (systemSettingsUpdated) {
       console.log(
@@ -709,75 +781,119 @@ const DisplayApp = ({
     }
   };
 
+  console.log("widget settings", widgetSettings);
+  console.log("widget config", widgetConfig);
+  console.log("widget list", widgetList);
+
+  // VIEWS CONFIGURATION ================================================================================================================
+
+  const [view, setView] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("views", JSON.stringify(views));
+  }, [views]);
+
+  const handleInputChange = e => {
+    setView(e.target.value);
+  };
+
+  const handleFormSubmit = e => {
+    e.preventDefault();
+
+    if (view !== "") {
+      setViews([
+        ...views,
+        {
+          // id: short.generate(),
+          id: views.length,
+          title: view.trim(),
+        },
+      ]);
+    }
+
+    setView("");
+  };
+
+  function handleDeleteClick(id) {
+    const removeItem = views.filter(view => {
+      return view.id !== id;
+    });
+    setViews(removeItem);
+  }
+
+  console.log("views", views);
+  console.log("view", view);
+  // ================================================================================================================
+
+  const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
+
   return (
     <>
-      {open && (
-        <C.ModalBackground
-          className={"widget-modal"}
-          onClick={e => {
-            console.log("TARGET ", e);
-            console.log("WIDGET SETTINGS ", refs.current, settings);
-            console.log("MODAL ", e.target.className);
-
-            if (e.target.className.indexOf("widget-modal") > -1) {
-              setOpen(false);
-            }
-          }}
-        >
-          {springs.map((props, i) => {
-            console.log("PROPS ", i, props);
-            console.log("IMAGE ", imageCache.current);
-            // widget settings...
-            console.log(settings.current);
-            console.log(widgetSettings);
-
-            return (
-              <animated.div
-                style={{
-                  transform: props.transform,
-                  left: settings.current.left,
-                  top: settings.current.top,
-                  width: props.width,
-                  height: props.height,
-                  position: "absolute",
-                  borderRadius: i === 0 ? "8px" : null,
-                  visibility: open ? "visible" : "hidden",
-                  zIndex: 50,
-                  backgroundSize: "cover",
-                  backgroundImage:
-                    i > 0
-                      ? null
-                      : flipped
-                      ? null
-                      : `url(${imageCache.current[settings.current.widget]})`,
-                }}
-                ref={ref => {
-                  if (ref !== null) settingsRef.current.push(ref);
-                }}
-                key={"animated-" + i}
-              >
-                {finish && i === 1 && (
+      {isVisible && (
+        <C.ModalBackground>
+          {transition((style, item) =>
+            item ? (
+              <animated.div style={style}>
+                <div>
                   <C.SettingsDiv>
                     <C.SettingsDialog
-                      spring={i}
-                      flipped={flipped}
-                      open={open}
+                      onBack={() => {
+                        setIsVisible(false);
+                      }}
+                      isVisible={isVisible}
                       onUpdate={onUpdate}
                       widgetIndex={settings.current.widget}
                       widgetSettings={
                         widgetSettings.current[settings.current.widget]
                       }
+                      data={widgetConfig}
                     />
                   </C.SettingsDiv>
-                )}
+                </div>
               </animated.div>
-            );
-          })}
+            ) : null,
+          )}
         </C.ModalBackground>
       )}
+      {addWidgetModalOpen && (
+        <AddWidgetModal
+          onClose={() => {
+            setAddWidgetModalOpen(false);
+          }}
+          widgetData={widgetConfigData}
+          viewID={viewID}
+        />
+      )}
+      <Button
+        onClick={() => {
+          setAddWidgetModalOpen(true);
+        }}
+      >
+        Add widgets
+      </Button>
       <Navbar backgroundColor="white">
         <DisplayAppLogo style={{ marginTop: 17 }} />
       </Navbar>
+      <div className="App">
+        <form onSubmit={handleFormSubmit}>
+          <input
+            name="view"
+            type="text"
+            placeholder="Create a new view"
+            value={view}
+            onChange={handleInputChange}
+          />
+        </form>
+
+        <ul className="view-list">
+          {views.map(view => (
+            <li key={view.id}>
+              {view.title}
+              <button onClick={() => handleDeleteClick(view.id)}>X</button>
+            </li>
+          ))}
+        </ul>
+      </div>
       <C.PageContainer>
         <div
           style={{
@@ -786,48 +902,48 @@ const DisplayApp = ({
         >
           <Tabs
             activeTab={activeTab}
+            // onClick={e => {
+            //   tabClick;
+            // }}
             onClick={tabClick}
             style={{ height: "100%" }}
             variant={"line"}
           >
             <TabList>
-              <Tab>
-                <C.TabText>{currentUser.name}</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Work</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Family</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Hobbies</C.TabText>
-              </Tab>
+              {views.length > 0
+                ? views.map((item, index) => (
+                    <Tab key={item.id} id={item.id}>
+                      <C.TabText>{item.title}</C.TabText>
+                    </Tab>
+                  ))
+                : null}
             </TabList>
             <TabPanelList style={{ backgroundColor: null }}>
-              <TabPanel
-                style={{
-                  height: "100vh",
-                  paddingBottom: "50px",
-                  overflow: "auto",
-                }}
-              >
-                <div style={{ overflow: "auto" }}>
-                  <C.WidgetContainer className={"prifina-widget-container"}>
-                    {widgetList.length > 0 && (
-                      <C.WidgetList
-                        widgetList={widgetList}
-                        widgetData={widgetConfig}
-                        currentUser={currentUser}
-                        dataSources={dataSources}
-                      />
-                    )}
-                  </C.WidgetContainer>
-                </div>
-              </TabPanel>
-              <TabPanel>Work panel</TabPanel>
-              <TabPanel>Family panel</TabPanel>
-              <TabPanel>Hobbies panel</TabPanel>
+              {views.length > 0
+                ? views.map((item, index) => (
+                    <TabPanel
+                      style={{
+                        height: "100vh",
+                        paddingBottom: "50px",
+                        overflow: "auto",
+                      }}
+                    >
+                      <div style={{ overflow: "auto" }}>
+                        <div>{item.title}</div>
+                        <C.WidgetContainer className="prifina-widget-container">
+                          {widgetList.length > 0 && (
+                            <C.WidgetList
+                              widgetList={widgetList}
+                              widgetData={widgetConfig}
+                              currentUser={currentUser}
+                              dataSources={dataSources}
+                            />
+                          )}
+                        </C.WidgetContainer>
+                      </div>
+                    </TabPanel>
+                  ))
+                : null}
             </TabPanelList>
           </Tabs>
         </div>
