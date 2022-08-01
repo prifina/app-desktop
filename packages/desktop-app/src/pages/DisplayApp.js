@@ -101,162 +101,162 @@ const DisplayApp = ({
     setViewID(Number(e.currentTarget.id));
   };
 
-  const [defaultWidgetsToRender, setDefaultWidgetsToRender] = useState([
-    {
-      id: defaultViewID,
-      widgetConfig: [
-        {
-          url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/0.0.1/main.bundle.js",
-          settings: true,
-          currentSettings: {
-            city: "london",
-            size: "300x300",
-            theme: "dark",
-          },
-          dataSources: [],
-          widget: {
-            settings: [
-              {
-                value: "New York",
-                field: "city",
-                label: "City",
-                type: "text",
-              },
-              {
-                value: '[{"option":"300x300","value":"300x300"}]',
-                field: "sizes",
-                label: "Sizes",
-                type: "select",
-              },
-              {
-                value: '[{"option":"Dark","value":"dark"}]',
-                field: "theme",
-                label: "Theme",
-                type: "select",
-              },
-            ],
-            installCount: 0,
-            appID: "xkn9NGTH6eNyWUbaLxtMe1",
-            name: "weatherWidget",
-            title: "Weather",
-            shortDescription:
-              "Heads up widget for showing you the weather in relevant locations to you.",
-            version: "0.0.1",
-            image:
-              "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-ss-1.png",
-            publisher: "Prifina Inc",
-            userGenerated: ["Location input"],
-            userHeld: ["Session time", "Session duration"],
-            public: ["Weather data"],
-            category: "Weather",
-            icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-icon.png",
-          },
-        },
-        {
-          url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
-          settings: true,
-          currentSettings: {
-            size: "300x300",
-            theme: "dark",
-            city: "London",
-          },
-          dataSources: ["@prifina/oura"],
-          widget: {
-            settings: [
-              {
-                value: '[{"option":"300x300","value":"300x300"}]',
-                field: "sizes",
-                label: "Sizes",
-                type: "select",
-              },
-              {
-                value: '[{"option":"Dark","value":"dark"}]',
-                field: "theme",
-                label: "Theme",
-                type: "select",
-              },
-              {
-                value: "London",
-                field: "city",
-                label: "City",
-                type: "text",
-              },
-            ],
-            installCount: 0,
-            appID: "3LSdcSs1kcPskBWBJvqGto",
-            name: "dryRunWidget",
-            title: "Dry Run",
-            shortDescription:
-              "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
-            version: "0.0.1",
-            image:
-              "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
-            publisher: "Prifina Inc",
-            userGenerated: ["Location input"],
-            userHeld: ["Session time", "Session duration"],
-            public: ["Weather data"],
-            category: "Health & Fitness",
-            icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
-          },
-        },
-      ],
-    },
-    {
-      id: 2,
-      widgetConfig: [
-        {
-          url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
-          settings: true,
-          currentSettings: {
-            size: "300x300",
-            theme: "dark",
-            city: "London",
-          },
-          dataSources: ["@prifina/oura"],
-          widget: {
-            settings: [
-              {
-                value: '[{"option":"300x300","value":"300x300"}]',
-                field: "sizes",
-                label: "Sizes",
-                type: "select",
-              },
-              {
-                value: '[{"option":"Dark","value":"dark"}]',
-                field: "theme",
-                label: "Theme",
-                type: "select",
-              },
-              {
-                value: "London",
-                field: "city",
-                label: "City",
-                type: "text",
-              },
-            ],
-            installCount: 0,
-            appID: "3LSdcSs1kcPskBWBJvqGto",
-            name: "dryRunWidget",
-            title: "Dry Run",
-            shortDescription:
-              "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
-            version: "0.0.1",
-            image:
-              "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
-            publisher: "Prifina Inc",
-            userGenerated: ["Location input"],
-            userHeld: ["Session time", "Session duration"],
-            public: ["Weather data"],
-            category: "Health & Fitness",
-            icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
-          },
-        },
-      ],
-    },
-  ]);
+  // const [defaultWidgetsToRender, setDefaultWidgetsToRender] = useState([
+  //   {
+  //     id: defaultViewID,
+  //     widgetConfig: [
+  //       {
+  //         url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/0.0.1/main.bundle.js",
+  //         settings: true,
+  //         currentSettings: {
+  //           city: "london",
+  //           size: "300x300",
+  //           theme: "dark",
+  //         },
+  //         dataSources: [],
+  //         widget: {
+  //           settings: [
+  //             {
+  //               value: "New York",
+  //               field: "city",
+  //               label: "City",
+  //               type: "text",
+  //             },
+  //             {
+  //               value: '[{"option":"300x300","value":"300x300"}]',
+  //               field: "sizes",
+  //               label: "Sizes",
+  //               type: "select",
+  //             },
+  //             {
+  //               value: '[{"option":"Dark","value":"dark"}]',
+  //               field: "theme",
+  //               label: "Theme",
+  //               type: "select",
+  //             },
+  //           ],
+  //           installCount: 0,
+  //           appID: "xkn9NGTH6eNyWUbaLxtMe1",
+  //           name: "weatherWidget",
+  //           title: "Weather",
+  //           shortDescription:
+  //             "Heads up widget for showing you the weather in relevant locations to you.",
+  //           version: "0.0.1",
+  //           image:
+  //             "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-ss-1.png",
+  //           publisher: "Prifina Inc",
+  //           userGenerated: ["Location input"],
+  //           userHeld: ["Session time", "Session duration"],
+  //           public: ["Weather data"],
+  //           category: "Weather",
+  //           icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-icon.png",
+  //         },
+  //       },
+  //       {
+  //         url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
+  //         settings: true,
+  //         currentSettings: {
+  //           size: "300x300",
+  //           theme: "dark",
+  //           city: "London",
+  //         },
+  //         dataSources: ["@prifina/oura"],
+  //         widget: {
+  //           settings: [
+  //             {
+  //               value: '[{"option":"300x300","value":"300x300"}]',
+  //               field: "sizes",
+  //               label: "Sizes",
+  //               type: "select",
+  //             },
+  //             {
+  //               value: '[{"option":"Dark","value":"dark"}]',
+  //               field: "theme",
+  //               label: "Theme",
+  //               type: "select",
+  //             },
+  //             {
+  //               value: "London",
+  //               field: "city",
+  //               label: "City",
+  //               type: "text",
+  //             },
+  //           ],
+  //           installCount: 0,
+  //           appID: "3LSdcSs1kcPskBWBJvqGto",
+  //           name: "dryRunWidget",
+  //           title: "Dry Run",
+  //           shortDescription:
+  //             "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
+  //           version: "0.0.1",
+  //           image:
+  //             "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
+  //           publisher: "Prifina Inc",
+  //           userGenerated: ["Location input"],
+  //           userHeld: ["Session time", "Session duration"],
+  //           public: ["Weather data"],
+  //           category: "Health & Fitness",
+  //           icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
+  //         },
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 2,
+  //     widgetConfig: [
+  //       {
+  //         url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
+  //         settings: true,
+  //         currentSettings: {
+  //           size: "300x300",
+  //           theme: "dark",
+  //           city: "London",
+  //         },
+  //         dataSources: ["@prifina/oura"],
+  //         widget: {
+  //           settings: [
+  //             {
+  //               value: '[{"option":"300x300","value":"300x300"}]',
+  //               field: "sizes",
+  //               label: "Sizes",
+  //               type: "select",
+  //             },
+  //             {
+  //               value: '[{"option":"Dark","value":"dark"}]',
+  //               field: "theme",
+  //               label: "Theme",
+  //               type: "select",
+  //             },
+  //             {
+  //               value: "London",
+  //               field: "city",
+  //               label: "City",
+  //               type: "text",
+  //             },
+  //           ],
+  //           installCount: 0,
+  //           appID: "3LSdcSs1kcPskBWBJvqGto",
+  //           name: "dryRunWidget",
+  //           title: "Dry Run",
+  //           shortDescription:
+  //             "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
+  //           version: "0.0.1",
+  //           image:
+  //             "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
+  //           publisher: "Prifina Inc",
+  //           userGenerated: ["Location input"],
+  //           userHeld: ["Session time", "Session duration"],
+  //           public: ["Weather data"],
+  //           category: "Health & Fitness",
+  //           icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
+  //         },
+  //       },
+  //     ],
+  //   },
+  // ]);
 
   const [widgetsToRender, setWidgetsToRender] = useState(() => {
-    const savedViews = localStorage.getItem(`viewsContent-${0}`);
+    const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
 
     const parsedViews = JSON.parse(savedViews);
 
@@ -267,7 +267,7 @@ const DisplayApp = ({
 
   useEffect(() => {
     // setCart(JSON.parse(localStorage.getItem("myCart")) || []);
-    const savedViews = localStorage.getItem(`viewsContent-${0}`);
+    const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
 
     const parsedViews = JSON.parse(savedViews);
     console.log("views content", parsedViews);
@@ -291,8 +291,8 @@ const DisplayApp = ({
 
   const [widgetList, setWidgetList] = useState([]);
   const [widgetConfig, setWidgetConfig] = useState(
-    // widgetsToRender.map((w, i) => {
-    defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
+    widgetsToRender.map((w, i) => {
+      // defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
       //parse theme and sizes....
       const { theme, size } = getSystemSettings(
         w.widget.settings,
@@ -318,8 +318,8 @@ const DisplayApp = ({
   });
 
   const widgetSettings = useRef(
-    // widgetsToRender.map((w, i) => {
-    defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
+    widgetsToRender.map((w, i) => {
+      // defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
       //parse theme and sizes....
       const { theme, size } = getSystemSettings(
         w.widget.settings,
@@ -450,8 +450,6 @@ const DisplayApp = ({
     };
   }, []);
 
-
-
   useEffect(() => {
     console.log("WIDGET CONFIG, create widgets... ");
 
@@ -511,7 +509,6 @@ const DisplayApp = ({
         );
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
-
 
           // if (w && w.widget.size) {
           //   const size = w.widget.size.split("x");
@@ -687,7 +684,7 @@ const DisplayApp = ({
 
       setWidgetList(widgets);
     }
-  }, [widgetConfig, viewID]);
+  }, [widgetConfig, activeTab]);
 
   const onUpdate = data => {
     console.log("Update settings ", data);
