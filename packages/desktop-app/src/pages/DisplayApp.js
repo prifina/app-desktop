@@ -18,8 +18,31 @@ import { ReactComponent as DisplayAppLogo } from "../assets/display-app-logo.svg
 
 import PropTypes from "prop-types";
 
-import { Flex, Box, Text, Button } from "@blend-ui/core";
+import {
+  Flex,
+  Box,
+  Text,
+  Button,
+  Divider,
+  Input,
+  colors,
+} from "@blend-ui/core";
 import AddWidgetModal from "../components/AddWidgetModal";
+
+import styled, { css } from "styled-components";
+import { BlendIcon } from "@blend-ui/icons";
+
+import mdiAddCircleOutline from "@iconify/icons-mdi/add-circle-outline";
+import mdiGearOutline from "@iconify/icons-mdi/gear-outline";
+
+import mdiPencilOutline from "@iconify/icons-mdi/pencil-outline";
+import mdiTrashCanOutline from "@iconify/icons-mdi/trash-can-outline";
+
+import mdiPlusBoxMultipleOutline from "@iconify/icons-mdi/plus-box-multiple-outline";
+import fxSync from "@iconify/icons-fe/sync";
+import mdiEyeOffOutline from "@iconify/icons-mdi/eye-off-outline";
+
+import fePlus from "@iconify/icons-fe/plus";
 
 i18n.init();
 
@@ -60,6 +83,10 @@ const DisplayApp = ({
 
   const short = require("short-uuid");
 
+  const [childData, setChildData] = useState([]);
+
+  console.log("child data state", childData);
+
   const [views, setViews] = useState(() => {
     const defaultView = [
       {
@@ -67,13 +94,9 @@ const DisplayApp = ({
         title: `${currentUser.name}'s home`,
       },
     ];
-
     const savedViews = localStorage.getItem("views");
-
     const parsedViews = JSON.parse(savedViews);
-
     console.log("parsed views", parsedViews);
-
     if (parsedViews === null) {
       return defaultView;
     } else if (parsedViews) {
@@ -101,213 +124,52 @@ const DisplayApp = ({
     setViewID(Number(e.currentTarget.id));
   };
 
-  // const [defaultWidgetsToRender, setDefaultWidgetsToRender] = useState([
-  //   {
-  //     id: defaultViewID,
-  //     widgetConfig: [
-  //       {
-  //         url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/0.0.1/main.bundle.js",
-  //         settings: true,
-  //         currentSettings: {
-  //           city: "london",
-  //           size: "300x300",
-  //           theme: "dark",
-  //         },
-  //         dataSources: [],
-  //         widget: {
-  //           settings: [
-  //             {
-  //               value: "New York",
-  //               field: "city",
-  //               label: "City",
-  //               type: "text",
-  //             },
-  //             {
-  //               value: '[{"option":"300x300","value":"300x300"}]',
-  //               field: "sizes",
-  //               label: "Sizes",
-  //               type: "select",
-  //             },
-  //             {
-  //               value: '[{"option":"Dark","value":"dark"}]',
-  //               field: "theme",
-  //               label: "Theme",
-  //               type: "select",
-  //             },
-  //           ],
-  //           installCount: 0,
-  //           appID: "xkn9NGTH6eNyWUbaLxtMe1",
-  //           name: "weatherWidget",
-  //           title: "Weather",
-  //           shortDescription:
-  //             "Heads up widget for showing you the weather in relevant locations to you.",
-  //           version: "0.0.1",
-  //           image:
-  //             "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-ss-1.png",
-  //           publisher: "Prifina Inc",
-  //           userGenerated: ["Location input"],
-  //           userHeld: ["Session time", "Session duration"],
-  //           public: ["Weather data"],
-  //           category: "Weather",
-  //           icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/assets/weatherly-icon.png",
-  //         },
-  //       },
-  //       {
-  //         url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
-  //         settings: true,
-  //         currentSettings: {
-  //           size: "300x300",
-  //           theme: "dark",
-  //           city: "London",
-  //         },
-  //         dataSources: ["@prifina/oura"],
-  //         widget: {
-  //           settings: [
-  //             {
-  //               value: '[{"option":"300x300","value":"300x300"}]',
-  //               field: "sizes",
-  //               label: "Sizes",
-  //               type: "select",
-  //             },
-  //             {
-  //               value: '[{"option":"Dark","value":"dark"}]',
-  //               field: "theme",
-  //               label: "Theme",
-  //               type: "select",
-  //             },
-  //             {
-  //               value: "London",
-  //               field: "city",
-  //               label: "City",
-  //               type: "text",
-  //             },
-  //           ],
-  //           installCount: 0,
-  //           appID: "3LSdcSs1kcPskBWBJvqGto",
-  //           name: "dryRunWidget",
-  //           title: "Dry Run",
-  //           shortDescription:
-  //             "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
-  //           version: "0.0.1",
-  //           image:
-  //             "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
-  //           publisher: "Prifina Inc",
-  //           userGenerated: ["Location input"],
-  //           userHeld: ["Session time", "Session duration"],
-  //           public: ["Weather data"],
-  //           category: "Health & Fitness",
-  //           icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
-  //         },
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     widgetConfig: [
-  //       {
-  //         url: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/0.0.1/main.bundle.js",
-  //         settings: true,
-  //         currentSettings: {
-  //           size: "300x300",
-  //           theme: "dark",
-  //           city: "London",
-  //         },
-  //         dataSources: ["@prifina/oura"],
-  //         widget: {
-  //           settings: [
-  //             {
-  //               value: '[{"option":"300x300","value":"300x300"}]',
-  //               field: "sizes",
-  //               label: "Sizes",
-  //               type: "select",
-  //             },
-  //             {
-  //               value: '[{"option":"Dark","value":"dark"}]',
-  //               field: "theme",
-  //               label: "Theme",
-  //               type: "select",
-  //             },
-  //             {
-  //               value: "London",
-  //               field: "city",
-  //               label: "City",
-  //               type: "text",
-  //             },
-  //           ],
-  //           installCount: 0,
-  //           appID: "3LSdcSs1kcPskBWBJvqGto",
-  //           name: "dryRunWidget",
-  //           title: "Dry Run",
-  //           shortDescription:
-  //             "Tired of running in bad weather? With Dry Run, utilize your activity data and you get a heads up when your typical time for a run collides with a sleet or a tropical storm.",
-  //           version: "0.0.1",
-  //           image:
-  //             "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-ss-1.png",
-  //           publisher: "Prifina Inc",
-  //           userGenerated: ["Location input"],
-  //           userHeld: ["Session time", "Session duration"],
-  //           public: ["Weather data"],
-  //           category: "Health & Fitness",
-  //           icon: "https://prifina-apps-352681697435-eu-west-1.s3.amazonaws.com/3LSdcSs1kcPskBWBJvqGto/assets/dryrun-icon.png",
-  //         },
-  //       },
-  //     ],
-  //   },
-  // ]);
+  const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
+  const parsedViews = JSON.parse(savedViews);
+  console.log("views content", parsedViews);
 
-  const [widgetsToRender, setWidgetsToRender] = useState(() => {
-    const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
+  const [widgetsToRender, setWidgetsToRender] = useState(parsedViews);
 
-    const parsedViews = JSON.parse(savedViews);
-
-    console.log("views content", parsedViews);
-
-    return parsedViews;
-  });
-
+  //////////////////RENDERING WIDGETS TO RENDER STATE
   useEffect(() => {
-    // setCart(JSON.parse(localStorage.getItem("myCart")) || []);
     const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
-
     const parsedViews = JSON.parse(savedViews);
     console.log("views content", parsedViews);
+    console.log("log2");
 
     setWidgetsToRender(parsedViews);
-  }, [activeTab, viewID]);
-
-  // const [widgetsToRender, setWidgetsToRender] = useState(
-  //   defaultWidgetsToRender,
-  // );
-
-  // console.log("WIDGETS TO RENDER", widgetsToRender);
-
-  useEffect(() => {
-    console.log("Something happened");
-
-    activeTab;
-  }, [viewID]);
+  }, [activeTab, viewID, childData]);
 
   console.log("widgets to render", widgetsToRender);
 
+  const [widgetConfig, setWidgetConfig] = useState([]);
   const [widgetList, setWidgetList] = useState([]);
-  const [widgetConfig, setWidgetConfig] = useState(
-    widgetsToRender.map((w, i) => {
-      // defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
-      //parse theme and sizes....
-      const { theme, size } = getSystemSettings(
-        w.widget.settings,
-        w.currentSettings,
+
+  useEffect(() => {
+    console.log("log1");
+    // renderWidgets;
+    if (widgetsToRender !== null) {
+      setWidgetConfig(
+        widgetsToRender.map((w, i) => {
+          // defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
+          //parse theme and sizes....
+          const { theme, size } = getSystemSettings(
+            w.widget.settings,
+            w.currentSettings,
+          );
+          return {
+            id: widgetsToRender.length + 1,
+            dataSources: w.dataSources,
+            currentSettings: w.currentSettings,
+            url: w.url,
+            settings: w.settings,
+            widget: { theme: theme, size: size, ...w.widget },
+            version: w.version,
+          };
+        }),
       );
-      return {
-        dataSources: w.dataSources,
-        currentSettings: w.currentSettings,
-        url: w.url,
-        settings: w.settings,
-        widget: { theme: theme, size: size, ...w.widget },
-        version: w.version,
-      };
-    }),
-  );
+    } else setWidgetConfig([]);
+  }, [activeTab, widgetsToRender, viewID]);
 
   const settings = useRef({
     left: "0px",
@@ -318,28 +180,28 @@ const DisplayApp = ({
   });
 
   const widgetSettings = useRef(
-    widgetsToRender.map((w, i) => {
-      // defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
-      //parse theme and sizes....
-      const { theme, size } = getSystemSettings(
-        w.widget.settings,
-        w.currentSettings,
-      );
-      console.log("w", w);
-      return {
-        theme: theme,
-        size: size,
-        settings: w.widget.settings || [],
-        title: w.widget.title,
-        appId: w.widget.appID,
-        installCount: w.widget.installCount,
-        currentSettings: w.currentSettings,
-        image: w.widget.image,
-        dataSources: w.dataSources,
-        publisher: w.publisher,
-        version: w.version,
-      };
-    }),
+    widgetsToRender !== null &&
+      widgetsToRender.map((w, i) => {
+        //parse theme and sizes....
+        const { theme, size } = getSystemSettings(
+          w.widget.settings,
+          w.currentSettings,
+        );
+        console.log("w", w);
+        return {
+          theme: theme,
+          size: size,
+          settings: w.widget.settings || [],
+          title: w.widget.title,
+          appId: w.widget.appID,
+          installCount: w.widget.installCount,
+          currentSettings: w.currentSettings,
+          image: w.widget.image,
+          dataSources: w.dataSources,
+          publisher: w.publisher,
+          version: w.version,
+        };
+      }),
   );
   console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
 
@@ -391,6 +253,7 @@ const DisplayApp = ({
   useEffect(() => {
     let ignore = false;
     console.log("OPEN CHANGE ", isVisible);
+    console.log("log3");
 
     return () => {
       ignore = true;
@@ -398,6 +261,8 @@ const DisplayApp = ({
   }, [isVisible]);
 
   useEffect(() => {
+    console.log("log3");
+
     registerClient([appSyncClient, GRAPHQL, Storage]);
 
     athenaSubscription.current = appSyncClient
@@ -411,6 +276,7 @@ const DisplayApp = ({
 
           const currentAppId = res.data.athenaResults.appId;
           console.log(currentAppId, widgetSettings.current);
+
           const widgetIndex = widgetSettings.current.findIndex(
             w => w.appId === currentAppId,
           );
@@ -450,7 +316,11 @@ const DisplayApp = ({
     };
   }, []);
 
+  console.log("widget config in use2", widgetConfig);
+
   useEffect(() => {
+    console.log("log3");
+
     console.log("WIDGET CONFIG, create widgets... ");
 
     console.log("widget config in use", widgetConfig);
@@ -509,6 +379,16 @@ const DisplayApp = ({
         );
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
+          console.log("W 2", w);
+
+          const [widgetMenu, setWidgetMenu] = useState(false);
+          const toggleWidgetMenu = () => setWidgetMenu(!widgetMenu);
+          let widgetMenuRef = useRef();
+
+          const removeWidget = index => {
+            console.log(index);
+            setWidgetConfig(widgetConfig.filter((o, i) => index !== i));
+          };
 
           // if (w && w.widget.size) {
           //   const size = w.widget.size.split("x");
@@ -534,6 +414,46 @@ const DisplayApp = ({
                         widgetTheme={w.widget.theme}
                       />
                     )}
+                    {!w.settings && <C.EmptyDiv />}
+                  </div>
+                  <div>
+                    <BlendIcon
+                      iconify={mdiGearOutline}
+                      onClick={toggleWidgetMenu}
+                      width="20px"
+                      color="white"
+                      style={{
+                        zIndex: 10,
+                        position: "absolute",
+                        left: 250,
+                        top: 15,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <C.DropDownContainer
+                      ref={widgetMenuRef}
+                      className="dropdown-menu"
+                    >
+                      {widgetMenu && (
+                        <C.DropDownListContainer>
+                          <C.DropDownList>
+                            <C.InteractiveMenuItem
+                              title="Duplicate"
+                              iconify={mdiPlusBoxMultipleOutline}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Replace"
+                              iconify={fxSync}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Remove"
+                              iconify={mdiEyeOffOutline}
+                              onClick={() => removeWidget(i)}
+                            />
+                          </C.DropDownList>
+                        </C.DropDownListContainer>
+                      )}
+                    </C.DropDownContainer>
                     {!w.settings && <C.EmptyDiv />}
                   </div>
                   <div
@@ -680,15 +600,17 @@ const DisplayApp = ({
         return Widget;
       });
 
-      console.log("WIDGETS ", widgets);
+      console.log("WIDGETS 2222", widgets);
 
       setWidgetList(widgets);
     }
-  }, [widgetConfig, activeTab]);
+  }, [widgetConfig]);
 
   const onUpdate = data => {
     console.log("Update settings ", data);
     console.log("HOOK ", WidgetHooks);
+
+    console.log("SETTINGS CURRENT hehehe", settings.current);
 
     console.log(settings.current, widgetSettings);
     // deep-copy...
@@ -785,9 +707,11 @@ const DisplayApp = ({
   // VIEWS CONFIGURATION ================================================================================================================
 
   const [view, setView] = useState("");
+  const [editView, setEditView] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("views", JSON.stringify(views));
+    console.log("log3");
   }, [views]);
 
   const handleInputChange = e => {
@@ -813,9 +737,13 @@ const DisplayApp = ({
 
   function handleDeleteClick(id) {
     const removeItem = views.filter(view => {
+      console.log("delete views content id", id);
+      localStorage.removeItem(`viewsContent-${id}`);
       return view.id !== id;
     });
+
     setViews(removeItem);
+    setActiveTab(0);
   }
 
   console.log("views", views);
@@ -823,6 +751,49 @@ const DisplayApp = ({
   // ================================================================================================================
 
   const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
+
+  // ======================
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggling = () => setMenuOpen(!menuOpen);
+
+  let menuRef = useRef();
+
+  // useEffect(() => {
+  //   const handler = event => {
+  //     console.log("menu ref", menuRef.current.contains(event));
+  //     if (
+  //       // menuOpen &&
+  //       menuRef.current.contains(event.target) === false
+  //       // menuRef.current &&
+  //       // !menuRef.current.contains(event.target)
+  //     ) {
+  //       setMenuOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handler);
+  //   document.addEventListener("touchstart", handler);
+  //   return () => {
+  //     // Cleanup the event listener
+  //     document.removeEventListener("mousedown", handler);
+  //     document.removeEventListener("touchstart", handler);
+  //   };
+  // }, [menuOpen]);
+
+  // ==========================================================================
+
+  const pullDataFromChild = data => {
+    console.log("child data", data);
+
+    setChildData(data);
+  };
+
+  const tabStyle = css`
+    height: 100%;
+    background: transparent;
+    padding: 0px;
+  `;
 
   return (
     <>
@@ -859,63 +830,42 @@ const DisplayApp = ({
           }}
           widgetData={widgetConfigData}
           viewID={viewID}
+          propDrill={pullDataFromChild}
+          widgetConfig={widgetConfig}
         />
       )}
-      <Button
-        onClick={() => {
-          setAddWidgetModalOpen(true);
-        }}
-      >
-        Add widgets
-      </Button>
       <Navbar backgroundColor="white">
         <DisplayAppLogo style={{ marginTop: 17 }} />
       </Navbar>
-      <div className="App">
-        <form onSubmit={handleFormSubmit}>
-          <input
-            name="view"
-            type="text"
-            placeholder="Create a new view"
-            value={view}
-            onChange={handleInputChange}
-          />
-        </form>
-
-        <ul className="view-list">
-          {views.map(view => (
-            <li key={view.id}>
-              {view.title}
-              <button onClick={() => handleDeleteClick(view.id)}>X</button>
-            </li>
-          ))}
-        </ul>
-      </div>
       <C.PageContainer>
         <div
           style={{
             overflow: "hidden",
           }}
         >
-          <Tabs
+          <C.CustomTabs
             activeTab={activeTab}
-            // onClick={e => {
-            //   tabClick;
-            // }}
             onClick={tabClick}
-            style={{ height: "100%" }}
-            variant={"line"}
+            variant="rectangle"
           >
-            <TabList>
+            <TabList
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                maxWidth: 500,
+                overflowX: "scroll",
+              }}
+            >
               {views.length > 0
                 ? views.map((item, index) => (
                     <Tab key={item.id} id={item.id}>
-                      <C.TabText>{item.title}</C.TabText>
+                      {/* <C.TabText style={{ padding: 0 }}>{item.title}</C.TabText> */}
+                      {item.title}
                     </Tab>
                   ))
                 : null}
             </TabList>
-            <TabPanelList style={{ backgroundColor: null }}>
+            <TabPanelList style={{ backgroundColor: null, padding: 0 }}>
               {views.length > 0
                 ? views.map((item, index) => (
                     <TabPanel
@@ -925,24 +875,146 @@ const DisplayApp = ({
                         overflow: "auto",
                       }}
                     >
+                      <C.DropDownContainer
+                        ref={menuRef}
+                        className="dropdown-menu"
+                        style={{ right: 120 }}
+                      >
+                        <BlendIcon
+                          iconify={mdiAddCircleOutline}
+                          width="16px"
+                          style={{ alignSelf: "center" }}
+                          onClick={toggling}
+                          color={colors.brandAccent}
+                        />
+                        {menuOpen && (
+                          <C.DropDownListContainer>
+                            <Flex
+                              justifyContent="space-between"
+                              alignItems="center"
+                              width="100%"
+                              padding={10}
+                            >
+                              <Text fontSize="sm">Your Views</Text>
+                              <BlendIcon
+                                iconify={mdiPencilOutline}
+                                onClick={() => setEditView(!editView)}
+                                width="13px"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Flex>
+                            {views.map((view, index) => (
+                              <C.DropDownList style={{ paddingBottom: 10 }}>
+                                {editView ? (
+                                  <C.ListItem key={view.id}>
+                                    <Input
+                                      height="25px"
+                                      width="120px"
+                                      defaultValue={views[index].title}
+                                      onChange={e => {
+                                        views[view.id].title = e.target.value;
+                                        setViews([...views]);
+                                      }}
+                                    />
+                                    <BlendIcon
+                                      iconify={mdiTrashCanOutline}
+                                      onClick={() => handleDeleteClick(view.id)}
+                                      width="13px"
+                                      style={{
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </C.ListItem>
+                                ) : (
+                                  <C.ListItem key={view.id}>
+                                    <Text fontSize="sm">{view.title}</Text>
+                                  </C.ListItem>
+                                )}
+                              </C.DropDownList>
+                            ))}
+
+                            {editView && (
+                              <>
+                                <Divider
+                                  color="#E7DBF0"
+                                  foo="bar"
+                                  height="1px"
+                                  ml={16}
+                                  mr={16}
+                                  mt={5}
+                                  mb={5}
+                                />
+                                <form onSubmit={handleFormSubmit}>
+                                  <C.ListItem
+                                    style={{
+                                      // alignItems: "baseline",
+                                      marginBottom: 10,
+                                    }}
+                                  >
+                                    <Input
+                                      height="25px"
+                                      width="120px"
+                                      value={view}
+                                      placeholder="Create new view"
+                                      onChange={handleInputChange}
+                                      mr={15}
+                                    />
+                                    <BlendIcon
+                                      iconify={fePlus}
+                                      onClick={e => {
+                                        handleFormSubmit(e);
+                                        setView("");
+                                      }}
+                                      width="13px"
+                                      style={{
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </C.ListItem>
+                                </form>
+                              </>
+                            )}
+                          </C.DropDownListContainer>
+                        )}
+                      </C.DropDownContainer>
+                      <Divider color="#E7DBF0" foo="bar" height="1px" />
                       <div style={{ overflow: "auto" }}>
-                        <div>{item.title}</div>
-                        <C.WidgetContainer className="prifina-widget-container">
-                          {widgetList.length > 0 && (
-                            <C.WidgetList
-                              widgetList={widgetList}
-                              widgetData={widgetConfig}
-                              currentUser={currentUser}
-                              dataSources={dataSources}
-                            />
-                          )}
-                        </C.WidgetContainer>
+                        {widgetsToRender !== null ? (
+                          <>
+                            <C.WidgetContainer className="prifina-widget-container">
+                              {widgetConfig.length > 0 && (
+                                // {widgetConfig !== null && (
+                                <C.WidgetList
+                                  widgetList={widgetList}
+                                  widgetData={widgetConfig}
+                                  currentUser={currentUser}
+                                  dataSources={dataSources}
+                                />
+                              )}
+                              {widgetsToRender.length <= 7 ? (
+                                <C.AddWidget
+                                  onClick={() => {
+                                    setAddWidgetModalOpen(true);
+                                  }}
+                                />
+                              ) : null}
+                            </C.WidgetContainer>
+                          </>
+                        ) : (
+                          <C.AddWidget
+                            onClick={() => {
+                              setAddWidgetModalOpen(true);
+                            }}
+                          />
+                        )}
                       </div>
                     </TabPanel>
                   ))
                 : null}
             </TabPanelList>
-          </Tabs>
+          </C.CustomTabs>
         </div>
       </C.PageContainer>
     </>
