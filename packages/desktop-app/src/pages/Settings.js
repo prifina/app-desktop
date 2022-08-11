@@ -12,7 +12,12 @@ const Settings = props => {
     setActiveTab(tab);
   };
   return (
-    <Tabs activeTab={activeTab} onClick={tabClick} title={"Account Settings"}>
+    <Tabs
+      activeTab={activeTab}
+      onClick={tabClick}
+      title={"Account Settings"}
+      variant="rounded"
+    >
       <TabList>
         <Tab>User Details</Tab>
         <Tab>Cloud Subscription</Tab>
