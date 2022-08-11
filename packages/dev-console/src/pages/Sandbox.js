@@ -150,6 +150,8 @@ const IconDiv = styled.div`
 `;
 
 const RedStatusCircle = styled.div`
+  margin-left: 10px;
+  margin-top: 2px;
   width: 8px;
   height: 8px;
   background-color: red;
