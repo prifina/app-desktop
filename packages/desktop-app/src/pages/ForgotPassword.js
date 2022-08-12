@@ -12,6 +12,8 @@ import {
   useFocus,
   checkPassword,
   validUsername,
+  sendVerificationMutation,
+  changeUserPasswordMutation,
 } from "@prifina-apps/utils";
 
 import { BlendIcon } from "@blend-ui/icons";
@@ -26,6 +28,8 @@ import { IconField } from "@blend-ui/icon-field";
 import { useToast } from "@blend-ui/toast";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
+
+import { API } from "aws-amplify";
 
 const ForgotPassword = props => {
   const { colors } = useTheme();
@@ -108,6 +112,8 @@ const ForgotPassword = props => {
     password: "",
     confirmationCode: "",
   });
+
+  console.log("input", loginFields.password);
 
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
@@ -296,6 +302,45 @@ const ForgotPassword = props => {
       stepProgress = 50;
   }
 
+  const getClientID = process.env.REACT_APP_APP_CLIENT_ID;
+
+  console.log("input", loginFields);
+  console.log("input", getClientID);
+
+  const sendCode = async e => {
+    try {
+      await sendVerificationMutation(
+        API,
+        "both",
+        JSON.stringify({
+          username: loginFields.username,
+          clientId: getClientID,
+        }),
+      );
+      alerts.info(i18n.__("phoneVerificatioSent"), {});
+      setStep(1);
+    } catch (e) {
+      console.log("ERR", e);
+    }
+  };
+
+  const changePassword = () => {
+    changeUserPasswordMutation(
+      API,
+      loginFields.username +
+        "#" +
+        getClientID +
+        "#both#" +
+        loginFields.confirmationCode,
+
+      loginFields.passwordConfirm,
+    ).then(res => {
+      alerts.success(i18n.__("success"), {});
+
+      console.log("SUCCESS", res);
+    });
+  };
+
   return (
     <React.Fragment>
       {step === 4 && <Login />}
@@ -325,23 +370,23 @@ const ForgotPassword = props => {
                   id={"username"}
                   name={"username"}
                   onChange={handleChange}
-                  onBlur={e => {
-                    if (e.target.value.length > 0) {
-                      const userError = checkUsername(e.target.value);
-                      if (userError !== "") {
-                        setInputUsernameFocus();
-                        e.preventDefault();
-                      }
-                    }
-                  }}
-                  error={state.username.status}
+                  // onBlur={e => {
+                  //   if (e.target.value.length > 0) {
+                  //     const userError = checkUsername(e.target.value);
+                  //     if (userError !== "") {
+                  //       setInputUsernameFocus();
+                  //       e.preventDefault();
+                  //     }
+                  //   }
+                  // }}
+                  // error={state.username.status}
                   ref={inputUsername}
                   defaultValue={state.username.value}
-                  onKeyDown={e => {
-                    if (e.key === "Enter" && e.target.value.length > 4) {
-                      checkUsername(e.target.value, true);
-                    }
-                  }}
+                  // onKeyDown={e => {
+                  //   if (e.key === "Enter" && e.target.value.length > 4) {
+                  //     checkUsername(e.target.value, true);
+                  //   }
+                  // }}
                   tabIndex="2"
                 />
               </IconField>
@@ -362,6 +407,7 @@ const ForgotPassword = props => {
                   onClick={() => {
                     setStep(4);
                   }}
+                  // onClick={sendCode}
                 >
                   {i18n.__("Back")}
                 </Button>
@@ -372,8 +418,13 @@ const ForgotPassword = props => {
                     usernameError.status ||
                     loginFields.username.length < config.usernameLength
                   }
-                  onClick={() => {
-                    setStep(1);
+                  // onClick={() => {
+                  //   setStep(1);
+                  // }}
+                  onClick={async e => {
+                    e.preventDefault();
+                    await sendCode();
+                    // setStep(1);
                   }}
                 >
                   {i18n.__("nextButton")}
@@ -484,49 +535,49 @@ const ForgotPassword = props => {
             <Box mt={28}>
               <PasswordField
                 placeholder={i18n.__("newPassword")}
-                onFocus={e => {
-                  const passwordCheckStatus = isPasswordPossible();
-                  if (!passwordCheckStatus) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  } else if (
-                    !state.accountPassword.valid ||
-                    state.accountPassword.value.length === 0
-                  ) {
-                    setAddPopper(true);
-                  }
-                }}
-                addPopper={addPopper}
-                verifications={passwordVerification}
+                // onFocus={e => {
+                //   const passwordCheckStatus = isPasswordPossible();
+                //   if (!passwordCheckStatus) {
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //   } else if (
+                //     !state.accountPassword.valid ||
+                //     state.accountPassword.value.length === 0
+                //   ) {
+                //     setAddPopper(true);
+                //   }
+                // }}
+                // addPopper={addPopper}
+                // verifications={passwordVerification}
                 id={"accountPassword"}
                 name={"accountPassword"}
                 onChange={e => {
                   handleChange(e);
-                  checkInputPassword(e.target.value);
+                  // checkInputPassword(e.target.value);
                 }}
-                ref={inputPassword}
+                // ref={inputPassword}
                 defaultValue={state.accountPassword.value}
-                error={state.accountPassword.status}
-                onBlur={e => {
-                  if (e.target.value.length > 0) {
-                    if (passwordCheck(e.target.value)) {
-                      setAddPopper(false);
-                    } else {
-                      setInputPasswordFocus();
-                      e.preventDefault();
-                    }
-                  } else {
-                    setAddPopper(false);
-                  }
-                }}
-                onKeyDown={e => {
-                  if (e.key === "Enter" && e.target.value.length > 4) {
-                    const checkStatus = passwordCheck(e.target.value);
-                    if (checkStatus) {
-                      setAddPopper(false);
-                    }
-                  }
-                }}
+                // error={state.accountPassword.status}
+                // onBlur={e => {
+                //   if (e.target.value.length > 0) {
+                //     if (passwordCheck(e.target.value)) {
+                //       setAddPopper(false);
+                //     } else {
+                //       setInputPasswordFocus();
+                //       e.preventDefault();
+                //     }
+                //   } else {
+                //     setAddPopper(false);
+                //   }
+                // }}
+                // onKeyDown={e => {
+                //   if (e.key === "Enter" && e.target.value.length > 4) {
+                //     const checkStatus = passwordCheck(e.target.value);
+                //     if (checkStatus) {
+                //       setAddPopper(false);
+                //     }
+                //   }
+                // }}
                 autoComplete="new-password"
                 tabIndex="3"
               />
@@ -534,48 +585,50 @@ const ForgotPassword = props => {
             <Box mt={28}>
               <PasswordField
                 placeholder={i18n.__("confirmNewPassword")}
-                onFocus={e => {
-                  if (state.accountPassword.value.length === 0) {
-                    setInputPasswordFocus();
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }
-                }}
+                // onFocus={e => {
+                //   if (state.accountPassword.value.length === 0) {
+                //     setInputPasswordFocus();
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //   }
+                // }}
                 id={"passwordConfirm"}
                 name={"passwordConfirm"}
                 defaultValue={state.passwordConfirm.value}
                 onChange={handleChange}
-                error={
-                  state.accountPassword.status || state.passwordConfirm.status
-                }
-                onBlur={e => {
-                  if (
-                    e.target.value.length === state.accountPassword.value.length
-                  ) {
-                    checkConfirmPassword(e.target.value, false);
-                  }
-                }}
-                onKeyDown={e => {
-                  if (e.key === "Enter" && e.target.value.length > 4) {
-                    checkConfirmPassword(e.target.value, false);
-                  }
-                }}
+                // error={
+                //   state.accountPassword.status || state.passwordConfirm.status
+                // }
+                // onBlur={e => {
+                //   if (
+                //     e.target.value.length === state.accountPassword.value.length
+                //   ) {
+                //     checkConfirmPassword(e.target.value, false);
+                //   }
+                // }}
+                // onKeyDown={e => {
+                //   if (e.key === "Enter" && e.target.value.length > 4) {
+                //     checkConfirmPassword(e.target.value, false);
+                //   }
+                // }}
                 autoComplete="new-password"
                 tabIndex="4"
               />
             </Box>
             <Box mt={37} display="flex" justifyContent="center">
               <Button
-                disabled={
-                  inputError.status ||
-                  passwordError.status ||
-                  usernameError.status ||
-                  loginFields.confirmationCode.length !== 6 ||
-                  loginFields.username.length < config.usernameLength ||
-                  loginFields.password.length < config.passwordLength
-                }
-                onClick={() => {
-                  setStep(3);
+                // disabled={
+                //   inputError.status ||
+                //   passwordError.status ||
+                //   usernameError.status ||
+                //   loginFields.confirmationCode.length !== 6 ||
+                //   loginFields.username.length < config.usernameLength ||
+                //   loginFields.password.length < config.passwordLength
+                // }
+                onClick={e => {
+                  // setStep(3);
+                  changePassword();
+                  e.preventDefault();
                 }}
               >
                 {i18n.__("doneButton")}

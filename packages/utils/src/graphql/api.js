@@ -568,3 +568,10 @@ export const addUserToCognitoGroupMutation = (API, id, group) => {
     authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
+export const changeUserPasswordMutation = (API, code, pw) => {
+  return API.graphql({
+    query: changeUserPassword,
+    variables: { code: code, pass: pw },
+    authMode: "AWS_IAM",
+  });
+};
