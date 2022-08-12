@@ -65,8 +65,8 @@ webkit-animation: pulsate 0.03 ease-out;
 webkit-animation-iteration-count: infinite; 
 `;
 const Circle = styled.div`
-width: 8px;
-height: 8px;
+width: 9px;
+height: 9px;
 background-color: #62bd19;
 border-radius: 50%;
 position: absolute;
@@ -80,8 +80,8 @@ border: 3px solid #62bd19;
 height: 25px;
 width: 25px;
 position: absolute;
-left: -8.5px;
-top: -8.5px;
+left: -8px;
+top: -8px;
 -webkit-animation: pulsate 2s ease-out;
 -webkit-animation-iteration-count: infinite; 
 opacity: 0.0
