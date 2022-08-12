@@ -106,44 +106,6 @@ const AddWidgetModal = ({
 
   const modalRef = useRef(null);
 
-  // useEffect(() => {
-  //   const closeOpenMenus = e => {
-  //     if (
-  //       modalRef.current &&
-  //       dialogOpen &&
-  //       !modalRef.current.contains(e.target)
-  //     ) {
-  //       setDialogOpen(prevalue => !prevalue);
-  //     }
-  //   };
-  //   document.addEventListener("modal", closeOpenMenus);
-
-  //   return () => {
-  //     // Cleanup the event listener
-  //     document.removeEventListener("modal", closeOpenMenus);
-  //   };
-  // }, [modalRef]);
-
-  function onOutsideClose(ref, state, setState, listener) {
-    const handleClickOutside = event => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setState(false);
-      }
-    };
-
-    useEffect(() => {
-      document.addEventListener("menu", handleClickOutside, true);
-      return () => {
-        document.removeEventListener("menu", handleClickOutside, true);
-      };
-    }, [ref, state]);
-
-    return { ref, state, setState };
-  }
-
-  // useOnClickOutside(modalRef, () => setDialogOpen(prevalue => !prevalue));
-  onOutsideClose(modalRef, dialogOpen, setDialogOpen, "addWidgetModal");
-
   return (
     <div ref={modalRef}>
       <Modal
@@ -215,7 +177,11 @@ const AddWidgetModal = ({
                   justifyContent="center"
                   width="320px"
                 >
-                  <Button mb={12} onClick={handleAddToArray}>
+                  <Button
+                    mb={12}
+                    onClick={handleAddToArray}
+                    disabled={widgetConfig.length === 8 ? true : false}
+                  >
                     Add to ‘{viewName}’
                   </Button>
                   <Button variation="outline" mb={12}>
