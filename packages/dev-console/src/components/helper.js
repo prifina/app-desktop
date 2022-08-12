@@ -164,7 +164,7 @@ export function ControlAddedDataSources({
             USER HELD
           </Text>
         </Flex>
-        {dataSource.url !== undefined ? (
+        {/* {dataSource.url !== undefined ? (
           <Flex>
             <Text mr="5px">{dataSource.source}</Text>
           </Flex>
@@ -172,7 +172,7 @@ export function ControlAddedDataSources({
           <Flex flexDirection="column">
             <Text mr="5px">{dataSource.source}</Text>
           </Flex>
-        )}
+        )} */}
       </Flex>
 
       <Flex>
@@ -261,24 +261,24 @@ export function ApiForm({ addApi, selectOptions }) {
   };
 
   const handleChange = event => {
-    const functionsByDataType = selectOptions.reduce(
-      (result, currentSelectOption) => ({
-        ...result,
-        [currentSelectOption.value]: currentSelectOption.functions,
-      }),
-      {},
-    );
-    const urlByDataType = selectOptions.reduce(
-      (result, currentSelectOption) => ({
-        ...result,
-        [currentSelectOption.value]: currentSelectOption.url,
-      }),
-      {},
-    );
-    console.log("SELECT", functionsByDataType[event.target.value]);
-    setValue(event.target.value);
-    setFunctions(functionsByDataType[event.target.value]);
-    setUrl(urlByDataType[event.target.value]);
+    // const functionsByDataType = selectOptions.reduce(
+    //   (result, currentSelectOption) => ({
+    //     ...result,
+    //     [currentSelectOption.value]: currentSelectOption.functions,
+    //   }),
+    //   {},
+    // );
+    // const urlByDataType = selectOptions.reduce(
+    //   (result, currentSelectOption) => ({
+    //     ...result,
+    //     [currentSelectOption.value]: currentSelectOption.url,
+    //   }),
+    //   {},
+    // );
+    // console.log("SELECT", functionsByDataType[event.target.value]);
+    // setValue(event.target.value);
+    // setFunctions(functionsByDataType[event.target.value]);
+    // setUrl(urlByDataType[event.target.value]);
   };
 
   return (
