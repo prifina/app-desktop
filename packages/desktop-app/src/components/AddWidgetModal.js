@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   Modal,
@@ -11,41 +11,53 @@ import { Box, Button, Text, Flex, Image, useTheme } from "@blend-ui/core";
 
 import styled from "styled-components";
 
-import { API } from "aws-amplify";
-
 import PropTypes from "prop-types";
-import {
-  i18n,
-  useAppContext,
-  useFormFields,
-  newAppVersionMutation,
-} from "@prifina-apps/utils";
+import { i18n } from "@prifina-apps/utils";
 
 import { useHistory } from "react-router-dom";
 
+import * as C from "../pages/display-app/components";
+
 i18n.init();
+
+const List = styled("ul")`
+  margin: 0;
+  padding: 0px 2px 5px 0px;
+  font-size: 12px;
+  font-weight: 500;
+
+  // width: 280px;
+`;
+
+const ListItem = styled.li`
+  // justify-content: space-between;
+  align-items: center;
+  list-style-type: none;
+  padding: 2px 14px 2px 0px;
+  &:active {
+    background: #e7dbf0;
+  }
+  &:hover {
+    background: #e7dbf0;
+  }
+  cursor: pointer;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  font-size: 14px;
+`;
 
 const AddWidgetModal = ({
   onClose,
   widgetData,
-  viewID,
   widgetConfig,
+  views,
+  viewID,
   ...props
 }) => {
-  const { currentUser } = useAppContext();
   const history = useHistory();
-  console.log("NEW APP ", currentUser);
 
   const { colors } = useTheme();
-
-  const [appFields, handleChange] = useFormFields({
-    name: "",
-    title: "",
-    version: 1,
-  });
-
-  const [appType, setAppType] = useState(1);
-
   const theme = useTheme();
 
   console.log("widgetData", widgetData);
@@ -61,19 +73,16 @@ const AddWidgetModal = ({
 
   const [activeItem, setActiveItem] = useState(widgetData[0]);
 
-  const handleActiveItem = e => {
-    setActiveItem(widgetData[+e.target.value]);
-  };
-
   let existingArray = widgetConfig;
 
   const [activeViewArray, setActiveViewArray] = useState(existingArray);
 
-  let id = viewID;
-
   const handleAddToArray = e => {
     setActiveViewArray(oldArray => [...oldArray, activeItem]);
-    // setActiveViewArray([...activeViewArray, activeItem]);
+  };
+
+  const onOptionClicked = value => () => {
+    setActiveItem(value);
   };
 
   console.log("active item", activeItem);
@@ -83,47 +92,63 @@ const AddWidgetModal = ({
     console.log("log3");
 
     // storing input name
-    localStorage.setItem(`viewsContent-${id}`, JSON.stringify(activeViewArray));
+    localStorage.setItem(
+      `viewsContent-${viewID}`,
+      JSON.stringify(activeViewArray),
+    );
   }, [activeViewArray]);
 
   props.propDrill(activeViewArray);
 
-  const List = styled("ul")`
-    margin: 0;
-    padding: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    width: 280px;
-    // overflow-y: scroll;
-  `;
+  let viewName = views.find(x => x.id === viewID).title;
 
-  const ListItem = styled.li`
-    // justify-content: space-between;
-    align-items: center;
-    list-style-type: none;
-    padding: 2px 14px 2px 12px;
-    &:active {
-      background: #e7dbf0;
-    }
-    &:hover {
-      background: #e7dbf0;
-    }
-    cursor: pointer;
-    height: 40px;
-    font-size: 14px;
-    border-radius: 8px;
-    display: flex;
-  `;
+  console.log("view name", viewName);
 
-  const onOptionClicked = value => () => {
-    setActiveItem(value);
-  };
+  const modalRef = useRef(null);
+
+  // useEffect(() => {
+  //   const closeOpenMenus = e => {
+  //     if (
+  //       modalRef.current &&
+  //       dialogOpen &&
+  //       !modalRef.current.contains(e.target)
+  //     ) {
+  //       setDialogOpen(prevalue => !prevalue);
+  //     }
+  //   };
+  //   document.addEventListener("modal", closeOpenMenus);
+
+  //   return () => {
+  //     // Cleanup the event listener
+  //     document.removeEventListener("modal", closeOpenMenus);
+  //   };
+  // }, [modalRef]);
+
+  function onOutsideClose(ref, state, setState, listener) {
+    const handleClickOutside = event => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setState(false);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener("menu", handleClickOutside, true);
+      return () => {
+        document.removeEventListener("menu", handleClickOutside, true);
+      };
+    }, [ref, state]);
+
+    return { ref, state, setState };
+  }
+
+  // useOnClickOutside(modalRef, () => setDialogOpen(prevalue => !prevalue));
+  onOutsideClose(modalRef, dialogOpen, setDialogOpen, "addWidgetModal");
 
   return (
-    <React.Fragment>
+    <div ref={modalRef}>
       <Modal
         isOpen={dialogOpen}
-        closeOnEsc={true}
+        closeOnEsc
         closeOnOutsideClick={false}
         onClose={onCloseCheck}
         scrollBehavior={"inside"}
@@ -134,55 +159,64 @@ const AddWidgetModal = ({
         <ModalContent
           style={{
             background: "white",
-            width: "806px",
-            height: "412px",
+            width: 640,
+            height: 402,
             borderRadius: 5,
+            padding: "8px 0px 16px 16px",
           }}
-          marginLeft="317px"
         >
-          <ModalHeader>Find Widgets</ModalHeader>
-          <ModalBody paddingRight="36px">
+          <Text mb={8}>Find widgets for ‘{viewName}’</Text>
+          <ModalBody style={{ overflow: "hidden" }}>
             <Flex>
-              <Flex
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="space-between"
-                style={{ overflowY: "scroll", width: 280, height: "100%" }}
-              >
-                {widgetData.map((item, index) => (
+              <Box style={{ height: "100%", width: 264 }}>
+                <Text fontSize="sm" color={colors.textMuted}>
+                  Available now
+                </Text>
+                <Box style={{ overflowY: "scroll" }}>
                   <List>
-                    <ListItem
-                      key={index}
-                      // value={index}
-                      // onClick={handleActiveItem}
-                      onClick={onOptionClicked(item)}
-                    >
-                      <Image
-                        src={item.widget.icon}
-                        width="21px"
-                        height="21px"
-                      />
-                      <Text ml={8}>{item.widget.title}</Text>
-                    </ListItem>
+                    {widgetData.map((item, index) => (
+                      <ListItem key={index} onClick={onOptionClicked(item)}>
+                        <Image
+                          src={item.widget.icon}
+                          width="21px"
+                          height="21px"
+                        />
+                        <Text ml={8}>{item.widget.title}</Text>
+                      </ListItem>
+                    ))}
                   </List>
-                ))}
-              </Flex>
-              <Box>
-                <Flex mb={10}>
+                </Box>
+              </Box>
+              <Box
+                width="320px"
+                style={{ borderLeft: "1px solid #EAECF0", paddingLeft: 22 }}
+              >
+                <Flex mb={10} justifyContent="space-between">
                   <Image
                     src={activeItem.widget.icon}
                     width="64px"
                     height="64px"
                   />
-                  <Text>{activeItem.widget.title}</Text>
+                  <C.CategoryBadge style={{ background: "#D5E7FB" }}>
+                    {/* Category  */}
+                    {activeItem.widget.category || "Category"}
+                  </C.CategoryBadge>
+
+                  {/* <Text>{activeItem.widget.title}</Text> */}
                 </Flex>
                 <Text fontWeight={500}>{activeItem.widget.title}</Text>
-                <Text color="#4D5150" mb={44}>
-                  {activeItem.widget.shortDescription}
-                </Text>
-                <Flex flexDirection="column" justifyContent="center">
+                <Box style={{ overflowY: "scroll", maxHeight: 75 }}>
+                  <Text color={colors.textMuted}>
+                    {activeItem.widget.shortDescription}
+                  </Text>
+                </Box>
+                <Flex
+                  flexDirection="column"
+                  justifyContent="center"
+                  width="320px"
+                >
                   <Button mb={12} onClick={handleAddToArray}>
-                    Add to
+                    Add to ‘{viewName}’
                   </Button>
                   <Button variation="outline" mb={12}>
                     Learn More
@@ -196,7 +230,7 @@ const AddWidgetModal = ({
           </ModalBody>
         </ModalContent>
       </Modal>
-    </React.Fragment>
+    </div>
   );
 };
 

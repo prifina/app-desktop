@@ -83,10 +83,6 @@ const DisplayApp = ({
 
   const short = require("short-uuid");
 
-  const [childData, setChildData] = useState([]);
-
-  console.log("child data state", childData);
-
   const [views, setViews] = useState(() => {
     const defaultView = [
       {
@@ -111,16 +107,25 @@ const DisplayApp = ({
 
   const [viewID, setViewID] = useState(0);
   console.log("viewID", viewID);
-
   const [activeTab, setActiveTab] = useState(0);
   console.log("active tab", activeTab);
+  const [view, setView] = useState("");
+  const [editView, setEditView] = useState(false);
+  const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const [childData, setChildData] = useState([]);
+  console.log("child data state", childData);
+
+  const [widgetConfig, setWidgetConfig] = useState([]);
+  const [widgetList, setWidgetList] = useState([]);
 
   const tabClick = (e, tab) => {
     console.log("Click", e);
     console.log("TAB", tab);
     setActiveTab(tab);
 
-    console.log("view target value", e.currentTarget.id);
+    console.log("view target value", e.target.value);
     setViewID(Number(e.currentTarget.id));
   };
 
@@ -142,9 +147,6 @@ const DisplayApp = ({
 
   console.log("widgets to render", widgetsToRender);
 
-  const [widgetConfig, setWidgetConfig] = useState([]);
-  const [widgetList, setWidgetList] = useState([]);
-
   useEffect(() => {
     console.log("log1");
     // renderWidgets;
@@ -158,7 +160,6 @@ const DisplayApp = ({
             w.currentSettings,
           );
           return {
-            id: widgetsToRender.length + 1,
             dataSources: w.dataSources,
             currentSettings: w.currentSettings,
             url: w.url,
@@ -188,6 +189,7 @@ const DisplayApp = ({
           w.currentSettings,
         );
         console.log("w", w);
+        console.log("i", i);
         return {
           theme: theme,
           size: size,
@@ -319,15 +321,13 @@ const DisplayApp = ({
   console.log("widget config in use2", widgetConfig);
 
   useEffect(() => {
-    console.log("log3");
-
     console.log("WIDGET CONFIG, create widgets... ");
 
     console.log("widget config in use", widgetConfig);
     if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
       // const widgets = widgetConfig.map((w, i) => {
-      const widgets = widgetConfig.map((w, i) => {
+      let widgets = widgetConfig.map((w, i) => {
         console.log("WIDGET COMPONENT ", w);
         //React.forwardRef((props, ref) =>
         let dataSourceModules = {};
@@ -432,7 +432,7 @@ const DisplayApp = ({
                     />
                     <C.DropDownContainer
                       ref={widgetMenuRef}
-                      className="dropdown-menu"
+                      className="dropdown-menu+1"
                     >
                       {widgetMenu && (
                         <C.DropDownListContainer>
@@ -604,7 +604,7 @@ const DisplayApp = ({
 
       setWidgetList(widgets);
     }
-  }, [widgetConfig]);
+  }, [widgetConfig, viewID]);
 
   const onUpdate = data => {
     console.log("Update settings ", data);
@@ -706,9 +706,6 @@ const DisplayApp = ({
 
   // VIEWS CONFIGURATION ================================================================================================================
 
-  const [view, setView] = useState("");
-  const [editView, setEditView] = useState(false);
-
   useEffect(() => {
     localStorage.setItem("views", JSON.stringify(views));
     console.log("log3");
@@ -750,15 +747,11 @@ const DisplayApp = ({
   console.log("view", view);
   // ================================================================================================================
 
-  const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
-
-  // ======================
-
-  const [menuOpen, setMenuOpen] = useState(false);
+  // ====================== MENU
 
   const toggling = () => setMenuOpen(!menuOpen);
 
-  let menuRef = useRef();
+  let menuRef = useRef(null);
 
   // useEffect(() => {
   //   const handler = event => {
@@ -781,6 +774,26 @@ const DisplayApp = ({
   //   };
   // }, [menuOpen]);
 
+  // const ref = useRef(null);
+  function onOutsideClose(ref, state, setState, listener) {
+    const handleClickOutside = event => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setState(false);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener("menu", handleClickOutside);
+      return () => {
+        document.removeEventListener("menu", handleClickOutside);
+      };
+    }, [ref, state]);
+
+    return { ref, state, setState };
+  }
+
+  console.log("ref", menuRef);
+
   // ==========================================================================
 
   const pullDataFromChild = data => {
@@ -789,11 +802,7 @@ const DisplayApp = ({
     setChildData(data);
   };
 
-  const tabStyle = css`
-    height: 100%;
-    background: transparent;
-    padding: 0px;
-  `;
+  onOutsideClose(menuRef, menuOpen, setMenuOpen, "menu");
 
   return (
     <>
@@ -829,9 +838,10 @@ const DisplayApp = ({
             setAddWidgetModalOpen(false);
           }}
           widgetData={widgetConfigData}
-          viewID={viewID}
           propDrill={pullDataFromChild}
           widgetConfig={widgetConfig}
+          viewID={viewID}
+          views={views}
         />
       )}
       <Navbar backgroundColor="white">
@@ -877,7 +887,7 @@ const DisplayApp = ({
                     >
                       <C.DropDownContainer
                         ref={menuRef}
-                        className="dropdown-menu"
+                        id="dropdown-menu"
                         style={{ right: 120 }}
                       >
                         <BlendIcon
@@ -997,6 +1007,9 @@ const DisplayApp = ({
                                 <C.AddWidget
                                   onClick={() => {
                                     setAddWidgetModalOpen(true);
+                                    // setAddWidgetModalOpen(
+                                    //   preValue => !preValue,
+                                    // );
                                   }}
                                 />
                               ) : null}
