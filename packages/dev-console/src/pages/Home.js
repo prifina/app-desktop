@@ -81,6 +81,7 @@ import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import ProjectDetails from "../components/ProjectDetails";
+import {Remote} from "@prifina-apps/remote";
 
 // Create a default prop getter
 const defaultPropGetter = () => ({});
@@ -739,11 +740,24 @@ const Home = props => {
     fetchData();
   }, [isMountedRef.current]);
 
+  const remoteRef=useRef();
+
   return (
     <>
       <ToastContextProvider>
-        {initClient && (
+        {initClient && (<>
+          <Remote ref={remoteRef}
+  componentProps={{ schema: { test: "cra works2" } }}
+  system={{
+    remote: "mfeApp2",
+    url:"dist/remoteEntry.js",
+    //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
+    //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+    module: "./App",
+  }} />
+        
           <Content Component={AppComponent} {...componentProps.current} />
+          </>
         )}
         {!initClient && (
           <div>
