@@ -573,6 +573,6 @@ export const changeUserPasswordMutation = (API, code, pw) => {
   return API.graphql({
     query: changeUserPassword,
     variables: { code: code, pass: pw },
-    authMode: "AMAZON_COGNITO_USER_POOLS",
+    authMode: "AWS_IAM",
   });
 };

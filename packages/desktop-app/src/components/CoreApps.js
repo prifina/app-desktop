@@ -235,7 +235,7 @@ const CoreApps = props => {
 
           let widgetData = {};
           prifinaWidgets.data.listAppMarket.items.forEach(item => {
-            //console.log("APPMARKET ITEM ", item);
+            console.log("APPMARKET ITEM ", item);
             const manifest = JSON.parse(item.manifest);
             console.log("APPMARKET MANIFEST ", manifest);
             widgetData[item.id] = {
@@ -246,6 +246,12 @@ const CoreApps = props => {
               version: item.version,
               image: manifest.screenshots[0],
               dataSources: item.dataSources || [],
+              publisher: manifest.publisher,
+              userGenerated: manifest.userGenerated,
+              userHeld: manifest.userHeld,
+              public: manifest.public,
+              category: manifest.category,
+              icon: manifest.icon,
             };
           });
           let data = [];
@@ -314,6 +320,18 @@ const CoreApps = props => {
                       ".s3.amazonaws.com",
                     w.id,
                     widgetData[w.id].image,
+                  ].join("/"),
+                  publisher: widgetData[w.id].publisher,
+                  userGenerated: widgetData[w.id].userGenerated,
+                  userHeld: widgetData[w.id].userHeld,
+                  public: widgetData[w.id].public,
+                  category: widgetData[w.id].category,
+                  icon: [
+                    "https:/",
+                    process.env.REACT_APP_PRIFINA_APPS_BUCKET +
+                      ".s3.amazonaws.com",
+                    w.id,
+                    widgetData[w.id].icon,
                   ].join("/"),
                 },
               };

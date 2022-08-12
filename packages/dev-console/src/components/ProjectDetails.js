@@ -54,15 +54,30 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   const { colors } = useTheme();
 
   const history = useHistory();
-  const location = useLocation();
 
   const toast = useToast();
+
+  const [newValues, setNewValues] = useState({
+    newAppType: allValues.appType,
+    newName: allValues.name,
+    newVersion: allValues.version,
+    newPublisher: allValues.publisher,
+    newCategory: allValues.category,
+    newDeviceSupport: allValues.deviceSupport,
+    newLanguages: allValues.languages,
+    newAge: allValues.age,
+    newShortDescription: allValues.shortDescription,
+    newLongDescription: allValues.longDescription,
+    newIcon: allValues.icon,
+    newDataSources: allValues.dataSources,
+    newRemoteUrl: allValues.remoteUrl,
+  });
 
   const handleValueChange = event => {
     let value = event.target.value;
     let name = event.target.name;
 
-    setAllValues(prevalue => {
+    setNewValues(prevalue => {
       return {
         ...prevalue, // Spread Operator
         [name]: value,
@@ -71,6 +86,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   };
 
   console.log("REAL VALUES", allValues);
+  console.log("NEW VALUES", newValues);
 
   const saveChanges = (
     id,
@@ -90,6 +106,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     newPublic,
     newIcon,
     newRemoteUrl,
+    newDataSources,
   ) => {
     updateAppVersionMutation(GRAPHQL, {
       id: id,
@@ -109,6 +126,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
       public: newPublic,
       icon: newIcon,
       remoteUrl: newRemoteUrl,
+      dataSources: JSON.stringify(newDataSources),
     }).then(res => {
       console.log("SUCCESS", res);
       toast.success("Project details updated", {});
@@ -148,7 +166,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               fontSize="8px"
               onChange={() => {}}
               onClick={() => {
-                setAllValues({ ...allValues, newType: 2 });
+                setNewValues({ ...newValues, newAppType: 2 });
               }}
             />
             <Text fontSize="xs">{i18n.__("widget")}</Text>
@@ -159,7 +177,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               onChange={() => {}}
               checked
               onClick={() => {
-                setAllValues({ ...allValues, newType: 1 });
+                setNewValues({ ...newValues, newAppType: 1 });
               }}
             />
             <Text fontSize="xs">Application</Text>
@@ -176,7 +194,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               onChange={() => {}}
               value="1"
               onClick={() => {
-                setAllValues({ ...allValues, newType: 2 });
+                setNewValues({ ...newValues, newAppType: 2 });
               }}
             />
             <Text fontSize="xs">{i18n.__("widget")}</Text>
@@ -187,7 +205,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               onChange={() => {}}
               value="2"
               onClick={() => {
-                setAllValues({ ...allValues, newType: 1 });
+                setNewValues({ ...newValues, newAppType: 1 });
               }}
             />
             <Text fontSize="xs">Application</Text>
@@ -199,8 +217,22 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
   const detailsSaveStatus = () => {
     if (
-      allValues.name !== allValues.newName ||
-      allValues.appType !== allValues.newType
+      allValues.name !== newValues.newName ||
+      allValues.appType !== newValues.newAppType ||
+      allValues.version !== newValues.newVersion ||
+      allValues.publisher !== newValues.newPublisher ||
+      allValues.category !== newValues.newCategory ||
+      allValues.deviceSupport !== newValues.newDeviceSupport ||
+      allValues.languages !== newValues.newLanguages ||
+      allValues.age !== newValues.newAge ||
+      allValues.keyFeatures !== newKeyFeatures ||
+      allValues.shortDescription !== newValues.newShortDescription ||
+      allValues.longDescription !== newValues.newLongDescription ||
+      allValues.userHeld !== newUserHeld ||
+      allValues.userGenerated !== newUserGenerated ||
+      allValues.public !== newPublic ||
+      allValues.icon !== newValues.newIcon ||
+      allValues.dataSources !== newDataSources
     ) {
       return (
         <Flex alignItems="center">
@@ -218,9 +250,23 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             onClick={() => {
               saveChanges(
                 allValues.id,
-                allValues.newType,
-                allValues.newName,
-                allValues.newVersion,
+                newValues.newAppType,
+                newValues.newName,
+                newValues.newVersion,
+                newValues.newPublisher,
+                newValues.newCategory,
+                newValues.newDeviceSupport,
+                newValues.newLanguages,
+                newValues.newAge,
+                newKeyFeatures,
+                newValues.newShortDescription,
+                newValues.newLongDescription,
+                newUserHeld,
+                newUserGenerated,
+                newPublic,
+                newValues.newIcon,
+                newValues.newRemoteUrl,
+                newDataSources,
               );
             }}
           >
@@ -242,139 +288,33 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
   console.log("all", allValues);
 
-  const resourcesSaveStatus = () => {
-    if (
-      allValues.version !== allValues.newVersion ||
-      allValues.publisher !== allValues.newPublisher ||
-      allValues.category !== allValues.newCategory ||
-      allValues.deviceSupport !== allValues.newDeviceSupport ||
-      allValues.languages !== allValues.newLanguages ||
-      allValues.age !== allValues.newAge ||
-      allValues.keyFeatures !== newKeyFeatures ||
-      allValues.shortDescription !== allValues.newShortDescription ||
-      allValues.longDescription !== allValues.newLongDescription ||
-      allValues.userHeld !== newUserHeld ||
-      allValues.userGenerated !== newUserGenerated ||
-      allValues.public !== newPublic ||
-      allValues.icon !== allValues.newIcon
-    ) {
-      return (
-        <Flex alignItems="center">
-          <BlendIcon
-            size="18px"
-            iconify={hazardSymbol}
-            ///strange but fixes overlay if the icon
-            style={{}}
-            className="icon"
-            color="orange"
-          />
-          <Text fontSize="xs" ml={5} color="#EDA436">
-            Unsaved Changes
-          </Text>
-          <Button
-            ml="15px"
-            onClick={() => {
-              saveChanges(
-                allValues.id,
-                allValues.appType,
-                allValues.newName,
-                allValues.newVersion,
-                allValues.newPublisher,
-                allValues.newCategory,
-                allValues.newDeviceSupport,
-                allValues.newLanguages,
-                allValues.newAge,
-                newKeyFeatures,
-                allValues.newShortDescription,
-                allValues.newLongDescription,
-                newUserHeld,
-                newUserGenerated,
-                newPublic,
-                allValues.newIcon,
-                allValues.newRemoteUrl,
-              );
-            }}
-          >
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    } else {
-      return (
-        <Flex alignItems="center">
-          <Text fontSize="xs">No Unsaved Changes</Text>
-          <Button disabled colorStyle="red" ml="15px">
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    }
-  };
-
-  const dataSourcesSaveStatus = () => {
-    if (allValues.dataSources !== newDataSources) {
-      return (
-        <Flex alignItems="center">
-          <BlendIcon
-            size="18px"
-            iconify={hazardSymbol}
-            ///strange but fixes overlay if the icon
-            style={{}}
-            className="icon"
-            color="orange"
-          />
-          <Text fontSize="xs" ml={5} color="#EDA436">
-            Unsaved Changes
-          </Text>
-          <Button
-            ml="15px"
-            onClick={() => {
-              saveDataSourceChanges(allValues.id, newDataSources);
-            }}
-          >
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    } else {
-      return (
-        <Flex alignItems="center">
-          <Text fontSize="xs">No Unsaved Changes</Text>
-          <Button disabled colorStyle="red" ml="15px">
-            Save Changes
-          </Button>
-        </Flex>
-      );
-    }
-  };
-
   const passAssetInfo = title => {
-    console.log("pass", title); // LOGS DATA FROM CHILD (My name is Dean Winchester... &)
+    console.log("pass", title);
 
-    setAllValues({
-      ...allValues,
+    setNewValues({
+      ...newValues,
       newIcon: allValues.id + "-" + "icon" + "-" + title,
     });
   };
 
   useEffect(() => {
-    if (allValues.version !== allValues.newVersion) {
+    if (allValues.version !== newValues.newVersion) {
       return console.log("true");
     } else {
       return console.log("false");
     }
-  }, [allValues.newVersion]);
+  }, [newValues.newVersion]);
 
   useEffect(() => {
     if (
-      allValues.name !== allValues.newName ||
-      allValues.type !== allValues.newType
+      allValues.name !== newValues.newName ||
+      allValues.appType !== newValues.newAppType
     ) {
       return console.log("true");
     } else {
       return console.log("false");
     }
-  }, [allValues.newName, allValues.newType]);
+  }, [newValues.newName, newValues.newAppType]);
 
   const [activeTab3, setActiveTab3] = useState(0);
 
@@ -435,8 +375,8 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
   ///Prifina user cloud
   //can make them reusable
-  const addDataSource = (name, sourceType) => {
-    const newSourceData = [...dataSourcePreview, { name, sourceType }];
+  const addDataSource = (source, sourceType) => {
+    const newSourceData = [...dataSourcePreview, { source, sourceType }];
     setDataSourcePreview(newSourceData);
   };
 
@@ -495,7 +435,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     allValues.public === null || undefined ? [] : allValues.public,
   );
 
-  ///changing attribute name
+  // /changing attribute name
   dataConnectors.forEach(function (obj) {
     obj.value = obj.name;
   });
@@ -565,7 +505,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             <Text style={{ textTransform: "uppercase" }}>
               Project resources
             </Text>
-            {resourcesSaveStatus()}
           </Flex>
           <Box width="584px">
             <Text fontSize="xs">
@@ -865,11 +804,222 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             />
           </Flex>
         </C.ProjectContainer>
-        <C.ProjectContainer alt="dataSources" mb={24}>
+        {/* <C.ProjectContainer alt="dataSources" mb={24}>
           <Flex justifyContent="space-between" alignItems="center" mb={25}>
             <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
-            {dataSourcesSaveStatus()}
           </Flex>
+        </C.ProjectContainer> */}
+        <C.ProjectContainer alt="dataSources" mb={24}>
+          <Flex justifyContent="space-between" alignItems="center" mb={45}>
+            <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
+          </Flex>
+          <Flex>
+            <div
+              style={{
+                overflow: "hidden",
+                width: 600,
+              }}
+            >
+              <Tabs
+                activeTab={activeTab3}
+                onClick={tabClick3}
+                style={{
+                  height: "100%",
+                  background: "transparent",
+                  padding: 0,
+                }}
+                variant="rectangle"
+              >
+                <TabList>
+                  <Tab>
+                    <Text>{i18n.__("publicApi")}</Text>
+                  </Tab>
+                  <Tab>
+                    <Text>{i18n.__("prifinaUserCloud")}</Text>
+                  </Tab>
+                  <Tab>
+                    <Text>{i18n.__("noData")}</Text>
+                  </Tab>
+                </TabList>
+                <TabPanelList style={{ backgroundColor: null }}>
+                  <TabPanel
+                    style={{
+                      height: "100vh",
+                      paddingBottom: "50px",
+                      overflow: "auto",
+                    }}
+                  >
+                    <div style={{ overflow: "auto" }}>
+                      <Flex>
+                        <ApiForm
+                          addApi={addApiSource}
+                          selectOptions={publicSources}
+                        />
+                      </Flex>
+
+                      {/* Box with state change */}
+                      <Flex>
+                        {apiDataPreview.length > 0 && (
+                          <Flex
+                            width="100%"
+                            flexDirection="column"
+                            padding="10px"
+                            style={{
+                              marginTop: 15,
+                              borderRadius: 10,
+                            }}
+                          >
+                            <Text textStyle="h6" mb="10px">
+                              {i18n.__("chooseToAddSources")}
+                            </Text>
+                            <Flex>
+                              <Flex flexDirection="column">
+                                {apiDataPreview.map((event, index) => (
+                                  <AddRemoveDataSources
+                                    key={index}
+                                    index={index}
+                                    dataSource={event}
+                                    removeDataSource={removeApiSource}
+                                    completeDataSource={completeApiSource}
+                                  />
+                                ))}
+                              </Flex>
+                            </Flex>
+                          </Flex>
+                        )}
+                      </Flex>
+                    </div>
+                  </TabPanel>
+                  <TabPanel>
+                    <div style={{ overflow: "auto" }}>
+                      <Flex>
+                        <DataSourceForm
+                          addDataSource={addDataSource}
+                          // addFunctions={addFunction}
+                          selectOptions={dataConnectors}
+                        />
+                      </Flex>
+                      <Flex>
+                        {dataSourcePreview.length > 0 && (
+                          <Flex
+                            width="100%"
+                            flexDirection="column"
+                            padding="10px"
+                            style={{
+                              backgroundColor: colors.baseMuted,
+                              marginTop: 15,
+                              borderRadius: 10,
+                            }}
+                          >
+                            <Text textStyle="h6" mt="10px" mb="10px">
+                              {i18n.__("dataConectorResults")}
+                            </Text>
+
+                            <Flex>
+                              <Flex flexDirection="column">
+                                {dataSourcePreview.map((item, index) => (
+                                  <>
+                                    <AddRemoveDataSources
+                                      key={index}
+                                      index={index}
+                                      dataSource={item}
+                                      removeDataSource={removeDataSource}
+                                      completeDataSource={completeDataSource}
+                                    />
+                                  </>
+                                ))}
+                              </Flex>
+                            </Flex>
+                          </Flex>
+                        )}
+                      </Flex>
+                    </div>
+                  </TabPanel>
+                  <TabPanel>
+                    <div style={{ overflow: "auto" }}>
+                      <Flex>
+                        <Box
+                          width="426px"
+                          height="76px"
+                          borderRadius="6px"
+                          paddingLeft="10px"
+                          bg={colors.baseLinkHover}
+                          style={{
+                            border: `2px solid ${colors.baseLink}`,
+                          }}
+                        >
+                          <Text>{i18n.__("noDataText")}</Text>
+                          <Link href="www.prifina.com">
+                            {i18n.__("learnMoreHere")}
+                          </Link>
+                        </Box>
+                        <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
+                      </Flex>
+                    </div>
+                  </TabPanel>
+                </TabPanelList>
+              </Tabs>
+            </div>
+            <Box width="320px">
+              <Text fontSize="13px">
+                Let us know how your application uses data by logging your
+                sources (or lack of) here.
+              </Text>
+              <Text mt="15px" fontSize="13px">
+                This information helps us provide quality support and helps
+                direct our product roadmap.
+              </Text>
+            </Box>
+          </Flex>
+
+          {newDataSources !== null &&
+          newDataSources[0] !== "[]" &&
+          newDataSources.length !== 0 ? (
+            <Flex flexDirection="column" justifyContent="center">
+              {checkJson(newDataSources)
+                ? JSON.parse(newDataSources).map((item, index) => (
+                    <ControlAddedDataSources
+                      key={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))
+                : newDataSources.map((item, index) => (
+                    <ControlAddedDataSources
+                      key={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))}
+            </Flex>
+          ) : (
+            <Flex flexDirection="column" justifyContent="center">
+              <Text mt="20px" mb="20px">
+                Data sources used in your project
+              </Text>
+              <Flex
+                style={{
+                  border: "1px dashed #BC31EA",
+                  width: 684,
+                  height: 132,
+                  borderRadius: 4,
+                  background: "#F7DEFF",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text fontSize="lg" color="#BC31EA">
+                  Search and select data sources
+                </Text>
+                <Text mt="10px" color="#BC31EA">
+                  Data sources you add will show up here
+                </Text>
+              </Flex>
+            </Flex>
+          )}
         </C.ProjectContainer>
 
         <C.ActionContainer mb={32} justifyContent="space-between">

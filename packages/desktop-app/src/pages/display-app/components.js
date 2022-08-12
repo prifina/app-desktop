@@ -1,5 +1,8 @@
 import React, { useRef, forwardRef, useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
+
+import { useHistory } from "react-router-dom";
+
+import styled, { keyframes, css } from "styled-components";
 
 import {
   Box,
@@ -16,6 +19,9 @@ import { IconField } from "@blend-ui/icon-field";
 import bxSearchAlt2 from "@iconify/icons-bx/bx-search-alt-2";
 import bxChevronUp from "@iconify/icons-bx/bx-chevron-up";
 import bxChevronDown from "@iconify/icons-bx/bx-chevron-down";
+import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
+
+import mdiTrashCanOutline from "@iconify/icons-mdi/trash-can-outline";
 
 import { API_KEY, GOOGLE_URL, SEARCH_ENGINE } from "../../config";
 
@@ -26,6 +32,12 @@ import PropTypes from "prop-types";
 
 import { useTheme } from "@blend-ui/core";
 
+import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
+
+import { ReactComponent as AddWidgetLogo } from "../../assets/display-app/add-widget.svg";
+
+import { BlendIcon } from "@blend-ui/icons";
+
 i18n.init();
 
 export const TabText = styled(Text)`
@@ -33,13 +45,18 @@ export const TabText = styled(Text)`
   padding-top: 25px;
 `;
 
-export const PageContainer = styled.div`
+export const PageContainer = styled(Box)`
   margin-left: 64px;
   margin-right: 64px;
   margin-top: 24px;
-
   background: #ffffff;
-  box-shadow: 0px -4px 8px #f5f6f6;
+  box-shadow: 0px -4px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 20px 20px 0px 0px;
+  height: 718px;
+  // padding: 16px 16px 16px 16x;
+  padding-left: 16px;
+  padding-top: 3px;
+  padding-right: 16px;
 `;
 
 export const WidgetWrapper = styled.div`
@@ -104,6 +121,52 @@ display: flex;
   left: 0px;
   overflow-y: auto;
 `;
+
+export const InfoBox = styled(Flex)`
+  padding: 16px;
+
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  border: 1px solid blue;
+  background: #ebf4fe;
+  border-radius: 8px;
+`;
+
+export const ScrollableBox = styled(Box)`
+  scrollbar-width: 4px;
+  scrollbar-color: ${props =>
+      props.colors ? props.colors.baseSecondary : "#00847A"}
+    ${props =>
+      props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
+
+  overflow-y: scroll;
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+
+  ::-webkit-scrollbar:vertical {
+    width: 4px;
+    height: 77px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: ${props =>
+      props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    height: 77px;
+    background-color: ${props =>
+      props.colors ? props.colors.baseSecondary : "#00847A"};
+  }
+  ::-webkit-scrollbar-thumb:vertical {
+    height: 77px;
+  }
+`;
+
 export const ModalBackground = styled.div`
   width: 100%;
   height: 100vh;
@@ -112,6 +175,10 @@ export const ModalBackground = styled.div`
   position: absolute;
   left: 0;
   top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 600px;
 `;
 
 export const SearchContainer = styled.div`
@@ -135,6 +202,14 @@ export const SettingsDiv = styled.div`
   /*border: 2px outset; */
   border-radius: 8px;
   z-index: 50;
+`;
+
+export const SettingsDialogBox = styled(Box)`
+  padding: 25px;
+  width: 564px;
+  height: 504px;
+  background: #fafafa;
+  border-radius: 20px;
 `;
 
 export const BlurImageDiv = styled.div`
@@ -223,35 +298,70 @@ export const DotLoader = props => {
   );
 };
 
-export const WidgetList = React.memo(
-  ({ widgetList, widgetData, currentUser, dataSources }) => {
-    // currentUser
-    // localization
-    // settings
-    console.log("WIDGET LIST ", widgetList);
-    console.log("WIDGET DATA", widgetData);
-    console.log("WIDGET USER", currentUser);
-    console.log("DATASOURCES", dataSources);
+// export const WidgetList = React.memo(
+//   ({ widgetList, widgetData, currentUser, dataSources }) => {
+//     // currentUser
+//     // localization
+//     // settings
+//     console.log("WIDGET LIST ", widgetList);
+//     console.log("WIDGET DATA", widgetData);
+//     console.log("WIDGET USER", currentUser);
+//     console.log("DATASOURCES", dataSources);
 
-    return (
-      <>
-        {widgetList.map((Widget, i) => {
-          const size = widgetData[i].widget.size.split("x");
+//     return (
+//       <>
+//         {widgetList.map((Widget, i) => {
+//           const size = widgetData[i].widget.size.split("x");
+
+//           return (
+//             <Widget
+//               data={{
+//                 settings: widgetData[i].currentSettings,
+//                 currentUser: currentUser,
+//               }}
+//               key={"prifina-widget-" + i}
+//             />
+//           );
+//         })}
+//       </>
+//     );
+//   },
+// );
+
+export const WidgetList = ({
+  widgetList,
+  widgetData,
+  currentUser,
+  dataSources,
+}) => {
+  console.log("WIDGET LIST ", widgetList);
+  console.log("WIDGET DATA", widgetData);
+  console.log("WIDGET USER", currentUser);
+  console.log("DATASOURCES", dataSources);
+
+  return (
+    <>
+      {widgetList.length === widgetData.length &&
+        widgetList.map((Widget, i) => {
+          // const size = widgetData[i].widget.size.split("x");
 
           return (
             <Widget
               data={{
-                settings: widgetData[i].currentSettings,
+                settings:
+                  widgetData.length === 1
+                    ? widgetData[0].currentSettings
+                    : widgetData[i].currentSettings,
+                // settings: widgetData[i].currentSettings,
                 currentUser: currentUser,
               }}
               key={"prifina-widget-" + i}
             />
           );
         })}
-      </>
-    );
-  },
-);
+    </>
+  );
+};
 
 WidgetList.propTypes = {
   widgetList: PropTypes.instanceOf(Array).isRequired,
@@ -266,6 +376,8 @@ export const SettingsDialog = ({
   widgetIndex,
   widgetSettings,
   onUpdate,
+  data,
+  data2,
   ...props
 }) => {
   console.log("SETTINGS ", widgetIndex, widgetSettings);
@@ -274,20 +386,28 @@ export const SettingsDialog = ({
   const inputRef = useRef();
   const systemFields = useRef({});
   const [fieldInit, setFieldInit] = useState(false);
+
+  const history = useHistory();
+
+  const { colors } = useTheme();
+
   // note size.... not sizes
   const settingsSystemFields = ["theme", "size"];
   useEffect(() => {
-    Object.keys(widgetSettings.currentSettings).forEach(f => {
-      if (settingsSystemFields.indexOf(f) > -1) {
-        if (f === "size") {
-          systemFields.current["sizes"] = widgetSettings.currentSettings[f];
+    console.log("log3");
+
+    data.length === data2.length &&
+      Object.keys(widgetSettings.currentSettings).forEach(f => {
+        if (settingsSystemFields.indexOf(f) > -1) {
+          if (f === "size") {
+            systemFields.current["sizes"] = widgetSettings.currentSettings[f];
+          } else {
+            systemFields.current[f] = widgetSettings.currentSettings[f];
+          }
         } else {
-          systemFields.current[f] = widgetSettings.currentSettings[f];
+          inputFields.current[f] = widgetSettings.currentSettings[f];
         }
-      } else {
-        inputFields.current[f] = widgetSettings.currentSettings[f];
-      }
-    });
+      });
     console.log("FLDS ", inputFields, systemFields);
     console.log("DIALOG ", props);
     let fieldTypeCheck = [];
@@ -307,7 +427,7 @@ export const SettingsDialog = ({
       });
     }
     setFieldInit(true);
-  }, []);
+  }, [data2]);
 
   // 1== widget settings, 2== system settings like theme,size...
   const settingsType = 1;
@@ -338,158 +458,330 @@ export const SettingsDialog = ({
     }
   }
 
+  const [activeTab, setActiveTab] = useState(1);
+
+  const tabClick = (e, tab) => {
+    console.log("Click", e);
+    console.log("TAB", tab);
+    setActiveTab(tab);
+  };
+
+  console.log("Widget SETTINGS DATA", data);
+  console.log("Widget INDEX", widgetIndex);
+  console.log("Widget SETTINGS", widgetSettings);
+
+  function docsButton() {
+    history.push("https://docs.prifina.com");
+  }
+
+  let number = 0;
+
   return (
-    <Box m={2}>
-      <Text textStyle={"h3"} textAlign={"center"} mt={10}>
-        {widgetSettings.title}
-      </Text>
-      <Divider />
-      {fieldInit && (
-        <Box mt={10} ml={5} mr={5}>
-          {widgetSettings.settings.map((setting, i) => {
-            if (
-              settingsType === 1 &&
-              Object.keys(inputFields.current).indexOf(setting.field) > -1
-            ) {
-              return (
-                <React.Fragment key={"settings-" + i}>
-                  {setting.type === "text" && (
-                    <Input
-                      mt={15}
-                      key={"widget-setting-" + i}
-                      placeholder={setting.label}
-                      mb={2}
-                      id={setting.field}
-                      name={setting.field}
-                      defaultValue={fields[setting.field]}
-                      onChange={handleChange}
-                      ref={inputRef}
-                    />
-                  )}
-                  {setting.type === "TZ" && (
-                    <>
-                      <Label key={"setting-label-" + i} mt={10}>
-                        {setting.label}
-                      </Label>
-                      <Select
-                        mb={10}
-                        size={"sm"}
-                        key={"widget-setting-" + i}
-                        id={setting.field}
-                        name={setting.field}
-                        defaultValue={fields[setting.value]}
-                        onChange={handleChange}
-                      >
-                        {timezones.current.map((t, ii) => {
-                          return (
-                            <option
-                              key={"widget-setting-" + i + "-" + ii}
-                              value={t.tz}
-                            >
-                              {t.text}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </>
-                  )}
-                </React.Fragment>
-              );
-            }
-            if (
-              settingsType === 2 &&
-              Object.keys(systemFields.current).indexOf(setting.field) > -1
-            ) {
-              let defaultValue = "";
-              let selectOptions = [];
-              let currentField = setting.field;
+    <SettingsDialogBox>
+      <>
+        <Flex alignItems="baseline">
+          <BlendIcon
+            style={{ cursor: "pointer" }}
+            iconify={mdiArrowLeft}
+            width="18px"
+            onClick={props.onBack}
+          />
+          <Text textStyle={"h3"} mt={10} ml={15} mb={15}>
+            {data[widgetIndex].widget.title}
+          </Text>
+        </Flex>
 
-              if (setting.type === "select" && setting.field === "theme") {
-                selectOptions = JSON.parse(setting.value);
-                //selectOptions.push({ option: "Dark", value: "dark" });
-                defaultValue = systemFields.current[currentField];
-              }
-
-              if (setting.type === "select" && setting.field === "sizes") {
-                selectOptions = JSON.parse(setting.value);
-                selectOptions.push({ option: "600x600", value: "600x600" });
-                //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
-                defaultValue = systemFields.current[currentField];
-              }
-              return (
-                <React.Fragment key={"settings-" + i}>
-                  {setting.type === "text" && (
-                    <Input
-                      mt={15}
-                      key={"widget-setting-" + i}
-                      placeholder={setting.label}
-                      mb={2}
-                      id={currentField}
-                      name={currentField}
-                      defaultValue={fields[currentField]}
-                      onChange={handleChange}
-                      ref={inputRef}
-                    />
-                  )}
-                  {setting.type === "select" && (
-                    <>
-                      <Label key={"setting-label-" + i} mt={10}>
-                        {setting.label}
-                      </Label>
-                      <Select
-                        mb={10}
-                        size={"sm"}
-                        key={"widget-setting-" + i}
-                        id={currentField}
-                        name={currentField}
-                        defaultValue={defaultValue}
-                        onChange={handleChange}
-                      >
-                        {selectOptions.map((t, ii) => {
-                          return (
-                            <option
-                              key={"widget-setting-" + i + "-" + ii}
-                              value={t.value}
-                            >
-                              {t.option}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </>
-                  )}
-                </React.Fragment>
-              );
-            }
-          })}
-          <Box mt={10}>
-            <Button
-              width={"100%"}
-              onClick={e => {
-                console.log("UPDATE BUTTON ", fields);
-
-                if (timezones.length > 0 && fields.hasOwnProperty("tz")) {
-                  onUpdate({
-                    tz: fields.tz,
-                    offset: moment.tz(fields.tz).utcOffset(),
-                  });
-                } else {
-                  onUpdate(fields);
+        {/* <Divider /> */}
+        <div
+          style={{
+            overflow: "scroll",
+          }}
+        >
+          <CustomTabs
+            activeTab={activeTab}
+            onClick={tabClick}
+            variant="rectangle"
+          >
+            <TabList>
+              {number === 1 ? (
+                <Tab>
+                  <Text>System Settings</Text>
+                </Tab>
+              ) : null}
+              <Tab>
+                <Text>User Settings</Text>
+              </Tab>
+              <Tab>
+                <Text>About this widget</Text>
+              </Tab>
+            </TabList>
+            <TabPanelList>
+              <TabPanel>System Settings</TabPanel>
+              <TabPanel
+                style={
+                  {
+                    // height: "auto",
+                  }
                 }
-              }}
-            >
-              Update
-            </Button>
-          </Box>
-        </Box>
-      )}
-    </Box>
+              >
+                <div style={{ overflow: "auto" }}>
+                  {fieldInit && (
+                    <Box mt={10} ml={5} mr={5}>
+                      {widgetSettings.settings.map((setting, i) => {
+                        if (
+                          settingsType === 1 &&
+                          Object.keys(inputFields.current).indexOf(
+                            setting.field,
+                          ) > -1
+                        ) {
+                          return (
+                            <React.Fragment key={"settings-" + i}>
+                              {setting.type === "text" && (
+                                <Input
+                                  mt={15}
+                                  key={"widget-setting-" + i}
+                                  placeholder={setting.label}
+                                  mb={2}
+                                  id={setting.field}
+                                  name={setting.field}
+                                  defaultValue={fields[setting.field]}
+                                  onChange={handleChange}
+                                  ref={inputRef}
+                                />
+                              )}
+                              {setting.type === "TZ" && (
+                                <>
+                                  <Label key={"setting-label-" + i} mt={10}>
+                                    {setting.label}
+                                  </Label>
+                                  <Select
+                                    mb={10}
+                                    size={"sm"}
+                                    key={"widget-setting-" + i}
+                                    id={setting.field}
+                                    name={setting.field}
+                                    defaultValue={fields[setting.value]}
+                                    onChange={handleChange}
+                                  >
+                                    {timezones.current.map((t, ii) => {
+                                      return (
+                                        <option
+                                          key={"widget-setting-" + i + "-" + ii}
+                                          value={t.tz}
+                                        >
+                                          {t.text}
+                                        </option>
+                                      );
+                                    })}
+                                  </Select>
+                                </>
+                              )}
+                            </React.Fragment>
+                          );
+                        }
+                        if (
+                          settingsType === 2 &&
+                          Object.keys(systemFields.current).indexOf(
+                            setting.field,
+                          ) > -1
+                        ) {
+                          let defaultValue = "";
+                          let selectOptions = [];
+                          let currentField = setting.field;
+
+                          if (
+                            setting.type === "select" &&
+                            setting.field === "theme"
+                          ) {
+                            selectOptions = JSON.parse(setting.value);
+                            //selectOptions.push({ option: "Dark", value: "dark" });
+                            defaultValue = systemFields.current[currentField];
+                          }
+
+                          if (
+                            setting.type === "select" &&
+                            setting.field === "sizes"
+                          ) {
+                            selectOptions = JSON.parse(setting.value);
+                            selectOptions.push({
+                              option: "600x600",
+                              value: "600x600",
+                            });
+                            //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
+                            defaultValue = systemFields.current[currentField];
+                          }
+                          return (
+                            <React.Fragment key={"settings-" + i}>
+                              {setting.type === "text" && (
+                                <Input
+                                  mt={15}
+                                  key={"widget-setting-" + i}
+                                  placeholder={setting.label}
+                                  mb={2}
+                                  id={currentField}
+                                  name={currentField}
+                                  defaultValue={fields[currentField]}
+                                  onChange={handleChange}
+                                  ref={inputRef}
+                                />
+                              )}
+                              {setting.type === "select" && (
+                                <>
+                                  <Label key={"setting-label-" + i} mt={10}>
+                                    {setting.label}
+                                  </Label>
+                                  <Select
+                                    mb={10}
+                                    size={"sm"}
+                                    key={"widget-setting-" + i}
+                                    id={currentField}
+                                    name={currentField}
+                                    defaultValue={defaultValue}
+                                    onChange={handleChange}
+                                  >
+                                    {selectOptions.map((t, ii) => {
+                                      return (
+                                        <option
+                                          key={"widget-setting-" + i + "-" + ii}
+                                          value={t.value}
+                                        >
+                                          {t.option}
+                                        </option>
+                                      );
+                                    })}
+                                  </Select>
+                                </>
+                              )}
+                            </React.Fragment>
+                          );
+                        }
+                      })}
+                      <Box mt={10}>
+                        <Button
+                          // width={"100%"}
+                          onClick={e => {
+                            console.log("UPDATE BUTTON ", fields);
+
+                            if (
+                              timezones.length > 0 &&
+                              fields.hasOwnProperty("tz")
+                            ) {
+                              onUpdate({
+                                tz: fields.tz,
+                                offset: moment.tz(fields.tz).utcOffset(),
+                              });
+                            } else {
+                              onUpdate(fields);
+                            }
+                          }}
+                        >
+                          Update
+                        </Button>
+                      </Box>
+                    </Box>
+                  )}
+                </div>
+              </TabPanel>
+              <TabPanel
+                style={{
+                  height: 340,
+                  paddingBottom: "50px",
+                  // background: "white",
+                  padding: 16,
+                }}
+              >
+                <>
+                  <Text mb={8}>{data[widgetIndex].widget.title}</Text>
+                  <Text mb={16}>{data[widgetIndex].widget.publisher}</Text>
+                  <Text mb={16} color={colors.textMuted}>
+                    {data[widgetIndex].widget.shortDescription}
+                  </Text>
+                  <Text textStyle="h7" bold mb={36}>
+                    Author Details
+                  </Text>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Author</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      {data[widgetIndex].widget.publisher}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Size</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      {data[widgetIndex].widget.size}
+                    </Text>
+                  </Flex>
+
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Version</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      {data[widgetIndex].widget.version}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Copyright</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      @{data[widgetIndex].widget.publisher}
+                    </Text>
+                  </Flex>
+                  <Button
+                    variation="link"
+                    onClick={docsButton}
+                    mb={40}
+                    style={{ color: colors.textLink }}
+                  >
+                    Developer Website
+                  </Button>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">LEDSupport</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      @LedSupport
+                    </Text>
+                  </Flex>
+                  <InfoBox>
+                    <Text textStyle="h7" mb={4}>
+                      Experiencing problems ?
+                    </Text>
+                    <Text fontSize="12px">
+                      If this widget is not working properly the best way to get
+                      in touch with the author is through our LEDSupport Slack
+                      channel .You can find the widget developers slack details
+                      in the table above.
+                    </Text>
+                  </InfoBox>
+                </>
+              </TabPanel>
+            </TabPanelList>
+          </CustomTabs>
+        </div>
+      </>
+    </SettingsDialogBox>
   );
 };
 
 SettingsDialog.propTypes = {
   widgetIndex: PropTypes.number.isRequired,
-  widgetSettings: PropTypes.instanceOf(Object).isRequired,
+  // widgetSettings: PropTypes.instanceOf(Object).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 
@@ -653,3 +945,154 @@ export const SearchHistory = props => {
 SearchHistory.propTypes = {
   searchBox: PropTypes.instanceOf(Object).isRequired,
 };
+
+export const AddWidgetContainer = styled(Flex)`
+  width: 284px;
+  height: 284px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #979b9b;
+  border-radius: 10px;
+`;
+
+export const AddWidget = ({ onClick, ...props }) => {
+  return (
+    <Box padding={16}>
+      <AddWidgetContainer>
+        <AddWidgetLogo />
+        <Button mt={34} variation="outline" onClick={onClick}>
+          Add Widget +
+        </Button>
+      </AddWidgetContainer>
+    </Box>
+  );
+};
+
+export const DropDownContainer = styled(Flex)`
+  width: 36px;
+  height: 32px;
+  cursor: pointer;
+  justify-content: center;
+  // align-items: center;
+  position: relative;
+  border-radius: 8px;
+  border: 1px dashed #dbf0ee;
+  margin: 0 auto;
+  bottom: 35px;
+`;
+
+export const DropDownListContainer = styled(Flex)`
+  margin-top: 40px;
+  position: absolute;
+  background: #f8fcfc;
+  border: 1px solid #bec1c0;
+  height: auto;
+  width: 170px;
+  // height: 133px;
+  box-shadow: 0px 4px 8px rgba(91, 92, 91, 0.2);
+  border-radius: 5px;
+  flex-direction: column;
+
+  z-index: 11;
+  // padding: 10px;
+`;
+
+export const DropDownList = styled("ul")`
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+`;
+
+export const ListItem = styled(Flex)`
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 2px 14px 2px 12px;
+`;
+
+export const InteractiveListItem = styled(Flex)`
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 10px 12px;
+
+  height: 40px;
+  pointer: cursor;
+  &:active {
+    background: #eaebeb;
+  }
+  &:hover {
+    background: #eaebeb;
+  }
+`;
+
+export const WidgetDropDownContainer = styled(Flex)`
+  width: 36px;
+  height: 32px;
+  cursor: pointer;
+  justify-content: center;
+  // align-items: center;
+  position: relative;
+  border-radius: 8px;
+
+  margin: 0 auto;
+  bottom: 35px;
+`;
+
+export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
+  return (
+    <InteractiveListItem
+      justifyContent="space-between"
+      alignItems="center"
+      style={{ pointer: "cursor" }}
+      height="40px"
+    >
+      <Text fontSize="sm">{title}</Text>
+      <BlendIcon
+        iconify={iconify}
+        width="16px"
+        variation="outline"
+        onClick={() => onClick}
+      />
+    </InteractiveListItem>
+  );
+};
+
+export const CustomTabs = styled(Tabs)`
+  height: 100%;
+  background: transparent;
+  padding: 0px;
+
+  ul {
+    // background: orange;
+  }
+  // ul > li {
+
+  //   &:hover {
+  //     background: red;
+  //   }
+  //   &:active {
+  //     background: red;
+  //   }
+  //   &:visited {
+  //     background: red;
+  //   }
+  //   &:focused {
+  //     background: red;
+  //   }
+  // }
+`;
+
+export const CategoryBadge = styled.span`
+  height: 27px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 16px;
+  padding-left: 16px;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #153e75;
+`;

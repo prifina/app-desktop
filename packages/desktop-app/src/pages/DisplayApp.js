@@ -1,18 +1,12 @@
 import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
 
-import {
-  Spring,
-  useSprings,
-  animated,
-  config as SpringConfig,
-} from "@react-spring/web";
+import { useTransition, animated } from "react-spring";
 
 import { RemoteComponent } from "../RemoteComponent";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
-import Amplify, { API as GRAPHQL, Storage } from "aws-amplify";
-import config from "../config";
+import { API as GRAPHQL, Storage } from "aws-amplify";
 
 import gql from "graphql-tag";
 
@@ -24,16 +18,33 @@ import { ReactComponent as DisplayAppLogo } from "../assets/display-app-logo.svg
 
 import PropTypes from "prop-types";
 
-import { Text, Button } from "@blend-ui/core";
+import {
+  Flex,
+  Box,
+  Text,
+  Button,
+  Divider,
+  Input,
+  colors,
+} from "@blend-ui/core";
+import AddWidgetModal from "../components/AddWidgetModal";
+
+import styled, { css } from "styled-components";
+import { BlendIcon } from "@blend-ui/icons";
+
+import mdiAddCircleOutline from "@iconify/icons-mdi/add-circle-outline";
+import mdiGearOutline from "@iconify/icons-mdi/gear-outline";
+
+import mdiPencilOutline from "@iconify/icons-mdi/pencil-outline";
+import mdiTrashCanOutline from "@iconify/icons-mdi/trash-can-outline";
+
+import mdiPlusBoxMultipleOutline from "@iconify/icons-mdi/plus-box-multiple-outline";
+import fxSync from "@iconify/icons-fe/sync";
+import mdiEyeOffOutline from "@iconify/icons-mdi/eye-off-outline";
+
+import fePlus from "@iconify/icons-fe/plus";
 
 i18n.init();
-
-const S3Config = {
-  AWSS3: {
-    bucket: config.S3.bucket, //REQUIRED -  Amazon S3 bucket name
-    region: config.S3.region, //OPTIONAL -  Amazon service region
-  },
-};
 
 function getSystemSettings(settings, currentSettings) {
   console.log("getSystemSettings ", settings, currentSettings);
@@ -61,89 +72,55 @@ const DisplayApp = ({
   dataSources,
 }) => {
   console.log("PROPS ", widgetConfigData, Object.keys(widgetConfigData));
+  console.log("WIDGET CONFIG DATA ", widgetConfigData);
   console.log("DISPLAY APP ", prifinaID);
-  const {
-    check,
-    currentUser,
-    getLocalization,
-    getSettings,
-    setSettings,
-    getCallbacks,
-    registerClient,
-    API,
-    Prifina,
-    activeRole,
-  } = usePrifina();
-
+  const { currentUser, setSettings, getCallbacks, registerClient, Prifina } =
+    usePrifina();
   console.log("DISPLAY APP ", currentUser);
   console.log("DISPLAY APP DATASOURCES", dataSources);
   const WidgetHooks = new Prifina({ appId: "WIDGETS" });
-  //console.log(check());
-  Amplify.configure(S3Config);
+  const athenaSubscription = useRef(null);
 
-  const [widgetList, setWidgetList] = useState([]);
-  const [widgetConfig, setWidgetConfig] = useState(
-    widgetConfigData.map((w, i) => {
-      //parse theme and sizes....
-      const { theme, size } = getSystemSettings(
-        w.widget.settings,
-        w.currentSettings,
-      );
-      return {
-        dataSources: w.dataSources,
-        currentSettings: w.currentSettings,
-        url: w.url,
-        settings: w.settings,
-        widget: { theme: theme, size: size, ...w.widget },
-      };
-    }),
-  );
+  const short = require("short-uuid");
 
+  const [views, setViews] = useState(() => {
+    const defaultView = [
+      {
+        id: 0,
+        title: `${currentUser.name}'s home`,
+      },
+    ];
+    const savedViews = localStorage.getItem("views");
+    const parsedViews = JSON.parse(savedViews);
+    console.log("parsed views", parsedViews);
+    if (parsedViews === null) {
+      return defaultView;
+    } else if (parsedViews) {
+      return parsedViews;
+    } else {
+      return [];
+    }
+  });
+
+  const defaultViewID = 0;
+  console.log("default view id", defaultViewID);
+
+  const [viewID, setViewID] = useState(0);
+  console.log("viewID", viewID);
   const [activeTab, setActiveTab] = useState(0);
+  console.log("active tab", activeTab);
+  const [view, setView] = useState("");
+  const [editView, setEditView] = useState(false);
+  const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const [showBox, setShowBox] = useState(false);
+  const [childData, setChildData] = useState([]);
+  console.log("child data state", childData);
 
-  const toggle = () => {
-    setShowBox(prevCheck => !prevCheck);
-  };
+  const [widgetConfig, setWidgetConfig] = useState([]);
+  const [widgetList, setWidgetList] = useState([]);
 
-  const BottomAnimation = ({ children, toggle }) => (
-    <Spring
-      hold={!toggle}
-      from={{
-        opacity: 0,
-        //top: -5000,
-        transform: "scale(0) rotate(0deg)",
-      }}
-      to={{
-        //top: toggle ? 0: -5000,
-        opacity: toggle ? 1.0 : 0,
-        transform: `scale(${toggle ? "1.0" : "0"}) rotate(${
-          toggle ? 180 : 0
-        }deg)`,
-      }}
-    >
-      {styles => (
-        <div style={{ overflow: "visible", width: 300, height: 300 }}>
-          <div
-            style={{
-              ...styles,
-              position: "relative",
-              border: "1px solid black",
-            }}
-          >
-            <div>{children}</div>
-          </div>
-        </div>
-      )}
-    </Spring>
-  );
-
-  const [open, setOpen] = useState(false);
-  const [flipped, setFlipped] = useState(false);
-  const [finish, setFinish] = useState(false);
-
-  const imageCache = useRef([]);
+  const [widgetSettings, setWidgetSettings] = useState();
 
   const settings = useRef({
     left: "0px",
@@ -153,88 +130,106 @@ const DisplayApp = ({
     widget: -1,
   });
 
-  const items = [
-    {
-      transform: `perspective(1000px) rotateY(0deg)`,
-      backgroundColor: `currentColor`,
-      background: null,
-    },
-    {
-      transform: null,
-      background: "",
-      backgroundColor: `white`,
-    },
-  ];
-  const animationItems = useRef(items.map((_, index) => index));
-  console.log("ITEMS ", animationItems);
-  const [springs, setSprings] = useSprings(items.length, index => {
-    return {
-      from: {
-        transform: items[index].transform,
-        opacity: 1,
-        width: "300px",
-        height: "300px",
-      },
-      config: {
-        mass: 5,
-        tension: 400,
-        friction: 150,
-      },
-    };
-  });
-
-  console.log("SPRINGS ", springs);
-  const refs = useRef([]);
-  const settingsRef = useRef([]);
-  const widgetSettings = useRef(
-    widgetConfigData.map((w, i) => {
-      //parse theme and sizes....
-      const { theme, size } = getSystemSettings(
-        w.widget.settings,
-        w.currentSettings,
-      );
-
-      return {
-        theme: theme,
-        size: size,
-        settings: w.widget.settings || [],
-        title: w.widget.title,
-        appId: w.widget.appID,
-        installCount: w.widget.installCount,
-        currentSettings: w.currentSettings,
-        image: w.widget.image,
-        dataSources: w.dataSources,
-      };
-    }),
-  );
-  console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
-
-  const athenaSubscription = useRef(null);
-
   const tabClick = (e, tab) => {
     console.log("Click", e);
     console.log("TAB", tab);
     setActiveTab(tab);
+
+    console.log("view target value", e.target.value);
+    setViewID(Number(e.currentTarget.id));
   };
 
-  useEffect(async () => {
-    // browser cache images....
-    const promises = widgetConfigData.map(src => {
-      return new Promise(function (resolve, reject) {
-        const img = new Image();
-        img.src = src.widget.image;
-        img.onload = resolve(img);
-        img.onerror = reject();
-        imageCache.current.push(src.widget.image);
-      });
-    });
-    await Promise.all(promises).then(cachedImages => {
-      console.log("Images loaded....", cachedImages);
-    });
-  }, []);
+  const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
+  const parsedViews = JSON.parse(savedViews);
+  console.log("views content", parsedViews);
 
+  const [widgetsToRender, setWidgetsToRender] = useState(parsedViews);
+
+  //////////////////RENDERING WIDGETS TO RENDER STATE
+  useEffect(() => {
+    const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
+    const parsedViews = JSON.parse(savedViews);
+    console.log("views content", parsedViews);
+
+    setWidgetsToRender(parsedViews);
+  }, [activeTab, viewID, childData]);
+
+  console.log("widgets to render", widgetsToRender);
+
+  useEffect(() => {
+    // renderWidgets;
+    if (widgetsToRender !== null) {
+      setWidgetConfig(
+        widgetsToRender.map((w, i) => {
+          //parse theme and sizes....
+          const { theme, size } = getSystemSettings(
+            w.widget.settings,
+            w.currentSettings,
+          );
+          return {
+            dataSources: w.dataSources,
+            currentSettings: w.currentSettings,
+            url: w.url,
+            settings: w.settings,
+            widget: { theme: theme, size: size, ...w.widget },
+            version: w.version,
+          };
+        }),
+      );
+      setWidgetSettings(
+        widgetsToRender.map((w, i) => {
+          //parse theme and sizes....
+          const { theme, size } = getSystemSettings(
+            w.widget.settings,
+            w.currentSettings,
+          );
+          console.log("w", w);
+          console.log("i", i);
+          return {
+            theme: theme,
+            size: size,
+            settings: w.widget.settings || [],
+            title: w.widget.title,
+            appId: w.widget.appID,
+            installCount: w.widget.installCount,
+            currentSettings: w.currentSettings,
+            image: w.widget.image,
+            dataSources: w.dataSources,
+            publisher: w.publisher,
+            version: w.version,
+          };
+        }),
+      );
+    } else setWidgetConfig([]);
+  }, [activeTab, widgetsToRender]);
+
+  console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
+
+  ///transition animation///////////////////////////////////
+  const [isVisible, setIsVisible] = useState(false);
+
+  const transition = useTransition(isVisible, {
+    from: {
+      transform: "translateY(100%) rotateX(90deg)",
+      transition: "all 0.1s ease-out",
+      opacity: 0,
+    },
+    enter: {
+      transform: "translateY(0%) rotateX(0deg)",
+      opacity: 1,
+      width: 568,
+      height: 504,
+    },
+    leave: {
+      transform: "translateY(0%) rotateX(90deg)",
+      transition: "all 0.1s ease-out",
+      opacity: 0,
+    },
+  });
+  ///////////////////////////////////////////////////////
+  ///settings config
   const openSettings = w => {
-    if (!open) {
+    if (!isVisible) {
       console.log("CLICK...", w);
 
       const ww = document
@@ -251,90 +246,38 @@ const DisplayApp = ({
         widget: w,
       };
 
-      setSprings(index => {
-        if (index === 0) {
-          return {
-            transform: `perspective(1000px) rotateY(150deg)`,
-            onRest: () => {
-              setFlipped(true);
-              setFinish(true);
-            },
-          };
-        }
-
-        return {
-          transform: null,
-
-          opacity: 0,
-          from: {
-            width: "300px",
-            height: "300px",
-          },
-          to: {
-            width: "400px",
-            height: "400px",
-          },
-          config: { ...SpringConfig.molasses, duration: 3500 },
-          onRest: () => {},
-        };
-      });
-
-      setOpen(true);
+      setIsVisible(true);
     }
   };
 
   useEffect(() => {
     let ignore = false;
-    console.log("OPEN CHANGE ", open);
-    if (false) {
-    } else {
-      if (settings.current.widget != -1) {
-        console.log("INIT SPRINGS....");
+    console.log("OPEN CHANGE ", isVisible);
 
-        settingsRef.current = [];
-        if (flipped && finish) {
-          setSprings(index => {
-            return {
-              from: {
-                transform: items[index].transform,
-                opacity: 1,
-                width: "300px",
-                height: "300px",
-              },
-              config: {
-                mass: 5,
-                tension: 500,
-                friction: 220,
-              },
-            };
-          });
-        }
-
-        setFlipped(false);
-        setFinish(false);
-      }
-    }
     return () => {
       ignore = true;
     };
-  }, [open]);
+  }, [isVisible]);
 
   useEffect(() => {
     registerClient([appSyncClient, GRAPHQL, Storage]);
 
     athenaSubscription.current = appSyncClient
-      .subscribe({ query: gql(getAthenaResults), variables: { id: prifinaID } })
+      .subscribe({
+        query: gql(getAthenaResults),
+        variables: { id: prifinaID },
+      })
       .subscribe({
         next: res => {
           console.log("ATHENA SUBS RESULTS ", res);
 
           const currentAppId = res.data.athenaResults.appId;
-          console.log(currentAppId, widgetSettings.current);
-          const widgetIndex = widgetSettings.current.findIndex(
+          console.log(currentAppId, widgetSettings);
+
+          const widgetIndex = widgetSettings.findIndex(
             w => w.appId === currentAppId,
           );
-          const widgetInstallCount =
-            widgetSettings.current[widgetIndex].installCount;
+          const widgetInstallCount = widgetSettings[widgetIndex].installCount;
 
           console.log(widgetIndex, widgetInstallCount);
           const c = getCallbacks();
@@ -369,11 +312,16 @@ const DisplayApp = ({
     };
   }, []);
 
+  console.log("widget config in use2", widgetConfig);
+
   useEffect(() => {
     console.log("WIDGET CONFIG, create widgets... ");
+
+    console.log("widget config in use", widgetConfig);
     if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
-      const widgets = widgetConfig.map((w, i) => {
+      // const widgets = widgetConfig.map((w, i) => {
+      let widgets = widgetConfig.map((w, i) => {
         console.log("WIDGET COMPONENT ", w);
         //React.forwardRef((props, ref) =>
         let dataSourceModules = {};
@@ -425,6 +373,26 @@ const DisplayApp = ({
         );
         const Widget = forwardRef((props, ref) => {
           console.log("W ", props);
+          console.log("W 2", w);
+
+          const [widgetMenu, setWidgetMenu] = useState(false);
+          const toggleWidgetMenu = () => setWidgetMenu(!widgetMenu);
+          let widgetMenuRef = useRef();
+
+          // const removeWidget = e => {
+          //   var array = [...widgetConfig];
+          //   var index = array[e];
+          //   if (index !== -1) {
+          //     array.splice(index, 1);
+          //     setWidgetConfig(array);
+          //   }
+          // };
+
+          // localStorage.setItem(
+          //   `viewsContent-${viewID}`,
+          //   JSON.stringify(widgetConfig),
+          // );
+
           const size = w.widget.size.split("x");
           return (
             <React.Fragment>
@@ -445,6 +413,46 @@ const DisplayApp = ({
                         widgetTheme={w.widget.theme}
                       />
                     )}
+                    {!w.settings && <C.EmptyDiv />}
+                  </div>
+                  <div>
+                    <BlendIcon
+                      iconify={mdiGearOutline}
+                      onClick={toggleWidgetMenu}
+                      width="20px"
+                      color="white"
+                      style={{
+                        zIndex: 10,
+                        position: "absolute",
+                        left: 250,
+                        top: 15,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <C.WidgetDropDownContainer
+                      ref={widgetMenuRef}
+                      className="dropdown-menu+1"
+                    >
+                      {widgetMenu && (
+                        <C.DropDownListContainer>
+                          <C.DropDownList>
+                            <C.InteractiveMenuItem
+                              title="Duplicate"
+                              iconify={mdiPlusBoxMultipleOutline}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Replace"
+                              iconify={fxSync}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Remove"
+                              iconify={mdiEyeOffOutline}
+                              // onClick={removeWidget(i)}
+                            />
+                          </C.DropDownList>
+                        </C.DropDownListContainer>
+                      )}
+                    </C.WidgetDropDownContainer>
                     {!w.settings && <C.EmptyDiv />}
                   </div>
                   <div
@@ -591,22 +599,22 @@ const DisplayApp = ({
         return Widget;
       });
 
-      console.log("WIDGETS ", widgets);
+      console.log("WIDGETS 2222", widgets);
 
       setWidgetList(widgets);
     }
-  }, [widgetConfig]);
+  }, [widgetConfig, viewID]);
 
   const onUpdate = data => {
     console.log("Update settings ", data);
     console.log("HOOK ", WidgetHooks);
 
+    console.log("SETTINGS CURRENT", settings.current);
+
     console.log(settings.current, widgetSettings);
     // deep-copy...
     const currentSettings = JSON.parse(
-      JSON.stringify(
-        widgetSettings.current[settings.current.widget].currentSettings,
-      ),
+      JSON.stringify(widgetSettings[settings.current.widget].currentSettings),
     );
 
     let systemSettingsUpdated = false;
@@ -634,9 +642,8 @@ const DisplayApp = ({
       }
 
       // note the dataField is not used with data object...
-      widgetSettings.current[settings.current.widget].currentSettings[
-        dataField
-      ] = data[k];
+      widgetSettings[settings.current.widget].currentSettings[dataField] =
+        data[k];
     });
     // update settings...
     let newSettings = [];
@@ -650,10 +657,10 @@ const DisplayApp = ({
       }
     });
 
-    const currentAppId = widgetSettings.current[settings.current.widget].appId;
+    const currentAppId = widgetSettings[settings.current.widget].appId;
 
     console.log("NEW SETTINGS ", newSettings, currentAppId);
-    console.log("UPDATED SETTINGS ", widgetSettings.current, currentAppId);
+    console.log("UPDATED SETTINGS ", widgetSettings, currentAppId);
 
     setSettings(currentAppId, prifinaID, {
       type: "WIDGET",
@@ -663,7 +670,7 @@ const DisplayApp = ({
     const c = getCallbacks();
     console.log("CALLBACKS ", c);
     const widgetInstallCount =
-      widgetSettings.current[settings.current.widget].installCount;
+      widgetSettings[settings.current.widget].installCount;
     console.log(
       " CALLBACK ",
       c.hasOwnProperty(currentAppId),
@@ -678,26 +685,6 @@ const DisplayApp = ({
       c[currentAppId][widgetInstallCount]({ settings: data });
     }
 
-    setSprings(index => {
-      return {
-        from: {
-          transform: items[index].transform,
-          opacity: 1,
-          width: "300px",
-          height: "300px",
-        },
-        config: {
-          mass: 5,
-          tension: 500,
-          friction: 220,
-        },
-      };
-    });
-
-    setOpen(false);
-    setFlipped(false);
-    setFinish(false);
-
     //widgetConfig...
     if (systemSettingsUpdated) {
       console.log(
@@ -709,71 +696,128 @@ const DisplayApp = ({
     }
   };
 
+  console.log("widget settings", widgetSettings);
+  console.log("widget config", widgetConfig);
+  console.log("widget list", widgetList);
+
+  // VIEWS CONFIGURATION ================================================================================================================
+
+  useEffect(() => {
+    localStorage.setItem("views", JSON.stringify(views));
+    console.log("log3");
+  }, [views]);
+
+  const handleInputChange = e => {
+    setView(e.target.value);
+  };
+
+  const handleFormSubmit = e => {
+    e.preventDefault();
+
+    if (view !== "") {
+      setViews([
+        ...views,
+        {
+          // id: short.generate(),
+          id: views.length,
+          title: view.trim(),
+        },
+      ]);
+    }
+
+    setView("");
+  };
+
+  function handleDeleteClick(id) {
+    const removeItem = views.filter(view => {
+      console.log("delete views content id", id);
+      localStorage.removeItem(`viewsContent-${id}`);
+      return view.id !== id;
+    });
+
+    setViews(removeItem);
+    setActiveTab(0);
+  }
+
+  console.log("views", views);
+  console.log("view", view);
+  // ================================================================================================================
+
+  // ====================== MENU
+
+  const toggling = () => setMenuOpen(!menuOpen);
+
+  let menuRef = useRef(null);
+
+  //FOR OUTSIDE CLICK CLOSE
+  // function onOutsideClose(ref, state, setState, listener) {
+  //   const handleClickOutside = event => {
+  //     if (ref.current && !ref.current.contains(event.target)) {
+  //       setState(false);
+  //     }
+  //   };
+
+  //   useEffect(() => {
+  //     document.addEventListener("menu", handleClickOutside);
+  //     return () => {
+  //       document.removeEventListener("menu", handleClickOutside);
+  //     };
+  //   }, [ref, state]);
+
+  //   return { ref, state, setState };
+  // }
+  // onOutsideClose(menuRef, menuOpen, setMenuOpen, "menu");
+
+  // console.log("ref", menuRef);
+
+  // ==========================================================================
+
+  const pullDataFromChild = data => {
+    console.log("child data", data);
+
+    setChildData(data);
+  };
+
+  console.log("widgetSettings", widgetSettings);
+
   return (
     <>
-      {open && (
-        <C.ModalBackground
-          className={"widget-modal"}
-          onClick={e => {
-            console.log("TARGET ", e);
-            console.log("WIDGET SETTINGS ", refs.current, settings);
-            console.log("MODAL ", e.target.className);
-
-            if (e.target.className.indexOf("widget-modal") > -1) {
-              setOpen(false);
-            }
-          }}
-        >
-          {springs.map((props, i) => {
-            console.log("PROPS ", i, props);
-            console.log("IMAGE ", imageCache.current);
-            // widget settings...
-            console.log(settings.current);
-            console.log(widgetSettings);
-
-            return (
-              <animated.div
-                style={{
-                  transform: props.transform,
-                  left: settings.current.left,
-                  top: settings.current.top,
-                  width: props.width,
-                  height: props.height,
-                  position: "absolute",
-                  borderRadius: i === 0 ? "8px" : null,
-                  visibility: open ? "visible" : "hidden",
-                  zIndex: 50,
-                  backgroundSize: "cover",
-                  backgroundImage:
-                    i > 0
-                      ? null
-                      : flipped
-                      ? null
-                      : `url(${imageCache.current[settings.current.widget]})`,
-                }}
-                ref={ref => {
-                  if (ref !== null) settingsRef.current.push(ref);
-                }}
-                key={"animated-" + i}
-              >
-                {finish && i === 1 && (
+      {isVisible && (
+        <C.ModalBackground>
+          {transition((style, item) =>
+            item ? (
+              <animated.div style={style}>
+                <div>
                   <C.SettingsDiv>
                     <C.SettingsDialog
-                      spring={i}
-                      flipped={flipped}
-                      open={open}
+                      onBack={() => {
+                        setIsVisible(false);
+                      }}
+                      isVisible={isVisible}
                       onUpdate={onUpdate}
                       widgetIndex={settings.current.widget}
-                      widgetSettings={
-                        widgetSettings.current[settings.current.widget]
-                      }
+                      widgetSettings={widgetSettings[settings.current.widget]}
+                      data={widgetConfig}
+                      data2={widgetSettings}
                     />
                   </C.SettingsDiv>
-                )}
+                </div>
               </animated.div>
-            );
-          })}
+            ) : null,
+          )}
         </C.ModalBackground>
+      )}
+      {addWidgetModalOpen && (
+        <AddWidgetModal
+          onClose={() => {
+            setAddWidgetModalOpen(false);
+          }}
+          widgetData={widgetConfigData}
+          propDrill={pullDataFromChild}
+          widgetConfig={widgetConfig}
+          viewID={viewID}
+          views={views}
+        />
       )}
       <Navbar backgroundColor="white">
         <DisplayAppLogo style={{ marginTop: 17 }} />
@@ -784,52 +828,177 @@ const DisplayApp = ({
             overflow: "hidden",
           }}
         >
-          <Tabs
+          <C.CustomTabs
             activeTab={activeTab}
             onClick={tabClick}
-            style={{ height: "100%" }}
-            variant={"line"}
+            variant="rectangle"
           >
-            <TabList>
-              <Tab>
-                <C.TabText>{currentUser.name}</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Work</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Family</C.TabText>
-              </Tab>
-              <Tab>
-                <C.TabText>Hobbies</C.TabText>
-              </Tab>
+            <TabList
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                maxWidth: 500,
+                overflowX: "scroll",
+              }}
+            >
+              {views.length > 0
+                ? views.map((item, index) => (
+                    <Tab key={item.id} id={item.id}>
+                      {item.title}
+                    </Tab>
+                  ))
+                : null}
             </TabList>
-            <TabPanelList style={{ backgroundColor: null }}>
-              <TabPanel
-                style={{
-                  height: "100vh",
-                  paddingBottom: "50px",
-                  overflow: "auto",
-                }}
-              >
-                <div style={{ overflow: "auto" }}>
-                  <C.WidgetContainer className={"prifina-widget-container"}>
-                    {widgetList.length > 0 && (
-                      <C.WidgetList
-                        widgetList={widgetList}
-                        widgetData={widgetConfig}
-                        currentUser={currentUser}
-                        dataSources={dataSources}
-                      />
-                    )}
-                  </C.WidgetContainer>
-                </div>
-              </TabPanel>
-              <TabPanel>Work panel</TabPanel>
-              <TabPanel>Family panel</TabPanel>
-              <TabPanel>Hobbies panel</TabPanel>
+            <TabPanelList style={{ backgroundColor: null, padding: 0 }}>
+              {views.length > 0
+                ? views.map((item, index) => (
+                    <TabPanel
+                      key={index}
+                      style={{
+                        height: "100vh",
+                        paddingBottom: "50px",
+                        overflow: "auto",
+                      }}
+                    >
+                      <C.DropDownContainer
+                        ref={menuRef}
+                        id="dropdown-menu"
+                        style={{ right: 120 }}
+                      >
+                        <BlendIcon
+                          iconify={mdiAddCircleOutline}
+                          width="16px"
+                          style={{ alignSelf: "center" }}
+                          onClick={toggling}
+                          color={colors.brandAccent}
+                        />
+                        {menuOpen && (
+                          <C.DropDownListContainer>
+                            <Flex
+                              justifyContent="space-between"
+                              alignItems="center"
+                              width="100%"
+                              padding={10}
+                            >
+                              <Text fontSize="sm">Your Views</Text>
+                              <BlendIcon
+                                iconify={mdiPencilOutline}
+                                onClick={() => setEditView(!editView)}
+                                width="13px"
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                              />
+                            </Flex>
+                            {views.map((view, index) => (
+                              <C.DropDownList style={{ paddingBottom: 10 }}>
+                                {editView ? (
+                                  <C.ListItem key={view.id}>
+                                    <Input
+                                      height="25px"
+                                      width="120px"
+                                      defaultValue={views[index].title}
+                                      onChange={e => {
+                                        views[view.id].title = e.target.value;
+                                        setViews([...views]);
+                                      }}
+                                    />
+                                    <BlendIcon
+                                      iconify={mdiTrashCanOutline}
+                                      onClick={() => handleDeleteClick(view.id)}
+                                      width="13px"
+                                      style={{
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </C.ListItem>
+                                ) : (
+                                  <C.ListItem key={view.id}>
+                                    <Text fontSize="sm">{view.title}</Text>
+                                  </C.ListItem>
+                                )}
+                              </C.DropDownList>
+                            ))}
+
+                            {editView && (
+                              <>
+                                <Divider
+                                  color="#E7DBF0"
+                                  foo="bar"
+                                  height="1px"
+                                  ml={16}
+                                  mr={16}
+                                  mt={5}
+                                  mb={5}
+                                />
+                                <form onSubmit={handleFormSubmit}>
+                                  <C.ListItem
+                                    style={{
+                                      marginBottom: 10,
+                                    }}
+                                  >
+                                    <Input
+                                      height="25px"
+                                      width="120px"
+                                      value={view}
+                                      placeholder="Create new view"
+                                      onChange={handleInputChange}
+                                      mr={15}
+                                    />
+                                    <BlendIcon
+                                      iconify={fePlus}
+                                      onClick={e => {
+                                        handleFormSubmit(e);
+                                        setView("");
+                                      }}
+                                      width="13px"
+                                      style={{
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </C.ListItem>
+                                </form>
+                              </>
+                            )}
+                          </C.DropDownListContainer>
+                        )}
+                      </C.DropDownContainer>
+                      <Divider color="#E7DBF0" foo="bar" height="1px" />
+                      <div style={{ overflow: "auto" }}>
+                        {widgetsToRender !== null ? (
+                          <>
+                            <C.WidgetContainer className="prifina-widget-container">
+                              {widgetConfig.length > 0 && (
+                                // {widgetConfig !== null && (
+                                <C.WidgetList
+                                  widgetList={widgetList}
+                                  widgetData={widgetConfig}
+                                  currentUser={currentUser}
+                                  dataSources={dataSources}
+                                />
+                              )}
+                              {widgetsToRender.length <= 7 ? (
+                                <C.AddWidget
+                                  onClick={() => {
+                                    setAddWidgetModalOpen(true);
+                                  }}
+                                />
+                              ) : null}
+                            </C.WidgetContainer>
+                          </>
+                        ) : (
+                          <C.AddWidget
+                            onClick={() => {
+                              setAddWidgetModalOpen(true);
+                            }}
+                          />
+                        )}
+                      </div>
+                    </TabPanel>
+                  ))
+                : null}
             </TabPanelList>
-          </Tabs>
+          </C.CustomTabs>
         </div>
       </C.PageContainer>
     </>
