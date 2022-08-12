@@ -189,7 +189,7 @@ export function ControlAddedDataSources({
 }
 
 ControlAddedDataSources.propTypes = {
-  dataSource: PropTypes.instanceOf(Array),
+  // dataSource: PropTypes.instanceOf(Array),
   index: PropTypes.number,
   uncompleteDataSource: PropTypes.func,
   editControled: PropTypes.bool,
@@ -247,7 +247,7 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
 }
 
 DataSourceForm.propTypes = {
-  addDataSource: PropTypes.instanceOf(Array),
+  // addDataSource: PropTypes.instanceOf(Array),
 };
 
 export function ApiForm({ addApi, selectOptions }) {
@@ -307,5 +307,5 @@ export function ApiForm({ addApi, selectOptions }) {
 }
 
 ApiForm.propTypes = {
-  addApi: PropTypes.string,
+  // addApi: PropTypes.string,
 };

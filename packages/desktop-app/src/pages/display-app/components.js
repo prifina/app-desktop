@@ -21,6 +21,8 @@ import bxChevronUp from "@iconify/icons-bx/bx-chevron-up";
 import bxChevronDown from "@iconify/icons-bx/bx-chevron-down";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 
+import mdiTrashCanOutline from "@iconify/icons-mdi/trash-can-outline";
+
 import { API_KEY, GOOGLE_URL, SEARCH_ENGINE } from "../../config";
 
 import { i18n, useFetch, useFormFields } from "@prifina-apps/utils";
@@ -375,6 +377,7 @@ export const SettingsDialog = ({
   widgetSettings,
   onUpdate,
   data,
+  data2,
   ...props
 }) => {
   console.log("SETTINGS ", widgetIndex, widgetSettings);
@@ -387,24 +390,24 @@ export const SettingsDialog = ({
   const history = useHistory();
 
   const { colors } = useTheme();
-  console.log("log3");
 
   // note size.... not sizes
   const settingsSystemFields = ["theme", "size"];
   useEffect(() => {
     console.log("log3");
 
-    Object.keys(widgetSettings.currentSettings).forEach(f => {
-      if (settingsSystemFields.indexOf(f) > -1) {
-        if (f === "size") {
-          systemFields.current["sizes"] = widgetSettings.currentSettings[f];
+    data.length === data2.length &&
+      Object.keys(widgetSettings.currentSettings).forEach(f => {
+        if (settingsSystemFields.indexOf(f) > -1) {
+          if (f === "size") {
+            systemFields.current["sizes"] = widgetSettings.currentSettings[f];
+          } else {
+            systemFields.current[f] = widgetSettings.currentSettings[f];
+          }
         } else {
-          systemFields.current[f] = widgetSettings.currentSettings[f];
+          inputFields.current[f] = widgetSettings.currentSettings[f];
         }
-      } else {
-        inputFields.current[f] = widgetSettings.currentSettings[f];
-      }
-    });
+      });
     console.log("FLDS ", inputFields, systemFields);
     console.log("DIALOG ", props);
     let fieldTypeCheck = [];
@@ -424,7 +427,7 @@ export const SettingsDialog = ({
       });
     }
     setFieldInit(true);
-  }, []);
+  }, [data2]);
 
   // 1== widget settings, 2== system settings like theme,size...
   const settingsType = 1;
@@ -475,312 +478,303 @@ export const SettingsDialog = ({
 
   return (
     <SettingsDialogBox>
-      {widgetSettings !== undefined && (
-        <>
-          <Flex alignItems="baseline">
-            <BlendIcon
-              style={{ cursor: "pointer" }}
-              // color={colors.textPrimary}
-              iconify={mdiArrowLeft}
-              width="18px"
-              onClick={props.onBack}
-            />
-            <Text textStyle={"h3"} mt={10} ml={15}>
-              {widgetSettings.title}
-            </Text>
-          </Flex>
+      <>
+        <Flex alignItems="baseline">
+          <BlendIcon
+            style={{ cursor: "pointer" }}
+            iconify={mdiArrowLeft}
+            width="18px"
+            onClick={props.onBack}
+          />
+          <Text textStyle={"h3"} mt={10} ml={15} mb={15}>
+            {data[widgetIndex].widget.title}
+          </Text>
+        </Flex>
 
-          {/* <Divider /> */}
-          <div
-            style={{
-              overflow: "scroll",
-            }}
+        {/* <Divider /> */}
+        <div
+          style={{
+            overflow: "scroll",
+          }}
+        >
+          <CustomTabs
+            activeTab={activeTab}
+            onClick={tabClick}
+            variant="rectangle"
           >
-            <CustomTabs
-              activeTab={activeTab}
-              onClick={tabClick}
-              // style={{ height: "100%", background: "transparent" }}
-              variant="rectangle"
-            >
-              <TabList>
-                {number === 1 ? (
-                  <Tab>
-                    <Text>System Settings</Text>
-                  </Tab>
-                ) : null}
+            <TabList>
+              {number === 1 ? (
                 <Tab>
-                  <Text>User Settings</Text>
+                  <Text>System Settings</Text>
                 </Tab>
-                <Tab>
-                  <Text>About this widget</Text>
-                </Tab>
-              </TabList>
-              <TabPanelList>
-                <TabPanel>System Settings</TabPanel>
-                <TabPanel
-                  style={
-                    {
-                      // height: "auto",
-                    }
+              ) : null}
+              <Tab>
+                <Text>User Settings</Text>
+              </Tab>
+              <Tab>
+                <Text>About this widget</Text>
+              </Tab>
+            </TabList>
+            <TabPanelList>
+              <TabPanel>System Settings</TabPanel>
+              <TabPanel
+                style={
+                  {
+                    // height: "auto",
                   }
-                >
-                  <div style={{ overflow: "auto" }}>
-                    {fieldInit && (
-                      <Box mt={10} ml={5} mr={5}>
-                        {widgetSettings.settings.map((setting, i) => {
-                          if (
-                            settingsType === 1 &&
-                            Object.keys(inputFields.current).indexOf(
-                              setting.field,
-                            ) > -1
-                          ) {
-                            return (
-                              <React.Fragment key={"settings-" + i}>
-                                {setting.type === "text" && (
-                                  <Input
-                                    mt={15}
+                }
+              >
+                <div style={{ overflow: "auto" }}>
+                  {fieldInit && (
+                    <Box mt={10} ml={5} mr={5}>
+                      {widgetSettings.settings.map((setting, i) => {
+                        if (
+                          settingsType === 1 &&
+                          Object.keys(inputFields.current).indexOf(
+                            setting.field,
+                          ) > -1
+                        ) {
+                          return (
+                            <React.Fragment key={"settings-" + i}>
+                              {setting.type === "text" && (
+                                <Input
+                                  mt={15}
+                                  key={"widget-setting-" + i}
+                                  placeholder={setting.label}
+                                  mb={2}
+                                  id={setting.field}
+                                  name={setting.field}
+                                  defaultValue={fields[setting.field]}
+                                  onChange={handleChange}
+                                  ref={inputRef}
+                                />
+                              )}
+                              {setting.type === "TZ" && (
+                                <>
+                                  <Label key={"setting-label-" + i} mt={10}>
+                                    {setting.label}
+                                  </Label>
+                                  <Select
+                                    mb={10}
+                                    size={"sm"}
                                     key={"widget-setting-" + i}
-                                    placeholder={setting.label}
-                                    mb={2}
                                     id={setting.field}
                                     name={setting.field}
-                                    defaultValue={fields[setting.field]}
+                                    defaultValue={fields[setting.value]}
                                     onChange={handleChange}
-                                    ref={inputRef}
-                                  />
-                                )}
-                                {setting.type === "TZ" && (
-                                  <>
-                                    <Label key={"setting-label-" + i} mt={10}>
-                                      {setting.label}
-                                    </Label>
-                                    <Select
-                                      mb={10}
-                                      size={"sm"}
-                                      key={"widget-setting-" + i}
-                                      id={setting.field}
-                                      name={setting.field}
-                                      defaultValue={fields[setting.value]}
-                                      onChange={handleChange}
-                                    >
-                                      {timezones.current.map((t, ii) => {
-                                        return (
-                                          <option
-                                            key={
-                                              "widget-setting-" + i + "-" + ii
-                                            }
-                                            value={t.tz}
-                                          >
-                                            {t.text}
-                                          </option>
-                                        );
-                                      })}
-                                    </Select>
-                                  </>
-                                )}
-                              </React.Fragment>
-                            );
-                          }
+                                  >
+                                    {timezones.current.map((t, ii) => {
+                                      return (
+                                        <option
+                                          key={"widget-setting-" + i + "-" + ii}
+                                          value={t.tz}
+                                        >
+                                          {t.text}
+                                        </option>
+                                      );
+                                    })}
+                                  </Select>
+                                </>
+                              )}
+                            </React.Fragment>
+                          );
+                        }
+                        if (
+                          settingsType === 2 &&
+                          Object.keys(systemFields.current).indexOf(
+                            setting.field,
+                          ) > -1
+                        ) {
+                          let defaultValue = "";
+                          let selectOptions = [];
+                          let currentField = setting.field;
+
                           if (
-                            settingsType === 2 &&
-                            Object.keys(systemFields.current).indexOf(
-                              setting.field,
-                            ) > -1
+                            setting.type === "select" &&
+                            setting.field === "theme"
                           ) {
-                            let defaultValue = "";
-                            let selectOptions = [];
-                            let currentField = setting.field;
+                            selectOptions = JSON.parse(setting.value);
+                            //selectOptions.push({ option: "Dark", value: "dark" });
+                            defaultValue = systemFields.current[currentField];
+                          }
 
-                            if (
-                              setting.type === "select" &&
-                              setting.field === "theme"
-                            ) {
-                              selectOptions = JSON.parse(setting.value);
-                              //selectOptions.push({ option: "Dark", value: "dark" });
-                              defaultValue = systemFields.current[currentField];
-                            }
-
-                            if (
-                              setting.type === "select" &&
-                              setting.field === "sizes"
-                            ) {
-                              selectOptions = JSON.parse(setting.value);
-                              selectOptions.push({
-                                option: "600x600",
-                                value: "600x600",
-                              });
-                              //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
-                              defaultValue = systemFields.current[currentField];
-                            }
-                            return (
-                              <React.Fragment key={"settings-" + i}>
-                                {setting.type === "text" && (
-                                  <Input
-                                    mt={15}
+                          if (
+                            setting.type === "select" &&
+                            setting.field === "sizes"
+                          ) {
+                            selectOptions = JSON.parse(setting.value);
+                            selectOptions.push({
+                              option: "600x600",
+                              value: "600x600",
+                            });
+                            //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
+                            defaultValue = systemFields.current[currentField];
+                          }
+                          return (
+                            <React.Fragment key={"settings-" + i}>
+                              {setting.type === "text" && (
+                                <Input
+                                  mt={15}
+                                  key={"widget-setting-" + i}
+                                  placeholder={setting.label}
+                                  mb={2}
+                                  id={currentField}
+                                  name={currentField}
+                                  defaultValue={fields[currentField]}
+                                  onChange={handleChange}
+                                  ref={inputRef}
+                                />
+                              )}
+                              {setting.type === "select" && (
+                                <>
+                                  <Label key={"setting-label-" + i} mt={10}>
+                                    {setting.label}
+                                  </Label>
+                                  <Select
+                                    mb={10}
+                                    size={"sm"}
                                     key={"widget-setting-" + i}
-                                    placeholder={setting.label}
-                                    mb={2}
                                     id={currentField}
                                     name={currentField}
-                                    defaultValue={fields[currentField]}
+                                    defaultValue={defaultValue}
                                     onChange={handleChange}
-                                    ref={inputRef}
-                                  />
-                                )}
-                                {setting.type === "select" && (
-                                  <>
-                                    <Label key={"setting-label-" + i} mt={10}>
-                                      {setting.label}
-                                    </Label>
-                                    <Select
-                                      mb={10}
-                                      size={"sm"}
-                                      key={"widget-setting-" + i}
-                                      id={currentField}
-                                      name={currentField}
-                                      defaultValue={defaultValue}
-                                      onChange={handleChange}
-                                    >
-                                      {selectOptions.map((t, ii) => {
-                                        return (
-                                          <option
-                                            key={
-                                              "widget-setting-" + i + "-" + ii
-                                            }
-                                            value={t.value}
-                                          >
-                                            {t.option}
-                                          </option>
-                                        );
-                                      })}
-                                    </Select>
-                                  </>
-                                )}
-                              </React.Fragment>
-                            );
-                          }
-                        })}
-                        <Box mt={10}>
-                          <Button
-                            // width={"100%"}
-                            onClick={e => {
-                              console.log("UPDATE BUTTON ", fields);
+                                  >
+                                    {selectOptions.map((t, ii) => {
+                                      return (
+                                        <option
+                                          key={"widget-setting-" + i + "-" + ii}
+                                          value={t.value}
+                                        >
+                                          {t.option}
+                                        </option>
+                                      );
+                                    })}
+                                  </Select>
+                                </>
+                              )}
+                            </React.Fragment>
+                          );
+                        }
+                      })}
+                      <Box mt={10}>
+                        <Button
+                          // width={"100%"}
+                          onClick={e => {
+                            console.log("UPDATE BUTTON ", fields);
 
-                              if (
-                                timezones.length > 0 &&
-                                fields.hasOwnProperty("tz")
-                              ) {
-                                onUpdate({
-                                  tz: fields.tz,
-                                  offset: moment.tz(fields.tz).utcOffset(),
-                                });
-                              } else {
-                                onUpdate(fields);
-                              }
-                            }}
-                          >
-                            Update
-                          </Button>
-                        </Box>
+                            if (
+                              timezones.length > 0 &&
+                              fields.hasOwnProperty("tz")
+                            ) {
+                              onUpdate({
+                                tz: fields.tz,
+                                offset: moment.tz(fields.tz).utcOffset(),
+                              });
+                            } else {
+                              onUpdate(fields);
+                            }
+                          }}
+                        >
+                          Update
+                        </Button>
                       </Box>
-                    )}
-                  </div>
-                </TabPanel>
-                <TabPanel
-                  style={{
-                    height: 340,
-                    paddingBottom: "50px",
-                    // background: "white",
-                    padding: 16,
-                  }}
-                >
-                  <>
-                    <Text mb={8}>{data[widgetIndex].title}</Text>
-                    <Text mb={16}>{data[widgetIndex].widget.publisher}</Text>
-                    <Text mb={16} color={colors.textMuted}>
-                      {data[widgetIndex].widget.shortDescription}
-                    </Text>
-                    <Text textStyle="h7" bold mb={36}>
-                      Author Details
-                    </Text>
-                    <Flex justifyContent="space-between" mb={40}>
-                      <Text fontSize="xs">Author</Text>
-                      <Text
-                        color={colors.brandAccent}
-                        fontSize="xs"
-                        style={{ textTransform: "uppercase" }}
-                      >
-                        {data[widgetIndex].widget.publisher}
-                      </Text>
-                    </Flex>
-                    <Flex justifyContent="space-between" mb={40}>
-                      <Text fontSize="xs">Size</Text>
-                      <Text
-                        color={colors.brandAccent}
-                        fontSize="xs"
-                        style={{ textTransform: "uppercase" }}
-                      >
-                        {data[widgetIndex].widget.size}
-                      </Text>
-                    </Flex>
-
-                    <Flex justifyContent="space-between" mb={40}>
-                      <Text fontSize="xs">Version</Text>
-                      <Text
-                        color={colors.brandAccent}
-                        fontSize="xs"
-                        style={{ textTransform: "uppercase" }}
-                      >
-                        {data[widgetIndex].widget.version}
-                      </Text>
-                    </Flex>
-                    <Flex justifyContent="space-between" mb={40}>
-                      <Text fontSize="xs">Copyright</Text>
-                      <Text
-                        color={colors.brandAccent}
-                        fontSize="xs"
-                        style={{ textTransform: "uppercase" }}
-                      >
-                        @{data[widgetIndex].widget.publisher}
-                      </Text>
-                    </Flex>
-                    <Button
-                      variation="link"
-                      onClick={docsButton}
-                      mb={40}
-                      style={{ color: colors.textLink }}
+                    </Box>
+                  )}
+                </div>
+              </TabPanel>
+              <TabPanel
+                style={{
+                  height: 340,
+                  paddingBottom: "50px",
+                  // background: "white",
+                  padding: 16,
+                }}
+              >
+                <>
+                  <Text mb={8}>{data[widgetIndex].widget.title}</Text>
+                  <Text mb={16}>{data[widgetIndex].widget.publisher}</Text>
+                  <Text mb={16} color={colors.textMuted}>
+                    {data[widgetIndex].widget.shortDescription}
+                  </Text>
+                  <Text textStyle="h7" bold mb={36}>
+                    Author Details
+                  </Text>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Author</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
                     >
-                      Developer Website
-                    </Button>
-                    <Flex justifyContent="space-between" mb={40}>
-                      <Text fontSize="xs">LEDSupport</Text>
-                      <Text
-                        color={colors.brandAccent}
-                        fontSize="xs"
-                        style={{ textTransform: "uppercase" }}
-                      >
-                        @LedSupport
-                      </Text>
-                    </Flex>
-                    <InfoBox>
-                      <Text textStyle="h7" mb={4}>
-                        Experiencing problems?
-                      </Text>
-                      <Text fontSize="12px">
-                        If this widget is not working properly the best way to
-                        get in touch with the author is through our LEDSupport
-                        Slack channel .You can find the widget developers slack
-                        details in the table above.
-                      </Text>
-                    </InfoBox>
-                  </>
-                  ;{/* })} */}
-                </TabPanel>
-              </TabPanelList>
-            </CustomTabs>
-          </div>
-        </>
-      )}
+                      {data[widgetIndex].widget.publisher}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Size</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      {data[widgetIndex].widget.size}
+                    </Text>
+                  </Flex>
+
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Version</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      {data[widgetIndex].widget.version}
+                    </Text>
+                  </Flex>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">Copyright</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      @{data[widgetIndex].widget.publisher}
+                    </Text>
+                  </Flex>
+                  <Button
+                    variation="link"
+                    onClick={docsButton}
+                    mb={40}
+                    style={{ color: colors.textLink }}
+                  >
+                    Developer Website
+                  </Button>
+                  <Flex justifyContent="space-between" mb={40}>
+                    <Text fontSize="xs">LEDSupport</Text>
+                    <Text
+                      color={colors.brandAccent}
+                      fontSize="xs"
+                      style={{ textTransform: "uppercase" }}
+                    >
+                      @LedSupport
+                    </Text>
+                  </Flex>
+                  <InfoBox>
+                    <Text textStyle="h7" mb={4}>
+                      Experiencing problems ?
+                    </Text>
+                    <Text fontSize="12px">
+                      If this widget is not working properly the best way to get
+                      in touch with the author is through our LEDSupport Slack
+                      channel .You can find the widget developers slack details
+                      in the table above.
+                    </Text>
+                  </InfoBox>
+                </>
+              </TabPanel>
+            </TabPanelList>
+          </CustomTabs>
+        </div>
+      </>
     </SettingsDialogBox>
   );
 };
@@ -1033,6 +1027,19 @@ export const InteractiveListItem = styled(Flex)`
   }
 `;
 
+export const WidgetDropDownContainer = styled(Flex)`
+  width: 36px;
+  height: 32px;
+  cursor: pointer;
+  justify-content: center;
+  // align-items: center;
+  position: relative;
+  border-radius: 8px;
+
+  margin: 0 auto;
+  bottom: 35px;
+`;
+
 export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
   return (
     <InteractiveListItem
@@ -1046,7 +1053,7 @@ export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
         iconify={iconify}
         width="16px"
         variation="outline"
-        onClick={onClick}
+        onClick={() => onClick}
       />
     </InteractiveListItem>
   );

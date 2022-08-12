@@ -120,6 +120,16 @@ const DisplayApp = ({
   const [widgetConfig, setWidgetConfig] = useState([]);
   const [widgetList, setWidgetList] = useState([]);
 
+  const [widgetSettings, setWidgetSettings] = useState();
+
+  const settings = useRef({
+    left: "0px",
+    top: "0px",
+    height: "0px",
+    width: "0px",
+    widget: -1,
+  });
+
   const tabClick = (e, tab) => {
     console.log("Click", e);
     console.log("TAB", tab);
@@ -140,7 +150,6 @@ const DisplayApp = ({
     const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
     const parsedViews = JSON.parse(savedViews);
     console.log("views content", parsedViews);
-    console.log("log2");
 
     setWidgetsToRender(parsedViews);
   }, [activeTab, viewID, childData]);
@@ -148,12 +157,10 @@ const DisplayApp = ({
   console.log("widgets to render", widgetsToRender);
 
   useEffect(() => {
-    console.log("log1");
     // renderWidgets;
     if (widgetsToRender !== null) {
       setWidgetConfig(
         widgetsToRender.map((w, i) => {
-          // defaultWidgetsToRender[0].widgetConfig.map((w, i) => {
           //parse theme and sizes....
           const { theme, size } = getSystemSettings(
             w.widget.settings,
@@ -169,42 +176,33 @@ const DisplayApp = ({
           };
         }),
       );
+      setWidgetSettings(
+        widgetsToRender.map((w, i) => {
+          //parse theme and sizes....
+          const { theme, size } = getSystemSettings(
+            w.widget.settings,
+            w.currentSettings,
+          );
+          console.log("w", w);
+          console.log("i", i);
+          return {
+            theme: theme,
+            size: size,
+            settings: w.widget.settings || [],
+            title: w.widget.title,
+            appId: w.widget.appID,
+            installCount: w.widget.installCount,
+            currentSettings: w.currentSettings,
+            image: w.widget.image,
+            dataSources: w.dataSources,
+            publisher: w.publisher,
+            version: w.version,
+          };
+        }),
+      );
     } else setWidgetConfig([]);
-  }, [activeTab, widgetsToRender, viewID]);
+  }, [activeTab, widgetsToRender]);
 
-  const settings = useRef({
-    left: "0px",
-    top: "0px",
-    height: "0px",
-    width: "0px",
-    widget: -1,
-  });
-
-  const widgetSettings = useRef(
-    widgetsToRender !== null &&
-      widgetsToRender.map((w, i) => {
-        //parse theme and sizes....
-        const { theme, size } = getSystemSettings(
-          w.widget.settings,
-          w.currentSettings,
-        );
-        console.log("w", w);
-        console.log("i", i);
-        return {
-          theme: theme,
-          size: size,
-          settings: w.widget.settings || [],
-          title: w.widget.title,
-          appId: w.widget.appID,
-          installCount: w.widget.installCount,
-          currentSettings: w.currentSettings,
-          image: w.widget.image,
-          dataSources: w.dataSources,
-          publisher: w.publisher,
-          version: w.version,
-        };
-      }),
-  );
   console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
 
   ///transition animation///////////////////////////////////
@@ -255,7 +253,6 @@ const DisplayApp = ({
   useEffect(() => {
     let ignore = false;
     console.log("OPEN CHANGE ", isVisible);
-    console.log("log3");
 
     return () => {
       ignore = true;
@@ -263,8 +260,6 @@ const DisplayApp = ({
   }, [isVisible]);
 
   useEffect(() => {
-    console.log("log3");
-
     registerClient([appSyncClient, GRAPHQL, Storage]);
 
     athenaSubscription.current = appSyncClient
@@ -277,13 +272,12 @@ const DisplayApp = ({
           console.log("ATHENA SUBS RESULTS ", res);
 
           const currentAppId = res.data.athenaResults.appId;
-          console.log(currentAppId, widgetSettings.current);
+          console.log(currentAppId, widgetSettings);
 
-          const widgetIndex = widgetSettings.current.findIndex(
+          const widgetIndex = widgetSettings.findIndex(
             w => w.appId === currentAppId,
           );
-          const widgetInstallCount =
-            widgetSettings.current[widgetIndex].installCount;
+          const widgetInstallCount = widgetSettings[widgetIndex].installCount;
 
           console.log(widgetIndex, widgetInstallCount);
           const c = getCallbacks();
@@ -385,15 +379,20 @@ const DisplayApp = ({
           const toggleWidgetMenu = () => setWidgetMenu(!widgetMenu);
           let widgetMenuRef = useRef();
 
-          const removeWidget = index => {
-            console.log(index);
-            setWidgetConfig(widgetConfig.filter((o, i) => index !== i));
-          };
+          // const removeWidget = e => {
+          //   var array = [...widgetConfig];
+          //   var index = array[e];
+          //   if (index !== -1) {
+          //     array.splice(index, 1);
+          //     setWidgetConfig(array);
+          //   }
+          // };
 
-          // if (w && w.widget.size) {
-          //   const size = w.widget.size.split("x");
-          //   setSize(size);
-          // }
+          // localStorage.setItem(
+          //   `viewsContent-${viewID}`,
+          //   JSON.stringify(widgetConfig),
+          // );
+
           const size = w.widget.size.split("x");
           return (
             <React.Fragment>
@@ -430,7 +429,7 @@ const DisplayApp = ({
                         cursor: "pointer",
                       }}
                     />
-                    <C.DropDownContainer
+                    <C.WidgetDropDownContainer
                       ref={widgetMenuRef}
                       className="dropdown-menu+1"
                     >
@@ -448,12 +447,12 @@ const DisplayApp = ({
                             <C.InteractiveMenuItem
                               title="Remove"
                               iconify={mdiEyeOffOutline}
-                              onClick={() => removeWidget(i)}
+                              // onClick={removeWidget(i)}
                             />
                           </C.DropDownList>
                         </C.DropDownListContainer>
                       )}
-                    </C.DropDownContainer>
+                    </C.WidgetDropDownContainer>
                     {!w.settings && <C.EmptyDiv />}
                   </div>
                   <div
@@ -610,14 +609,12 @@ const DisplayApp = ({
     console.log("Update settings ", data);
     console.log("HOOK ", WidgetHooks);
 
-    console.log("SETTINGS CURRENT hehehe", settings.current);
+    console.log("SETTINGS CURRENT", settings.current);
 
     console.log(settings.current, widgetSettings);
     // deep-copy...
     const currentSettings = JSON.parse(
-      JSON.stringify(
-        widgetSettings.current[settings.current.widget].currentSettings,
-      ),
+      JSON.stringify(widgetSettings[settings.current.widget].currentSettings),
     );
 
     let systemSettingsUpdated = false;
@@ -645,9 +642,8 @@ const DisplayApp = ({
       }
 
       // note the dataField is not used with data object...
-      widgetSettings.current[settings.current.widget].currentSettings[
-        dataField
-      ] = data[k];
+      widgetSettings[settings.current.widget].currentSettings[dataField] =
+        data[k];
     });
     // update settings...
     let newSettings = [];
@@ -661,10 +657,10 @@ const DisplayApp = ({
       }
     });
 
-    const currentAppId = widgetSettings.current[settings.current.widget].appId;
+    const currentAppId = widgetSettings[settings.current.widget].appId;
 
     console.log("NEW SETTINGS ", newSettings, currentAppId);
-    console.log("UPDATED SETTINGS ", widgetSettings.current, currentAppId);
+    console.log("UPDATED SETTINGS ", widgetSettings, currentAppId);
 
     setSettings(currentAppId, prifinaID, {
       type: "WIDGET",
@@ -674,7 +670,7 @@ const DisplayApp = ({
     const c = getCallbacks();
     console.log("CALLBACKS ", c);
     const widgetInstallCount =
-      widgetSettings.current[settings.current.widget].installCount;
+      widgetSettings[settings.current.widget].installCount;
     console.log(
       " CALLBACK ",
       c.hasOwnProperty(currentAppId),
@@ -753,46 +749,26 @@ const DisplayApp = ({
 
   let menuRef = useRef(null);
 
-  // useEffect(() => {
-  //   const handler = event => {
-  //     console.log("menu ref", menuRef.current.contains(event));
-  //     if (
-  //       // menuOpen &&
-  //       menuRef.current.contains(event.target) === false
-  //       // menuRef.current &&
-  //       // !menuRef.current.contains(event.target)
-  //     ) {
-  //       setMenuOpen(false);
+  //FOR OUTSIDE CLICK CLOSE
+  // function onOutsideClose(ref, state, setState, listener) {
+  //   const handleClickOutside = event => {
+  //     if (ref.current && !ref.current.contains(event.target)) {
+  //       setState(false);
   //     }
   //   };
-  //   document.addEventListener("mousedown", handler);
-  //   document.addEventListener("touchstart", handler);
-  //   return () => {
-  //     // Cleanup the event listener
-  //     document.removeEventListener("mousedown", handler);
-  //     document.removeEventListener("touchstart", handler);
-  //   };
-  // }, [menuOpen]);
 
-  // const ref = useRef(null);
-  function onOutsideClose(ref, state, setState, listener) {
-    const handleClickOutside = event => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setState(false);
-      }
-    };
+  //   useEffect(() => {
+  //     document.addEventListener("menu", handleClickOutside);
+  //     return () => {
+  //       document.removeEventListener("menu", handleClickOutside);
+  //     };
+  //   }, [ref, state]);
 
-    useEffect(() => {
-      document.addEventListener("menu", handleClickOutside);
-      return () => {
-        document.removeEventListener("menu", handleClickOutside);
-      };
-    }, [ref, state]);
+  //   return { ref, state, setState };
+  // }
+  // onOutsideClose(menuRef, menuOpen, setMenuOpen, "menu");
 
-    return { ref, state, setState };
-  }
-
-  console.log("ref", menuRef);
+  // console.log("ref", menuRef);
 
   // ==========================================================================
 
@@ -802,7 +778,7 @@ const DisplayApp = ({
     setChildData(data);
   };
 
-  onOutsideClose(menuRef, menuOpen, setMenuOpen, "menu");
+  console.log("widgetSettings", widgetSettings);
 
   return (
     <>
@@ -820,10 +796,9 @@ const DisplayApp = ({
                       isVisible={isVisible}
                       onUpdate={onUpdate}
                       widgetIndex={settings.current.widget}
-                      widgetSettings={
-                        widgetSettings.current[settings.current.widget]
-                      }
+                      widgetSettings={widgetSettings[settings.current.widget]}
                       data={widgetConfig}
+                      data2={widgetSettings}
                     />
                   </C.SettingsDiv>
                 </div>
@@ -869,7 +844,6 @@ const DisplayApp = ({
               {views.length > 0
                 ? views.map((item, index) => (
                     <Tab key={item.id} id={item.id}>
-                      {/* <C.TabText style={{ padding: 0 }}>{item.title}</C.TabText> */}
                       {item.title}
                     </Tab>
                   ))
@@ -879,6 +853,7 @@ const DisplayApp = ({
               {views.length > 0
                 ? views.map((item, index) => (
                     <TabPanel
+                      key={index}
                       style={{
                         height: "100vh",
                         paddingBottom: "50px",
@@ -959,7 +934,6 @@ const DisplayApp = ({
                                 <form onSubmit={handleFormSubmit}>
                                   <C.ListItem
                                     style={{
-                                      // alignItems: "baseline",
                                       marginBottom: 10,
                                     }}
                                   >
@@ -1007,9 +981,6 @@ const DisplayApp = ({
                                 <C.AddWidget
                                   onClick={() => {
                                     setAddWidgetModalOpen(true);
-                                    // setAddWidgetModalOpen(
-                                    //   preValue => !preValue,
-                                    // );
                                   }}
                                 />
                               ) : null}

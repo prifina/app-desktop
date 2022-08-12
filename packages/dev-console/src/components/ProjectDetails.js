@@ -947,7 +947,9 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                           }}
                         >
                           <Text>{i18n.__("noDataText")}</Text>
-                          <Link>{i18n.__("learnMoreHere")}</Link>
+                          <Link href="www.prifina.com">
+                            {i18n.__("learnMoreHere")}
+                          </Link>
                         </Box>
                         <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
                       </Flex>

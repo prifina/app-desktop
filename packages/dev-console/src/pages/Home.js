@@ -490,8 +490,9 @@ const Main = ({ data, currentUser }) => {
                 width="1027px"
                 justifyContent="space-between"
               >
-                {resourceCardItems.map(item => (
+                {resourceCardItems.map((item, index) => (
                   <C.ResourceCard
+                    key={index}
                     marginRight="42px"
                     src={item.src}
                     title={item.title}
