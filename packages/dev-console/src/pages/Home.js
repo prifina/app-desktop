@@ -158,34 +158,21 @@ const Main = ({ data, currentUser }) => {
     name: "",
     id: "",
     appType: "",
-    newType: "",
-    newName: "",
     version: "",
-    newVersion: "",
     publisher: "",
-    newPublisher: "",
     category: "",
-    newCategory: "",
     deviceSupport: "",
-    newDeviceSupport: "",
     languages: "",
-    newLanguages: "",
     age: "",
-    newAge: "",
     keyFeatures: [],
     shortDescription: "",
-    newShortDescription: "",
     longDescription: "",
-    newLongDescription: "",
     userHeld: [],
     userGenerated: [],
     public: [],
     icon: "",
-    newIcon: "",
     dataSources: [],
-    newDataSources: [],
     remoteUrl: "",
-    newRemoteUrl: "",
   });
 
   const Columns = [
@@ -203,35 +190,22 @@ const Main = ({ data, currentUser }) => {
                 ...allValues,
                 name: props.cell.value,
                 id: props.row.values.id,
-                newName: props.cell.value,
                 appType: props.row.values.appType,
-                newType: props.row.values.appType,
                 version: props.row.values.version,
-                newVersion: props.row.values.version,
                 publisher: props.row.original.publisher,
-                newPublisher: props.row.original.publisher,
                 category: props.row.original.category,
-                newCategory: props.row.original.category,
                 deviceSupport: props.row.original.deviceSupport,
-                newDeviceSupport: props.row.original.newDeviceSupport,
                 languages: props.row.original.languages,
-                newLanguages: props.row.original.newLanguages,
                 age: props.row.original.age,
-                newAge: props.row.original.newAge,
                 keyFeatures: props.row.original.keyFeatures,
                 shortDescription: props.row.original.shortDescription,
-                newShortDescription: props.row.original.newShortDescription,
                 longDescription: props.row.original.longDescription,
-                newLongDescription: props.row.original.newLongDescription,
                 userHeld: props.row.original.userHeld,
                 userGenerated: props.row.original.userGenerated,
                 public: props.row.original.public,
                 icon: props.row.original.icon,
-                newIcon: props.row.original.newIcon,
                 dataSources: props.row.original.dataSources,
-                newDataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
-                newRemoteUrl: props.row.original.newRemoteUrl,
               });
             }}
           >
@@ -314,35 +288,22 @@ const Main = ({ data, currentUser }) => {
                 ...allValues,
                 name: props.row.values.name,
                 id: props.row.values.id,
-                newName: props.row.values.name,
                 appType: props.row.values.appType,
-                newType: props.row.values.appType,
                 version: props.row.values.version,
-                newVersion: props.row.values.version,
                 publisher: props.row.original.publisher,
-                newPublisher: props.row.original.publisher,
                 category: props.row.original.category,
-                newCategory: props.row.original.category,
                 deviceSupport: props.row.original.deviceSupport,
-                newDeviceSupport: props.row.original.newDeviceSupport,
                 languages: props.row.original.languages,
-                newLanguages: props.row.original.newLanguages,
                 age: props.row.original.age,
-                newAge: props.row.original.newAge,
                 keyFeatures: props.row.original.keyFeatures,
                 shortDescription: props.row.original.shortDescription,
-                newShortDescription: props.row.original.newShortDescription,
                 longDescription: props.row.original.longDescription,
-                newLongDescription: props.row.original.newLongDescription,
                 userHeld: props.row.original.userHeld,
                 userGenerated: props.row.original.userGenerated,
                 public: props.row.original.public,
                 icon: props.row.original.icon,
-                newIcon: props.row.original.newIcon,
                 dataSources: props.row.original.dataSources,
-                newDataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
-                newRemoteUrl: props.row.original.newRemoteUrl,
               });
             }}
           >
@@ -529,8 +490,9 @@ const Main = ({ data, currentUser }) => {
                 width="1027px"
                 justifyContent="space-between"
               >
-                {resourceCardItems.map(item => (
+                {resourceCardItems.map((item, index) => (
                   <C.ResourceCard
+                    key={index}
                     marginRight="42px"
                     src={item.src}
                     title={item.title}
