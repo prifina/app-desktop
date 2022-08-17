@@ -1,16 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Storage as S3Storage } from "aws-amplify";
 
 import { Box, Flex, Button, Text, Input, colors } from "@blend-ui/core";
 import config from "../config";
-import { useFormFields } from "@prifina-apps/utils";
+import { useFormFields, useAppContext } from "@prifina-apps/utils";
 
 import { useToast } from "@blend-ui/toast";
 
 import styled from "styled-components";
 
 import PropTypes from "prop-types";
+// Load the required clients and commands.
+import {
+  // CreateMultipartUploadCommand,
+  // UploadPartCommand,
+  // CompleteMultipartUploadCommand,
+  CopyObjectCommand,
+} from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+
+//https://github.com/Tonel/multipart-upload-js-demo/blob/main/src/frontend/utils/upload.js
+
+//https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javascriptv3/example_code/s3/src/s3_multipartupload.js
+
+//https://stackoverflow.com/questions/65728325/how-to-track-upload-progress-to-s3-using-aws-sdk-v3-for-browser-javascript
+
+// https://blog.devgenius.io/upload-files-to-amazon-s3-from-a-react-frontend-fbd8f0b26f5
+
+// https://dev.to/kitsunekyo/upload-to-aws-s3-directly-from-the-browser-js-aws-sdk-v3-1opk
+// https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javascriptv3/example_code/s3/photoExample/src/s3_PhotoExample.ts
+
+// https://stackoverflow.com/questions/69884898/how-to-upload-a-stream-to-s3-with-aws-sdk-v3
 
 const StyledButton = styled(Button)`
   &:hover {
@@ -21,6 +42,8 @@ const StyledButton = styled(Button)`
 `;
 
 const UploadAsset = ({ id, type, numId, variant, ...props }) => {
+  const { s3UploadClient } = useAppContext();
+
   const [uploaded, setUploaded] = useState("");
   console.log("PROPS ", props);
 
@@ -56,35 +79,88 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
 
       const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
 
-      const currentCredentials = JSON.parse(
-        localStorage.getItem("PrifinaClientCredentials"),
-      );
+      console.log("Upload Size", file.size);
+      const maxPartSize = 5 * 1024 * 1024;
+      if (file.size > maxPartSize && Object.keys(s3UploadClient).length) {
+        const createParams = {
+          Bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+          Key: "public/" + s3Key,
+          Body: file,
+        };
 
-      console.log("CREDS ", currentCredentials);
-      S3Storage.configure({
-        bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
-        region: userRegion,
-      });
+        const parallelUploads3 = new Upload({
+          client: s3UploadClient,
+          params: createParams,
 
-      const s3Status = await S3Storage.put(s3Key, file, {
-        level: "public", // private doesn't work
+          tags: [
+            // doesn't work, something about bucket owner
+            // { Key: "created", Value: new Date().toISOString() },
+            // { Key: "alt-name", Value: file.name },
+            /*...*/
+          ], // optional tags
+          queueSize: 4, // optional concurrency configuration
+          partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+          leavePartsOnError: false, // optional manually handle dropped parts
+          // didn't work...
+          // metadata: {
+          //   created: new Date().toISOString(),
+          //   "alt-name": file.name,
+          // },
+        });
 
-        metadata: { created: new Date().toISOString(), "alt-name": file.name },
-
-        progressCallback(progress) {
-          //console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
+        parallelUploads3.on("httpUploadProgress", progress => {
+          console.log(progress);
           setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
-        },
-        customPrefix: {
-          public: "uploads/",
-          // private: "apps/",
-        },
-      });
-      // props.close(true, file.name);
-      console.log("success ");
-      toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
+        });
 
-      console.log(s3Status);
+        const uploadResult = await parallelUploads3.done();
+        console.log("UPLOAD RESULT ", uploadResult);
+        // update metadata as it was not included with multipartupload
+        s3UploadClient.send(
+          new CopyObjectCommand({
+            Metadata: {
+              created: new Date().toISOString(),
+              "alt-name": file.name,
+            },
+            MetadataDirective: "REPLACE",
+            Bucket: uploadResult.Bucket,
+            CopySource: "/" + uploadResult.Bucket + "/" + uploadResult.Key,
+            Key: uploadResult.Key,
+          }),
+        );
+
+        toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
+      } else {
+        S3Storage.configure({
+          bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+          region: userRegion,
+        });
+
+        const s3Status = await S3Storage.put(s3Key, file, {
+          level: "public", // private doesn't work
+
+          metadata: {
+            created: new Date().toISOString(),
+            "alt-name": file.name,
+          },
+
+          progressCallback(progress) {
+            //console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
+            setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
+          },
+          customPrefix: {
+            //public: "uploads/",
+            // private: "apps/",
+          },
+        });
+
+        console.log("success ");
+        toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
+
+        console.log(s3Status);
+      }
+
+      // props.close(true, file.name);
     } catch (e) {
       console.log("OOPS ", e);
       toast.error("Upload failed", {});

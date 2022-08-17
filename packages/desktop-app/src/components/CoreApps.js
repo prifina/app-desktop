@@ -235,7 +235,7 @@ const CoreApps = props => {
 
           let widgetData = {};
           prifinaWidgets.data.listAppMarket.items.forEach(item => {
-            //console.log("APPMARKET ITEM ", item);
+            console.log("APPMARKET ITEM ", item);
             const manifest = JSON.parse(item.manifest);
             console.log("APPMARKET MANIFEST ", manifest);
             widgetData[item.id] = {
@@ -246,9 +246,24 @@ const CoreApps = props => {
               version: item.version,
               image: manifest.screenshots[0],
               dataSources: item.dataSources || [],
+              publisher: manifest.publisher,
+              userGenerated: manifest.userGenerated,
+              userHeld: manifest.userHeld,
+              public: manifest.public,
+              category: manifest.category,
+              icon: manifest.icon,
             };
           });
           let data = [];
+          let viewSettings=[];
+          if (currentPrifinaUser.data.getPrifinaUser?.viewSettings) {
+            viewSettings=JSON.parse(currentPrifinaUser.data.getPrifinaUser.viewSettings);
+          }
+          
+          if (viewSettings.length===0) {
+            viewSettings.push({"widgets":{},"view":{"title": `${appProfile.name}'s home`}});
+          }
+
           if (
             currentPrifinaUser.data.getPrifinaUser.hasOwnProperty(
               "installedWidgets",
@@ -260,7 +275,9 @@ const CoreApps = props => {
             );
 
             let widgetCounts = {};
-            data = installedWidgets.map(w => {
+         
+
+            data = installedWidgets.map((w,wi) => {
               if (widgetCounts.hasOwnProperty(w.id)) {
                 widgetCounts[w.id]++;
               } else {
@@ -295,6 +312,17 @@ const CoreApps = props => {
                 "main.bundle.js",
               ].join("/");
 
+              
+              // default view includes all installed widgets, if view is still not created... 
+              if (currentPrifinaUser.data.getPrifinaUser.viewSettings===null || currentPrifinaUser.data.getPrifinaUser.viewSettings.length===0) {
+                viewSettings[0].widgets[w.id]={
+                  order: wi,
+                  currentSettings:defaultValues,
+                  settingsExists: widgetData[w.id].settings.length > 0,
+                };
+              }
+
+
               return {
                 url: remoteUrl,
                 settings: widgetData[w.id].settings.length > 0,
@@ -315,6 +343,18 @@ const CoreApps = props => {
                     w.id,
                     widgetData[w.id].image,
                   ].join("/"),
+                  publisher: widgetData[w.id].publisher,
+                  userGenerated: widgetData[w.id].userGenerated,
+                  userHeld: widgetData[w.id].userHeld,
+                  public: widgetData[w.id].public,
+                  category: widgetData[w.id].category,
+                  icon: [
+                    "https:/",
+                    process.env.REACT_APP_PRIFINA_APPS_BUCKET +
+                      ".s3.amazonaws.com",
+                    w.id,
+                    widgetData[w.id].icon,
+                  ].join("/"),
                 },
               };
             });
@@ -324,6 +364,7 @@ const CoreApps = props => {
           console.log("CURRENT SETTINGS 2", data, appProfile, client);
           componentProps.current.appSyncClient = client;
           componentProps.current.widgetConfigData = data;
+          componentProps.current.widgetViewSettings = viewSettings;
           componentProps.current.prifinaID = prifinaID;
           componentProps.current.initials = appProfile.initials;
           componentProps.current.dataSources = dataSources;

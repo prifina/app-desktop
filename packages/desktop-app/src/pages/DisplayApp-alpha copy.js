@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, forwardRef,useReducer } from "react";
+import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { usePrifina } from "@prifina/hooks";
 
 import { useTransition, animated } from "react-spring";
@@ -12,7 +12,7 @@ import gql from "graphql-tag";
 
 import * as C from "./display-app/components";
 
-import { i18n, getAthenaResults, Navbar,updatePrifinaUserMutation,useIsMountedRef } from "@prifina-apps/utils";
+import { i18n, getAthenaResults, Navbar } from "@prifina-apps/utils";
 
 import { ReactComponent as DisplayAppLogo } from "../assets/display-app-logo.svg";
 
@@ -46,26 +46,6 @@ import fePlus from "@iconify/icons-fe/plus";
 
 i18n.init();
 
-function saveViewSettings(uuid,viewSettings) {
-
-  /*
-  return new Promise((resolve, reject) => {
-
-  localStorage.setItem(
-      "localViews",
-       JSON.stringify({"uuid":uuid,views:viewSettings}),
-     );
-
-     resolve(true);  
-  });
-*/
-return updatePrifinaUserMutation(GRAPHQL, {
-  id: uuid,
-  viewSettings: JSON.stringify(viewSettings),
-});
-
-
-}
 function getSystemSettings(settings, currentSettings) {
   console.log("getSystemSettings ", settings, currentSettings);
   // default values.... should not be needed, if all is configured correctly.
@@ -97,17 +77,15 @@ const DisplayApp = ({
   console.log("WIDGET CONFIG DATA ", widgetConfigData);
   console.log("WIDGET VIEW SETTINGS ", widgetViewSettings);
   console.log("DISPLAY APP ", prifinaID);
-
-  const isMountedRef = useIsMountedRef();
-  
-  const { currentUser,  getCallbacks,removeCallbacks,deleteCallback, registerClient, Prifina,check } =
+  const { currentUser, setSettings, getCallbacks, registerClient, Prifina } =
     usePrifina();
   console.log("DISPLAY APP ", currentUser);
   console.log("DISPLAY APP DATASOURCES", dataSources);
   const WidgetHooks = new Prifina({ appId: "WIDGETS" });
   const athenaSubscription = useRef(null);
 
-  /*
+  const short = require("short-uuid");
+
   const [views, setViews] = useState(() => {
     const defaultView = [
       {
@@ -126,39 +104,26 @@ const DisplayApp = ({
       return [];
     }
   });
-  */
 
-  //const [viewID, setViewID] = useState(0);
-  //console.log("viewID", viewID);
+  const defaultViewID = 0;
+  console.log("default view id", defaultViewID);
+
+  const [viewID, setViewID] = useState(0);
+  console.log("viewID", viewID);
   const [activeTab, setActiveTab] = useState(0);
   console.log("active tab", activeTab);
- // const [view, setView] = useState("");
+  const [view, setView] = useState("");
   const [editView, setEditView] = useState(false);
   const [addWidgetModalOpen, setAddWidgetModalOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [state, setState] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    {
-     widgetConfig:[],
-     //widgetSettings:[],
-     widgetList:[],
-     views:[]
-     //widgetViewSettings:widgetViewSettings
-    },
-  );
+  const [childData, setChildData] = useState([]);
+  console.log("child data state", childData);
 
+  const [widgetConfig, setWidgetConfig] = useState([]);
+  const [widgetList, setWidgetList] = useState([]);
 
-  const widgetSettings=useRef([]);
-
-  const savedViews = localStorage.getItem("localViews");
-
-  const viewSettings=useRef(widgetViewSettings);
-  //const viewSettings=useRef(JSON.parse(savedViews).views);
-
-  const inputRef = useRef(Array(widgetViewSettings.length+1).fill(null));
-
-  const viewsRef = useRef(Array(widgetViewSettings.length).fill(null));
+  const [widgetSettings, setWidgetSettings] = useState();
 
   const settings = useRef({
     left: "0px",
@@ -168,21 +133,80 @@ const DisplayApp = ({
     widget: -1,
   });
 
-  const [reloadViewWidgets, setReloadViewWidgets] = useState(false);
-
   const tabClick = (e, tab) => {
     console.log("Click", e);
     console.log("TAB", tab);
-
-    console.log("view target value", e.target.value);
-    const newViewID=Number(e.currentTarget.id);
-   
-    if (activeTab!==newViewID) {
     setActiveTab(tab);
 
-    //setViewID(Number(e.currentTarget.id));
-    }
+    console.log("view target value", e.target.value);
+    setViewID(Number(e.currentTarget.id));
   };
+
+  const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
+  const parsedViews = JSON.parse(savedViews);
+  console.log("views content", parsedViews);
+
+  const [widgetsToRender, setWidgetsToRender] = useState(parsedViews);
+
+  //////////////////RENDERING WIDGETS TO RENDER STATE
+  useEffect(() => {
+    const savedViews = localStorage.getItem(`viewsContent-${viewID}`);
+    const parsedViews = JSON.parse(savedViews);
+    console.log("views content", parsedViews);
+
+    setWidgetsToRender(parsedViews);
+  }, [activeTab, viewID, childData]);
+
+  console.log("widgets to render", widgetsToRender);
+
+  useEffect(() => {
+    // renderWidgets;
+    if (widgetsToRender !== null) {
+      setWidgetConfig(
+        widgetsToRender.map((w, i) => {
+          //parse theme and sizes....
+          const { theme, size } = getSystemSettings(
+            w.widget.settings,
+            w.currentSettings,
+          );
+          return {
+            dataSources: w.dataSources,
+            currentSettings: w.currentSettings,
+            url: w.url,
+            settings: w.settings,
+            widget: { theme: theme, size: size, ...w.widget },
+            version: w.version,
+          };
+        }),
+      );
+      setWidgetSettings(
+        widgetsToRender.map((w, i) => {
+          //parse theme and sizes....
+          const { theme, size } = getSystemSettings(
+            w.widget.settings,
+            w.currentSettings,
+          );
+          console.log("w", w);
+          console.log("i", i);
+          return {
+            theme: theme,
+            size: size,
+            settings: w.widget.settings || [],
+            title: w.widget.title,
+            appId: w.widget.appID,
+            installCount: w.widget.installCount,
+            currentSettings: w.currentSettings,
+            image: w.widget.image,
+            dataSources: w.dataSources,
+            publisher: w.publisher,
+            version: w.version,
+          };
+        }),
+      );
+    } else setWidgetConfig([]);
+  }, [activeTab, widgetsToRender]);
+
+  console.log("WIDGET SETTINGS after parsing theme&sizes ", widgetSettings);
 
   ///transition animation///////////////////////////////////
   const [isVisible, setIsVisible] = useState(false);
@@ -209,7 +233,7 @@ const DisplayApp = ({
   ///settings config
   const openSettings = w => {
     if (!isVisible) {
-      console.log("CLICK...", w,activeTab);
+      console.log("CLICK...", w);
 
       const ww = document
         .querySelectorAll("[data-widget-index='" + w + "']")[0]
@@ -228,7 +252,7 @@ const DisplayApp = ({
       setIsVisible(true);
     }
   };
-/*
+
   useEffect(() => {
     let ignore = false;
     console.log("OPEN CHANGE ", isVisible);
@@ -237,12 +261,10 @@ const DisplayApp = ({
       ignore = true;
     };
   }, [isVisible]);
-*/
-
 
   useEffect(() => {
     registerClient([appSyncClient, GRAPHQL, Storage]);
-    console.log("SUBSCRIPTION INIT...");
+
     athenaSubscription.current = appSyncClient
       .subscribe({
         query: gql(getAthenaResults),
@@ -253,12 +275,12 @@ const DisplayApp = ({
           console.log("ATHENA SUBS RESULTS ", res);
 
           const currentAppId = res.data.athenaResults.appId;
-          //console.log("SUBS CHECK ", currentAppId, state,widgetSettings.current);
+          console.log(currentAppId, widgetSettings);
 
-          const widgetIndex = widgetSettings.current.findIndex(
+          const widgetIndex = widgetSettings.findIndex(
             w => w.appId === currentAppId,
           );
-          const widgetInstallCount = widgetSettings.current[widgetIndex].installCount;
+          const widgetInstallCount = widgetSettings[widgetIndex].installCount;
 
           console.log(widgetIndex, widgetInstallCount);
           const c = getCallbacks();
@@ -282,7 +304,7 @@ const DisplayApp = ({
         },
       });
 
-  
+    console.log("WIDGET CONFIG ", widgetConfig);
 
     return () => {
       // unsubscribe...
@@ -291,71 +313,18 @@ const DisplayApp = ({
         athenaSubscription.current.unsubscribe();
       }
     };
-    
   }, []);
 
+  console.log("widget config in use2", widgetConfig);
 
   useEffect(() => {
-    console.log("WIDGET VIEW, create widgets... ");
+    console.log("WIDGET CONFIG, create widgets... ");
 
-    console.log("widgets in view", state.views,viewSettings.current[activeTab]);
-    let widgets=[];
-    let currentViewConfig=[];
-    let currentViewSettings=[];
-    let currentViews=viewSettings.current.map(v=>{
-      return {...v.view}
-    });
-   
-    if (isMountedRef.current && viewSettings.current[activeTab]!=="undefied") {
-      const visibleWidgets=Object.keys(viewSettings.current[activeTab].widgets).length;
-      currentViewConfig=Array(visibleWidgets).fill({});
-   
-      if (visibleWidgets>0) {
-      widgetConfigData.forEach((w,i)=>{
-
-        console.log("CREATE WIDGET ",w)
-        
-        if (viewSettings.current[activeTab].widgets?.[w.widget.appID]) {
-
-         
-
-        const { theme, size } = getSystemSettings(
-          w.widget.settings, // config settings... 
-          viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings
-        );
-
-        currentViewConfig[ viewSettings.current[activeTab].widgets[w.widget.appID].order ]={
-          dataSources: w.dataSources,
-          currentSettings: viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings,
-          url: w.url,
-          settingsExists: viewSettings.current[activeTab].widgets[w.widget.appID].settingsExists,
-          widget: { theme: theme, size: size, ...w.widget },
-          //version: w.version,
-        };
-
-        currentViewSettings[ viewSettings.current[activeTab].widgets[w.widget.appID].order ]={
-              theme: theme,
-              size: size,
-              settings: w.widget.settings || [],
-              title: w.widget.title,
-              appId: w.widget.appID,
-              installCount: w.widget.installCount,
-              currentSettings: viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings,
-              image: w.widget.image,
-              dataSources: w.dataSources,
-              publisher: w.widget.publisher,
-              version: w.widget.version,
-              shortDescription:w.widget.shortDescription
-            };
-          }    
-
-      });
-    }
-      console.log(" CURRENT ",currentViewConfig,currentViewSettings)
-
+    console.log("widget config in use", widgetConfig);
+    if (widgetConfig.length > 0) {
       console.log("CREATE WIDGETS...");
       // const widgets = widgetConfig.map((w, i) => {
-       widgets = currentViewConfig.map((w, i) => {
+      let widgets = widgetConfig.map((w, i) => {
         console.log("WIDGET COMPONENT ", w);
         //React.forwardRef((props, ref) =>
         let dataSourceModules = {};
@@ -440,59 +409,54 @@ const DisplayApp = ({
               >
                 <div>
                   <div>
-                    {w.settingsExists && (
+                    {w.settings && (
                       <C.IconDiv
                         open={props.open}
-                    
-                       onClick={toggleWidgetMenu}
+                        onClick={() => openSettings(i)}
                         widgetTheme={w.widget.theme}
                       />
                     )}
-                    {!w.settingsExists && <C.EmptyDiv />}
+                    {!w.settings && <C.EmptyDiv />}
                   </div>
                   <div>
-                   
-                   
+                    <BlendIcon
+                      iconify={mdiGearOutline}
+                      onClick={toggleWidgetMenu}
+                      width="20px"
+                      color="white"
+                      style={{
+                        zIndex: 10,
+                        position: "absolute",
+                        left: 250,
+                        top: 15,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <C.WidgetDropDownContainer
+                      ref={widgetMenuRef}
+                      className="dropdown-menu+1"
+                    >
                       {widgetMenu && (
-                         <C.WidgetDropDownContainer
-                         ref={widgetMenuRef}
-                         className="dropdown-menu+1"
-                       >
                         <C.DropDownListContainer>
                           <C.DropDownList>
                             <C.InteractiveMenuItem
                               title="Duplicate"
                               iconify={mdiPlusBoxMultipleOutline}
                             />
-                            
+                            <C.InteractiveMenuItem
+                              title="Replace"
+                              iconify={fxSync}
+                            />
                             <C.InteractiveMenuItem
                               title="Remove"
                               iconify={mdiEyeOffOutline}
-                              data-widgetindex={i}
-                              onClick={(e)=>{
-                                e.preventDefault();
-                                toggleWidgetMenu();
-                                removeWidget(Number(e.currentTarget.dataset['widgetindex']));
-                              }}
-                            />
-                           <Divider as="div" />
-                           <C.InteractiveMenuItem
-                              title="Settings >"
-                              iconify={mdiGearOutline}
-                              data-widgetindex={i}
-                              onClick={(e)=>{
-                                e.preventDefault();
-                                //console.log("SETTINGS CLICK ",e.currentTarget.dataset,e.currentTarget.dataset['widgetindex']);
-                                toggleWidgetMenu();
-                               openSettings(Number(e.currentTarget.dataset['widgetindex']));
-                              }}
+                              // onClick={removeWidget(i)}
                             />
                           </C.DropDownList>
                         </C.DropDownListContainer>
-                        </C.WidgetDropDownContainer>
                       )}
-                   
-                    {!w.settingsExists && <C.EmptyDiv />}
+                    </C.WidgetDropDownContainer>
+                    {!w.settings && <C.EmptyDiv />}
                   </div>
                   <div
                     style={{
@@ -638,51 +602,30 @@ const DisplayApp = ({
         return Widget;
       });
 
-      console.log("WIDGETS ON VIEW", widgets);
+      console.log("WIDGETS 2222", widgets);
 
-      //setWidgetList(widgets);
-      widgetSettings.current=currentViewSettings;
-      setState( {widgetConfig:currentViewConfig,
-        //widgetSettings:currentViewSettings,
-        widgetList:widgets,
-        views:currentViews
-      });
-    } 
-
-     return () => { 
-      
-      widgets=[];
-      currentViewSettings=[];
-      currentViewConfig=[];
-      currentViews=[];
-      
-      console.log("CLEANUP....");
-      removeCallbacks();
-      };
-
-  }, [isMountedRef,widgetConfigData,activeTab,reloadViewWidgets]);
+      setWidgetList(widgets);
+    }
+  }, [widgetConfig, viewID]);
 
   const onUpdate = data => {
-    console.log("Update settings ", data,activeTab);
+    console.log("Update settings ", data);
     console.log("HOOK ", WidgetHooks);
 
     console.log("SETTINGS CURRENT", settings.current);
 
-    console.log(settings.current, widgetSettings.current);
+    console.log(settings.current, widgetSettings);
     // deep-copy...
     const currentSettings = JSON.parse(
-      JSON.stringify(widgetSettings.current[settings.current.widget].currentSettings),
+      JSON.stringify(widgetSettings[settings.current.widget].currentSettings),
     );
 
     let systemSettingsUpdated = false;
 
-    const currentAppId = widgetSettings.current[settings.current.widget].appId;
-    let currentWidgetConfig = JSON.parse(JSON.stringify(state.widgetConfig));
- 
-    
+    let currentWidgetConfig = JSON.parse(JSON.stringify(widgetConfig));
     Object.keys(data).forEach(k => {
       let dataField = k;
-      
+
       if (
         ["theme"].indexOf(dataField) > -1 &&
         currentSettings[dataField] !== data[dataField]
@@ -690,7 +633,8 @@ const DisplayApp = ({
         systemSettingsUpdated = true;
         currentWidgetConfig[settings.current.widget].widget[dataField] =
           data[dataField];
-      } 
+      }
+
       if (
         ["sizes"].indexOf(dataField) > -1 &&
         currentSettings["size"] !== data[k]
@@ -701,9 +645,9 @@ const DisplayApp = ({
       }
 
       // note the dataField is not used with data object...
-      currentSettings[dataField] =data[k];
+      widgetSettings[settings.current.widget].currentSettings[dataField] =
+        data[k];
     });
-    /*
     // update settings...
     let newSettings = [];
     Object.keys(currentSettings).forEach(k => {
@@ -715,22 +659,21 @@ const DisplayApp = ({
         newSettings.push({ field: k, value: currentSettings[k] });
       }
     });
-    */
 
-    const currentViewSettings=viewSettings.current;
-    const currentWidgetSettings=widgetSettings.current;
+    const currentAppId = widgetSettings[settings.current.widget].appId;
 
-    currentViewSettings[activeTab].widgets[currentAppId].currentSettings=currentSettings; 
-    currentWidgetSettings[settings.current.widget].currentSettings=currentSettings;
+    console.log("NEW SETTINGS ", newSettings, currentAppId);
+    console.log("UPDATED SETTINGS ", widgetSettings, currentAppId);
 
-    console.log("UPDATED SETTINGS ", widgetSettings.current, currentAppId,currentViewSettings,currentWidgetSettings);
-
-    
-
+    setSettings(currentAppId, prifinaID, {
+      type: "WIDGET",
+      index: settings.current.widget,
+      settings: newSettings,
+    });
     const c = getCallbacks();
     console.log("CALLBACKS ", c);
     const widgetInstallCount =
-      widgetSettings.current[settings.current.widget].installCount;
+      widgetSettings[settings.current.widget].installCount;
     console.log(
       " CALLBACK ",
       c.hasOwnProperty(currentAppId),
@@ -745,7 +688,6 @@ const DisplayApp = ({
       c[currentAppId][widgetInstallCount]({ settings: data });
     }
 
-    //widgetSettings:
     //widgetConfig...
     if (systemSettingsUpdated) {
       console.log(
@@ -753,32 +695,25 @@ const DisplayApp = ({
         systemSettingsUpdated,
         currentWidgetConfig,
       );
-     // setWidgetConfig(currentWidgetConfig);
-     
-     setState({widgetConfig:currentWidgetConfig})
-    } 
-    widgetSettings.current=currentWidgetSettings;
-   viewSettings.current=currentViewSettings;
-    saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-      setIsVisible(false);
-    })
-   
+      setWidgetConfig(currentWidgetConfig);
+    }
   };
 
+  console.log("widget settings", widgetSettings);
+  console.log("widget config", widgetConfig);
+  console.log("widget list", widgetList);
 
   // VIEWS CONFIGURATION ================================================================================================================
-/*
+
   useEffect(() => {
     localStorage.setItem("views", JSON.stringify(views));
     console.log("log3");
   }, [views]);
-*/
-/*
+
   const handleInputChange = e => {
     setView(e.target.value);
   };
-*/
-  /*
+
   const handleFormSubmit = e => {
     e.preventDefault();
 
@@ -787,7 +722,7 @@ const DisplayApp = ({
         ...views,
         {
           // id: short.generate(),
-          id: 'prifina-view-'+views.length,
+          id: views.length,
           title: view.trim(),
         },
       ]);
@@ -795,18 +730,20 @@ const DisplayApp = ({
 
     setView("");
   };
-*/
-/*
+
   function handleDeleteClick(id) {
-    //console.log("DELE CLICK ",id)
-    viewSettings.current.splice(id,1);
-   // set new active tab 
-    setActiveTab(viewSettings.current.length-1);
-    
+    const removeItem = views.filter(view => {
+      console.log("delete views content id", id);
+      localStorage.removeItem(`viewsContent-${id}`);
+      return view.id !== id;
+    });
+
+    setViews(removeItem);
+    setActiveTab(0);
   }
-*/
-  //console.log("views", views);
- // console.log("view", view);
+
+  console.log("views", views);
+  console.log("view", view);
   // ================================================================================================================
 
   // ====================== MENU
@@ -838,40 +775,13 @@ const DisplayApp = ({
 
   // ==========================================================================
 
-  const addWidgetToView=(appID)=>{
-      console.log("ADD THIS WIDGET ",widgetConfigData.find(w=>w.widget.appID===appID));
-      console.log("VIEW SETTINGS ",viewSettings.current[activeTab]);
-      const selectedWidget=widgetConfigData.find(w=>w.widget.appID===appID);
-      const currentPos=Object.keys(viewSettings.current[activeTab].widgets).length;
+  const pullDataFromChild = data => {
+    console.log("child data", data);
 
-      viewSettings.current[activeTab].widgets[appID]={
-        order:currentPos,
-        currentSettings:selectedWidget.currentSettings,
-        settingsExists:selectedWidget.settings
-      };
-      saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-        setReloadViewWidgets(!reloadViewWidgets);
-      })
-      
-  }
+    setChildData(data);
+  };
 
-  const removeWidget=(wi)=>{
-
-    console.log("Widget Index ",wi);
-    console.log("Widget Index ",widgetSettings.current[wi]);
-    
-    const selectedWidgetAppId= widgetSettings.current[wi].appId;
-    const currentViewSettings=viewSettings.current[activeTab];
-
-    // later should also know the installCount index... if multiple widgets are installed on same view
-    delete currentViewSettings.widgets[selectedWidgetAppId];
-    viewSettings.current[activeTab]=currentViewSettings;
-
-    saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-      setReloadViewWidgets(!reloadViewWidgets);
-    })
-    
-}
+  console.log("widgetSettings", widgetSettings);
 
   return (
     <>
@@ -889,7 +799,9 @@ const DisplayApp = ({
                       isVisible={isVisible}
                       onUpdate={onUpdate}
                       widgetIndex={settings.current.widget}
-                      widgetSettings={widgetSettings.current[settings.current.widget]}
+                      widgetSettings={widgetSettings[settings.current.widget]}
+                      data={widgetConfig}
+                      data2={widgetSettings}
                     />
                   </C.SettingsDiv>
                 </div>
@@ -903,10 +815,11 @@ const DisplayApp = ({
           onClose={() => {
             setAddWidgetModalOpen(false);
           }}
-          widgetSettings={widgetSettings.current}
-          widgetConfigs={widgetConfigData}
-          addWidget={addWidgetToView}
-          viewName={state.views[activeTab].title}
+          widgetData={widgetConfigData}
+          propDrill={pullDataFromChild}
+          widgetConfig={widgetConfig}
+          viewID={viewID}
+          views={views}
         />
       )}
       <Navbar backgroundColor="white">
@@ -931,17 +844,17 @@ const DisplayApp = ({
                 overflowX: "scroll",
               }}
             >
-              {state.views.length > 0
-                ? state.views.map((view, index) => (
-                    <Tab key={"prifina-view-"+index} id={"prifina-view-"+index} ref={el=>viewsRef.current[index]=el}>
-                      {view.title}
+              {views.length > 0
+                ? views.map((item, index) => (
+                    <Tab key={item.id} id={item.id}>
+                      {item.title}
                     </Tab>
                   ))
                 : null}
             </TabList>
             <TabPanelList style={{ backgroundColor: null, padding: 0 }}>
-              {state.views.length > 0
-                ? state.views.map((view, index) => (
+              {views.length > 0
+                ? views.map((item, index) => (
                     <TabPanel
                       key={index}
                       style={{
@@ -980,76 +893,30 @@ const DisplayApp = ({
                                 }}
                               />
                             </Flex>
-                            {state.views.map((view, index) => (
+                            {views.map((view, index) => (
                               <C.DropDownList style={{ paddingBottom: 10 }}>
                                 {editView ? (
-                                  <C.ListItem key={"edit-view-"+index}>
+                                  <C.ListItem key={view.id}>
                                     <Input
                                       height="25px"
                                       width="120px"
-                                      defaultValue={view.title}
-                                      ref={el=>inputRef.current[index]=el}
-                                      data-view={index}
-                                      onKeyDown={ev => {
-                                        const viewIndex=ev.currentTarget.dataset['view'];
-                                        const viewTitle=inputRef.current[viewIndex].value;
-
-                                        if (ev.key === "Enter" && viewTitle !== "") {
-                                          ev.preventDefault();
-                                         
-                                          saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-                                            viewsRef.current[viewIndex].innerText=viewTitle;
-                                            viewSettings.current[viewIndex].view.title=viewTitle;
-                                          })
-                                        }
-                                      }}    
-                                      onBlur={e => {
-                                       // ref={el => itemsRef.current[i] = el} 
-                                        //views[view.id].title = e.target.value;
-                                        //setViews([...views]);
-                                    
-                                        const viewIndex=e.currentTarget.dataset['view'];
-                                        const viewTitle=inputRef.current[viewIndex].value;
-
-                                        console.log("EDIT VIEW ",inputRef,inputRef.current[viewIndex]);
-                                        if (viewTitle!=="") {
-                                        //console.log("TAB TITLE ",viewsRef.current[viewIndex],viewsRef.current[viewIndex].innerText);
-                                      
-                                        saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-                                          viewsRef.current[viewIndex].innerText=viewTitle;
-                                          viewSettings.current[viewIndex].view.title=viewTitle;
-                                        })
-                                        }
-
+                                      defaultValue={views[index].title}
+                                      onChange={e => {
+                                        views[view.id].title = e.target.value;
+                                        setViews([...views]);
                                       }}
                                     />
-                                    {index>0 &&
                                     <BlendIcon
                                       iconify={mdiTrashCanOutline}
-                                      data-view={index}
-                                      onClick={(e,index) => {
-                                        e.preventDefault();
-                                          //console.log("DELE CLICK ",index, e.currentTarget.dataset)
-                                        viewSettings.current.splice( e.currentTarget.dataset['view'],1);
-                                           
-                                        saveViewSettings(prifinaID,viewSettings.current);
-
-                                        setEditView(!editView);
-                                        setMenuOpen(!menuOpen);
-                                          // set new active tab 
-                                        setActiveTab(viewSettings.current.length-1);
-                                        //handleDeleteClick(index);
-                                      }
-                                      }
+                                      onClick={() => handleDeleteClick(view.id)}
                                       width="13px"
                                       style={{
                                         cursor: "pointer",
                                       }}
                                     />
-}
                                   </C.ListItem>
                                 ) : (
-                                  <C.ListItem key={"edit-view-"+index}>
+                                  <C.ListItem key={view.id}>
                                     <Text fontSize="sm">{view.title}</Text>
                                   </C.ListItem>
                                 )}
@@ -1067,7 +934,7 @@ const DisplayApp = ({
                                   mt={5}
                                   mb={5}
                                 />
-                                <div>
+                                <form onSubmit={handleFormSubmit}>
                                   <C.ListItem
                                     style={{
                                       marginBottom: 10,
@@ -1076,57 +943,16 @@ const DisplayApp = ({
                                     <Input
                                       height="25px"
                                       width="120px"
-                                      defaultValue=""
+                                      value={view}
                                       placeholder="Create new view"
-                                      
-                                      ref={el=>inputRef.current[viewSettings.current.length]=el}
-                                      onKeyDown={ev => {
-                                        const viewIndex=viewSettings.current.length
-                                        const viewTitle=inputRef.current[viewIndex].value;
-
-                                        if (ev.key === "Enter" && viewTitle !== "") {
-                                          ev.preventDefault();
-                                          viewSettings.current.push({widgets:{},view:{title:viewTitle}});
-                                          saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-                                            setEditView(!editView);
-                                            setMenuOpen(!menuOpen);
-                                            // set active tab +1 
-                                            setActiveTab(viewSettings.current.length-1);
-                                            inputRef.current[viewIndex]="";
-                                            inputRef.current.push(null);
-                                          })
-
-
-                                          
-                                        }
-                                      }}    
+                                      onChange={handleInputChange}
                                       mr={15}
                                     />
                                     <BlendIcon
                                       iconify={fePlus}
                                       onClick={e => {
-                                        e.preventDefault();
-                                        const viewIndex=viewSettings.current.length
-                                        const viewTitle=inputRef.current[viewIndex].value;
-                                        if (viewTitle !== "") {
-                                        // inputRef length is views +1 
-                                        viewSettings.current.push({widgets:{},view:{title:viewTitle}});
-                                          saveViewSettings(prifinaID,viewSettings.current).then(res=>{
-                                            setEditView(!editView);
-                                            setMenuOpen(!menuOpen);
-                                            // set active tab +1 
-                                            setActiveTab(viewSettings.current.length-1);
-                                            inputRef.current[viewIndex]="";
-                                            inputRef.current.push(null);
-                                          })
-
-                                          
-
-                                        //handleFormSubmit(e);
-                                        //setView("");
-                                        //console.log("EDIT VIEW ADD CLICK ",e);
-                                        }
-
+                                        handleFormSubmit(e);
+                                        setView("");
                                       }}
                                       width="13px"
                                       style={{
@@ -1134,7 +960,7 @@ const DisplayApp = ({
                                       }}
                                     />
                                   </C.ListItem>
-                                </div>
+                                </form>
                               </>
                             )}
                           </C.DropDownListContainer>
@@ -1142,18 +968,19 @@ const DisplayApp = ({
                       </C.DropDownContainer>
                       <Divider color="#E7DBF0" foo="bar" height="1px" />
                       <div style={{ overflow: "auto" }}>
-                        {state.widgetList.length>0 ? (
+                        {widgetsToRender !== null ? (
                           <>
                             <C.WidgetContainer className="prifina-widget-container">
-                             
+                              {widgetConfig.length > 0 && (
+                                // {widgetConfig !== null && (
                                 <C.WidgetList
-                                  widgetList={state.widgetList}
-                                  widgetData={state.widgetConfig}
+                                  widgetList={widgetList}
+                                  widgetData={widgetConfig}
                                   currentUser={currentUser}
                                   dataSources={dataSources}
                                 />
-                              
-                              {state.widgetList.length <= 7 ? (
+                              )}
+                              {widgetsToRender.length <= 7 ? (
                                 <C.AddWidget
                                   onClick={() => {
                                     setAddWidgetModalOpen(true);

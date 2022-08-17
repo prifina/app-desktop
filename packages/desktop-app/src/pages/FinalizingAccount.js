@@ -47,7 +47,7 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
           password: currentUser.accountPassword.value,
           attributes: {
             email: currentUser.emailVerified,
-            phone_number: currentUser.phoneVerified,
+            phone_number: '+'+currentUser.phoneVerified.replace(/\D/g, ''),  // cognito doesn't accept formatted phone numbers
             family_name: currentUser.lastName.value,
             given_name: currentUser.firstName.value,
             name: currentUser.username.value,

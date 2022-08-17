@@ -3,6 +3,7 @@ export const getPrifinaUser = `query prifinaUser($id:String!){
           dataSources
           installedApps
           installedWidgets
+          viewSettings
           appProfile
           id
 
