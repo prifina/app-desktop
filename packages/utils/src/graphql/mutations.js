@@ -151,6 +151,7 @@ export const updatePrifinaUser = `mutation updatePrifinaUser($input: UpdatePrifi
     id
     installedApps
     installedWidgets
+    viewSettings
   }
 }`;
 

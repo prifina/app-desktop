@@ -34,7 +34,8 @@ const ListItem = styled.li`
   align-items: center;
   list-style-type: none;
   padding: 2px 14px 2px 0px;
-  &:active {
+
+  &.active {
     background: #e7dbf0;
   }
   &:hover {
@@ -49,10 +50,10 @@ const ListItem = styled.li`
 
 const AddWidgetModal = ({
   onClose,
-  widgetData,
-  widgetConfig,
-  views,
-  viewID,
+  widgetSettings,
+  widgetConfigs,
+  viewName,
+  addWidget,
   ...props
 }) => {
   const history = useHistory();
@@ -60,8 +61,8 @@ const AddWidgetModal = ({
   const { colors } = useTheme();
   const theme = useTheme();
 
-  console.log("widgetData", widgetData);
-  console.log("widgetConfig", widgetConfig);
+  console.log("current view widgets", widgetSettings);
+  console.log("widgetConfig", widgetConfigs);
 
   const [dialogOpen, setDialogOpen] = useState(true);
 
@@ -71,6 +72,32 @@ const AddWidgetModal = ({
     e.preventDefault();
   };
 
+  const [availableWidgets,setAvailableWidgets]=useState(widgetConfigs.filter(w=>{
+
+    return  (widgetSettings.find(installed=>installed.appId===w.widget.appID)===undefined ) 
+
+  })) 
+
+  console.log("AVAILABLE ",availableWidgets);
+
+  const [activeItem, setActiveItem] = useState(0);
+
+  //const [selectedWidgets, setSelectedWidgets] = useState([]);
+
+
+  const handleAddToArray = e => {
+    e.preventDefault();
+    //setActiveViewArray(oldArray => [...oldArray, activeItem]);
+    const selectedAppID=availableWidgets[activeItem].widget.appID
+    //console.log(selectedAppID);
+    addWidget(selectedAppID);
+    setAvailableWidgets(availableWidgets.filter(w => w.widget.appID !== selectedAppID));
+    // is 0 good here... 
+    setActiveItem(0);
+   
+  };
+
+/*
   const [activeItem, setActiveItem] = useState(widgetData[0]);
 
   let existingArray = widgetConfig;
@@ -80,11 +107,14 @@ const AddWidgetModal = ({
   const handleAddToArray = e => {
     setActiveViewArray(oldArray => [...oldArray, activeItem]);
   };
+*/
 
   const onOptionClicked = value => () => {
+    //console.log("CLICKED ",value)
     setActiveItem(value);
   };
 
+  /*
   console.log("active item", activeItem);
   console.log("active array", activeViewArray);
 
@@ -97,12 +127,13 @@ const AddWidgetModal = ({
       JSON.stringify(activeViewArray),
     );
   }, [activeViewArray]);
+*/
 
-  props.propDrill(activeViewArray);
+  //props.propDrill(activeViewArray);
 
-  let viewName = views.find(x => x.id === viewID).title;
+  //let viewName = views[viewID].title;
 
-  console.log("view name", viewName);
+  //console.log("view name", viewName);
 
   const modalRef = useRef(null);
 
@@ -116,7 +147,6 @@ const AddWidgetModal = ({
         scrollBehavior={"inside"}
         theme={theme}
         size="640px"
-        {...props}
       >
         <ModalContent
           style={{
@@ -131,13 +161,20 @@ const AddWidgetModal = ({
           <ModalBody style={{ overflow: "hidden" }}>
             <Flex>
               <Box style={{ height: "100%", width: 264 }}>
+                {availableWidgets.length===0 && 
+                <Text fontSize="sm" color={colors.textMuted}>
+                  No available widgets
+              </Text>
+                } 
+                 {availableWidgets.length>0 && <>
                 <Text fontSize="sm" color={colors.textMuted}>
                   Available now
                 </Text>
                 <Box style={{ overflowY: "scroll" }}>
+                
                   <List>
-                    {widgetData.map((item, index) => (
-                      <ListItem key={index} onClick={onOptionClicked(item)}>
+                    {availableWidgets.map((item, index) => (
+                      <ListItem key={index} className={`${activeItem===index?"active":null}`} onClick={onOptionClicked(index)}>
                         <Image
                           src={item.widget.icon}
                           width="21px"
@@ -148,30 +185,34 @@ const AddWidgetModal = ({
                     ))}
                   </List>
                 </Box>
+                </>
+                }
               </Box>
-              <Box
+             <Box
                 width="320px"
                 style={{ borderLeft: "1px solid #EAECF0", paddingLeft: 22 }}
               >
+                 {availableWidgets.length>0 && <>
                 <Flex mb={10} justifyContent="space-between">
                   <Image
-                    src={activeItem.widget.icon}
+                    src={availableWidgets[activeItem]?.widget.icon}
                     width="64px"
                     height="64px"
                   />
                   <C.CategoryBadge style={{ background: "#D5E7FB" }}>
                     {/* Category  */}
-                    {activeItem.widget.category || "Category"}
+                    {availableWidgets[activeItem]?.widget.category || "Category"}
                   </C.CategoryBadge>
-
-                  {/* <Text>{activeItem.widget.title}</Text> */}
                 </Flex>
-                <Text fontWeight={500}>{activeItem.widget.title}</Text>
+                  
+                <Text fontWeight={500}>{availableWidgets[activeItem]?.widget.title}</Text>
                 <Box style={{ overflowY: "scroll", maxHeight: 75 }}>
                   <Text color={colors.textMuted}>
-                    {activeItem.widget.shortDescription}
+                    {availableWidgets[activeItem]?.widget.shortDescription}
                   </Text>
                 </Box>
+                </>
+                }
                 <Flex
                   flexDirection="column"
                   justifyContent="center"
@@ -180,7 +221,7 @@ const AddWidgetModal = ({
                   <Button
                     mb={12}
                     onClick={handleAddToArray}
-                    disabled={widgetConfig.length === 8 ? true : false}
+                    disabled={availableWidgets.length===0 || widgetSettings.length> 7 ? true : false}
                   >
                     Add to ‘{viewName}’
                   </Button>
@@ -192,6 +233,7 @@ const AddWidgetModal = ({
                   </Button>
                 </Flex>
               </Box>
+              
             </Flex>
           </ModalBody>
         </ModalContent>
@@ -202,6 +244,6 @@ const AddWidgetModal = ({
 
 AddWidgetModal.propTypes = {
   onClose: PropTypes.func.isRequired,
-  onButtonClick: PropTypes.func.isRequired,
+  //onButtonClick: PropTypes.func.isRequired,
 };
 export default AddWidgetModal;

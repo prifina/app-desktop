@@ -376,8 +376,6 @@ export const SettingsDialog = ({
   widgetIndex,
   widgetSettings,
   onUpdate,
-  data,
-  data2,
   ...props
 }) => {
   console.log("SETTINGS ", widgetIndex, widgetSettings);
@@ -385,7 +383,7 @@ export const SettingsDialog = ({
   let timezones = useRef([]);
   const inputRef = useRef();
   const systemFields = useRef({});
-  const [fieldInit, setFieldInit] = useState(false);
+  //const [fieldInit, setFieldInit] = useState(false);
 
   const history = useHistory();
 
@@ -393,10 +391,7 @@ export const SettingsDialog = ({
 
   // note size.... not sizes
   const settingsSystemFields = ["theme", "size"];
-  useEffect(() => {
-    console.log("log3");
-
-    data.length === data2.length &&
+    
       Object.keys(widgetSettings.currentSettings).forEach(f => {
         if (settingsSystemFields.indexOf(f) > -1) {
           if (f === "size") {
@@ -426,9 +421,7 @@ export const SettingsDialog = ({
         });
       });
     }
-    setFieldInit(true);
-  }, [data2]);
-
+    
   // 1== widget settings, 2== system settings like theme,size...
   const settingsType = 1;
 
@@ -466,7 +459,6 @@ export const SettingsDialog = ({
     setActiveTab(tab);
   };
 
-  console.log("Widget SETTINGS DATA", data);
   console.log("Widget INDEX", widgetIndex);
   console.log("Widget SETTINGS", widgetSettings);
 
@@ -487,7 +479,7 @@ export const SettingsDialog = ({
             onClick={props.onBack}
           />
           <Text textStyle={"h3"} mt={10} ml={15} mb={15}>
-            {data[widgetIndex].widget.title}
+            {widgetSettings.title}
           </Text>
         </Flex>
 
@@ -525,7 +517,7 @@ export const SettingsDialog = ({
                 }
               >
                 <div style={{ overflow: "auto" }}>
-                  {fieldInit && (
+               
                     <Box mt={10} ml={5} mr={5}>
                       {widgetSettings.settings.map((setting, i) => {
                         if (
@@ -679,7 +671,7 @@ export const SettingsDialog = ({
                         </Button>
                       </Box>
                     </Box>
-                  )}
+                  
                 </div>
               </TabPanel>
               <TabPanel
@@ -691,10 +683,10 @@ export const SettingsDialog = ({
                 }}
               >
                 <>
-                  <Text mb={8}>{data[widgetIndex].widget.title}</Text>
-                  <Text mb={16}>{data[widgetIndex].widget.publisher}</Text>
+                  <Text mb={8}>{widgetSettings.title}</Text>
+                  <Text mb={16}>{widgetSettings.publisher||""}</Text>
                   <Text mb={16} color={colors.textMuted}>
-                    {data[widgetIndex].widget.shortDescription}
+                    {widgetSettings.shortDescription||""}
                   </Text>
                   <Text textStyle="h7" bold mb={36}>
                     Author Details
@@ -706,7 +698,7 @@ export const SettingsDialog = ({
                       fontSize="xs"
                       style={{ textTransform: "uppercase" }}
                     >
-                      {data[widgetIndex].widget.publisher}
+                      {widgetSettings.publisher||""}
                     </Text>
                   </Flex>
                   <Flex justifyContent="space-between" mb={40}>
@@ -716,7 +708,7 @@ export const SettingsDialog = ({
                       fontSize="xs"
                       style={{ textTransform: "uppercase" }}
                     >
-                      {data[widgetIndex].widget.size}
+                      {widgetSettings.size}
                     </Text>
                   </Flex>
 
@@ -727,7 +719,7 @@ export const SettingsDialog = ({
                       fontSize="xs"
                       style={{ textTransform: "uppercase" }}
                     >
-                      {data[widgetIndex].widget.version}
+                      {widgetSettings.version}
                     </Text>
                   </Flex>
                   <Flex justifyContent="space-between" mb={40}>
@@ -737,7 +729,7 @@ export const SettingsDialog = ({
                       fontSize="xs"
                       style={{ textTransform: "uppercase" }}
                     >
-                      @{data[widgetIndex].widget.publisher}
+                      @{widgetSettings.publisher||""}
                     </Text>
                   </Flex>
                   <Button
@@ -1047,13 +1039,15 @@ export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
       alignItems="center"
       style={{ pointer: "cursor" }}
       height="40px"
+      onClick={onClick}
+      {...props}
     >
       <Text fontSize="sm">{title}</Text>
       <BlendIcon
         iconify={iconify}
         width="16px"
         variation="outline"
-        onClick={() => onClick}
+       
       />
     </InteractiveListItem>
   );
