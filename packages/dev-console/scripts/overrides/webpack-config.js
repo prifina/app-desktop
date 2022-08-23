@@ -20,13 +20,14 @@ const override = config => {
   }));
   */
   config.output.publicPath = "auto";
-
+  /*
   config.resolve.fallback = {
     http: require.resolve("stream-http"),
     https: require.resolve("https-browserify"),
     stream: require.resolve("stream-browserify"),
   };
-
+  */
+  config.resolve.fallback= { "http": false, "https": false }
   return config;
 };
 

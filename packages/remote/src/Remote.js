@@ -5,7 +5,8 @@ import PropTypes from "prop-types";
 import { loadComponent } from "./loadComponent";
 
 //import Loading from "./Loading";
-
+// github raw does not have proper content type (javascript), https://raw.githubusercontent.com/prifina/widgets/master/packages/weather/dist/main.bundle.js
+// use other service like jsdeliver ... cdn.jsdelivr.net.... 
 export const Remote = forwardRef((props, ref) => {
   const {
     system,

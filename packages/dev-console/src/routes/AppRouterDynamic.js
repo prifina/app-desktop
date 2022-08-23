@@ -15,6 +15,9 @@ const Register = React.lazy(() => import("../pages/Register"));
 
 const UploadApp = React.lazy(() => import("../components/UploadApp"));
 
+
+const RemoteTest = React.lazy(() => import("../pages/RemoteTest"));
+
 import Landing from "../pages/Landing";
 
 export default props => (
@@ -43,6 +46,9 @@ export default props => (
       </AppliedRoute>
       <AuthenticatedRoute path="/register" exact>
         <Register />
+      </AuthenticatedRoute>
+      <AuthenticatedRoute path="/remote" exact>
+        <RemoteTest />
       </AuthenticatedRoute>
       {/* 
       <UnauthenticatedRoute path="/" exact>

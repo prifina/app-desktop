@@ -7,5 +7,5 @@ export default function AppliedRoute({ children, ...rest }) {
 }
 
 AppliedRoute.propTypes = {
-  children: PropTypes.elementType.isRequired,
+  children: PropTypes.object.isRequired,
 };
