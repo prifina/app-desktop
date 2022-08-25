@@ -37,6 +37,7 @@ import {
   addUserToCognitoGroup,
   deleteAppVersion,
   changeUserPassword,
+  updateCognitoUser,
 } from "./mutations";
 
 // until the amplify identitypoolregion bug is fixed...
@@ -574,5 +575,13 @@ export const changeUserPasswordMutation = (API, code, pw) => {
     query: changeUserPassword,
     variables: { code: code, pass: pw },
     authMode: "AWS_IAM",
+  });
+};
+
+export const updateCognitoUserMutation = (API, attrName, attrValue) => {
+  return API.graphql({
+    query: updateCognitoUser,
+    variables: { attrName: attrName, attrValue: attrValue },
+    authMode: "AMAZON_COGNITO_USER_POOLS",
   });
 };
