@@ -10,6 +10,7 @@ export const NavbarContainer = styled(Flex)`
   height: 65px;
   width: 100%;
   padding-left: 64px;
+  padding-top: 17px;
   position: sticky;
   top: 0;
   z-index: 1;

@@ -8,7 +8,7 @@ import {
   useTheme,
   Divider,
 } from "@blend-ui/core";
-import {IconField} from "@blend-ui/icon-field";
+import { IconField } from "@blend-ui/icon-field";
 
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";

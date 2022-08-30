@@ -164,3 +164,8 @@ export const changeUserPassword = `mutation changeUserCognitoPassword($code: Str
  
   changeUserPassword( user_code: $code,password: $pass)
 }`;
+
+export const updateCognitoUser = `mutation updateCognitoUser($attrName: String!, $attrValue: String!) {
+  
+  updateCognitoUser( attrName: $attrName, attrValue: $attrValue)
+}`;

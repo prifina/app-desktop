@@ -148,9 +148,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   };
 
   const deleteApp = () => {
-    deleteAppVersionMutation(GRAPHQL, {
-      id: allValues.id,
-    }).then(res => {
+    deleteAppVersionMutation(GRAPHQL, allValues.id).then(res => {
       console.log("SUCCESS", res);
       // location.reload();
       toast.success("Deleted project", {});
@@ -1032,7 +1030,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               permanently lost.
             </Text>
           </Box>
-          <Button colorStyle="error" onClick={deleteApp} disabled>
+          <Button colorStyle="error" onClick={deleteApp}>
             Delete
           </Button>
         </C.ActionContainer>
