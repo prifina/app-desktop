@@ -16,6 +16,8 @@ const subtleHiover = "#373436";
 
 const textMuted = "#969595";
 
+const landingGradient = "linear-gradient(255.4deg, #280198 0%, #E33FA4 73.71%)";
+
 const gradientPurple = "linear-gradient(180deg, #AA076B 0%, #61045F 100%)";
 
 const sandboxGradient =
@@ -38,6 +40,7 @@ const colors = {
   sandboxGradient,
   baseBright,
   subtleHiover,
+  landingGradient,
   text: {
     muted: baseBright,
   },

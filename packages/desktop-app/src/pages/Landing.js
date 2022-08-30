@@ -63,9 +63,10 @@ const Landing = props => {
   const { colors } = useTheme();
 
   let initStep = 5;
-  if (pathname === "/login") {
-    initStep = 5;
-  } else if (pathname === "/register") {
+  // if (pathname === "/login") {
+  //   initStep = 5;
+  // }
+  if (pathname === "/register") {
     initStep = 1;
   } else if (pathname === "/home" && isAuthenticated) {
     initStep = 6;
@@ -165,7 +166,7 @@ const Landing = props => {
                         {stepCounter === 1 && !isAuthenticated && (
                           <CreateAccount finalStep={finalStep} />
                         )}
-                        {stepCounter === 5 && <Login />}
+                        {/* {stepCounter === 5 && <Login />} */}
                       </Box>
                     </Flex>
                   </StyledPlate>
