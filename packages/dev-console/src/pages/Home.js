@@ -81,6 +81,7 @@ import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import ProjectDetails from "../components/ProjectDetails";
+import Resources from "../components/Resources";
 
 // Create a default prop getter
 const defaultPropGetter = () => ({});
@@ -384,12 +385,14 @@ const Main = ({ data, currentUser }) => {
     {
       label: i18n.__("resources"),
       icon: mdiBookOpenVariant,
-      disabled: true,
+      badgeText: "New",
+      onClick: () => {
+        setStep(4);
+      },
     },
     {
-      label: "Data Model",
+      label: "Profiles",
       icon: mdiSitemap,
-      badgeText: "Soon",
       disabled: true,
     },
   ];
@@ -567,6 +570,12 @@ const Main = ({ data, currentUser }) => {
               setAllValues={setAllValues}
               setStep={setStep}
             />
+          </>
+        )}
+        {/* RESOURCES */}
+        {step === 4 && (
+          <>
+            <Resources />
           </>
         )}
       </C.ContentContainer>
