@@ -7,7 +7,9 @@ const CopyPlugin = require("copy-webpack-plugin");
 const override = config => {
   config.plugins.push(new CopyPlugin({
     patterns: [
-      { from: "/Users/Tero/react-projects/digiole/data-modelling/plugins/packages/json-view/dist", to: "dist" },
+     // { from: "/Users/Tero/react-projects/digiole/data-modelling/plugins/packages/json-view/dist", to: "dist" },
+    // { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dataTest-v2/dist", to: "dist" },
+    { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/imessage-v2/dist", to: "dist" },
     ],
   }));
   
@@ -26,6 +28,11 @@ const override = config => {
     https: require.resolve("https-browserify"),
     stream: require.resolve("stream-browserify"),
   };
+  resolve: {
+        alias: { react: require.resolve("react") }
+    },
+    'react': require.resolve('./node_modules/react'),
+'react-dom': require.resolve('./node_modules/react-dom'),
   */
   config.resolve.fallback= { "http": false, "https": false }
   return config;
