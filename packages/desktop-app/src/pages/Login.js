@@ -7,10 +7,6 @@ import bxUser from "@iconify/icons-bx/bx-user";
 import { API, Auth } from "aws-amplify";
 
 import { useHistory } from "react-router-dom";
-// import PasswordField from "../components/PasswordField";
-
-// import ForgotPassword from "./ForgotPassword";
-// import RecoverUsername from "./RecoverUsername";
 
 import {
   getLoginUserIdentityPoolQuery,
@@ -26,6 +22,9 @@ import {
   digitChars,
   ConfirmAuth,
   PasswordField,
+  sendVerificationMutation,
+  ForgotPassword,
+  RecoverUsername,
 } from "@prifina-apps/utils";
 
 import config from "../config";
@@ -253,6 +252,24 @@ const Login = () => {
     default:
   }
 
+  const getClientID = process.env.REACT_APP_APP_CLIENT_ID;
+
+  const resendCode = async e => {
+    try {
+      await sendVerificationMutation(
+        API,
+        "phone",
+        JSON.stringify({
+          username: loginFields.username,
+          clientId: getClientID,
+        }),
+      );
+      alerts.info(i18n.__("phoneVerificatioSent"), {});
+    } catch (e) {
+      console.log("ERR", e);
+    }
+  };
+
   return (
     <>
       <Flex width="100vw" height="100vh">
@@ -267,232 +284,245 @@ const Login = () => {
           <Image src={landingImage} />
         </Flex>
         <LoginContainer>
-          <Box textAlign="start" width="354px">
-            <Flex mt={55} mb={57} alignSelf="flex-start">
-              <Image src={prifinaIcon} width="25px" />
-              <Text ml={3} fontWeight="600">
-                Prifina
-              </Text>
-            </Flex>
-            {confirmCode ? (
-              <ConfirmAuth
-                backButton={backButtonClick}
-                authOptions={authOptions}
-              />
-            ) : (
-              <>
-                <Text mb={4} textStyle="h3">
-                  Log in to your account
+          {step === 0 && (
+            <Box textAlign="start" width="354px">
+              <Flex mt={55} mb={57} alignSelf="flex-start">
+                <Image src={prifinaIcon} width="25px" />
+                <Text ml={3} fontWeight="600">
+                  Prifina
                 </Text>
-                <Text mb={32}>Welcome back! Please enter your details.</Text>
-                <Box>
-                  <Text fontWeight="600" fontSize="sm">
-                    Username
+              </Flex>
+              {confirmCode ? (
+                <ConfirmAuth
+                  backButton={backButtonClick}
+                  authOptions={authOptions}
+                  resendCode={resendCode}
+                />
+              ) : (
+                <>
+                  <Text mb={4} textStyle="h3">
+                    Log in to your account
                   </Text>
-                  <IconField>
-                    <IconField.LeftIcon
-                      iconify={bxUser}
-                      color={"componentPrimary"}
-                      size={"17"}
-                    />
-                    <IconField.InputField
-                      autoFocus={true}
-                      placeholder={i18n.__("usernamePlaceholder")}
-                      id={"username"}
-                      name={"username"}
+                  <Text mb={32}>Welcome back! Please enter your details.</Text>
+                  <Box>
+                    <Text fontWeight="600" fontSize="sm">
+                      Username
+                    </Text>
+                    <IconField>
+                      <IconField.LeftIcon
+                        iconify={bxUser}
+                        color={"componentPrimary"}
+                        size={"17"}
+                      />
+                      <IconField.InputField
+                        autoFocus={true}
+                        placeholder={i18n.__("usernamePlaceholder")}
+                        id={"username"}
+                        name={"username"}
+                        onChange={e => {
+                          handleChange(e);
+                        }}
+                        ref={inputUsername}
+                        error={usernameError.status}
+                        onKeyDown={e => {
+                          if (e.key === "Enter") {
+                            const userError = checkUsername(
+                              e.target.value,
+                              true,
+                            );
+                          }
+                        }}
+                        onBlur={e => {
+                          if (e.target.value.length > 0) {
+                            const userError = checkUsername(e.target.value);
+                            if (userError !== "") {
+                              setInputUsernameFocus();
+                              e.preventDefault();
+                            }
+                          }
+                        }}
+                      />
+                    </IconField>
+                    <Box
+                      display={"inline-flex"}
+                      justifyContent={"flex-end"}
+                      width={[1]}
+                      style={{
+                        position: "relative",
+                        top: "-4px",
+                      }}
+                    >
+                      <Flex>
+                        <Button
+                          id="forgotUsernameButton"
+                          variation={"link"}
+                          fontSize="xs"
+                          onClick={() => {
+                            setStep(2);
+                          }}
+                        >
+                          {i18n.__("forgotUsername")}
+                        </Button>
+                      </Flex>
+                    </Box>
+                  </Box>
+                  <Box mt={32}>
+                    <Text fontWeight="600" fontSize="sm">
+                      Password
+                    </Text>
+                    <PasswordField
+                      placeholder={i18n.__("passwordPlaceholder")}
+                      id={"password"}
+                      name={"password"}
+                      onFocus={e => {
+                        if (
+                          loginFields.username.length === 0 ||
+                          document.querySelector("input#username").value
+                            .length === 0
+                        ) {
+                          console.log(
+                            "PASSWORD ON FOCUS CHECK...",
+                            loginFields.username.length,
+                            document.querySelector("input#username").value
+                              .length,
+                          );
+                          setInputUsernameFocus();
+                          e.preventDefault();
+                        }
+                      }}
                       onChange={e => {
                         handleChange(e);
                       }}
-                      ref={inputUsername}
-                      error={usernameError.status}
                       onKeyDown={e => {
                         if (e.key === "Enter") {
-                          const userError = checkUsername(e.target.value, true);
+                          let errorMsg = "";
+                          if (e.target.value.length === 0) {
+                            errorMsg = i18n.__("invalidEntry");
+                          } else {
+                            const passwordError = checkPassword(e.target.value);
+                            if (passwordError) {
+                              errorMsg = i18n.__("passwordQuality");
+                            }
+                          }
+                          if (errorMsg !== "") {
+                            if (
+                              !alerts
+                                .check()
+                                .some(alert => alert.message === errorMsg)
+                            )
+                              alerts.error(errorMsg, {});
+                            setPasswordError({
+                              status: true,
+                            });
+                          } else {
+                            setPasswordError({
+                              status: false,
+                            });
+                            checkUsername(loginFields.username);
+                          }
                         }
                       }}
                       onBlur={e => {
-                        if (e.target.value.length > 0) {
-                          const userError = checkUsername(e.target.value);
-                          if (userError !== "") {
-                            setInputUsernameFocus();
+                        if (
+                          document.querySelector("input#username").value
+                            .length > 0
+                        ) {
+                          const passwordError = checkPassword(
+                            e.target.value,
+                            true,
+                          );
+
+                          if (passwordError) {
+                            const errorMsg = i18n.__("passwordQuality");
+                            console.log("ALERTS ", alerts.check());
+                            if (
+                              !alerts
+                                .check()
+                                .some(alert => alert.message === errorMsg)
+                            )
+                              alerts.error(errorMsg, {});
+                            setPasswordError({
+                              status: true,
+                            });
+
+                            setInputPasswordFocus();
                             e.preventDefault();
+                          } else {
+                            setPasswordError({
+                              status: false,
+                            });
                           }
                         }
                       }}
+                      ref={inputPassword}
+                      error={passwordError.status}
                     />
-                  </IconField>
-                  <Box
-                    display={"inline-flex"}
-                    justifyContent={"flex-end"}
-                    width={[1]}
-                    style={{
-                      position: "relative",
-                      top: "-7px",
-                    }}
-                  >
-                    <Flex>
-                      <Button
-                        id="forgotUsernameButton"
-                        variation={"link"}
-                        fontSize={"10px"}
-                        onClick={() => {
-                          setStep(2);
-                        }}
-                      >
-                        {i18n.__("forgotUsername")}
-                      </Button>
-                    </Flex>
-                  </Box>
-                </Box>
-                <Box mt={32}>
-                  <Text fontWeight="600" fontSize="sm">
-                    Password
-                  </Text>
-                  <PasswordField
-                    placeholder={i18n.__("passwordPlaceholder")}
-                    id={"password"}
-                    name={"password"}
-                    onFocus={e => {
-                      if (
-                        loginFields.username.length === 0 ||
-                        document.querySelector("input#username").value
-                          .length === 0
-                      ) {
-                        console.log(
-                          "PASSWORD ON FOCUS CHECK...",
-                          loginFields.username.length,
-                          document.querySelector("input#username").value.length,
-                        );
-                        setInputUsernameFocus();
-                        e.preventDefault();
-                      }
-                    }}
-                    onChange={e => {
-                      handleChange(e);
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === "Enter") {
-                        let errorMsg = "";
-                        if (e.target.value.length === 0) {
-                          errorMsg = i18n.__("invalidEntry");
-                        } else {
-                          const passwordError = checkPassword(e.target.value);
-                          if (passwordError) {
-                            errorMsg = i18n.__("passwordQuality");
-                          }
-                        }
-                        if (errorMsg !== "") {
-                          if (
-                            !alerts
-                              .check()
-                              .some(alert => alert.message === errorMsg)
-                          )
-                            alerts.error(errorMsg, {});
-                          setPasswordError({
-                            status: true,
-                          });
-                        } else {
-                          setPasswordError({
-                            status: false,
-                          });
-                          checkUsername(loginFields.username);
-                        }
-                      }
-                    }}
-                    onBlur={e => {
-                      if (
-                        document.querySelector("input#username").value.length >
-                        0
-                      ) {
-                        const passwordError = checkPassword(
-                          e.target.value,
-                          true,
-                        );
-
-                        if (passwordError) {
-                          const errorMsg = i18n.__("passwordQuality");
-                          console.log("ALERTS ", alerts.check());
-                          if (
-                            !alerts
-                              .check()
-                              .some(alert => alert.message === errorMsg)
-                          )
-                            alerts.error(errorMsg, {});
-                          setPasswordError({
-                            status: true,
-                          });
-
-                          setInputPasswordFocus();
-                          e.preventDefault();
-                        } else {
-                          setPasswordError({
-                            status: false,
-                          });
-                        }
-                      }
-                    }}
-                    ref={inputPassword}
-                    error={passwordError.status}
-                  />
-                  <Box
-                    display={"inline-flex"}
-                    justifyContent={"flex-end"}
-                    width={[1]}
-                    style={{
-                      position: "relative",
-                      top: "-7px",
-                    }}
-                  >
-                    <Flex>
-                      <Button
-                        className={"ForgotPasswordButton"}
-                        variation={"link"}
-                        fontSize={"10px"}
-                        onClick={() => {
-                          setStep(1);
-                        }}
-                      >
-                        {i18n.__("forgotPassword")}
-                      </Button>
-                    </Flex>
-                  </Box>
-                </Box>
-                <Flex mt={77} flexDirection="column" alignItems="center">
-                  <Button
-                    width="100%"
-                    className="LoginButton"
-                    disabled={
-                      passwordError.status ||
-                      usernameError.status ||
-                      loginFields.username.length < config.usernameLength ||
-                      loginFields.password.length < config.passwordLength
-                    }
-                    onClick={loginClick}
-                  >
-                    {i18n.__("loginButton")}
-                  </Button>
-
-                  <Flex alignItems="baseline" mt={10}>
-                    <Text mr={3} fontSize="xs" textAlign="center">
-                      Don’t have an account?
-                    </Text>
-                    <Button
-                      className="createAccountButton"
-                      id="createAccountButton"
-                      color={colors.textLink}
-                      variation="link"
-                      onClick={createAccountClick}
+                    <Box
+                      display={"inline-flex"}
+                      justifyContent={"flex-end"}
+                      width={[1]}
+                      style={{
+                        position: "relative",
+                        top: "-4px",
+                      }}
                     >
-                      {i18n.__("createAccount")}
+                      <Flex>
+                        <Button
+                          className={"ForgotPasswordButton"}
+                          variation={"link"}
+                          fontSize="xs"
+                          onClick={() => {
+                            setStep(1);
+                          }}
+                        >
+                          {i18n.__("forgotPassword")}
+                        </Button>
+                      </Flex>
+                    </Box>
+                  </Box>
+                  <Flex mt={77} flexDirection="column" alignItems="center">
+                    <Button
+                      width="100%"
+                      className="LoginButton"
+                      disabled={
+                        passwordError.status ||
+                        usernameError.status ||
+                        loginFields.username.length < config.usernameLength ||
+                        loginFields.password.length < config.passwordLength
+                      }
+                      onClick={loginClick}
+                    >
+                      {i18n.__("loginButton")}
                     </Button>
+
+                    <Flex alignItems="baseline" mt={10}>
+                      <Text mr={3} fontSize="xs" textAlign="center">
+                        Don’t have an account?
+                      </Text>
+                      <Button
+                        className="createAccountButton"
+                        id="createAccountButton"
+                        color={colors.textLink}
+                        variation="link"
+                        onClick={createAccountClick}
+                      >
+                        {i18n.__("createAccount")}
+                      </Button>
+                    </Flex>
                   </Flex>
-                </Flex>
-              </>
-            )}
-          </Box>
+                </>
+              )}
+            </Box>
+          )}
+          {step === 1 && (
+            <ForgotPassword
+              onBack={() => setStep(0)}
+              onForward={() => setStep(2)}
+            />
+          )}
+
+          {step === 2 && <RecoverUsername onBack={() => setStep(0)} />}
         </LoginContainer>
-        {/* {step === 1 && <ForgotPassword />}
-        {step === 2 && <RecoverUsername />} */}
       </Flex>
     </>
   );
