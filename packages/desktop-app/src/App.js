@@ -133,10 +133,13 @@ function App() {
           _currentUser = {
             username: token["cognito:username"],
             organization: token["custom:organization"] || "",
-            /* given_name: token["given_name"],*/
+            given_name: token["given_name"],
             client: token["aud"],
             prifinaID: token["custom:prifina"],
             group: token["cognito:groups"],
+            email: token["email"],
+            phoneNumber: token["phone_number"],
+            loginUsername: token["preferred_username"],
           };
 
           if (
