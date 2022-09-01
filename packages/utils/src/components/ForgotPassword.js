@@ -14,24 +14,21 @@ import {
   validUsername,
   sendVerificationMutation,
   changeUserPasswordMutation,
-} from "@prifina-apps/utils";
+  PasswordField,
+} from "../";
 
 import { BlendIcon } from "@blend-ui/icons";
 
 import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
 
-import Login from "./Login";
-
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
 import { useToast } from "@blend-ui/toast";
-import ProgressContainer from "../components/ProgressContainer";
-import PasswordField from "../components/PasswordField";
 
 import { API } from "aws-amplify";
 
-const ForgotPassword = props => {
+const ForgotPassword = ({ onBack, onForward, ...props }) => {
   const { colors } = useTheme();
 
   const [passwordVerification, setPasswordVerification] = useState([
@@ -343,15 +340,12 @@ const ForgotPassword = props => {
 
   return (
     <React.Fragment>
-      {step === 4 && <Login />}
-      {step === 0 && (
-        <Box mt={120}>
-          <ProgressContainer
-            title={i18n.__("resetPasswordTitle")}
-            pr={19}
-            minHeight={406}
-            progress={stepProgress}
-          >
+      <Box width="354px" textAlign="center">
+        <Text textStyle="h3" mb={30}>
+          {i18n.__("resetPasswordTitle")}
+        </Text>
+        {step === 0 && (
+          <Box mt={120}>
             <Box mt={20}>
               <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("resetPasswordText")}
@@ -395,7 +389,12 @@ const ForgotPassword = props => {
               <Text textAlign={"center"} fontSize={10}>
                 {i18n.__("forgotUsername2")}
               </Text>
-              <Button variation={"link"} size="xs" paddingLeft={5}>
+              <Button
+                variation={"link"}
+                size="xs"
+                paddingLeft={5}
+                onClick={onForward}
+              >
                 {i18n.__("sendAgainLinkText")}
               </Button>
             </Flex>
@@ -404,10 +403,7 @@ const ForgotPassword = props => {
                 <Button
                   className="backButton"
                   variation={"outline"}
-                  onClick={() => {
-                    setStep(4);
-                  }}
-                  // onClick={sendCode}
+                  onClick={onBack}
                 >
                   {i18n.__("Back")}
                 </Button>
@@ -431,17 +427,10 @@ const ForgotPassword = props => {
                 </Button>
               </Flex>
             </Box>
-          </ProgressContainer>
-        </Box>
-      )}
-      {step === 1 && (
-        <Box mt={120}>
-          <ProgressContainer
-            title={i18n.__("resetPasswordTitle")}
-            progress={stepProgress}
-            pr={19}
-            minHeight={406}
-          >
+          </Box>
+        )}
+        {step === 1 && (
+          <Box mt={120}>
             <Box mt={70}>
               <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("sentCodeText")}
@@ -451,7 +440,12 @@ const ForgotPassword = props => {
               <Text textAlign={"center"} fontSize={10}>
                 {i18n.__("codeMissing2")}
               </Text>
-              <Button variation="link" size="xs" paddingLeft={5}>
+              <Button
+                variation="link"
+                size="xs"
+                paddingLeft={5}
+                // onClick={onForward}
+              >
                 {i18n.__("sendAgainLinkText2")}
               </Button>
             </Flex>
@@ -476,17 +470,10 @@ const ForgotPassword = props => {
                 </Button>
               </Flex>
             </Box>
-          </ProgressContainer>
-        </Box>
-      )}
-      {step === 2 && (
-        <Box mt={40}>
-          <ProgressContainer
-            title={i18n.__("resetPasswordTitle")}
-            pr={19}
-            minHeight={580}
-            progress={stepProgress}
-          >
+          </Box>
+        )}
+        {step === 2 && (
+          <Box mt={40}>
             <Box mt={20}>
               <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("resetPasswordText2")}
@@ -634,17 +621,10 @@ const ForgotPassword = props => {
                 {i18n.__("doneButton")}
               </Button>
             </Box>
-          </ProgressContainer>
-        </Box>
-      )}
-      {step === 3 && (
-        <Box mt={120}>
-          <ProgressContainer
-            title={i18n.__("resetPasswordTitle")}
-            pr={19}
-            minHeight={406}
-            progress={stepProgress}
-          >
+          </Box>
+        )}
+        {step === 3 && (
+          <Box mt={120}>
             <Box mt={20}>
               <Text fontSize={16} textAlign="center">
                 {i18n.__("resetPasswordText3")}
@@ -667,9 +647,9 @@ const ForgotPassword = props => {
                 {/* Leads to first page of this flow - to be implemented... */}
               </Button>
             </Box>
-          </ProgressContainer>
-        </Box>
-      )}
+          </Box>
+        )}
+      </Box>
     </React.Fragment>
   );
 };

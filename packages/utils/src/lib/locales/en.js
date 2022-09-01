@@ -203,7 +203,7 @@ const strings = {
     authConfirmationText:
       "We've sent you the authentication code. Please enter it below to login.",
     confirmationCodeSent:
-      "Authentication code was sent to your vefified phone number.",
+      "Authentication code was sent to your verified phone number.",
 
     /* Logout dialog */
     logoutTitle: "Are you sure you want to sign out?",
