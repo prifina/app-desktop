@@ -129,6 +129,7 @@ export function ControlAddedDataSources({
     onClose(e, action);
     e.preventDefault();
   };
+
   return (
     <Flex
       justifyContent="space-between"
@@ -148,7 +149,7 @@ export function ControlAddedDataSources({
           color={colors.baseBright}
           onClick={() => completeDataSource(index)}
         />
-        <Flex
+        {/* <Flex
           ml={8}
           mr={16}
           style={{
@@ -161,18 +162,15 @@ export function ControlAddedDataSources({
         >
           <Text fontSize="xs" color="#28C3E8">
             {/* {i18n.__("publicApi")} */}
-            USER HELD
-          </Text>
-        </Flex>
-        {/* {dataSource.url !== undefined ? (
+        {/* USER HELD */}
+        {/* </Text>
+        </Flex> */}
+
+        {dataSource !== undefined && dataSource !== null ? (
           <Flex>
             <Text mr="5px">{dataSource.source}</Text>
           </Flex>
-        ) : (
-          <Flex flexDirection="column">
-            <Text mr="5px">{dataSource.source}</Text>
-          </Flex>
-        )} */}
+        ) : null}
       </Flex>
 
       <Flex>

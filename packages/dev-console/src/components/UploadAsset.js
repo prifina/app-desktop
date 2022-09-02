@@ -12,26 +12,8 @@ import styled from "styled-components";
 
 import PropTypes from "prop-types";
 // Load the required clients and commands.
-import {
-  // CreateMultipartUploadCommand,
-  // UploadPartCommand,
-  // CompleteMultipartUploadCommand,
-  CopyObjectCommand,
-} from "@aws-sdk/client-s3";
+import { CopyObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-
-//https://github.com/Tonel/multipart-upload-js-demo/blob/main/src/frontend/utils/upload.js
-
-//https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javascriptv3/example_code/s3/src/s3_multipartupload.js
-
-//https://stackoverflow.com/questions/65728325/how-to-track-upload-progress-to-s3-using-aws-sdk-v3-for-browser-javascript
-
-// https://blog.devgenius.io/upload-files-to-amazon-s3-from-a-react-frontend-fbd8f0b26f5
-
-// https://dev.to/kitsunekyo/upload-to-aws-s3-directly-from-the-browser-js-aws-sdk-v3-1opk
-// https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javascriptv3/example_code/s3/photoExample/src/s3_PhotoExample.ts
-
-// https://stackoverflow.com/questions/69884898/how-to-upload-a-stream-to-s3-with-aws-sdk-v3
 
 const StyledButton = styled(Button)`
   &:hover {
@@ -153,6 +135,8 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
             // private: "apps/",
           },
         });
+
+        
 
         console.log("success ");
         toast.success(`Asset uploaded - Progress: ${uploaded}`, {});

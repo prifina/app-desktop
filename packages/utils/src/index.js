@@ -24,3 +24,5 @@ export { default as PasswordField } from "./components/PasswordField";
 export { default as ProgressContainer } from "./components/ProgressContainer";
 export { default as PhoneNumberField } from "./components/PhoneNumberField";
 export { default as ConfirmAuth } from "./components/ConfirmAuth";
+export { default as ForgotPassword } from "./components/ForgotPassword";
+export { default as RecoverUsername } from "./components/RecoverUsername";

@@ -9,20 +9,17 @@ import {
   useFocus,
   addRegionCode,
   isValidNumber,
-} from "@prifina-apps/utils";
+  PhoneNumberField,
+} from "../";
 
 import { BlendIcon } from "@blend-ui/icons";
-
-import Login from "./Login";
 
 import bxCheckCircle from "@iconify/icons-bx/bx-check-circle";
 
 import { Box, Flex, Button, Text } from "@blend-ui/core";
 import { useToast } from "@blend-ui/toast";
-import ProgressContainer from "../components/ProgressContainer";
-import PhoneNumberField from "../components/PhoneNumberField";
 
-const RecoverUsername = props => {
+const RecoverUsername = ({ onBack, ...props }) => {
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -259,15 +256,12 @@ const RecoverUsername = props => {
 
   return (
     <React.Fragment>
-      {step === 4 && <Login />}
-      {step === 0 && (
-        <Box mt={120}>
-          <ProgressContainer
-            title={i18n.__("recoverUsernameTitle")}
-            pr={19}
-            minHeight={406}
-            progress={stepProgress}
-          >
+      <Box width="354px" textAlign="center" mt={50}>
+        <Text textStyle="h3" mb={30}>
+          {i18n.__("recoverUsernameTitle")}
+        </Text>
+        {step === 0 && (
+          <Box mt={120}>
             <Box mt={20}>
               <Text fontSize={16} textAlign={"center"}>
                 {i18n.__("recoverUsernameText1")}
@@ -350,9 +344,7 @@ const RecoverUsername = props => {
                 <Button
                   className="backButton"
                   variation={"outline"}
-                  onClick={() => {
-                    setStep(4);
-                  }}
+                  onClick={onBack}
                 >
                   {i18n.__("Back")}
                 </Button>
@@ -367,18 +359,10 @@ const RecoverUsername = props => {
                 </Button>
               </Flex>
             </Box>
-          </ProgressContainer>
-        </Box>
-      )}
-      {step === 1 && (
-        <Box mt={120}>
-          <ProgressContainer
-            title={i18n.__("recoverUsernameTitle")}
-            progress={50}
-            pr={19}
-            minHeight={406}
-            progress={stepProgress}
-          >
+          </Box>
+        )}
+        {step === 1 && (
+          <Box mt={120}>
             <Box mt={20}>
               <Text fontSize={12} textAlign="center">
                 {i18n.__("recoverUsernameText2")}
@@ -397,9 +381,9 @@ const RecoverUsername = props => {
                 {/* Leads to first page of this flow - to be implemented... */}
               </Button>
             </Box>
-          </ProgressContainer>
-        </Box>
-      )}
+          </Box>
+        )}
+      </Box>
     </React.Fragment>
   );
 };
