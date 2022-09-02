@@ -23,11 +23,15 @@ import {
   deleteAppVersionMutation,
   listDataSourcesQuery,
   i18n,
+  useFetch,
 } from "@prifina-apps/utils";
 
 import { API as GRAPHQL } from "aws-amplify";
+import { Storage as S3Storage } from "aws-amplify";
 
 import { useLocation, useHistory } from "react-router-dom";
+
+import config from "../config";
 
 import PropTypes from "prop-types";
 import { BlendIcon } from "@blend-ui/icons";
@@ -35,6 +39,8 @@ import { BlendIcon } from "@blend-ui/icons";
 import * as C from "./components";
 
 import { useToast } from "@blend-ui/toast";
+
+import styled from "styled-components";
 
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import hazardSymbol from "@iconify/icons-mdi/warning";
@@ -49,6 +55,16 @@ import {
   DataSourceForm,
   ApiForm,
 } from "../components/helper";
+
+const ImageZoomContainer = styled(Image)`
+  transition: transform 0.2s;
+
+  height: 142px;
+  &:hover {
+    transform: scale(1.5, 1.5);
+  }
+  cursor: pointer;
+`;
 
 const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
   const { colors } = useTheme();
@@ -71,6 +87,7 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     newIcon: allValues.icon,
     newDataSources: allValues.dataSources,
     newRemoteUrl: allValues.remoteUrl,
+    newStatus: allValues.status,
   });
 
   const handleValueChange = event => {
@@ -130,6 +147,19 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     }).then(res => {
       console.log("SUCCESS", res);
       toast.success("Project details updated", {});
+      // location.reload();
+      //   setStep(2);
+    });
+  };
+
+  const publishApp = () => {
+    updateAppVersionMutation(GRAPHQL, {
+      id: allValues.id,
+      status: 1,
+    }).then(res => {
+      console.log("SUCCESS", res);
+      setNewValues({ ...newValues });
+      toast.success("Your project has been published", {});
       // location.reload();
       //   setStep(2);
     });
@@ -295,6 +325,8 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     });
   };
 
+  useEffect(() => {}, [allValues.status]);
+
   useEffect(() => {
     if (allValues.version !== newValues.newVersion) {
       return console.log("true");
@@ -459,6 +491,57 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
     setFontColor(colors.textMuted);
   };
 
+  const assetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/assets`;
+
+  // const nativeAssetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/native-assets`;
+
+  const ImageZoom = ({ src }) => {
+    return (
+      <ImageZoomContainer
+        src={src}
+        height="150px"
+        onError={e => (e.target.style.display = "none")}
+        onClick={() => {
+          window.open(src);
+        }}
+      />
+    );
+  };
+
+  // const [listFiles, setListFiles] = useState([]);
+
+  // const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+  // S3Storage.configure({
+  //   bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+  //   region: userRegion,
+  // });
+  // const nativePath = allValues.id + "/native-assets/";
+
+  // useEffect(() => {
+  //   // declare the data fetching function
+  //   const fetchData = async () => {
+  //     const data = await S3Storage.list(nativePath, {
+  //       level: "public",
+  //       metadata: {
+  //         created: new Date().toISOString(),
+  //       },
+  //     })
+  //       .then(result => console.log("REAL result", result))
+
+  //       .catch(err => console.log(err));
+  //     setListFiles(data);
+  //   };
+
+  //   // call the function
+  //   fetchData()
+  //     // make sure to catch any error
+  //     .catch(console.error);
+  // }, []);
+
+  // console.log("list", listFiles);
+
+  // // var result = listFiles.map(person => ({ value: person.id,}));
+
   return (
     <>
       <Flex flexDirection="column">
@@ -596,6 +679,12 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
                 Native Assets
               </Text>
             </Box>
+            {/* <Box>
+              {listFiles.map((item, index) => {
+                <Text>{item.key}</Text>;
+              })}
+            </Box> */}
+            {/* <ImageFetch /> */}
 
             {/*  Only one asset??? */}
             <UploadAsset variant="native" id={allValues.id} />
@@ -776,6 +865,10 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               passAssetInfo={passAssetInfo}
             />
           </Flex>
+          <Image
+            src={`${assetsS3Path}/icon-1.png`}
+            onError={e => (e.target.style.display = "none")}
+          />
           <Flex alignItems="flex-end" mb={16}>
             <Box>
               <Text fontSize="sm" mb={5}>
@@ -801,12 +894,12 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               // passAssetInfo={passAssetInfo}
             />
           </Flex>
-        </C.ProjectContainer>
-        {/* <C.ProjectContainer alt="dataSources" mb={24}>
-          <Flex justifyContent="space-between" alignItems="center" mb={25}>
-            <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
+          <Flex width="700px" justifyContent="space-between">
+            <ImageZoom src={`${assetsS3Path}/screenshot-1.png`} />
+            <ImageZoom src={`${assetsS3Path}/screenshot-2.png`} />
+            <ImageZoom src={`${assetsS3Path}/screenshot-3.png`} />
           </Flex>
-        </C.ProjectContainer> */}
+        </C.ProjectContainer>
         <C.ProjectContainer alt="dataSources" mb={24}>
           <Flex justifyContent="space-between" alignItems="center" mb={45}>
             <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
@@ -972,7 +1065,8 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
           {newDataSources !== null &&
           newDataSources[0] !== "[]" &&
-          newDataSources.length !== 0 ? (
+          newDataSources.length !== 0 &&
+          allValues.dataSources !== ["[null]"] ? (
             <Flex flexDirection="column" justifyContent="center">
               {checkJson(newDataSources)
                 ? JSON.parse(newDataSources).map((item, index) => (
@@ -1019,6 +1113,23 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
             </Flex>
           )}
         </C.ProjectContainer>
+
+        <C.ActionContainer mb={32} justifyContent="space-between">
+          <C.CustomShape bg="baseError" />
+          <Box width="530px">
+            <Text>PUBLISH PROJECT</Text>
+            <Text mt={5} fontSize="xs">
+              Your App Status is -{" "}
+              {allValues.status === 1 ? "Published" : "Not Published"}
+            </Text>
+          </Box>
+          <Button
+            onClick={publishApp}
+            disabled={allValues.status === 1 ? true : false}
+          >
+            Publish
+          </Button>
+        </C.ActionContainer>
 
         <C.ActionContainer mb={32} justifyContent="space-between">
           <C.CustomShape bg="baseError" />

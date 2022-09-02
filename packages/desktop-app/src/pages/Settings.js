@@ -569,8 +569,6 @@ const Settings = props => {
     setModalOpen(oldValue => !oldValue);
   };
 
-  console.log("heystate", state);
-
   console.log("state email", state.email.value);
   console.log("state phoneNumber", state.phoneNumber.value);
   console.log("state region Code", state.regionCode);
