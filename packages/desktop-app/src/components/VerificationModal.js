@@ -15,6 +15,7 @@ import {
   Divider,
   Image,
   useTheme,
+  colors,
 } from "@blend-ui/core";
 
 import { API } from "aws-amplify";
@@ -28,9 +29,6 @@ import {
   getVerificationQuery,
   sendVerificationMutation,
   useFormFields,
-  useFocus,
-  useAccountContext,
-  onlyDigitChars,
   updateCognitoUserMutation,
   useAppContext,
 } from "@prifina-apps/utils";
@@ -136,6 +134,44 @@ const VerificationModal = ({
   console.log("verification email ", state);
   console.log("verification phone ", phoneNumber);
 
+  const resendCodeEmail = async e => {
+    try {
+      await sendVerificationMutation(
+        API,
+        "email",
+        JSON.stringify({
+          username: currentUser.loginUsername,
+          clientId: currentUser.client,
+          email: state.email.value,
+          given_name: currentUser.given_name,
+        }),
+      );
+      // alerts.info(i18n.__("phoneVerificatioSent"), {});
+    } catch (e) {
+      console.log("ERR", e);
+    }
+  };
+
+  const getClientID = process.env.REACT_APP_APP_CLIENT_ID;
+
+  const resendCodePhone = async e => {
+    try {
+      await sendVerificationMutation(
+        API,
+        "phone",
+        JSON.stringify({
+          username: currentUser.loginUsername,
+          clientId: getClientID,
+          phone_number: phoneNumber,
+          given_name: currentUser.given_name,
+        }),
+      );
+      // alerts.info(i18n.__("emailVerificatioSent"), {});
+    } catch (e) {
+      console.log("ERR", e);
+    }
+  };
+
   return (
     <React.Fragment>
       <Modal
@@ -201,42 +237,55 @@ const VerificationModal = ({
             </Flex>
           </ModalBody>
           <ModalFooter style={{ margin: 0 }}>
-            <Flex height="34px">
-              <Flex alignItems="center">
-                <Text fontSize="xxs" mr={1}>
-                  Didn’t receive the code?
-                </Text>
-                <Button variation="link" size="xs">
-                  <Text fontSize="xxs">Send another code</Text>
+            <Box textAlign="center">
+              <Flex height="34px" width="350px" justifyContent="space-between">
+                <Flex alignItems="center">
+                  <Text fontSize="xxs" mr={1}>
+                    Didn’t receive the code?
+                  </Text>
+                  <Button
+                    variation="link"
+                    size="xs"
+                    onClick={
+                      verificationType === "phone"
+                        ? resendCodePhone
+                        : resendCodeEmail
+                    }
+                  >
+                    <Text fontSize="xxs" ml={3} color={colors.textLink}>
+                      Send another code
+                    </Text>
+                  </Button>
+                </Flex>
+
+                <Button
+                  size="xs"
+                  // onClick={e => {
+                  // //   setDialogOpen(false);
+
+                  // on
+
+                  //   e.preventDefault();
+                  // }}
+                  onClick={
+                    verificationType === "phone"
+                      ? verifyClickPhone
+                      : verifyClickEmail
+                  }
+                >
+                  {/* {i18n.__("declineButton")} */}
+                  Verify
                 </Button>
               </Flex>
               <Button
                 size="xs"
-                variation={"outline"}
+                variation={"link"}
                 colorStyle={"error"}
                 onClick={onClose}
               >
                 {i18n.__("cancelButton")}
               </Button>
-              <Button
-                size="xs"
-                // onClick={e => {
-                // //   setDialogOpen(false);
-
-                // on
-
-                //   e.preventDefault();
-                // }}
-                onClick={
-                  verificationType === "phone"
-                    ? verifyClickPhone
-                    : verifyClickEmail
-                }
-              >
-                {/* {i18n.__("declineButton")} */}
-                Verify
-              </Button>
-            </Flex>
+            </Box>
           </ModalFooter>
         </ModalContent>
       </Modal>
