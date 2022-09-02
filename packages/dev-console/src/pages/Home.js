@@ -174,6 +174,7 @@ const Main = ({ data, currentUser }) => {
     icon: "",
     dataSources: [],
     remoteUrl: "",
+    status,
   });
 
   const Columns = [
@@ -207,6 +208,7 @@ const Main = ({ data, currentUser }) => {
                 icon: props.row.original.icon,
                 dataSources: props.row.original.dataSources,
                 remoteUrl: props.row.original.remoteUrl,
+                status: props.row.original.status,
               });
             }}
           >
@@ -364,6 +366,7 @@ const Main = ({ data, currentUser }) => {
 
   const onDialogClick = async e => {
     setProjectDialogOpen(false);
+    setStep(2);
     e.preventDefault();
   };
 
@@ -431,6 +434,10 @@ const Main = ({ data, currentUser }) => {
     setUpdatedData(updatedApps);
     console.log("updated apps", updatedApps);
   }, []);
+
+  let dataLength = data.length;
+
+  console.log("data length", dataLength);
 
   useEffect(() => {
     console.log("updated apps triggered");
