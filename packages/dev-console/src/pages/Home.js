@@ -40,7 +40,6 @@ import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
 //import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 
-import { useHistory } from "react-router-dom";
 
 import { StyledBox } from "../components/DefaultBackground";
 
@@ -137,7 +136,6 @@ Content.propTypes = {
 };
 
 const Main = ({ data, currentUser }) => {
-  const history = useHistory();
 
   const { colors } = useTheme();
 
@@ -460,7 +458,7 @@ const Main = ({ data, currentUser }) => {
               <CreateProjectModal
                 onClose={onDialogClose}
                 onButtonClick={onDialogClick}
-                // isOpen={projectDialogOpen}
+              // isOpen={projectDialogOpen}
               />
             )}
             <Flex flexDirection="column" alignItems="center" mt="42px">
@@ -520,7 +518,7 @@ const Main = ({ data, currentUser }) => {
               <CreateProjectModal
                 onClose={onDialogClose}
                 onButtonClick={onDialogClick}
-                // isOpen={projectDialogOpen}
+              // isOpen={projectDialogOpen}
               />
             )}
             <Flex paddingTop="48px">
@@ -599,7 +597,6 @@ Main.propTypes = {
 };
 
 const Home = props => {
-  const history = useHistory();
   const {
     userAuth,
     currentUser,
@@ -721,9 +718,9 @@ const Home = props => {
     <>
       <ToastContextProvider>
         {initClient && (<>
-          
+
           <Content Component={AppComponent} {...componentProps.current} />
-          </>
+        </>
         )}
         {!initClient && (
           <div>

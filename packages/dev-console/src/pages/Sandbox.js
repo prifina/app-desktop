@@ -30,7 +30,9 @@ import {
   i18n,
   checkUrl,
 } from "@prifina-apps/utils";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
+import { useNavigate } from "react-router";
 
 import { Box, Flex, Text, Button, Input, useTheme } from "@blend-ui/core";
 
@@ -40,7 +42,7 @@ import { useToast } from "@blend-ui/toast";
 
 //import { useRemoteComponent } from "../useRemoteComponent";
 
-import {Remote} from "@prifina-apps/remote";
+import { Remote } from "@prifina-apps/remote";
 import styled, { keyframes } from "styled-components";
 import ReactJson from "react-json-view";
 
@@ -173,57 +175,12 @@ const TypeBadge = styled.span`
   color: ${props => (props.type === 2 ? "#FC62C1" : "#CB8E12")};
 `;
 
-const RemoteContent = ({ url, ...props }) => {
-  console.log("COMPONENT URL ", url);
-  // const [loading, err, Component] = useRemoteComponent(
-  //   "https://raw.githubusercontent.com/prifina/widgets/master/packages/dry-run/dist/main.bundle.js",
-  // );
-  const [loading, err, Component] = useRemoteComponent(url);
 
-  /*
-      useEffect(() => {
-        if (loading) {
-          console.log("Still loading... ");
-        } else {
-          console.log("Componend loaded ");
-        }
-        if (err !== null) {
-          console.log("ERRORS ", err);
-        }
-      }, [loading, err, Component]);
-    
-      return [];
-      */
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (err != null) {
-    console.log("REMOTE ERROR ", err);
-    return (
-      <React.Fragment>
-        <Text fontSize="xs" colorStyle="error">
-          Unknown Error: {err.toString()}
-        </Text>
-        <Text fontSize="xs" colorStyle="error">
-          Invalid URL {url} or Possible CORS problem.
-        </Text>
-        <Text fontSize="xs" colorStyle="error">
-          Check Browser console for more informations...
-        </Text>
-      </React.Fragment>
-      // <ErrorStateScreen />
-    );
-  }
-  //console.log("COMPONENT ", Component);
-  return <Component {...props} />;
-};
 //const Widget = forwardRef((props, ref) => {
 
 //const Content = ({ appSyncClient, url, prifinaID, ...props }) => {
 const Content = forwardRef((props, ref) => {
-  const { appSyncClient, url, prifinaID, updateDebug, appSettings,appID } = props;
+  const { appSyncClient, url, prifinaID, updateDebug, appSettings, appID } = props;
   const {
     check,
     currentUser,
@@ -441,20 +398,20 @@ const Content = forwardRef((props, ref) => {
             }}
           >
             <WidgetWrapper>
-            
-            <Remote ref={ref}
-          componentProps={{...settingsInit}}
-          system={{
-            //remote: "x866fscSq5Ae7bPgUtb6ffB",
-                  
-            remote:appID,
-            url:"dist/remoteEntry.js",
-            //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
-            //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
-           //https://github.com/tro9999/module-federation-examples/blob/master/dynamic-system-host/app2/dist/remoteEntry.js
-            
-            module: "./App",
-          }} />
+
+              <Remote ref={ref}
+                componentProps={{ ...settingsInit }}
+                system={{
+                  //remote: "x866fscSq5Ae7bPgUtb6ffB",
+
+                  remote: appID,
+                  url: "dist/remoteEntry.js",
+                  //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
+                  //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+                  //https://github.com/tro9999/module-federation-examples/blob/master/dynamic-system-host/app2/dist/remoteEntry.js
+
+                  module: "./App",
+                }} />
             </WidgetWrapper>
           </div>
         </div>
@@ -462,8 +419,8 @@ const Content = forwardRef((props, ref) => {
     );
   } else {
     return null
-  {/* return <RemoteContent url={url} ref={ref} {...settingsInit} />;
-  */} 
+    {/* return <RemoteContent url={url} ref={ref} {...settingsInit} />;
+  */}
   }
 });
 
@@ -485,7 +442,9 @@ const Sandbox = props => {
   const { AUTHConfig, APIConfig, userAuth, currentUser } = useAppContext();
   //const activeUser = useRef({});
 
-  const history = useHistory();
+  //const history = useHistory();
+
+  const navigate = useNavigate();
 
   const location = useLocation();
 
@@ -530,69 +489,69 @@ const Sandbox = props => {
   console.log("check remote link valid", remoteLink);
   console.log("check valid status", validStatus);
 
-  
+
   useEffect(() => {
     async function init() {
       // const remoteAppUrl = localStorage.getItem("remoteWidget")
-         // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
-         //componentProps.current = { url: remoteApp };
-     
-         const remoteAppUrl = allValues.remoteUrl;
-     
-         const session = await Auth.currentSession();
-         const prifinaID = session.idToken.payload["custom:prifina"];
-         const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
-     
-         console.log("CURRENT USER ", currentPrifinaUser);
-         let appProfile = JSON.parse(
-           currentPrifinaUser.data.getPrifinaUser.appProfile,
-         );
-     
-         const currentApp = await getAppVersionQuery(GRAPHQL, currentAppId);
-         console.log("currentApp", currentApp);
-         currentAppRef.current = {
-           appID: currentAppId,
-           settings: currentApp.data.getAppVersion.settings,
-           remoteUrl: currentApp.data.getAppVersion.remoteUrl,
-         };
-         if (currentAppRef.current.settings === null) {
-           currentAppRef.current.settings = [];
-         }
-     
-         console.log("APP INFO", currentAppRef.current);
-         let clientEndpoint = "";
-         let clientRegion = "";
-         if (!appProfile.hasOwnProperty("endpoint")) {
-           const defaultProfileUpdate = await updateUserProfileMutation(
-             GRAPHQL,
-             currentUser.prifinaID,
-           );
-           console.log("PROFILE UPDATE ", defaultProfileUpdate);
-           appProfile = JSON.parse(
-             defaultProfileUpdate.data.updateUserProfile.appProfile,
-           );
-         }
-         clientEndpoint = appProfile.endpoint;
-         clientRegion = appProfile.region;
-     
-         const client = await createClient(clientEndpoint, clientRegion, session);
-         componentProps.current.appSyncClient = client;
-         componentProps.current.prifinaID = prifinaID;
-         componentProps.current.initials = appProfile.initials;
-         componentProps.current.url = remoteAppUrl;
-         componentProps.current.widget = true;
-         componentProps.current.appID = currentAppId;
-         
-     
-         console.log("COMPONENT PROPS....", componentProps);
-     
-         if (remoteAppUrl === null) {
-           setReady(false);
-         } else {
-           setReady(true);
-         }
-       }
-   init();
+      // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
+      //componentProps.current = { url: remoteApp };
+
+      const remoteAppUrl = allValues.remoteUrl;
+
+      const session = await Auth.currentSession();
+      const prifinaID = session.idToken.payload["custom:prifina"];
+      const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
+
+      console.log("CURRENT USER ", currentPrifinaUser);
+      let appProfile = JSON.parse(
+        currentPrifinaUser.data.getPrifinaUser.appProfile,
+      );
+
+      const currentApp = await getAppVersionQuery(GRAPHQL, currentAppId);
+      console.log("currentApp", currentApp);
+      currentAppRef.current = {
+        appID: currentAppId,
+        settings: currentApp.data.getAppVersion.settings,
+        remoteUrl: currentApp.data.getAppVersion.remoteUrl,
+      };
+      if (currentAppRef.current.settings === null) {
+        currentAppRef.current.settings = [];
+      }
+
+      console.log("APP INFO", currentAppRef.current);
+      let clientEndpoint = "";
+      let clientRegion = "";
+      if (!appProfile.hasOwnProperty("endpoint")) {
+        const defaultProfileUpdate = await updateUserProfileMutation(
+          GRAPHQL,
+          currentUser.prifinaID,
+        );
+        console.log("PROFILE UPDATE ", defaultProfileUpdate);
+        appProfile = JSON.parse(
+          defaultProfileUpdate.data.updateUserProfile.appProfile,
+        );
+      }
+      clientEndpoint = appProfile.endpoint;
+      clientRegion = appProfile.region;
+
+      const client = await createClient(clientEndpoint, clientRegion, session);
+      componentProps.current.appSyncClient = client;
+      componentProps.current.prifinaID = prifinaID;
+      componentProps.current.initials = appProfile.initials;
+      componentProps.current.url = remoteAppUrl;
+      componentProps.current.widget = true;
+      componentProps.current.appID = currentAppId;
+
+
+      console.log("COMPONENT PROPS....", componentProps);
+
+      if (remoteAppUrl === null) {
+        setReady(false);
+      } else {
+        setReady(true);
+      }
+    }
+    init();
   }, []);
 
   // const debugUpdate = useCallback(content => {
@@ -732,7 +691,8 @@ const Sandbox = props => {
                   color={colors.textPrimary}
                   style={{ cursor: "pointer" }}
                   onClick={() => {
-                    history.goBack();
+                    //history.goBack();
+                    navigate(-1);
                   }}
                 />
                 <Text ml={16} mr={100}>
@@ -759,7 +719,7 @@ const Sandbox = props => {
                 height={"100%"}
               >
                 {currentAppRef.current.remoteUrl !== null ||
-                currentAppRef.current.remoteUrl !== "" ? (
+                  currentAppRef.current.remoteUrl !== "" ? (
                   <>
                     {ready && (
                       <Content
@@ -903,7 +863,7 @@ const Sandbox = props => {
                                       </Text>
                                     )}
                                     {remoteLink !=
-                                    allValues.remoteUrl ? null : (
+                                      allValues.remoteUrl ? null : (
                                       <Text fontSize="xxs" color="red">
                                         This remote link already exists
                                       </Text>
@@ -921,8 +881,8 @@ const Sandbox = props => {
                                 <Button
                                   disabled={
                                     validUrl &&
-                                    remoteLink.length > 0 &&
-                                    remoteLink != allValues.remoteUrl
+                                      remoteLink.length > 0 &&
+                                      remoteLink != allValues.remoteUrl
                                       ? false
                                       : true
                                   }
@@ -962,7 +922,7 @@ const Sandbox = props => {
                             <ReactJson key={state.updated} src={asyncContent} />
                           </div>
                         </TabPanel>
-                       
+
                       </TabPanelList>
                     </Tabs>
                   </div>

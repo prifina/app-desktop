@@ -1,8 +1,8 @@
 // /* global localStorage */
 
 import React, { useEffect, useReducer, useRef } from "react";
-
-import { withRouter, useLocation, useHistory } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { useLocation } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
 
 import { API, Auth } from "aws-amplify";
@@ -59,7 +59,7 @@ let AUTHConfig = {
 
 function App() {
   //console.log("REMOTE TEST ",Remote);
-    console.log("APP START");
+  console.log("APP START");
   console.log("CONFIG ", config);
 
   const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
@@ -71,7 +71,7 @@ function App() {
   Auth.configure(AUTHConfig);
   API.configure(APIConfig);
   const { pathname, search } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const userAgent =
     typeof window.navigator === "undefined" ? "" : navigator.userAgent;
@@ -109,15 +109,15 @@ function App() {
       const tracker = Base64.stringify(sha512(window.deviceFingerPrint));
       const lastAuthUser = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
-          config.cognito.APP_CLIENT_ID +
-          ".LastAuthUser",
+        config.cognito.APP_CLIENT_ID +
+        ".LastAuthUser",
       );
       const currentIdToken = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
-          config.cognito.APP_CLIENT_ID +
-          "." +
-          lastAuthUser +
-          ".idToken",
+        config.cognito.APP_CLIENT_ID +
+        "." +
+        lastAuthUser +
+        ".idToken",
       );
       const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
 
@@ -170,9 +170,9 @@ function App() {
               if (
                 key.startsWith(
                   "CognitoIdentityServiceProvider." +
-                    config.cognito.APP_CLIENT_ID +
-                    "." +
-                    lastAuthUser,
+                  config.cognito.APP_CLIENT_ID +
+                  "." +
+                  lastAuthUser,
                 )
               ) {
                 tokens[key] = localStorage.getItem(key);
@@ -184,8 +184,8 @@ function App() {
               if (
                 key.startsWith(
                   "CognitoIdentityServiceProvider." +
-                    config.cognito.APP_CLIENT_ID +
-                    ".LastAuthUser",
+                  config.cognito.APP_CLIENT_ID +
+                  ".LastAuthUser",
                 )
               ) {
                 tokens[key] = localStorage.getItem(key);
@@ -241,19 +241,23 @@ function App() {
             console.log("REDIRECT SEARCH", search);
             // ?redirect=/
             if (search.startsWith("?redirect")) {
-              history.replace("/login" + search);
+              navigate("/login" + search, { replace: true })
+              //history.replace("/login" + search);
             } else if (
               pathname.startsWith("/login") &&
               search.startsWith("?debug")
             ) {
-              history.replace("/login" + search);
+              //history.replace("/login" + search);
+              navigate("/login" + search, { replace: true })
             } else if (
               pathname.startsWith("/register") &&
               search.startsWith("?debug")
             ) {
-              history.replace("/register" + search);
+              //history.replace("/register" + search);
+              navigate("/register" + search, { replace: true })
             } else {
-              history.replace("/login?redirect=" + pathname + search);
+              //history.replace("/login?redirect=" + pathname + search);
+              navigate("/login?redirect=" + pathname + search, { replace: true })
             }
           } else {
             let tokens = JSON.parse(prifinaSession.data.getSession.tokens);
@@ -292,7 +296,9 @@ function App() {
       deletePrifinaSessionMutation(API, tracker).then(() => {
         Auth.signOut().then(() => {
           setState({ isAuthenticated: auth });
-          history.replace("/");
+          //history.replace("/");
+          navigate("/", { replace: true })
+
         });
       });
     } else {
@@ -326,24 +332,24 @@ function App() {
 
   const mergedTheme = mergeDeep(defaultTheme, newTheme);
   //const remoteRef=useRef();
-/*
-  <Remote ref={remoteRef}
-  componentProps={{ schema: { test: "cra works2" } }}
-  system={{
-    remote: "mfeApp2",
-    url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
-    module: "./App",
-  }} />
-
-
-            <Remote ref={remoteRef}
-  componentProps={{ schema: { test: "cra works2" } }}
-  system={{
-    remote: "mfeApp2",
-    url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
-    module: "./App",
-  }} />
-*/
+  /*
+    <Remote ref={remoteRef}
+    componentProps={{ schema: { test: "cra works2" } }}
+    system={{
+      remote: "mfeApp2",
+      url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+      module: "./App",
+    }} />
+  
+  
+              <Remote ref={remoteRef}
+    componentProps={{ schema: { test: "cra works2" } }}
+    system={{
+      remote: "mfeApp2",
+      url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+      module: "./App",
+    }} />
+  */
   return (
     <AppContext.Provider
       value={{
@@ -361,8 +367,8 @@ function App() {
         <React.Fragment>
           <ToastContextProvider>
             <GlobalStyle />
-            
-            
+
+
             {!isAuthenticating && <Routes />}
             {isAuthenticating && <div>Loading...</div>}
           </ToastContextProvider>
@@ -372,4 +378,4 @@ function App() {
   );
 }
 
-export default withRouter(App);
+export default App;

@@ -6,7 +6,9 @@ import bxUser from "@iconify/icons-bx/bx-user";
 
 import { API, Auth } from "aws-amplify";
 
-import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
+import { useLocation } from "react-router-dom";
 
 import appStudioIcon from "../assets/app-studio-icon.svg";
 import PrifinaIcon from "../assets/prifina-icon.svg";
@@ -64,7 +66,10 @@ const ImageFlex = styled(Flex)`
 `;
 
 const Login = () => {
-  const history = useHistory();
+  //const history = useHistory();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { colors } = useTheme();
 
@@ -80,9 +85,9 @@ const Login = () => {
 
   const appDebug =
     process.env.REACT_APP_DEBUG === "true" &&
-    history.location.search === "?debug=true";
-  console.log("APP DEBUG ", appDebug);
-
+    location.search === "?debug=true";
+  console.log("APP DEBUG ", appDebug, location);
+  //history.location.search === "?debug=true";
   const alerts = useToast();
 
   const [loginFields, handleChange] = useFormFields({
@@ -179,14 +184,15 @@ const Login = () => {
     
     credentialParams.Logins[provider] = idToken;
     const cognitoIdentityCredentials=await cognitoClient.send(
-				new GetCredentialsForIdentityCommand(credentialParams
-				)
+        new GetCredentialsForIdentityCommand(credentialParams
+        )
     //console.log(cognitoIdentityCredentials);
 */
 
       if (appDebug && user.preferredMFA === "NOMFA") {
         userAuth(true);
-        history.replace("/home");
+        //history.replace("/home");
+        navigate("/home", { replace: true })
       } else {
         if (user.preferredMFA === "NOMFA") {
           const mfa = await Auth.setPreferredMFA(user, "SMS");
@@ -253,7 +259,8 @@ const Login = () => {
   };
 
   const createAccountClick = e => {
-    history.replace("/register");
+    //history.replace("/register");
+    navigate("/register", { replace: true })
     e.preventDefault();
   };
   const backButtonClick = e => {

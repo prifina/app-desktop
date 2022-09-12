@@ -3,14 +3,17 @@ import { Box, Button } from "@blend-ui/core";
 
 import ProgressContainer from "../components/ProgressContainer";
 
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
 import { Auth } from "aws-amplify";
 
 import { useAppContext, i18n } from "@prifina-apps/utils";
 i18n.init();
 
 const Logout = props => {
-  const history = useHistory();
+  //const history = useHistory();
+  const navigate = useNavigate();
   const { userAuth } = useAppContext();
 
   const buttonClick = async e => {
@@ -19,7 +22,8 @@ const Logout = props => {
 
       await Auth.signOut();
       userAuth(false);
-      history.replace("/");
+      //history.replace("/");
+      navigate("/", { replace: true })
       // otherwise page is not reloaded....
       // window.location.reload();
     } catch (e) {

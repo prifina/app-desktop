@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 
+import { useNavigate } from "react-router";
 import {
   Box,
   Flex,
@@ -23,13 +24,10 @@ import {
   deleteAppVersionMutation,
   listDataSourcesQuery,
   i18n,
-  useFetch,
 } from "@prifina-apps/utils";
 
 import { API as GRAPHQL } from "aws-amplify";
-import { Storage as S3Storage } from "aws-amplify";
 
-import { useLocation, useHistory } from "react-router-dom";
 
 import config from "../config";
 
@@ -81,14 +79,15 @@ const ImageZoom = ({ src }) => {
 };
 
 ImageZoom.propTypes = {
-  src:PropTypes.string
-}  
+  src: PropTypes.string
+}
 
 
-const ProjectDetails = ({ allValues,  setStep, ...props }) => {
+const ProjectDetails = ({ allValues, setStep, ...props }) => {
   const { colors } = useTheme();
 
-  const history = useHistory();
+  //const history = useHistory();
+  const navigate = useNavigate();
 
   const toast = useToast();
 
@@ -211,7 +210,7 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
           <Flex flexDirection="row" alignItems="center" mr="15px">
             <Radio
               fontSize="8px"
-              onChange={() => {}}
+              onChange={() => { }}
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 2 });
               }}
@@ -221,7 +220,7 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
           <Flex flexDirection="row" alignItems="center">
             <Radio
               fontSize="10px"
-              onChange={() => {}}
+              onChange={() => { }}
               checked
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 1 });
@@ -238,7 +237,7 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
             <Radio
               checked
               fontSize="10px"
-              onChange={() => {}}
+              onChange={() => { }}
               value="1"
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 2 });
@@ -249,7 +248,7 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
           <Flex flexDirection="row" alignItems="center">
             <Radio
               fontSize="10px"
-              onChange={() => {}}
+              onChange={() => { }}
               value="2"
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 1 });
@@ -344,7 +343,7 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
     });
   };
 
-  useEffect(() => {}, [allValues.status]);
+  useEffect(() => { }, [allValues.status]);
 
   useEffect(() => {
     if (allValues.version !== newValues.newVersion) {
@@ -579,10 +578,14 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
           </Flex>
           <Button
             onClick={() => {
+              //const navigate = useNavigate();
+              navigate("/sandbox", { state: { allValues: allValues } });
+              /*
               history.push({
                 pathname: "/sandbox",
                 state: { allValues: allValues },
               });
+              */
             }}
           >
             Launch Sandbox
@@ -650,9 +653,9 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
               <Text fontSize="sm" mb={5}>
                 Build deployment package
               </Text>
-              
+
               <UploadFile widgetId={allValues.id} />
-              
+
             </Box>
             <Box ml={25}>
               <Text fontSize="xs" color={colors.textMuted}>
@@ -888,19 +891,19 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
               id={allValues.id}
               type="screenshot"
               numId="1"
-              // passAssetInfo={passAssetInfo}
+            // passAssetInfo={passAssetInfo}
             />
             <UploadAsset
               id={allValues.id}
               type="screenshot"
               numId="2"
-              // passAssetInfo={passAssetInfo}
+            // passAssetInfo={passAssetInfo}
             />
             <UploadAsset
               id={allValues.id}
               type="screenshot"
               numId="3"
-              // passAssetInfo={passAssetInfo}
+            // passAssetInfo={passAssetInfo}
             />
           </Flex>
           <Flex width="700px" justifyContent="space-between">
@@ -1073,27 +1076,27 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
           </Flex>
 
           {newDataSources !== null &&
-          newDataSources[0] !== "[]" &&
-          newDataSources.length !== 0 &&
-          allValues.dataSources !== ["[null]"] ? (
+            newDataSources[0] !== "[]" &&
+            newDataSources.length !== 0 &&
+            allValues.dataSources !== ["[null]"] ? (
             <Flex flexDirection="column" justifyContent="center">
               {checkJson(newDataSources)
                 ? JSON.parse(newDataSources).map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))
+                  <ControlAddedDataSources
+                    key={index}
+                    dataSource={item}
+                    uncompleteDataSource={uncompleteDataSource}
+                    editControled={editControled}
+                  />
+                ))
                 : newDataSources.map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))}
+                  <ControlAddedDataSources
+                    key={index}
+                    dataSource={item}
+                    uncompleteDataSource={uncompleteDataSource}
+                    editControled={editControled}
+                  />
+                ))}
             </Flex>
           ) : (
             <Flex flexDirection="column" justifyContent="center">
@@ -1161,7 +1164,7 @@ const ProjectDetails = ({ allValues,  setStep, ...props }) => {
 
 ProjectDetails.propTypes = {
   allValues: PropTypes.object,
-  setStep:PropTypes.func
+  setStep: PropTypes.func
 
 };
 

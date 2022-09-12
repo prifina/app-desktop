@@ -22,7 +22,7 @@ import {
   newAppVersionMutation,
 } from "@prifina-apps/utils";
 
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
 
 import * as C from "./components";
 
@@ -47,7 +47,6 @@ const StyledBox = styled(Box)`
 
 const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
   const { currentUser } = useAppContext();
-  const history = useHistory();
   console.log("NEW APP ", currentUser);
 
   const { colors } = useTheme();
@@ -124,7 +123,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => {}}
+                      onChange={() => { }}
                       onClick={() => {
                         setAppType(1);
                       }}
@@ -134,7 +133,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => {}}
+                      onChange={() => { }}
                       onClick={() => {
                         setAppType(2);
                       }}
