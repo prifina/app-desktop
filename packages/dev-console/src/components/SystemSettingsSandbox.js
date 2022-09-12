@@ -4,13 +4,8 @@ import { useFormFields } from "@prifina-apps/utils";
 
 import { Flex, Box, Button, Text, useTheme } from "@blend-ui/core";
 
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-} from "@blend-ui/modal";
+import PropTypes from "prop-types";
+
 
 const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
   const theme = useTheme();
@@ -178,5 +173,9 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
     </Box>
   );
 };
+SystemSettingsSandbox.propTypes = {
+  onClick:PropTypes.func,
+  appSettings:PropTypes.object
+}  
 
 export default SystemSettingsSandbox;

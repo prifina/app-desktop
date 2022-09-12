@@ -177,6 +177,10 @@ UploadAsset.defaultProps = {
 UploadAsset.propTypes = {
   row: PropTypes.instanceOf(Array),
   close: PropTypes.func,
+  id:PropTypes.string,
+  type:PropTypes.string,
+  numId:PropTypes.string,
+  variant:PropTypes.string
 };
 
 UploadAsset.displayName = "UploadAsset";

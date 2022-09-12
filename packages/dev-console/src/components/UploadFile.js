@@ -36,118 +36,30 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const UploadFile = ({ props, widgetId }) => {
-  const { colors } = useTheme();
-
-  const toast = useToast();
-
-  const [droppedFiles, setDroppedFiles] = useState([]);
-
-  const [uploaded, setUploaded] = useState("");
-  console.log("PROPS ", props);
-
-  const [appFields, handleChange] = useFormFields({
-    version: "",
-  });
-  window.LOG_LEVEL = "DEBUG";
-
-  console.log("log", NativeTypes);
-  const TargetBox = props => {
-    const { onDrop } = props;
-    const [{ canDrop, isOver }, drop] = useDrop(
-      () => ({
-        accept: [NativeTypes.FILE],
-
-        drop(item) {
-          if (onDrop) {
-            onDrop(item);
-          }
-        },
-        canDrop(item) {
-          return true;
-        },
-        hover(item) {},
-        collect: monitor => {
-          const item = monitor.getItem();
-          if (item) {
-          }
-          return {
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop(),
-          };
-        },
-      }),
-      [props],
-    );
-    const isActive = canDrop && isOver;
-    return (
-      <Flex style={style} ref={drop}>
-        {/* <Text ref={drop}>
-          {isActive ? "Release to drop" : "Drag file here"}
-        </Text> */}
-        {isActive ? (
-          <Text color={colors.textMuted}>Release to drop</Text>
-        ) : (
-          <Flex width="167px" alignItems="center" flexDirection="column">
-            <Text fontSize="xs" color={colors.textMuted}>
-              Upload a .zip file of your build
-            </Text>
-            <Text fontSize="xs" color={colors.textMuted}>
-              Drag and drop a file here or
-            </Text>
-            <StyledButton
-              accept={".zip"}
-              onChange={buttonUploadFile}
-              variation={"file"}
-            >
-              Click to upload
-            </StyledButton>
-          </Flex>
-        )}
-      </Flex>
-    );
-  };
-
-  function list(files) {
-    const label = file =>
-      `'${file.name}' of size '${file.size}' and type '${file.type}'`;
-    return files.map(file => (
-      <Text fontSize="xs" key={file.name}>
-        {label(file)}
-      </Text>
-    ));
+const list=(files) =>{
+  const label = file =>
+    `'${file.name}' of size '${file.size}' and type '${file.type}'`;
+  return files.map(file => (
+    <Text fontSize="xs" key={file.name}>
+      {label(file)}
+    </Text>
+  ));
+}
+const FileList = ({ files }) => {
+  if (files.length === 0) {
+    // return <Text>Nothing to display</Text>;
+    return null;
   }
-  const FileList = ({ files }) => {
-    if (files.length === 0) {
-      // return <Text>Nothing to display</Text>;
-      return null;
-    }
-    const fileList = useMemo(() => list(files), [files]);
-    return <Text>{fileList}</Text>;
-  };
+  const fileList = useMemo(() => list(files), [files]);
+  return <Text>{fileList}</Text>;
+};
 
-  const handleFileDrop = useCallback(
-    item => {
-      if (item) {
-        const files = item.files;
-        setDroppedFiles(files);
-      }
-    },
+FileList.propTypes = {
+  files:PropTypes.object,
+}
 
-    [setDroppedFiles],
-  );
-
-  const s3Key = widgetId + "/packages/" + "build-package" + ".zip";
-
-  const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
-
-  /*
-  const currentCredentials = JSON.parse(
-    localStorage.getItem("PrifinaClientCredentials"),
-  );
-
-  console.log("CREDS ", currentCredentials);
-  */
+const TargetBox = (onDrop,colors) => {
+  
 
   const buttonUploadFile = async e => {
     try {
@@ -180,6 +92,107 @@ const UploadFile = ({ props, widgetId }) => {
       toast.error("Upload failed", {});
     }
   };
+
+  const [{ canDrop, isOver }, drop] = useDrop(
+    () => ({
+      accept: [NativeTypes.FILE],
+
+      drop(item) {
+        if (onDrop) {
+          onDrop(item);
+        }
+      },
+      canDrop(item) {
+        return true;
+      },
+      hover(item) {},
+      collect: monitor => {
+        const item = monitor.getItem();
+        if (item) {
+        }
+        return {
+          isOver: monitor.isOver(),
+          canDrop: monitor.canDrop(),
+        };
+      },
+    }),
+    [],
+  );
+
+  const isActive = canDrop && isOver;
+  return (
+    <Flex style={style} ref={drop}>
+      {/* <Text ref={drop}>
+        {isActive ? "Release to drop" : "Drag file here"}
+      </Text> */}
+      {isActive ? (
+        <Text color={colors.textMuted}>Release to drop</Text>
+      ) : (
+        <Flex width="167px" alignItems="center" flexDirection="column">
+          <Text fontSize="xs" color={colors.textMuted}>
+            Upload a .zip file of your build
+          </Text>
+          <Text fontSize="xs" color={colors.textMuted}>
+            Drag and drop a file here or
+          </Text>
+          <StyledButton
+            accept={".zip"}
+            onChange={buttonUploadFile}
+            variation={"file"}
+          >
+            Click to upload
+          </StyledButton>
+        </Flex>
+      )}
+    </Flex>
+  );
+};
+
+TargetBox.propTypes = {
+  onDrop:PropTypes.func,
+  colors:PropTypes.object
+}
+
+const UploadFile = ({  widgetId }) => {
+  const { colors } = useTheme();
+
+  const toast = useToast();
+
+  const [droppedFiles, setDroppedFiles] = useState([]);
+
+  const [uploaded, setUploaded] = useState("");
+  //console.log("PROPS ", props);
+
+  const [appFields, handleChange] = useFormFields({
+    version: "",
+  });
+  window.LOG_LEVEL = "DEBUG";
+
+  console.log("log", NativeTypes);
+  
+
+  const handleFileDrop = useCallback(
+    item => {
+      if (item) {
+        const files = item.files;
+        setDroppedFiles(files);
+      }
+    },
+
+    [setDroppedFiles],
+  );
+
+  const s3Key = widgetId + "/packages/" + "build-package" + ".zip";
+
+  const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+
+  /*
+  const currentCredentials = JSON.parse(
+    localStorage.getItem("PrifinaClientCredentials"),
+  );
+
+  console.log("CREDS ", currentCredentials);
+  */
 
   const uploadFile = async e => {
     try {
@@ -215,7 +228,7 @@ const UploadFile = ({ props, widgetId }) => {
     }
   };
 
-  useEffect(async () => {
+  useEffect( () => {
     if (droppedFiles.length > 0) {
       uploadFile();
     }
@@ -227,7 +240,7 @@ const UploadFile = ({ props, widgetId }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <>
-        <TargetBox onDrop={handleFileDrop} />
+        <TargetBox onDrop={handleFileDrop} colors={colors} />
         <FileList files={droppedFiles} />
         {uploaded !== "" ? (
           <Text fontSize="xs" color={colors.baseSuccess}>
@@ -240,7 +253,8 @@ const UploadFile = ({ props, widgetId }) => {
 };
 
 UploadFile.propTypes = {
-  row: PropTypes.instanceOf(Array),
+  widgetId:PropTypes.string,
+  row: PropTypes.array,
   close: PropTypes.func,
 };
 

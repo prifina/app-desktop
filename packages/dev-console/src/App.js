@@ -33,6 +33,8 @@ import { ToastContextProvider } from "@blend-ui/toast";
 
 import { S3Client } from "@aws-sdk/client-s3";
 
+//import {Remote} from "@prifina-apps/remote";
+
 const GlobalStyle = createGlobalStyle`
   body {
    ${baseStyles};
@@ -56,7 +58,8 @@ let AUTHConfig = {
 };
 
 function App() {
-  console.log("APP START");
+  //console.log("REMOTE TEST ",Remote);
+    console.log("APP START");
   console.log("CONFIG ", config);
 
   const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
@@ -322,7 +325,25 @@ function App() {
   }
 
   const mergedTheme = mergeDeep(defaultTheme, newTheme);
+  //const remoteRef=useRef();
+/*
+  <Remote ref={remoteRef}
+  componentProps={{ schema: { test: "cra works2" } }}
+  system={{
+    remote: "mfeApp2",
+    url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+    module: "./App",
+  }} />
 
+
+            <Remote ref={remoteRef}
+  componentProps={{ schema: { test: "cra works2" } }}
+  system={{
+    remote: "mfeApp2",
+    url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+    module: "./App",
+  }} />
+*/
   return (
     <AppContext.Provider
       value={{
@@ -340,6 +361,8 @@ function App() {
         <React.Fragment>
           <ToastContextProvider>
             <GlobalStyle />
+            
+            
             {!isAuthenticating && <Routes />}
             {isAuthenticating && <div>Loading...</div>}
           </ToastContextProvider>

@@ -14,7 +14,7 @@ import React, {
   createContext,
 } from "react";
 
-import { PrifinaProvider, PrifinaContext, usePrifina } from "@prifina/hooks";
+import { PrifinaProvider, PrifinaContext, usePrifina } from "@prifina/hooks-v2";
 import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 
 import gql from "graphql-tag";
@@ -38,7 +38,9 @@ import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import { useToast } from "@blend-ui/toast";
 
-import { useRemoteComponent } from "../useRemoteComponent";
+//import { useRemoteComponent } from "../useRemoteComponent";
+
+import {Remote} from "@prifina-apps/remote";
 import styled, { keyframes } from "styled-components";
 import ReactJson from "react-json-view";
 
@@ -221,7 +223,7 @@ const RemoteContent = ({ url, ...props }) => {
 
 //const Content = ({ appSyncClient, url, prifinaID, ...props }) => {
 const Content = forwardRef((props, ref) => {
-  const { appSyncClient, url, prifinaID, updateDebug, appSettings } = props;
+  const { appSyncClient, url, prifinaID, updateDebug, appSettings,appID } = props;
   const {
     check,
     currentUser,
@@ -236,6 +238,8 @@ const Content = forwardRef((props, ref) => {
     activeRole,
   } = usePrifina();
   const { update } = useContext(SandboxContext);
+
+  console.log("APP-ID", appID);
 
   console.log("appsett", appSettings);
 
@@ -437,14 +441,29 @@ const Content = forwardRef((props, ref) => {
             }}
           >
             <WidgetWrapper>
-              <RemoteContent url={url} {...settingsInit} />
+            
+            <Remote ref={ref}
+          componentProps={{...settingsInit}}
+          system={{
+            //remote: "x866fscSq5Ae7bPgUtb6ffB",
+                  
+            remote:appID,
+            url:"dist/remoteEntry.js",
+            //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
+            //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
+           //https://github.com/tro9999/module-federation-examples/blob/master/dynamic-system-host/app2/dist/remoteEntry.js
+            
+            module: "./App",
+          }} />
             </WidgetWrapper>
           </div>
         </div>
       </>
     );
   } else {
-    return <RemoteContent url={url} ref={ref} {...settingsInit} />;
+    return null
+  {/* return <RemoteContent url={url} ref={ref} {...settingsInit} />;
+  */} 
   }
 });
 
@@ -454,6 +473,7 @@ Content.propTypes = {
   url: PropTypes.string.isRequired,
   prifinaID: PropTypes.string.isRequired,
 };
+
 
 const Sandbox = props => {
   console.log("SANDBOX --->", props, props.hasOwnProperty("app"));
@@ -510,63 +530,69 @@ const Sandbox = props => {
   console.log("check remote link valid", remoteLink);
   console.log("check valid status", validStatus);
 
-  useEffect(async () => {
-    // const remoteAppUrl = localStorage.getItem("remoteWidget")
-    // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
-    //componentProps.current = { url: remoteApp };
-
-    const remoteAppUrl = allValues.remoteUrl;
-
-    const session = await Auth.currentSession();
-    const prifinaID = session.idToken.payload["custom:prifina"];
-    const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
-
-    console.log("CURRENT USER ", currentPrifinaUser);
-    let appProfile = JSON.parse(
-      currentPrifinaUser.data.getPrifinaUser.appProfile,
-    );
-
-    const currentApp = await getAppVersionQuery(GRAPHQL, currentAppId);
-    console.log("currentApp", currentApp);
-    currentAppRef.current = {
-      appID: currentAppId,
-      settings: currentApp.data.getAppVersion.settings,
-      remoteUrl: currentApp.data.getAppVersion.remoteUrl,
-    };
-    if (currentAppRef.current.settings === null) {
-      currentAppRef.current.settings = [];
-    }
-
-    console.log("APP INFO", currentAppRef.current);
-    let clientEndpoint = "";
-    let clientRegion = "";
-    if (!appProfile.hasOwnProperty("endpoint")) {
-      const defaultProfileUpdate = await updateUserProfileMutation(
-        GRAPHQL,
-        currentUser.prifinaID,
-      );
-      console.log("PROFILE UPDATE ", defaultProfileUpdate);
-      appProfile = JSON.parse(
-        defaultProfileUpdate.data.updateUserProfile.appProfile,
-      );
-    }
-    clientEndpoint = appProfile.endpoint;
-    clientRegion = appProfile.region;
-
-    const client = await createClient(clientEndpoint, clientRegion, session);
-    componentProps.current.appSyncClient = client;
-    componentProps.current.prifinaID = prifinaID;
-    componentProps.current.initials = appProfile.initials;
-    componentProps.current.url = remoteAppUrl;
-    componentProps.current.widget = true;
-
-    console.log("COMPONENT PROPS....", componentProps);
-
-    if (remoteAppUrl === null) {
-      setReady(false);
-    } else {
-      setReady(true);
-    }
+  
+  useEffect(() => {
+    async function init() {
+      // const remoteAppUrl = localStorage.getItem("remoteWidget")
+         // https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/1u3f465t4cNSWYiyKFVwBG/0.0.1/main.bundle.js
+         //componentProps.current = { url: remoteApp };
+     
+         const remoteAppUrl = allValues.remoteUrl;
+     
+         const session = await Auth.currentSession();
+         const prifinaID = session.idToken.payload["custom:prifina"];
+         const currentPrifinaUser = await getPrifinaUserQuery(GRAPHQL, prifinaID);
+     
+         console.log("CURRENT USER ", currentPrifinaUser);
+         let appProfile = JSON.parse(
+           currentPrifinaUser.data.getPrifinaUser.appProfile,
+         );
+     
+         const currentApp = await getAppVersionQuery(GRAPHQL, currentAppId);
+         console.log("currentApp", currentApp);
+         currentAppRef.current = {
+           appID: currentAppId,
+           settings: currentApp.data.getAppVersion.settings,
+           remoteUrl: currentApp.data.getAppVersion.remoteUrl,
+         };
+         if (currentAppRef.current.settings === null) {
+           currentAppRef.current.settings = [];
+         }
+     
+         console.log("APP INFO", currentAppRef.current);
+         let clientEndpoint = "";
+         let clientRegion = "";
+         if (!appProfile.hasOwnProperty("endpoint")) {
+           const defaultProfileUpdate = await updateUserProfileMutation(
+             GRAPHQL,
+             currentUser.prifinaID,
+           );
+           console.log("PROFILE UPDATE ", defaultProfileUpdate);
+           appProfile = JSON.parse(
+             defaultProfileUpdate.data.updateUserProfile.appProfile,
+           );
+         }
+         clientEndpoint = appProfile.endpoint;
+         clientRegion = appProfile.region;
+     
+         const client = await createClient(clientEndpoint, clientRegion, session);
+         componentProps.current.appSyncClient = client;
+         componentProps.current.prifinaID = prifinaID;
+         componentProps.current.initials = appProfile.initials;
+         componentProps.current.url = remoteAppUrl;
+         componentProps.current.widget = true;
+         componentProps.current.appID = currentAppId;
+         
+     
+         console.log("COMPONENT PROPS....", componentProps);
+     
+         if (remoteAppUrl === null) {
+           setReady(false);
+         } else {
+           setReady(true);
+         }
+       }
+   init();
   }, []);
 
   // const debugUpdate = useCallback(content => {
@@ -646,13 +672,6 @@ const Sandbox = props => {
     });
   };
 
-  const remoteUser = opts => {
-    return Promise.resolve({});
-  };
-  const remoteClient = async (endpoint, region) => {
-    return Promise.resolve({});
-  };
-
   const [activetab, setactivetab] = useState(0);
 
   const tabClick = (e, tab) => {
@@ -670,8 +689,6 @@ const Sandbox = props => {
         Context={PrifinaContext}
         activeUser={{ uuid: currentUser.prifinaID }}
         activeApp={"Sandbox"}
-        remoteUser={remoteUser}
-        remoteClient={remoteClient}
       >
         <React.Suspense fallback={"Loading ..."}>
           <SandboxContext.Provider
@@ -945,9 +962,7 @@ const Sandbox = props => {
                             <ReactJson key={state.updated} src={asyncContent} />
                           </div>
                         </TabPanel>
-                        <TabPanel>
-                          <div style={{ overflow: "auto" }}></div>
-                        </TabPanel>
+                       
                       </TabPanelList>
                     </Tabs>
                   </div>

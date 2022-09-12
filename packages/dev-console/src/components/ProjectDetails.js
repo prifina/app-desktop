@@ -66,7 +66,26 @@ const ImageZoomContainer = styled(Image)`
   cursor: pointer;
 `;
 
-const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
+
+const ImageZoom = ({ src }) => {
+  return (
+    <ImageZoomContainer
+      src={src}
+      height="150px"
+      onError={e => (e.target.style.display = "none")}
+      onClick={() => {
+        window.open(src);
+      }}
+    />
+  );
+};
+
+ImageZoom.propTypes = {
+  src:PropTypes.string
+}  
+
+
+const ProjectDetails = ({ allValues,  setStep, ...props }) => {
   const { colors } = useTheme();
 
   const history = useHistory();
@@ -495,18 +514,6 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 
   // const nativeAssetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/native-assets`;
 
-  const ImageZoom = ({ src }) => {
-    return (
-      <ImageZoomContainer
-        src={src}
-        height="150px"
-        onError={e => (e.target.style.display = "none")}
-        onClick={() => {
-          window.open(src);
-        }}
-      />
-    );
-  };
 
   // const [listFiles, setListFiles] = useState([]);
 
@@ -643,7 +650,9 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
               <Text fontSize="sm" mb={5}>
                 Build deployment package
               </Text>
+              
               <UploadFile widgetId={allValues.id} />
+              
             </Box>
             <Box ml={25}>
               <Text fontSize="xs" color={colors.textMuted}>
@@ -1151,7 +1160,9 @@ const ProjectDetails = ({ allValues, setAllValues, setStep, ...props }) => {
 };
 
 ProjectDetails.propTypes = {
-  allValues: PropTypes.instanceOf(Object),
+  allValues: PropTypes.object,
+  setStep:PropTypes.func
+
 };
 
 ProjectDetails.displayName = "ProjectDetails";

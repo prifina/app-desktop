@@ -14,13 +14,25 @@ import { useHistory } from "react-router-dom";
 
 const short = require("short-uuid");
 
+function randomAppId() {
+  const idPart=short.generate();
+  const chars = "abcdefghijklmnopqrzxvwABCDEFGHIJKLMNOPQRZXVW";
+  let randomChar = "A";
+  
+  const rnum = Math.floor(Math.random() * chars.length);
+  randomChar = chars.substring(rnum, rnum + 1);
+  
+  // to make sure appID doesn't begin with number... valid module name requirement. 
+  return randomChar+idPart;
+}
+
 const NewApp = () => {
   const { currentUser } = useAppContext();
   const history = useHistory();
   console.log("NEW APP ", currentUser);
 
   const [appFields, handleChange] = useFormFields({
-    appId: short.generate(),
+    appId: randomAppId(),
     name: "",
     title: "",
     //version: "",

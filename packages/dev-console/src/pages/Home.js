@@ -720,8 +720,10 @@ const Home = props => {
   return (
     <>
       <ToastContextProvider>
-        {initClient && (
+        {initClient && (<>
+          
           <Content Component={AppComponent} {...componentProps.current} />
+          </>
         )}
         {!initClient && (
           <div>

@@ -6,6 +6,46 @@ import slackIcon from "@iconify/icons-mdi/slack";
 import noteTextOutline from "@iconify/icons-mdi/note-text-outline";
 import zendIcon from "@iconify/icons-mdi/zend";
 
+import PropTypes from "prop-types";
+
+const CustomBox = ({ icon, title, description, buttonName, onClick }) => {
+  return (
+    <Flex
+      bg="baseTertiary"
+      width=" 395px"
+      height="226px"
+      border="1px solid #6B6669"
+      padding="25px"
+      justifyContent="space-between"
+      flexDirection="column"
+      style={{ position: "relative" }}
+    >
+      <BlendIcon iconify={icon} color={colors.brandAccent} />
+      <Text>{title}</Text>
+      <Text mb={44}>{description}</Text>
+      <Button
+        size="xs"
+        onClick={onClick}
+        variation="link"
+        alignSelf="flex-start"
+        style={{ position: "absolute", bottom: 25, left: 25 }}
+      >
+        {buttonName}
+      </Button>
+    </Flex>
+  );
+};
+
+
+
+CustomBox.propTypes = {
+  icon:PropTypes.node,
+  title:PropTypes.string,
+  description:PropTypes.string,
+  buttonName:PropTypes.string,
+  onClick:PropTypes.func
+}  
+
 const ErrorStateScreen = () => {
   const { colors } = useTheme();
 
@@ -38,34 +78,6 @@ const ErrorStateScreen = () => {
       },
     },
   ];
-
-  const CustomBox = ({ icon, title, description, buttonName, onClick }) => {
-    return (
-      <Flex
-        bg="baseTertiary"
-        width=" 395px"
-        height="226px"
-        border="1px solid #6B6669"
-        padding="25px"
-        justifyContent="space-between"
-        flexDirection="column"
-        style={{ position: "relative" }}
-      >
-        <BlendIcon iconify={icon} color={colors.brandAccent} />
-        <Text>{title}</Text>
-        <Text mb={44}>{description}</Text>
-        <Button
-          size="xs"
-          onClick={onClick}
-          variation="link"
-          alignSelf="flex-start"
-          style={{ position: "absolute", bottom: 25, left: 25 }}
-        >
-          {buttonName}
-        </Button>
-      </Flex>
-    );
-  };
 
   return (
     <Flex flexDirection="column" alignItems="center">

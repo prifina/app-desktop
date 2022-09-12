@@ -1,6 +1,5 @@
-/* eslint-disable react/display-name */
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import NotFoundPage from "../components/NotFoundPage";
 
 import AuthenticatedRoute from "./AuthenticatedRoute";
@@ -16,51 +15,59 @@ const Login = React.lazy(() => import("../pages/Login"));
 
 const UploadApp = React.lazy(() => import("../components/UploadApp"));
 
+
+//const RemoteTest = React.lazy(() => import("../pages/RemoteTest"));
+
 import Landing from "../pages/Landing";
 
-export default props => (
-  <React.Suspense fallback={"Loading routing..."}>
-    <Switch>
-      <AuthenticatedRoute path="/upload" exact>
-        <UploadApp />
+export default () => (
+
+  <Routes>
+    <AuthenticatedRoute path="/upload" exact>
+      <UploadApp />
+    </AuthenticatedRoute>
+    <AuthenticatedRoute path="/new-app" exact>
+      <NewApp />
+    </AuthenticatedRoute>
+    <AuthenticatedRoute path="/admin" exact>
+      <Admin />
+    </AuthenticatedRoute>
+    <AuthenticatedRoute path="/sandbox" exact>
+      <Sandbox />
+    </AuthenticatedRoute>
+    <AuthenticatedRoute path="/test" exact>
+      <Landing />
+    </AuthenticatedRoute>
+    <AuthenticatedRoute path="/home" exact>
+      <Home />
+    </AuthenticatedRoute>
+
+    <AppliedRoute path="/" exact>
+      <Home />
+    </AppliedRoute>
+    <AuthenticatedRoute path="/register" exact>
+      <Register />
+    </AuthenticatedRoute>
+
+    <UnauthenticatedRoute path="/login" exact>
+      <Login />
+    </UnauthenticatedRoute>
+    {/* 
+      <AuthenticatedRoute path="/remote" exact>
+        <RemoteTest />
       </AuthenticatedRoute>
-      <AuthenticatedRoute path="/new-app" exact>
-        <NewApp />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/admin" exact>
-        <Admin />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/sandbox" exact>
-        <Sandbox />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/test" exact>
-        <Landing />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/home" exact>
-        <Home />
-      </AuthenticatedRoute>
-      <AppliedRoute path="/" exact>
-        <Home />
-      </AppliedRoute>
-      <AuthenticatedRoute path="/register" exact>
-        <Register />
-      </AuthenticatedRoute>
-      <UnauthenticatedRoute path="/login" exact>
-        <Login />
-      </UnauthenticatedRoute>
-      {/* 
+      
       <UnauthenticatedRoute path="/" exact>
         <Landing />
       </UnauthenticatedRoute>
       */}
 
-      {/* <UnauthenticatedRoute path="/register" exact>
+    {/* <UnauthenticatedRoute path="/register" exact>
         <Landing />
       </UnauthenticatedRoute> */}
-      {/* <AuthenticatedRoute path="/logout" exact>
+    {/* <AuthenticatedRoute path="/logout" exact>
         <Logout />
       </AuthenticatedRoute> */}
-      <Route component={NotFoundPage} />
-    </Switch>
-  </React.Suspense>
+    <Route path="*" element={<NotFoundPage />} />
+  </Routes>
 );
