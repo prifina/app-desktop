@@ -22,6 +22,7 @@ import {
   deletePrifinaSessionMutation,
   AppContext,
   cognitoCredentials,
+  mergeDeep,
 } from "@prifina-apps/utils";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
@@ -109,15 +110,15 @@ function App() {
       const tracker = Base64.stringify(sha512(window.deviceFingerPrint));
       const lastAuthUser = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
-        config.cognito.APP_CLIENT_ID +
-        ".LastAuthUser",
+          config.cognito.APP_CLIENT_ID +
+          ".LastAuthUser",
       );
       const currentIdToken = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
-        config.cognito.APP_CLIENT_ID +
-        "." +
-        lastAuthUser +
-        ".idToken",
+          config.cognito.APP_CLIENT_ID +
+          "." +
+          lastAuthUser +
+          ".idToken",
       );
       const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
 
@@ -170,9 +171,9 @@ function App() {
               if (
                 key.startsWith(
                   "CognitoIdentityServiceProvider." +
-                  config.cognito.APP_CLIENT_ID +
-                  "." +
-                  lastAuthUser,
+                    config.cognito.APP_CLIENT_ID +
+                    "." +
+                    lastAuthUser,
                 )
               ) {
                 tokens[key] = localStorage.getItem(key);
@@ -184,8 +185,8 @@ function App() {
               if (
                 key.startsWith(
                   "CognitoIdentityServiceProvider." +
-                  config.cognito.APP_CLIENT_ID +
-                  ".LastAuthUser",
+                    config.cognito.APP_CLIENT_ID +
+                    ".LastAuthUser",
                 )
               ) {
                 tokens[key] = localStorage.getItem(key);
@@ -241,23 +242,25 @@ function App() {
             console.log("REDIRECT SEARCH", search);
             // ?redirect=/
             if (search.startsWith("?redirect")) {
-              navigate("/login" + search, { replace: true })
+              navigate("/login" + search, { replace: true });
               //history.replace("/login" + search);
             } else if (
               pathname.startsWith("/login") &&
               search.startsWith("?debug")
             ) {
               //history.replace("/login" + search);
-              navigate("/login" + search, { replace: true })
+              navigate("/login" + search, { replace: true });
             } else if (
               pathname.startsWith("/register") &&
               search.startsWith("?debug")
             ) {
               //history.replace("/register" + search);
-              navigate("/register" + search, { replace: true })
+              navigate("/register" + search, { replace: true });
             } else {
               //history.replace("/login?redirect=" + pathname + search);
-              navigate("/login?redirect=" + pathname + search, { replace: true })
+              navigate("/login?redirect=" + pathname + search, {
+                replace: true,
+              });
             }
           } else {
             let tokens = JSON.parse(prifinaSession.data.getSession.tokens);
@@ -297,8 +300,7 @@ function App() {
         Auth.signOut().then(() => {
           setState({ isAuthenticated: auth });
           //history.replace("/");
-          navigate("/", { replace: true })
-
+          navigate("/", { replace: true });
         });
       });
     } else {
@@ -308,27 +310,6 @@ function App() {
 
   const { currentUser, isAuthenticating, isAuthenticated, s3UploadClient } =
     state;
-
-  function mergeDeep(...objects) {
-    const isObject = obj => obj && typeof obj === "object";
-
-    return objects.reduce((prev, obj) => {
-      Object.keys(obj).forEach(key => {
-        const pVal = prev[key];
-        const oVal = obj[key];
-
-        if (Array.isArray(pVal) && Array.isArray(oVal)) {
-          prev[key] = pVal.concat(...oVal);
-        } else if (isObject(pVal) && isObject(oVal)) {
-          prev[key] = mergeDeep(pVal, oVal);
-        } else {
-          prev[key] = oVal;
-        }
-      });
-
-      return prev;
-    }, {});
-  }
 
   const mergedTheme = mergeDeep(defaultTheme, newTheme);
   //const remoteRef=useRef();
@@ -367,7 +348,6 @@ function App() {
         <React.Fragment>
           <ToastContextProvider>
             <GlobalStyle />
-
 
             {!isAuthenticating && <Routes />}
             {isAuthenticating && <div>Loading...</div>}
