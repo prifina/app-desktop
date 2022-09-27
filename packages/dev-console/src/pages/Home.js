@@ -345,7 +345,7 @@ const Main = ({ data, currentUser }) => {
       console.log("updated apps", updatedApps);
     }
     fetchData();
-  }, [step]);
+  }, [data]);
 
   useEffect(() => {
     const showProjects = searchParams.get("id");

@@ -272,7 +272,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
   };
 
   const radioButtons = () => {
-    if (allValues.appType === 1) {
+    if (appData.appType === 1) {
       return (
         <Flex flexDirection="row" alignItems="center" mr="20px">
           <Flex flexDirection="row" alignItems="center" mr="15px">
@@ -298,7 +298,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
           </Flex>
         </Flex>
       );
-    } else if (allValues.appType === 2) {
+    } else if (appData.appType === 2) {
       return (
         <Flex flexDirection="row" alignItems="center" mr="20px">
           <Flex flexDirection="row" alignItems="center" mr="15px">
@@ -621,7 +621,11 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
         <C.ActionContainer
           mt={10}
           mb={24}
-          style={{ top: 65, position: "sticky" }}
+          style={{
+            top: 65,
+            position: "sticky",
+            outline: `24px solid ${colors.basePrimary}`,
+          }}
         >
           <C.CustomShape bg="brandAccent" />
           <BlendIcon
@@ -701,7 +705,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 onBlur={handleBlurColor}
                 label="text"
                 name="newVersion"
-                defaultValue={allValues.version || "undefined"}
+                defaultValue={appData.version || "undefined"}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
                 style={{
@@ -723,7 +727,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 Build deployment package
               </Text>
 
-              <UploadFile widgetId={allValues.id} />
+              <UploadFile widgetId={appData.id} />
             </Box>
             <Box ml={25}>
               <Text fontSize="xs" color={colors.textMuted}>
@@ -747,7 +751,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newRemoteUrl"
-                defaultValue={allValues.remoteUrl}
+                defaultValue={appData.remoteUrl}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
               />
@@ -767,7 +771,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
             {/* <ImageFetch /> */}
 
             {/*  Only one asset??? */}
-            <UploadAsset variant="native" id={allValues.id} />
+            <UploadAsset variant="native" id={appData.id} />
           </Flex>
           <Flex alignItems="flex-end" mb={16}>
             <Box>
@@ -778,7 +782,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newPublisher"
-                defaultValue={allValues.publisher}
+                defaultValue={appData.publisher}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
               />
@@ -793,7 +797,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newCategory"
-                defaultValue={allValues.category}
+                defaultValue={appData.category}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
               />
@@ -810,7 +814,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newShortDescription"
-                defaultValue={allValues.shortDescription}
+                defaultValue={appData.shortDescription}
                 onChange={handleValueChange}
               />
             </Box>
@@ -826,7 +830,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newLongDescription"
-                defaultValue={allValues.longDescription}
+                defaultValue={appData.longDescription}
                 onChange={handleValueChange}
               />
             </Box>
@@ -891,7 +895,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newDeviceSupport"
-                defaultValue={allValues.deviceSupport}
+                defaultValue={appData.deviceSupport}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
                 style={
@@ -911,7 +915,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newLanguages"
-                defaultValue={allValues.languages}
+                defaultValue={appData.languages}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
               />
@@ -926,7 +930,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 width="451px"
                 label="text"
                 name="newAge"
-                defaultValue={allValues.age}
+                defaultValue={appData.age}
                 onChange={handleValueChange}
                 color={colors.textPrimary}
               />
@@ -939,7 +943,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               </Text>
             </Box>
             <UploadAsset
-              id={allValues.id}
+              id={appData.id}
               type="icon"
               numId="1"
               passAssetInfo={passAssetInfo}
@@ -956,19 +960,19 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               </Text>
             </Box>
             <UploadAsset
-              id={allValues.id}
+              id={appData.id}
               type="screenshot"
               numId="1"
               // passAssetInfo={passAssetInfo}
             />
             <UploadAsset
-              id={allValues.id}
+              id={appData.id}
               type="screenshot"
               numId="2"
               // passAssetInfo={passAssetInfo}
             />
             <UploadAsset
-              id={allValues.id}
+              id={appData.id}
               type="screenshot"
               numId="3"
               // passAssetInfo={passAssetInfo}
@@ -1232,7 +1236,8 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
 ProjectDetails.propTypes = {
   allValues: PropTypes.object,
-  // setStep: PropTypes.func,
+  setStep: PropTypes.func,
+  setSearchParams: PropTypes.func,
 };
 
 ProjectDetails.displayName = "ProjectDetails";
