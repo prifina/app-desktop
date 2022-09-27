@@ -3,17 +3,13 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Image,
-  Link,
-  Divider,
-  Input,
-  Radio,
-  useTheme,
-} from "@blend-ui/core";
+  createSearchParams,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
+
+import { Box, Flex, Text, Button, Image, useTheme } from "@blend-ui/core";
 
 import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
@@ -40,7 +36,6 @@ import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
 //import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 
-
 import { StyledBox } from "../components/DefaultBackground";
 
 //import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
@@ -66,24 +61,14 @@ import CreateProjectModal from "../components/CreateProjectModal";
 
 import Table from "../components/Table";
 
-/*
-import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
-import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
-import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
-import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
-import baselineWeb from "@iconify/icons-mdi/table";
-*/
-//sidebar icons
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";
 import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import ProjectDetails from "../components/ProjectDetails";
-import Resources from "../components/Resources";
 
-// Create a default prop getter
-const defaultPropGetter = () => ({});
+import Resources from "../components/Resources";
 
 const Content = ({
   Component,
@@ -136,6 +121,7 @@ Content.propTypes = {
 };
 
 const Main = ({ data, currentUser }) => {
+  const navigate = useNavigate();
 
   const { colors } = useTheme();
 
@@ -152,28 +138,32 @@ const Main = ({ data, currentUser }) => {
 
   // const appTypes = ["Widget", "App"];
 
+  const [step, setStep] = useState(0);
+
+  switch (step) {
+    case 0:
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    case 5:
+      break;
+    default:
+  }
+
   console.log("is it saved", data);
-  const [allValues, setAllValues] = useState({
-    name: "",
-    id: "",
-    appType: "",
-    version: "",
-    publisher: "",
-    category: "",
-    deviceSupport: "",
-    languages: "",
-    age: "",
-    keyFeatures: [],
-    shortDescription: "",
-    longDescription: "",
-    userHeld: [],
-    userGenerated: [],
-    public: [],
-    icon: "",
-    dataSources: [],
-    remoteUrl: "",
-    status,
-  });
+
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const openProject = props => {
+    setSearchParams(createSearchParams({ id: props.row.values.id }));
+    setStep(3);
+  };
 
   const Columns = [
     {
@@ -185,29 +175,7 @@ const Main = ({ data, currentUser }) => {
         return (
           <Text
             onClick={() => {
-              setStep(3);
-              setAllValues({
-                ...allValues,
-                name: props.cell.value,
-                id: props.row.values.id,
-                appType: props.row.values.appType,
-                version: props.row.values.version,
-                publisher: props.row.original.publisher,
-                category: props.row.original.category,
-                deviceSupport: props.row.original.deviceSupport,
-                languages: props.row.original.languages,
-                age: props.row.original.age,
-                keyFeatures: props.row.original.keyFeatures,
-                shortDescription: props.row.original.shortDescription,
-                longDescription: props.row.original.longDescription,
-                userHeld: props.row.original.userHeld,
-                userGenerated: props.row.original.userGenerated,
-                public: props.row.original.public,
-                icon: props.row.original.icon,
-                dataSources: props.row.original.dataSources,
-                remoteUrl: props.row.original.remoteUrl,
-                status: props.row.original.status,
-              });
+              openProject(props);
             }}
           >
             {props.cell.value}
@@ -259,23 +227,6 @@ const Main = ({ data, currentUser }) => {
         return <Text>{props.cell.value}</Text>;
       },
     },
-    // {
-    //   Header: () => null, // No header
-    //   id: "sendApp", // It needs an ID
-    //   Cell: cellProp => {
-    //     return (
-    //       <Button
-    //         size="xs"
-    //         onClick={e => {
-    //           console.log(cellProp.row.values);
-    //           sendClick(cellProp.row.values);
-    //         }}
-    //       >
-    //         {i18n.__("submit")}
-    //       </Button>
-    //     );
-    //   },
-    // },
     {
       Header: () => null, // No header
       id: "edit",
@@ -284,28 +235,7 @@ const Main = ({ data, currentUser }) => {
           <Button
             size="xs"
             onClick={() => {
-              setStep(3);
-              setAllValues({
-                ...allValues,
-                name: props.row.values.name,
-                id: props.row.values.id,
-                appType: props.row.values.appType,
-                version: props.row.values.version,
-                publisher: props.row.original.publisher,
-                category: props.row.original.category,
-                deviceSupport: props.row.original.deviceSupport,
-                languages: props.row.original.languages,
-                age: props.row.original.age,
-                keyFeatures: props.row.original.keyFeatures,
-                shortDescription: props.row.original.shortDescription,
-                longDescription: props.row.original.longDescription,
-                userHeld: props.row.original.userHeld,
-                userGenerated: props.row.original.userGenerated,
-                public: props.row.original.public,
-                icon: props.row.original.icon,
-                dataSources: props.row.original.dataSources,
-                remoteUrl: props.row.original.remoteUrl,
-              });
+              openProject(props);
             }}
           >
             Edit
@@ -336,24 +266,6 @@ const Main = ({ data, currentUser }) => {
       setUpload(false);
     }
   };
-
-  const [step, setStep] = useState(0);
-
-  switch (step) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      break;
-    case 4:
-      break;
-    case 5:
-      break;
-    default:
-  }
 
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 
@@ -423,25 +335,25 @@ const Main = ({ data, currentUser }) => {
 
   const [updatedData, setUpdatedData] = useState(data);
 
-  const fetchDataManually = useCallback(async () => {
-    const prifinaApps = await listAppsQuery(GRAPHQL, {
-      filter: { prifinaId: { eq: currentUser.prifinaID } },
-    });
-    let updatedApps = prifinaApps.data.listApps.items;
-
-    setUpdatedData(updatedApps);
-    console.log("updated apps", updatedApps);
-  }, []);
-
-  let dataLength = data.length;
-
-  console.log("data length", dataLength);
+  useEffect(() => {
+    async function fetchData() {
+      const prifinaApps = await listAppsQuery(GRAPHQL, {
+        filter: { prifinaId: { eq: currentUser.prifinaID } },
+      });
+      let updatedApps = prifinaApps.data.listApps.items;
+      setUpdatedData(updatedApps);
+      console.log("updated apps", updatedApps);
+    }
+    fetchData();
+  }, [step]);
 
   useEffect(() => {
-    console.log("updated apps triggered");
+    const showProjects = searchParams.get("id");
 
-    fetchDataManually().catch("COULD NOT FETCH DATA", console.error);
-  }, [step]);
+    if (showProjects !== null) {
+      setStep(3);
+    } else setStep(0);
+  }, [searchParams]);
 
   return (
     <React.Fragment>
@@ -458,7 +370,7 @@ const Main = ({ data, currentUser }) => {
               <CreateProjectModal
                 onClose={onDialogClose}
                 onButtonClick={onDialogClick}
-              // isOpen={projectDialogOpen}
+                // isOpen={projectDialogOpen}
               />
             )}
             <Flex flexDirection="column" alignItems="center" mt="42px">
@@ -518,7 +430,7 @@ const Main = ({ data, currentUser }) => {
               <CreateProjectModal
                 onClose={onDialogClose}
                 onButtonClick={onDialogClick}
-              // isOpen={projectDialogOpen}
+                // isOpen={projectDialogOpen}
               />
             )}
             <Flex paddingTop="48px">
@@ -571,9 +483,8 @@ const Main = ({ data, currentUser }) => {
         {step === 3 && (
           <>
             <ProjectDetails
-              allValues={allValues}
-              setAllValues={setAllValues}
               setStep={setStep}
+              setSearchParams={setSearchParams}
             />
           </>
         )}
@@ -717,15 +628,10 @@ const Home = props => {
   return (
     <>
       <ToastContextProvider>
-        {initClient && (<>
-
-          <Content Component={AppComponent} {...componentProps.current} />
-        </>
-        )}
-        {!initClient && (
-          <div>
-            Home {isAuthenticated ? "Authenticated" : "Unauthenticated"}{" "}
-          </div>
+        {initClient && (
+          <>
+            <Content Component={AppComponent} {...componentProps.current} />
+          </>
         )}
       </ToastContextProvider>
     </>

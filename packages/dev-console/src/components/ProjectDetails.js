@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-import { useNavigate } from "react-router";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Flex,
@@ -24,10 +24,11 @@ import {
   deleteAppVersionMutation,
   listDataSourcesQuery,
   i18n,
+  listAppsQuery,
+  useAppContext,
 } from "@prifina-apps/utils";
 
 import { API as GRAPHQL } from "aws-amplify";
-
 
 import config from "../config";
 
@@ -52,7 +53,7 @@ import {
   ControlAddedDataSources,
   DataSourceForm,
   ApiForm,
-} from "../components/helper";
+} from "./helper";
 
 const ImageZoomContainer = styled(Image)`
   transition: transform 0.2s;
@@ -63,7 +64,6 @@ const ImageZoomContainer = styled(Image)`
   }
   cursor: pointer;
 `;
-
 
 const ImageZoom = ({ src }) => {
   return (
@@ -79,34 +79,102 @@ const ImageZoom = ({ src }) => {
 };
 
 ImageZoom.propTypes = {
-  src: PropTypes.string
-}
+  src: PropTypes.string,
+};
 
-
-const ProjectDetails = ({ allValues, setStep, ...props }) => {
+const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
   const { colors } = useTheme();
 
   //const history = useHistory();
   const navigate = useNavigate();
 
+  const [param] = useSearchParams();
+
+  const [allValues, setAllValues] = useState({
+    name: "",
+    id: "",
+    appType: "",
+    version: "",
+    publisher: "",
+    category: "",
+    deviceSupport: "",
+    languages: "",
+    age: "",
+    keyFeatures: [],
+    shortDescription: "",
+    longDescription: "",
+    userHeld: [],
+    userGenerated: [],
+    public: [],
+    icon: "",
+    dataSources: [],
+    remoteUrl: "",
+    status,
+  });
+
+  // const allValues = param.get("id");
+  console.log("params", param.get("id"));
+
+  const appID = param.get("id");
+
+  const { currentUser } = useAppContext();
+
   const toast = useToast();
 
+  const [appData, setAppData] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      const prifinaApps = await listAppsQuery(GRAPHQL, {
+        filter: { prifinaId: { eq: currentUser.prifinaID } },
+      });
+      let updatedApps = prifinaApps.data.listApps.items;
+
+      console.log("updated apps", updatedApps);
+
+      var result = updatedApps.filter(obj => {
+        return obj.id === appID;
+      });
+
+      console.log("filtered app", result[0]);
+      setAppData(result[0]);
+    }
+    fetchData();
+  }, []);
+
   const [newValues, setNewValues] = useState({
-    newAppType: allValues.appType,
-    newName: allValues.name,
-    newVersion: allValues.version,
-    newPublisher: allValues.publisher,
-    newCategory: allValues.category,
-    newDeviceSupport: allValues.deviceSupport,
-    newLanguages: allValues.languages,
-    newAge: allValues.age,
-    newShortDescription: allValues.shortDescription,
-    newLongDescription: allValues.longDescription,
-    newIcon: allValues.icon,
-    newDataSources: allValues.dataSources,
-    newRemoteUrl: allValues.remoteUrl,
-    newStatus: allValues.status,
+    newAppType: appData.appType,
+    newName: appData.name,
+    newVersion: appData.version,
+    newPublisher: appData.publisher,
+    newCategory: appData.category,
+    newDeviceSupport: appData.deviceSupport,
+    newLanguages: appData.languages,
+    newAge: appData.age,
+    newShortDescription: appData.shortDescription,
+    newLongDescription: appData.longDescription,
+    newIcon: appData.icon,
+    newDataSources: appData.dataSources,
+    newRemoteUrl: appData.remoteUrl,
+    newStatus: appData.status,
   });
+
+  // const [newValues, setNewValues] = useState({
+  //   newAppType: 1,
+  //   newName: appData.name,
+  //   newVersion: 1,
+  //   newPublisher: "sad",
+  //   newCategory: null,
+  //   newDeviceSupport: null,
+  //   newLanguages: null,
+  //   newAge: null,
+  //   newShortDescription: null,
+  //   newLongDescription: null,
+  //   newIcon: null,
+  //   newDataSources: null,
+  //   newRemoteUrl: null,
+  //   newStatus: null,
+  // });
 
   const handleValueChange = event => {
     let value = event.target.value;
@@ -183,17 +251,17 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
     });
   };
 
-  const saveDataSourceChanges = (id, newDataSources) => {
-    updateAppVersionMutation(GRAPHQL, {
-      id: id,
-      dataSources: JSON.stringify(newDataSources),
-    }).then(res => {
-      console.log("SUCCESS", res);
-      toast.success("Project data sources updated", {});
-      // location.reload();
-      //   setStep(2);
-    });
-  };
+  // const saveDataSourceChanges = (id, newDataSources) => {
+  //   updateAppVersionMutation(GRAPHQL, {
+  //     id: id,
+  //     dataSources: JSON.stringify(newDataSources),
+  //   }).then(res => {
+  //     console.log("SUCCESS", res);
+  //     toast.success("Project data sources updated", {});
+  //     // location.reload();
+  //     //   setStep(2);
+  //   });
+  // };
 
   const deleteApp = () => {
     deleteAppVersionMutation(GRAPHQL, allValues.id).then(res => {
@@ -210,7 +278,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
           <Flex flexDirection="row" alignItems="center" mr="15px">
             <Radio
               fontSize="8px"
-              onChange={() => { }}
+              onChange={() => {}}
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 2 });
               }}
@@ -220,7 +288,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
           <Flex flexDirection="row" alignItems="center">
             <Radio
               fontSize="10px"
-              onChange={() => { }}
+              onChange={() => {}}
               checked
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 1 });
@@ -237,7 +305,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
             <Radio
               checked
               fontSize="10px"
-              onChange={() => { }}
+              onChange={() => {}}
               value="1"
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 2 });
@@ -248,7 +316,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
           <Flex flexDirection="row" alignItems="center">
             <Radio
               fontSize="10px"
-              onChange={() => { }}
+              onChange={() => {}}
               value="2"
               onClick={() => {
                 setNewValues({ ...newValues, newAppType: 1 });
@@ -343,7 +411,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
     });
   };
 
-  useEffect(() => { }, [allValues.status]);
+  useEffect(() => {}, [allValues.status]);
 
   useEffect(() => {
     if (allValues.version !== newValues.newVersion) {
@@ -513,7 +581,6 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
 
   // const nativeAssetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/native-assets`;
 
-
   // const [listFiles, setListFiles] = useState([]);
 
   // const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
@@ -564,12 +631,14 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
             width="24px"
             onClick={() => {
               setStep(2);
+              setSearchParams({});
+              // navigate("/project-details");
             }}
           />
           <Input
             width="200px"
             name="newName"
-            defaultValue={allValues.name}
+            defaultValue={appData.name}
             onChange={handleValueChange}
           />
           <Flex>
@@ -616,7 +685,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
                 disabled
                 width="451px"
                 label="text"
-                value={allValues.id}
+                value={appData.id}
                 color={colors.textPrimary}
                 style={{ background: "transparent" }}
               />
@@ -655,7 +724,6 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
               </Text>
 
               <UploadFile widgetId={allValues.id} />
-
             </Box>
             <Box ml={25}>
               <Text fontSize="xs" color={colors.textMuted}>
@@ -891,19 +959,19 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
               id={allValues.id}
               type="screenshot"
               numId="1"
-            // passAssetInfo={passAssetInfo}
+              // passAssetInfo={passAssetInfo}
             />
             <UploadAsset
               id={allValues.id}
               type="screenshot"
               numId="2"
-            // passAssetInfo={passAssetInfo}
+              // passAssetInfo={passAssetInfo}
             />
             <UploadAsset
               id={allValues.id}
               type="screenshot"
               numId="3"
-            // passAssetInfo={passAssetInfo}
+              // passAssetInfo={passAssetInfo}
             />
           </Flex>
           <Flex width="700px" justifyContent="space-between">
@@ -1076,27 +1144,27 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
           </Flex>
 
           {newDataSources !== null &&
-            newDataSources[0] !== "[]" &&
-            newDataSources.length !== 0 &&
-            allValues.dataSources !== ["[null]"] ? (
+          newDataSources[0] !== "[]" &&
+          newDataSources.length !== 0 &&
+          allValues.dataSources !== ["[null]"] ? (
             <Flex flexDirection="column" justifyContent="center">
               {checkJson(newDataSources)
                 ? JSON.parse(newDataSources).map((item, index) => (
-                  <ControlAddedDataSources
-                    key={index}
-                    dataSource={item}
-                    uncompleteDataSource={uncompleteDataSource}
-                    editControled={editControled}
-                  />
-                ))
+                    <ControlAddedDataSources
+                      key={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))
                 : newDataSources.map((item, index) => (
-                  <ControlAddedDataSources
-                    key={index}
-                    dataSource={item}
-                    uncompleteDataSource={uncompleteDataSource}
-                    editControled={editControled}
-                  />
-                ))}
+                    <ControlAddedDataSources
+                      key={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))}
             </Flex>
           ) : (
             <Flex flexDirection="column" justifyContent="center">
@@ -1164,8 +1232,7 @@ const ProjectDetails = ({ allValues, setStep, ...props }) => {
 
 ProjectDetails.propTypes = {
   allValues: PropTypes.object,
-  setStep: PropTypes.func
-
+  // setStep: PropTypes.func,
 };
 
 ProjectDetails.displayName = "ProjectDetails";
