@@ -113,15 +113,32 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
   });
 
   // const allValues = param.get("id");
-  console.log("params", param.get("id"));
+  // console.log("params", param.get("projectId"));
 
-  const appID = param.get("id");
+  const appID = param.get("projectId");
 
   const { currentUser } = useAppContext();
 
   const toast = useToast();
 
-  const [appData, setAppData] = useState({});
+  const [appData, setAppData] = useState();
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [newValues, setNewValues] = useState();
+
+  const [newKeyFeatures, setNewKeyFeatures] = useState([]);
+  const [newUserHeld, setNewUserHeld] = useState([]);
+  const [newUserGenerated, setNewUserGenerated] = useState([]);
+  const [newPublic, setNewPublic] = useState([]);
+
+  const [isEqual, setIsEqual] = useState();
+
+  const [activeTab, setActiveTab] = useState(0);
+
+  const tabClick3 = (e, tab) => {
+    setActiveTab(tab);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -137,44 +154,39 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
       });
 
       console.log("filtered app", result[0]);
+      delete result[0].modifiedAt;
+      delete result[0].createdAt;
+
       setAppData(result[0]);
+
+      setNewValues(result[0]);
+
+      setNewKeyFeatures(result[0].keyFeatures);
+      setNewUserHeld(result[0].userHeld);
+      setNewUserGenerated(result[0].userGenerated);
+      setNewPublic(result[0].public);
+
+      setIsLoading(false);
     }
     fetchData();
   }, []);
 
-  const [newValues, setNewValues] = useState({
-    newAppType: appData.appType,
-    newName: appData.name,
-    newVersion: appData.version,
-    newPublisher: appData.publisher,
-    newCategory: appData.category,
-    newDeviceSupport: appData.deviceSupport,
-    newLanguages: appData.languages,
-    newAge: appData.age,
-    newShortDescription: appData.shortDescription,
-    newLongDescription: appData.longDescription,
-    newIcon: appData.icon,
-    newDataSources: appData.dataSources,
-    newRemoteUrl: appData.remoteUrl,
-    newStatus: appData.status,
-  });
+  console.log("appData", appData);
 
-  // const [newValues, setNewValues] = useState({
-  //   newAppType: 1,
-  //   newName: appData.name,
-  //   newVersion: 1,
-  //   newPublisher: "sad",
-  //   newCategory: null,
-  //   newDeviceSupport: null,
-  //   newLanguages: null,
-  //   newAge: null,
-  //   newShortDescription: null,
-  //   newLongDescription: null,
-  //   newIcon: null,
-  //   newDataSources: null,
-  //   newRemoteUrl: null,
-  //   newStatus: null,
-  // });
+  console.log("USER HELD", newUserHeld);
+
+  console.log("KEY FEATURES", newKeyFeatures);
+
+  useEffect(() => {
+    let eq = JSON.stringify(newValues) === JSON.stringify(appData);
+    console.log("eq", eq);
+
+    if (eq) {
+      setIsEqual(true);
+    } else if (!eq) {
+      setIsEqual(false);
+    }
+  }, [newValues]);
 
   const handleValueChange = event => {
     let value = event.target.value;
@@ -188,46 +200,45 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
     });
   };
 
-  console.log("REAL VALUES", allValues);
   console.log("NEW VALUES", newValues);
 
   const saveChanges = (
     id,
-    newAppType,
-    newName,
-    newVersion,
-    newPublisher,
+    appType,
+    name,
+    version,
+    publisher,
     newCategory,
-    newDeviceSupport,
-    newLanguages,
-    newAge,
+    deviceSupport,
+    languages,
+    age,
     newKeyFeatures,
-    newShortDescription,
-    newLongDescription,
+    shortDescription,
+    longDescription,
     newUserHeld,
     newUserGenerated,
     newPublic,
-    newIcon,
+    icon,
     newRemoteUrl,
     newDataSources,
   ) => {
     updateAppVersionMutation(GRAPHQL, {
       id: id,
-      appType: newAppType,
-      name: newName,
-      nextVersion: newVersion,
-      publisher: newPublisher,
+      appType: appType,
+      name: name,
+      nextVersion: version,
+      publisher: publisher,
       category: newCategory,
-      deviceSupport: newDeviceSupport,
-      languages: newLanguages,
-      age: newAge,
+      deviceSupport: deviceSupport,
+      languages: languages,
+      age: age,
       keyFeatures: newKeyFeatures,
-      shortDescription: newShortDescription,
-      longDescription: newLongDescription,
+      shortDescription: shortDescription,
+      longDescription: longDescription,
       userHeld: newUserHeld,
       userGenerated: newUserGenerated,
       public: newPublic,
-      icon: newIcon,
+      icon: icon,
       remoteUrl: newRemoteUrl,
       dataSources: JSON.stringify(newDataSources),
     }).then(res => {
@@ -240,7 +251,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
   const publishApp = () => {
     updateAppVersionMutation(GRAPHQL, {
-      id: allValues.id,
+      id: newValues.id,
       status: 1,
     }).then(res => {
       console.log("SUCCESS", res);
@@ -251,20 +262,8 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
     });
   };
 
-  // const saveDataSourceChanges = (id, newDataSources) => {
-  //   updateAppVersionMutation(GRAPHQL, {
-  //     id: id,
-  //     dataSources: JSON.stringify(newDataSources),
-  //   }).then(res => {
-  //     console.log("SUCCESS", res);
-  //     toast.success("Project data sources updated", {});
-  //     // location.reload();
-  //     //   setStep(2);
-  //   });
-  // };
-
   const deleteApp = () => {
-    deleteAppVersionMutation(GRAPHQL, allValues.id).then(res => {
+    deleteAppVersionMutation(GRAPHQL, newValues.id).then(res => {
       console.log("SUCCESS", res);
       // location.reload();
       toast.success("Deleted project", {});
@@ -280,7 +279,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               fontSize="8px"
               onChange={() => {}}
               onClick={() => {
-                setNewValues({ ...newValues, newAppType: 2 });
+                setNewValues({ ...newValues, appType: 2 });
               }}
             />
             <Text fontSize="xs">{i18n.__("widget")}</Text>
@@ -291,7 +290,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               onChange={() => {}}
               checked
               onClick={() => {
-                setNewValues({ ...newValues, newAppType: 1 });
+                setNewValues({ ...newValues, appType: 1 });
               }}
             />
             <Text fontSize="xs">Application</Text>
@@ -308,7 +307,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               onChange={() => {}}
               value="1"
               onClick={() => {
-                setNewValues({ ...newValues, newAppType: 2 });
+                setNewValues({ ...newValues, appType: 2 });
               }}
             />
             <Text fontSize="xs">{i18n.__("widget")}</Text>
@@ -319,7 +318,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               onChange={() => {}}
               value="2"
               onClick={() => {
-                setNewValues({ ...newValues, newAppType: 1 });
+                setNewValues({ ...newValues, appType: 1 });
               }}
             />
             <Text fontSize="xs">Application</Text>
@@ -330,24 +329,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
   };
 
   const detailsSaveStatus = () => {
-    if (
-      allValues.name !== newValues.newName ||
-      allValues.appType !== newValues.newAppType ||
-      allValues.version !== newValues.newVersion ||
-      allValues.publisher !== newValues.newPublisher ||
-      allValues.category !== newValues.newCategory ||
-      allValues.deviceSupport !== newValues.newDeviceSupport ||
-      allValues.languages !== newValues.newLanguages ||
-      allValues.age !== newValues.newAge ||
-      allValues.keyFeatures !== newKeyFeatures ||
-      allValues.shortDescription !== newValues.newShortDescription ||
-      allValues.longDescription !== newValues.newLongDescription ||
-      allValues.userHeld !== newUserHeld ||
-      allValues.userGenerated !== newUserGenerated ||
-      allValues.public !== newPublic ||
-      allValues.icon !== newValues.newIcon ||
-      allValues.dataSources !== newDataSources
-    ) {
+    if (!isEqual) {
       return (
         <Flex alignItems="center">
           <BlendIcon
@@ -363,22 +345,22 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
             ml="15px"
             onClick={() => {
               saveChanges(
-                allValues.id,
-                newValues.newAppType,
-                newValues.newName,
-                newValues.newVersion,
-                newValues.newPublisher,
-                newValues.newCategory,
-                newValues.newDeviceSupport,
-                newValues.newLanguages,
-                newValues.newAge,
+                newValues.id,
+                newValues.appType,
+                newValues.name,
+                newValues.version,
+                newValues.publisher,
+                newValues.category,
+                newValues.deviceSupport,
+                newValues.languages,
+                newValues.age,
                 newKeyFeatures,
-                newValues.newShortDescription,
-                newValues.newLongDescription,
+                newValues.shortDescription,
+                newValues.longDescription,
                 newUserHeld,
                 newUserGenerated,
                 newPublic,
-                newValues.newIcon,
+                newValues.icon,
                 newValues.newRemoteUrl,
                 newDataSources,
               );
@@ -407,37 +389,8 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
     setNewValues({
       ...newValues,
-      newIcon: allValues.id + "-" + "icon" + "-" + title,
+      icon: allValues.id + "-" + "icon" + "-" + title,
     });
-  };
-
-  useEffect(() => {}, [allValues.status]);
-
-  useEffect(() => {
-    if (allValues.version !== newValues.newVersion) {
-      return console.log("true");
-    } else {
-      return console.log("false");
-    }
-  }, [newValues.newVersion]);
-
-  useEffect(() => {
-    if (
-      allValues.name !== newValues.newName ||
-      allValues.appType !== newValues.newAppType
-    ) {
-      return console.log("true");
-    } else {
-      return console.log("false");
-    }
-  }, [newValues.newName, newValues.newAppType]);
-
-  const [activeTab3, setActiveTab3] = useState(0);
-
-  const tabClick3 = (e, tab) => {
-    console.log("Click", e);
-    console.log("TAB", tab);
-    setActiveTab3(tab);
   };
 
   //---------------------------------------------------------
@@ -503,10 +456,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
   };
 
   const completeDataSource = index => {
-    // const newSourceData = [...dataSourcePreview];
     const newSourceData = [...dataSourcePreview];
-
-    // newSourceData[index].isAdded = true;
     setNewDataSources(newSourceData);
   };
 
@@ -536,21 +486,6 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
   //==============//==============//==============//==============//==============//==============//==============
 
-  const [newKeyFeatures, setNewKeyFeatures] = useState(
-    allValues.keyFeatures === null || undefined ? [] : allValues.keyFeatures,
-  );
-  const [newUserHeld, setNewUserHeld] = useState(
-    allValues.userHeld === null || undefined ? [] : allValues.userHeld,
-  );
-  const [newUserGenerated, setNewUserGenerated] = useState(
-    allValues.userGenerated === null || undefined
-      ? []
-      : allValues.userGenerated,
-  );
-  const [newPublic, setNewPublic] = useState(
-    allValues.public === null || undefined ? [] : allValues.public,
-  );
-
   // /changing attribute name
   dataConnectors.forEach(function (obj) {
     obj.value = obj.name;
@@ -579,657 +514,611 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
   const assetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/assets`;
 
-  // const nativeAssetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/native-assets`;
-
-  // const [listFiles, setListFiles] = useState([]);
-
-  // const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
-  // S3Storage.configure({
-  //   bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
-  //   region: userRegion,
-  // });
-  // const nativePath = allValues.id + "/native-assets/";
-
-  // useEffect(() => {
-  //   // declare the data fetching function
-  //   const fetchData = async () => {
-  //     const data = await S3Storage.list(nativePath, {
-  //       level: "public",
-  //       metadata: {
-  //         created: new Date().toISOString(),
-  //       },
-  //     })
-  //       .then(result => console.log("REAL result", result))
-
-  //       .catch(err => console.log(err));
-  //     setListFiles(data);
-  //   };
-
-  //   // call the function
-  //   fetchData()
-  //     // make sure to catch any error
-  //     .catch(console.error);
-  // }, []);
-
-  // console.log("list", listFiles);
-
-  // // var result = listFiles.map(person => ({ value: person.id,}));
-
   return (
     <>
-      <Flex flexDirection="column">
-        <C.ActionContainer
-          mt={10}
-          mb={24}
-          style={{
-            top: 65,
-            position: "sticky",
-            outline: `24px solid ${colors.basePrimary}`,
-          }}
-        >
-          <C.CustomShape bg="brandAccent" />
-          <BlendIcon
-            style={{ cursor: "pointer" }}
-            color={colors.textPrimary}
-            iconify={mdiArrowLeft}
-            width="24px"
-            onClick={() => {
-              setStep(2);
-              setSearchParams({});
-              // navigate("/project-details");
-            }}
-          />
-          <Input
-            width="200px"
-            name="newName"
-            defaultValue={appData.name}
-            onChange={handleValueChange}
-          />
-          <Flex>
-            {radioButtons()}
-            {detailsSaveStatus()}
-          </Flex>
-          <Button
-            onClick={() => {
-              //const navigate = useNavigate();
-              navigate("/sandbox", { state: { allValues: allValues } });
-              /*
-              history.push({
-                pathname: "/sandbox",
-                state: { allValues: allValues },
-              });
-              */
+      {!isLoading ? (
+        <Flex flexDirection="column">
+          <C.ActionContainer
+            mt={10}
+            mb={24}
+            style={{
+              top: 65,
+              position: "sticky",
+              // outline: `24px solid ${colors.basePrimary}`,
+              boxShadow: `0px 15px 20px ${colors.basePrimary}`,
             }}
           >
-            Launch Sandbox
-          </Button>
-        </C.ActionContainer>
-        <C.ProjectContainer mb={24}>
-          <Flex justifyContent="space-between" alignItems="center">
-            <Text style={{ textTransform: "uppercase" }}>
-              Project resources
-            </Text>
-          </Flex>
-          <Box width="584px">
-            <Text fontSize="xs">
-              Add your .Zip build deployment package and information regarding
-              your apps data useage here to prepare for handoff to a nominated
-              publisher account.
-            </Text>
-          </Box>
-          <Divider mb={24} mt={24} color={colors.textMuted} />
-          <Text mb={24}>Build deployment</Text>
-
-          <Flex mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                App ID
-              </Text>
-              <Input
-                disabled
-                width="451px"
-                label="text"
-                value={appData.id}
-                color={colors.textPrimary}
-                style={{ background: "transparent" }}
-              />
-            </Box>
-          </Flex>
-          <Box mb={16}>
-            <Text fontSize="sm" mb={5}>
-              Version number
-            </Text>
-            <Flex alignItems="center">
-              <Input
-                onFocus={handleFocusColor}
-                onBlur={handleBlurColor}
-                label="text"
-                name="newVersion"
-                defaultValue={appData.version || "undefined"}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={{
-                  background: "transparent",
-                  minWidth: "451px",
-                  width: 451,
-                }}
-              />
-              <Text fontSize="xs" ml={25} color={fontColor}>
-                This version number is for your internal use so can follow
-                whatever logic you choose.
-              </Text>
+            <C.CustomShape bg="brandAccent" />
+            <BlendIcon
+              style={{ cursor: "pointer" }}
+              color={colors.textPrimary}
+              iconify={mdiArrowLeft}
+              width="24px"
+              onClick={() => {
+                setStep(2);
+                setSearchParams({});
+                // navigate("/project-details");
+              }}
+            />
+            <Input
+              width="200px"
+              name="name"
+              defaultValue={appData.name}
+              onChange={handleValueChange}
+            />
+            <Flex>
+              {radioButtons()}
+              {detailsSaveStatus()}
             </Flex>
-          </Box>
-
-          <Flex alignItems="center" justifyContent="center" mb={16}>
-            <Box ml="5px">
-              <Text fontSize="sm" mb={5}>
-                Build deployment package
-              </Text>
-
-              <UploadFile widgetId={appData.id} />
-            </Box>
-            <Box ml={25}>
-              <Text fontSize="xs" color={colors.textMuted}>
-                The build deployment package is a package version of your local
-                build. It must include:
-              </Text>
-              <Text fontSize="xs" color={colors.textMuted}>
-                1. Your Prifina App ID
-              </Text>
-              <Text fontSize="xs" color={colors.textMuted}>
-                2. Come in a .zip with a maximum file size of 5MB
-              </Text>
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Remote Link
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newRemoteUrl"
-                defaultValue={appData.remoteUrl}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Native Assets
-              </Text>
-            </Box>
-            {/* <Box>
-              {listFiles.map((item, index) => {
-                <Text>{item.key}</Text>;
-              })}
-            </Box> */}
-            {/* <ImageFetch /> */}
-
-            {/*  Only one asset??? */}
-            <UploadAsset variant="native" id={appData.id} />
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Publisher
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newPublisher"
-                defaultValue={appData.publisher}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Category
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newCategory"
-                defaultValue={appData.category}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Short Description
-              </Text>
-              <TextArea
-                expand
-                height={50}
-                width="451px"
-                label="text"
-                name="newShortDescription"
-                defaultValue={appData.shortDescription}
-                onChange={handleValueChange}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Long Description
-              </Text>
-              <TextArea
-                expand
-                height={100}
-                width="451px"
-                label="text"
-                name="newLongDescription"
-                defaultValue={appData.longDescription}
-                onChange={handleValueChange}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Key Features
-              </Text>
-              <TagInput
-                tags={newKeyFeatures}
-                setTags={setNewKeyFeatures}
-                style={{
-                  background: colors.baseTertiary,
-                }}
-              />
-            </Box>
-          </Flex>
-
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                User Held
-              </Text>
-              <TagInput
-                tags={newUserHeld}
-                setTags={setNewUserHeld}
-                style={{ backgroundColor: colors.baseTertiary }}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                User Generated
-              </Text>
-              <TagInput
-                tags={newUserGenerated}
-                setTags={setNewUserGenerated}
-                style={{ backgroundColor: colors.baseTertiary }}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Public
-              </Text>
-              <TagInput
-                tags={newPublic}
-                setTags={setNewPublic}
-                style={{ backgroundColor: colors.baseTertiary }}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Device support
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newDeviceSupport"
-                defaultValue={appData.deviceSupport}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-                style={
-                  {
-                    // background: "transparent",
-                  }
-                }
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Languages
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newLanguages"
-                defaultValue={appData.languages}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Age
-              </Text>
-              <Input
-                width="451px"
-                label="text"
-                name="newAge"
-                defaultValue={appData.age}
-                onChange={handleValueChange}
-                color={colors.textPrimary}
-              />
-            </Box>
-          </Flex>
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Icon
-              </Text>
-            </Box>
-            <UploadAsset
-              id={appData.id}
-              type="icon"
-              numId="1"
-              passAssetInfo={passAssetInfo}
-            />
-          </Flex>
-          <Image
-            src={`${assetsS3Path}/icon-1.png`}
-            onError={e => (e.target.style.display = "none")}
-          />
-          <Flex alignItems="flex-end" mb={16}>
-            <Box>
-              <Text fontSize="sm" mb={5}>
-                Screenshot
-              </Text>
-            </Box>
-            <UploadAsset
-              id={appData.id}
-              type="screenshot"
-              numId="1"
-              // passAssetInfo={passAssetInfo}
-            />
-            <UploadAsset
-              id={appData.id}
-              type="screenshot"
-              numId="2"
-              // passAssetInfo={passAssetInfo}
-            />
-            <UploadAsset
-              id={appData.id}
-              type="screenshot"
-              numId="3"
-              // passAssetInfo={passAssetInfo}
-            />
-          </Flex>
-          <Flex width="700px" justifyContent="space-between">
-            <ImageZoom src={`${assetsS3Path}/screenshot-1.png`} />
-            <ImageZoom src={`${assetsS3Path}/screenshot-2.png`} />
-            <ImageZoom src={`${assetsS3Path}/screenshot-3.png`} />
-          </Flex>
-        </C.ProjectContainer>
-        <C.ProjectContainer alt="dataSources" mb={24}>
-          <Flex justifyContent="space-between" alignItems="center" mb={45}>
-            <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
-          </Flex>
-          <Flex>
-            <div
-              style={{
-                overflow: "hidden",
-                width: 600,
+            <Button
+              onClick={() => {
+                navigate("/sandbox", { state: { allValues: appData } });
               }}
             >
-              <Tabs
-                activeTab={activeTab3}
-                onClick={tabClick3}
+              Launch Sandbox
+            </Button>
+          </C.ActionContainer>
+          <C.ProjectContainer mb={24}>
+            <Flex justifyContent="space-between" alignItems="center">
+              <Text style={{ textTransform: "uppercase" }}>
+                Project resources
+              </Text>
+            </Flex>
+            <Box width="584px">
+              <Text fontSize="xs">
+                Add your .Zip build deployment package and information regarding
+                your apps data useage here to prepare for handoff to a nominated
+                publisher account.
+              </Text>
+            </Box>
+            <Divider mb={24} mt={24} color={colors.textMuted} />
+            <Text mb={24}>Build deployment</Text>
+
+            <Flex mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  App ID
+                </Text>
+                <Input
+                  disabled
+                  width="451px"
+                  label="text"
+                  value={appData.id}
+                  color={colors.textPrimary}
+                  style={{ background: "transparent" }}
+                />
+              </Box>
+            </Flex>
+            <Box mb={16}>
+              <Text fontSize="sm" mb={5}>
+                Version number
+              </Text>
+              <Flex alignItems="center">
+                <Input
+                  onFocus={handleFocusColor}
+                  onBlur={handleBlurColor}
+                  label="text"
+                  name="version"
+                  defaultValue={appData.version || "undefined"}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                  style={{
+                    background: "transparent",
+                    minWidth: "451px",
+                    width: 451,
+                  }}
+                />
+                <Text fontSize="xs" ml={25} color={fontColor}>
+                  This version number is for your internal use so can follow
+                  whatever logic you choose.
+                </Text>
+              </Flex>
+            </Box>
+
+            <Flex alignItems="center" justifyContent="center" mb={16}>
+              <Box ml="5px">
+                <Text fontSize="sm" mb={5}>
+                  Build deployment package
+                </Text>
+
+                <UploadFile widgetId={appData.id} />
+              </Box>
+              <Box ml={25}>
+                <Text fontSize="xs" color={colors.textMuted}>
+                  The build deployment package is a package version of your
+                  local build. It must include:
+                </Text>
+                <Text fontSize="xs" color={colors.textMuted}>
+                  1. Your Prifina App ID
+                </Text>
+                <Text fontSize="xs" color={colors.textMuted}>
+                  2. Come in a .zip with a maximum file size of 5MB
+                </Text>
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Remote Link
+                </Text>
+                <Input
+                  width="451px"
+                  label="text"
+                  name="newRemoteUrl"
+                  defaultValue={appData.remoteUrl}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Native Assets
+                </Text>
+              </Box>
+              <UploadAsset variant="native" id={appData.id} />
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Publisher
+                </Text>
+                <Input
+                  width="451px"
+                  label="text"
+                  name="publisher"
+                  defaultValue={appData.publisher}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Category
+                </Text>
+                <Input
+                  width="451px"
+                  label="text"
+                  name="category"
+                  defaultValue={appData.category}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Short Description
+                </Text>
+                <TextArea
+                  expand
+                  height={50}
+                  width="451px"
+                  label="text"
+                  name="shortDescription"
+                  defaultValue={appData.shortDescription}
+                  onChange={handleValueChange}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Long Description
+                </Text>
+                <TextArea
+                  expand
+                  height={100}
+                  width="451px"
+                  label="text"
+                  name="longDescription"
+                  defaultValue={appData.longDescription}
+                  onChange={handleValueChange}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Key Features
+                </Text>
+                <TagInput
+                  tags={newKeyFeatures}
+                  setTags={setNewKeyFeatures}
+                  style={{
+                    background: colors.baseTertiary,
+                  }}
+                />
+              </Box>
+            </Flex>
+
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  User Held
+                </Text>
+                <TagInput
+                  tags={newUserHeld}
+                  setTags={setNewUserHeld}
+                  style={{ backgroundColor: colors.baseTertiary }}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  User Generated
+                </Text>
+                <TagInput
+                  tags={newUserGenerated}
+                  setTags={setNewUserGenerated}
+                  style={{ backgroundColor: colors.baseTertiary }}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Public
+                </Text>
+                <TagInput
+                  tags={newPublic}
+                  setTags={setNewPublic}
+                  style={{ backgroundColor: colors.baseTertiary }}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Device support
+                </Text>
+                <Input
+                  width="451px"
+                  label="text"
+                  name="deviceSupport"
+                  defaultValue={appData.deviceSupport}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                  style={
+                    {
+                      // background: "transparent",
+                    }
+                  }
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Languages
+                </Text>
+                <Input
+                  width="451px"
+                  label="text"
+                  name="languages"
+                  defaultValue={appData.languages}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Age
+                </Text>
+                <Input
+                  width="451px"
+                  label="text"
+                  name="age"
+                  defaultValue={appData.age}
+                  onChange={handleValueChange}
+                  color={colors.textPrimary}
+                />
+              </Box>
+            </Flex>
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Icon
+                </Text>
+              </Box>
+              <UploadAsset
+                id={appData.id}
+                type="icon"
+                numId="1"
+                passAssetInfo={passAssetInfo}
+              />
+            </Flex>
+            <Image
+              src={`${assetsS3Path}/icon-1.png`}
+              onError={e => (e.target.style.display = "none")}
+            />
+            <Flex alignItems="flex-end" mb={16}>
+              <Box>
+                <Text fontSize="sm" mb={5}>
+                  Screenshot
+                </Text>
+              </Box>
+              <UploadAsset
+                id={appData.id}
+                type="screenshot"
+                numId="1"
+                // passAssetInfo={passAssetInfo}
+              />
+              <UploadAsset
+                id={appData.id}
+                type="screenshot"
+                numId="2"
+                // passAssetInfo={passAssetInfo}
+              />
+              <UploadAsset
+                id={appData.id}
+                type="screenshot"
+                numId="3"
+                // passAssetInfo={passAssetInfo}
+              />
+            </Flex>
+            <Flex width="700px" justifyContent="space-between">
+              <ImageZoom src={`${assetsS3Path}/screenshot-1.png`} />
+              <ImageZoom src={`${assetsS3Path}/screenshot-2.png`} />
+              <ImageZoom src={`${assetsS3Path}/screenshot-3.png`} />
+            </Flex>
+          </C.ProjectContainer>
+          <C.ProjectContainer alt="dataSources" mb={24}>
+            <Flex justifyContent="space-between" alignItems="center" mb={45}>
+              <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
+            </Flex>
+            <Flex>
+              <div
                 style={{
-                  height: "100%",
-                  background: "transparent",
-                  padding: 0,
+                  overflow: "hidden",
+                  width: 600,
                 }}
-                variant="rectangle"
               >
-                <TabList>
-                  <Tab>
-                    <Text>{i18n.__("publicApi")}</Text>
-                  </Tab>
-                  <Tab>
-                    <Text>{i18n.__("prifinaUserCloud")}</Text>
-                  </Tab>
-                  <Tab>
-                    <Text>{i18n.__("noData")}</Text>
-                  </Tab>
-                </TabList>
-                <TabPanelList style={{ backgroundColor: null }}>
-                  <TabPanel
-                    style={{
-                      height: "100vh",
-                      paddingBottom: "50px",
-                      overflow: "auto",
-                    }}
-                  >
-                    <div style={{ overflow: "auto" }}>
-                      <Flex>
-                        <ApiForm
-                          addApi={addApiSource}
-                          selectOptions={publicSources}
-                        />
-                      </Flex>
+                <Tabs
+                  activeTab={activeTab}
+                  onClick={tabClick3}
+                  style={{
+                    height: "100%",
+                    background: "transparent",
+                    padding: 0,
+                  }}
+                  variant="rectangle"
+                >
+                  <TabList>
+                    <Tab>
+                      <Text>{i18n.__("publicApi")}</Text>
+                    </Tab>
+                    <Tab>
+                      <Text>{i18n.__("prifinaUserCloud")}</Text>
+                    </Tab>
+                    <Tab>
+                      <Text>{i18n.__("noData")}</Text>
+                    </Tab>
+                  </TabList>
+                  <TabPanelList style={{ backgroundColor: null }}>
+                    <TabPanel
+                      style={{
+                        height: "100vh",
+                        paddingBottom: "50px",
+                        overflow: "auto",
+                      }}
+                    >
+                      <div style={{ overflow: "auto" }}>
+                        <Flex>
+                          <ApiForm
+                            addApi={addApiSource}
+                            selectOptions={publicSources}
+                          />
+                        </Flex>
 
-                      {/* Box with state change */}
-                      <Flex>
-                        {apiDataPreview.length > 0 && (
-                          <Flex
-                            width="100%"
-                            flexDirection="column"
-                            padding="10px"
-                            style={{
-                              marginTop: 15,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <Text textStyle="h6" mb="10px">
-                              {i18n.__("chooseToAddSources")}
-                            </Text>
-                            <Flex>
-                              <Flex flexDirection="column">
-                                {apiDataPreview.map((event, index) => (
-                                  <AddRemoveDataSources
-                                    key={index}
-                                    index={index}
-                                    dataSource={event}
-                                    removeDataSource={removeApiSource}
-                                    completeDataSource={completeApiSource}
-                                  />
-                                ))}
-                              </Flex>
-                            </Flex>
-                          </Flex>
-                        )}
-                      </Flex>
-                    </div>
-                  </TabPanel>
-                  <TabPanel>
-                    <div style={{ overflow: "auto" }}>
-                      <Flex>
-                        <DataSourceForm
-                          addDataSource={addDataSource}
-                          // addFunctions={addFunction}
-                          selectOptions={dataConnectors}
-                        />
-                      </Flex>
-                      <Flex>
-                        {dataSourcePreview.length > 0 && (
-                          <Flex
-                            width="100%"
-                            flexDirection="column"
-                            padding="10px"
-                            style={{
-                              backgroundColor: colors.baseMuted,
-                              marginTop: 15,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <Text textStyle="h6" mt="10px" mb="10px">
-                              {i18n.__("dataConectorResults")}
-                            </Text>
-
-                            <Flex>
-                              <Flex flexDirection="column">
-                                {dataSourcePreview.map((item, index) => (
-                                  <>
+                        {/* Box with state change */}
+                        <Flex>
+                          {apiDataPreview.length > 0 && (
+                            <Flex
+                              width="100%"
+                              flexDirection="column"
+                              padding="10px"
+                              style={{
+                                marginTop: 15,
+                                borderRadius: 10,
+                              }}
+                            >
+                              <Text textStyle="h6" mb="10px">
+                                {i18n.__("chooseToAddSources")}
+                              </Text>
+                              <Flex>
+                                <Flex flexDirection="column">
+                                  {apiDataPreview.map((event, index) => (
                                     <AddRemoveDataSources
                                       key={index}
                                       index={index}
-                                      dataSource={item}
-                                      removeDataSource={removeDataSource}
-                                      completeDataSource={completeDataSource}
+                                      dataSource={event}
+                                      removeDataSource={removeApiSource}
+                                      completeDataSource={completeApiSource}
                                     />
-                                  </>
-                                ))}
+                                  ))}
+                                </Flex>
                               </Flex>
                             </Flex>
-                          </Flex>
-                        )}
-                      </Flex>
-                    </div>
-                  </TabPanel>
-                  <TabPanel>
-                    <div style={{ overflow: "auto" }}>
-                      <Flex>
-                        <Box
-                          width="426px"
-                          height="76px"
-                          borderRadius="6px"
-                          paddingLeft="10px"
-                          bg={colors.baseLinkHover}
-                          style={{
-                            border: `2px solid ${colors.baseLink}`,
-                          }}
-                        >
-                          <Text>{i18n.__("noDataText")}</Text>
-                          <Link href="www.prifina.com">
-                            {i18n.__("learnMoreHere")}
-                          </Link>
-                        </Box>
-                        <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
-                      </Flex>
-                    </div>
-                  </TabPanel>
-                </TabPanelList>
-              </Tabs>
-            </div>
-            <Box width="320px">
-              <Text fontSize="13px">
-                Let us know how your application uses data by logging your
-                sources (or lack of) here.
-              </Text>
-              <Text mt="15px" fontSize="13px">
-                This information helps us provide quality support and helps
-                direct our product roadmap.
+                          )}
+                        </Flex>
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div style={{ overflow: "auto" }}>
+                        <Flex>
+                          <DataSourceForm
+                            addDataSource={addDataSource}
+                            // addFunctions={addFunction}
+                            selectOptions={dataConnectors}
+                          />
+                        </Flex>
+                        <Flex>
+                          {dataSourcePreview.length > 0 && (
+                            <Flex
+                              width="100%"
+                              flexDirection="column"
+                              padding="10px"
+                              style={{
+                                backgroundColor: colors.baseMuted,
+                                marginTop: 15,
+                                borderRadius: 10,
+                              }}
+                            >
+                              <Text textStyle="h6" mt="10px" mb="10px">
+                                {i18n.__("dataConectorResults")}
+                              </Text>
+
+                              <Flex>
+                                <Flex flexDirection="column">
+                                  {dataSourcePreview.map((item, index) => (
+                                    <>
+                                      <AddRemoveDataSources
+                                        key={index}
+                                        index={index}
+                                        dataSource={item}
+                                        removeDataSource={removeDataSource}
+                                        completeDataSource={completeDataSource}
+                                      />
+                                    </>
+                                  ))}
+                                </Flex>
+                              </Flex>
+                            </Flex>
+                          )}
+                        </Flex>
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div style={{ overflow: "auto" }}>
+                        <Flex>
+                          <Box
+                            width="426px"
+                            height="76px"
+                            borderRadius="6px"
+                            paddingLeft="10px"
+                            bg={colors.baseLinkHover}
+                            style={{
+                              border: `2px solid ${colors.baseLink}`,
+                            }}
+                          >
+                            <Text>{i18n.__("noDataText")}</Text>
+                            <Link href="www.prifina.com">
+                              {i18n.__("learnMoreHere")}
+                            </Link>
+                          </Box>
+                          <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
+                        </Flex>
+                      </div>
+                    </TabPanel>
+                  </TabPanelList>
+                </Tabs>
+              </div>
+              <Box width="320px">
+                <Text fontSize="13px">
+                  Let us know how your application uses data by logging your
+                  sources (or lack of) here.
+                </Text>
+                <Text mt="15px" fontSize="13px">
+                  This information helps us provide quality support and helps
+                  direct our product roadmap.
+                </Text>
+              </Box>
+            </Flex>
+
+            {appData.dataSources !== null &&
+            appData.dataSources !== "[]" &&
+            appData.dataSources !== 0 &&
+            appData.dataSources !== ["[null]"] ? (
+              <Flex flexDirection="column" justifyContent="center">
+                {checkJson(newDataSources)
+                  ? JSON.parse(newDataSources).map((item, index) => (
+                      <ControlAddedDataSources
+                        key={index}
+                        dataSource={item}
+                        uncompleteDataSource={uncompleteDataSource}
+                        editControled={editControled}
+                      />
+                    ))
+                  : newDataSources.map((item, index) => (
+                      <ControlAddedDataSources
+                        key={index}
+                        dataSource={item}
+                        uncompleteDataSource={uncompleteDataSource}
+                        editControled={editControled}
+                      />
+                    ))}
+              </Flex>
+            ) : (
+              <Flex flexDirection="column" justifyContent="center">
+                <Text mt="20px" mb="20px">
+                  Data sources used in your project
+                </Text>
+                <Flex
+                  style={{
+                    border: "1px dashed #BC31EA",
+                    width: 684,
+                    height: 132,
+                    borderRadius: 4,
+                    background: "#F7DEFF",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text fontSize="lg" color="#BC31EA">
+                    Search and select data sources
+                  </Text>
+                  <Text mt="10px" color="#BC31EA">
+                    Data sources you add will show up here
+                  </Text>
+                </Flex>
+              </Flex>
+            )}
+          </C.ProjectContainer>
+
+          <C.ActionContainer mb={32} justifyContent="space-between">
+            <C.CustomShape bg="baseError" />
+            <Box width="530px">
+              <Text>PUBLISH PROJECT</Text>
+              <Text mt={5} fontSize="xs">
+                Your App Status is -{" "}
+                {appData.status === 1 ? "Published" : "Not Published"}
               </Text>
             </Box>
-          </Flex>
+            <Button
+              onClick={publishApp}
+              disabled={appData.status === 1 ? true : false}
+            >
+              Publish
+            </Button>
+          </C.ActionContainer>
 
-          {newDataSources !== null &&
-          newDataSources[0] !== "[]" &&
-          newDataSources.length !== 0 &&
-          allValues.dataSources !== ["[null]"] ? (
-            <Flex flexDirection="column" justifyContent="center">
-              {checkJson(newDataSources)
-                ? JSON.parse(newDataSources).map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))
-                : newDataSources.map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))}
-            </Flex>
-          ) : (
-            <Flex flexDirection="column" justifyContent="center">
-              <Text mt="20px" mb="20px">
-                Data sources used in your project
+          <C.ActionContainer mb={32} justifyContent="space-between">
+            <C.CustomShape bg="baseError" />
+            <Box width="530px">
+              <Text>DELETE PROJECT</Text>
+              <Text mt={5} fontSize="xs">
+                Choose this to delete your project and all data associated with
+                your account. This operation is final and all data will be
+                permanently lost.
               </Text>
-              <Flex
-                style={{
-                  border: "1px dashed #BC31EA",
-                  width: 684,
-                  height: 132,
-                  borderRadius: 4,
-                  background: "#F7DEFF",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text fontSize="lg" color="#BC31EA">
-                  Search and select data sources
-                </Text>
-                <Text mt="10px" color="#BC31EA">
-                  Data sources you add will show up here
-                </Text>
-              </Flex>
-            </Flex>
-          )}
-        </C.ProjectContainer>
-
-        <C.ActionContainer mb={32} justifyContent="space-between">
-          <C.CustomShape bg="baseError" />
-          <Box width="530px">
-            <Text>PUBLISH PROJECT</Text>
-            <Text mt={5} fontSize="xs">
-              Your App Status is -{" "}
-              {allValues.status === 1 ? "Published" : "Not Published"}
-            </Text>
-          </Box>
-          <Button
-            onClick={publishApp}
-            disabled={allValues.status === 1 ? true : false}
-          >
-            Publish
-          </Button>
-        </C.ActionContainer>
-
-        <C.ActionContainer mb={32} justifyContent="space-between">
-          <C.CustomShape bg="baseError" />
-          <Box width="530px">
-            <Text>DELETE PROJECT</Text>
-            <Text mt={5} fontSize="xs">
-              Choose this to delete your project and all data associated with
-              your account. This operation is final and all data will be
-              permanently lost.
-            </Text>
-          </Box>
-          <Button colorStyle="error" onClick={deleteApp}>
-            Delete
-          </Button>
-        </C.ActionContainer>
-      </Flex>
+            </Box>
+            <Button colorStyle="error" onClick={deleteApp}>
+              Delete
+            </Button>
+          </C.ActionContainer>
+        </Flex>
+      ) : (
+        <Text>Loading...</Text>
+      )}
     </>
   );
 };

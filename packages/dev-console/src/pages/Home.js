@@ -161,7 +161,7 @@ const Main = ({ data, currentUser }) => {
   let [searchParams, setSearchParams] = useSearchParams();
 
   const openProject = props => {
-    setSearchParams(createSearchParams({ id: props.row.values.id }));
+    setSearchParams(createSearchParams({ projectId: props.row.values.id }));
     setStep(3);
   };
 
@@ -348,11 +348,11 @@ const Main = ({ data, currentUser }) => {
   }, [data]);
 
   useEffect(() => {
-    const showProjects = searchParams.get("id");
+    const showProjects = searchParams.get("projectId");
 
     if (showProjects !== null) {
       setStep(3);
-    } else setStep(0);
+    } else setStep(2);
   }, [searchParams]);
 
   return (
