@@ -6,7 +6,10 @@ import bxUser from "@iconify/icons-bx/bx-user";
 
 import { API, Auth } from "aws-amplify";
 
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
+import { useLocation } from "react-router-dom";
 
 import {
   getLoginUserIdentityPoolQuery,
@@ -47,7 +50,11 @@ const LoginContainer = styled(Box)`
 `;
 
 const Login = () => {
-  const history = useHistory();
+
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
+
+  //const history = useHistory();
 
   const { colors } = useTheme();
 
@@ -61,9 +68,12 @@ const Login = () => {
   // set default prifina api configs...
   API.configure(APIConfig);
 
+  //search.startsWith("?debug")
+  const searchKeys = new URLSearchParams(search);
+
   const appDebug =
-    process.env.REACT_APP_DEBUG === "true" &&
-    history.location.search === "?debug=true";
+    process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true"
+  //history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
   const alerts = useToast();
@@ -162,14 +172,15 @@ const Login = () => {
     
     credentialParams.Logins[provider] = idToken;
     const cognitoIdentityCredentials=await cognitoClient.send(
-				new GetCredentialsForIdentityCommand(credentialParams
-				)
+        new GetCredentialsForIdentityCommand(credentialParams
+        )
     //console.log(cognitoIdentityCredentials);
 */
 
       if (appDebug && user.preferredMFA === "NOMFA") {
         userAuth(true);
-        history.replace("/home");
+        //history.replace("/home");
+        navigate("/home", { replace: true })
       } else {
         if (user.preferredMFA === "NOMFA") {
           const mfa = await Auth.setPreferredMFA(user, "SMS");
@@ -236,7 +247,8 @@ const Login = () => {
   };
 
   const createAccountClick = e => {
-    history.replace("/register");
+    //history.replace("/register");
+    navigate("/register", { replace: true })
     e.preventDefault();
   };
   const backButtonClick = e => {

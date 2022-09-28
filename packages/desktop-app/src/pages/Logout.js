@@ -3,7 +3,6 @@ import { Box, Button } from "@blend-ui/core";
 
 import ProgressContainer from "../components/ProgressContainer";
 
-import { useHistory } from "react-router-dom";
 import { Auth } from "aws-amplify";
 
 import { i18n, useAppContext } from "@prifina-apps/utils";
@@ -11,11 +10,11 @@ import { i18n, useAppContext } from "@prifina-apps/utils";
 i18n.init();
 
 const Logout = props => {
-  const history = useHistory();
   const { userAuth } = useAppContext();
 
   const buttonClick = async e => {
     try {
+      /*
       await Auth.signOut();
       const localStorageKeys = Object.keys(window.localStorage);
 
@@ -29,7 +28,9 @@ const Logout = props => {
       });
 
       userAuth(false);
-      history.replace("/");
+      */
+      //history.replace("/");
+      window.location.replace("/");
     } catch (e) {
       console.log("error signing out: ", e);
     }

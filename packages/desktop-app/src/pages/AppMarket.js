@@ -24,7 +24,6 @@ import {
   i18n,
 } from "@prifina-apps/utils";
 
-import { useHistory } from "react-router-dom";
 
 import PropTypes from "prop-types";
 
@@ -75,7 +74,7 @@ const WidgetBox = ({
       onClick={onClick}
       backgroundImage={bannerImage}
       id="appMarket-widgetBase"
-      // id={`appmarket${title}`}
+    // id={`appmarket${title}`}
     >
       <Flex flexDirection={"column"} justifyContent="space-between">
         <C.MarketBadge
@@ -147,7 +146,6 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const { colors } = useTheme();
 
-  const history = useHistory();
 
   const s3path = `https://prifina-apps-${config.prifinaAccountId}-${config.main_region}.s3.amazonaws.com`;
 
@@ -162,172 +160,161 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     "google-timeline": dataSourceIcon,
   };
 
-  useEffect(async () => {
-    const apps = await listAppMarketQuery(GraphQLClient, {
-      filter: { appType: { lt: 3 } },
-    });
-    const prifinaUser = await getPrifinaUserQuery(GraphQLClient, prifinaID);
-    if (
-      prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources") &&
-      prifinaUser.data.getPrifinaUser.dataSources !== null
-    ) {
-      //
-      //console.log(typeof prifinaUser.data.getPrifinaUser.dataSources);
-      //console.log("INIT USER DATASOURCES...", prifinaUser.data.getPrifinaUser);
-      userDataSources.current = JSON.parse(
-        prifinaUser.data.getPrifinaUser.dataSources,
-      );
-    } else {
-      userDataSources.current = {};
-    }
-    // filter sourceType===1 only oauth based datasources...
-    const dataSources = await listDataSourcesQuery(GraphQLClient, {
-      filter: { sourceType: { gt: 0 } },
-    });
-    //console.log("AVAILABLE DATASOURCES ", dataSources);
-    availableDataSources.current = dataSources.data.listDataSources.items;
-    console.log("AVAILABLE DATASOURCES ", availableDataSources.current);
+  useEffect(() => {
 
-    let dataSourceModules = {};
-    Object.keys(availableDataSources.current).forEach(s => {
-      if (availableDataSources.current[s].modules !== null) {
-        for (
-          let m = 0;
-          m < availableDataSources.current[s].modules.length;
-          m++
-        ) {
-          const moduleName = availableDataSources.current[s].modules[m];
-          dataSourceModules[moduleName] = {
-            ...availableDataSources.current[s],
-          };
-        }
-      }
-    });
-
-    /*
-export const listDataSources = `query listDataSources($filter:TableDataSourceFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
-  listDataSources(filter: $filter, limit: $limit, nextToken: $nextToken,sortDirection:$sortDirection) {
-    items {
-      source
-      modules
-      sourceType
-      name
-      route
-      description
-    }
-    nextTokenCE
-  }
-}`;
-*/
-
-    const widgetData = apps.data.listAppMarket.items;
-    let availableWidgets = {};
-    widgetData.forEach(item => {
-      const manifest = JSON.parse(item.manifest);
-      let theme = "dark";
-      let size = "300x300";
-      let defaultSettings = [
-        { field: "size", size },
-        { field: "theme", theme },
-      ];
-
-      if (item.settings && item.settings.length > 0) {
-        item.settings.forEach(s => {
-          if (s.field === "sizes") {
-            defaultSettings[0] = {
-              field: "size",
-              value: JSON.parse(s.value)[0].value,
-            };
-            //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
-          } else if (s.field === "theme") {
-            defaultSettings[1] = {
-              field: "theme",
-              value: JSON.parse(s.value)[0].value,
-            };
-          } else {
-            defaultSettings.push({ field: s.field, value: s.value });
-          }
-        });
-      }
-      console.log("WidgetData ITEM ", item);
-      let dataSources = [];
-
+    async function init() {
+      const apps = await listAppMarketQuery(GraphQLClient, {
+        filter: { appType: { lt: 3 } },
+      });
+      const prifinaUser = await getPrifinaUserQuery(GraphQLClient, prifinaID);
       if (
-        item.hasOwnProperty("dataSources") &&
-        item.dataSources !== null &&
-        item.dataSources.length > 0
+        prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources") &&
+        prifinaUser.data.getPrifinaUser.dataSources !== null
       ) {
-        dataSources = item.dataSources.map(ds => {
-          const dataSource = dataSourceModules[ds];
-
-          return {
-            id: dataSource.source,
-            title: dataSource ? dataSource.name : dataSource.source,
-            description: dataSource ? dataSource.description : "",
-            icon: dataSourceIcons[dataSource.source],
-            connected: false,
-            sourceType: dataSource ? dataSource.sourceType : 0,
-          };
-        });
+        //
+        //console.log(typeof prifinaUser.data.getPrifinaUser.dataSources);
+        //console.log("INIT USER DATASOURCES...", prifinaUser.data.getPrifinaUser);
+        userDataSources.current = JSON.parse(
+          prifinaUser.data.getPrifinaUser.dataSources,
+        );
+      } else {
+        userDataSources.current = {};
       }
+      // filter sourceType===1 only oauth based datasources...
+      const dataSources = await listDataSourcesQuery(GraphQLClient, {
+        filter: { sourceType: { gt: 0 } },
+      });
+      //console.log("AVAILABLE DATASOURCES ", dataSources);
+      availableDataSources.current = dataSources.data.listDataSources.items;
+      console.log("AVAILABLE DATASOURCES ", availableDataSources.current);
 
-      availableWidgets[item.id] = {
-        title: item.title,
-        installed: false,
-        settings: defaultSettings,
-        publisher: manifest.publisher,
-        icon: `${s3path}/${manifest.id}/${manifest.icon}`,
-        bannerImage: `${s3path}/${manifest.id}/${manifest.bannerImage}`,
-        description: manifest.description,
-        shortDescription: manifest.shortDescription,
-        longDescription: manifest.longDescription,
-        dataTypes: manifest.dataTypes,
-        category: manifest.category,
-        deviceSupport: manifest.deviceSupport,
-        languages: manifest.languages,
-        age: manifest.age,
-        screenshots: manifest.screenshots,
-        keyFeatures: manifest.keyFeatures,
-        userHeld: manifest.userHeld,
-        userGenerated: manifest.userGenerated,
-        public: manifest.public,
-        id: manifest.id,
-        dataSources: dataSources,
-        //dataConnectors: manifest.dataConnectors || [],
-      };
-
-      console.log("MANIFEST", manifest);
-      const screenshots = [`${s3path}/${manifest.id}/${manifest.screenshots}`];
-      console.log("sreenshots", screenshots);
-    });
-
-    console.log("AVAILABLE WIDGETS ", availableWidgets);
-    let currentInstalled = [];
-    if (
-      prifinaUser.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
-      prifinaUser.data.getPrifinaUser.installedWidgets !== null
-    ) {
-      const installedWidgets = JSON.parse(
-        prifinaUser.data.getPrifinaUser.installedWidgets,
-      );
-      installedWidgets.forEach(w => {
-        if (availableWidgets.hasOwnProperty(w.id)) {
-          availableWidgets[w.id].installed = true;
-          currentInstalled.push(w.id);
+      let dataSourceModules = {};
+      Object.keys(availableDataSources.current).forEach(s => {
+        if (availableDataSources.current[s].modules !== null) {
+          for (
+            let m = 0;
+            m < availableDataSources.current[s].modules.length;
+            m++
+          ) {
+            const moduleName = availableDataSources.current[s].modules[m];
+            dataSourceModules[moduleName] = {
+              ...availableDataSources.current[s],
+            };
+          }
         }
       });
-      console.log(availableWidgets);
-      widgets.current = availableWidgets;
-      setInstalledWidgets(currentInstalled);
-    } else {
-      // no widgets installed....
-      widgets.current = availableWidgets;
-      setInstalledWidgets(currentInstalled);
+
+      const widgetData = apps.data.listAppMarket.items;
+      let availableWidgets = {};
+      widgetData.forEach(item => {
+        const manifest = JSON.parse(item.manifest);
+        let theme = "dark";
+        let size = "300x300";
+        let defaultSettings = [
+          { field: "size", size },
+          { field: "theme", theme },
+        ];
+
+        if (item.settings && item.settings.length > 0) {
+          item.settings.forEach(s => {
+            if (s.field === "sizes") {
+              defaultSettings[0] = {
+                field: "size",
+                value: JSON.parse(s.value)[0].value,
+              };
+              //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
+            } else if (s.field === "theme") {
+              defaultSettings[1] = {
+                field: "theme",
+                value: JSON.parse(s.value)[0].value,
+              };
+            } else {
+              defaultSettings.push({ field: s.field, value: s.value });
+            }
+          });
+        }
+        console.log("WidgetData ITEM ", item);
+        let dataSources = [];
+
+        if (
+          item.hasOwnProperty("dataSources") &&
+          item.dataSources !== null &&
+          item.dataSources.length > 0
+        ) {
+          dataSources = item.dataSources.map(ds => {
+            const dataSource = dataSourceModules[ds];
+
+            return {
+              id: dataSource.source,
+              title: dataSource ? dataSource.name : dataSource.source,
+              description: dataSource ? dataSource.description : "",
+              icon: dataSourceIcons[dataSource.source],
+              connected: false,
+              sourceType: dataSource ? dataSource.sourceType : 0,
+            };
+          });
+        }
+
+        availableWidgets[item.id] = {
+          title: item.title,
+          installed: false,
+          settings: defaultSettings,
+          publisher: manifest.publisher,
+          icon: `${s3path}/${manifest.id}/${manifest.icon}`,
+          bannerImage: `${s3path}/${manifest.id}/${manifest.bannerImage}`,
+          description: manifest.description,
+          shortDescription: manifest.shortDescription,
+          longDescription: manifest.longDescription,
+          dataTypes: manifest.dataTypes,
+          category: manifest.category,
+          deviceSupport: manifest.deviceSupport,
+          languages: manifest.languages,
+          age: manifest.age,
+          screenshots: manifest.screenshots,
+          keyFeatures: manifest.keyFeatures,
+          userHeld: manifest.userHeld,
+          userGenerated: manifest.userGenerated,
+          public: manifest.public,
+          id: manifest.id,
+          dataSources: dataSources,
+          //dataConnectors: manifest.dataConnectors || [],
+        };
+
+        console.log("MANIFEST", manifest);
+        const screenshots = [`${s3path}/${manifest.id}/${manifest.screenshots}`];
+        console.log("sreenshots", screenshots);
+      });
+
+      console.log("AVAILABLE WIDGETS ", availableWidgets);
+      let currentInstalled = [];
+      if (
+        prifinaUser.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
+        prifinaUser.data.getPrifinaUser.installedWidgets !== null
+      ) {
+        const installedWidgets = JSON.parse(
+          prifinaUser.data.getPrifinaUser.installedWidgets,
+        );
+        installedWidgets.forEach(w => {
+          if (availableWidgets.hasOwnProperty(w.id)) {
+            availableWidgets[w.id].installed = true;
+            currentInstalled.push(w.id);
+          }
+        });
+        console.log(availableWidgets);
+        widgets.current = availableWidgets;
+        setInstalledWidgets(currentInstalled);
+      } else {
+        // no widgets installed....
+        widgets.current = availableWidgets;
+        setInstalledWidgets(currentInstalled);
+      }
     }
+    init();
 
     return () => {
       widgets.current = {};
     };
+
   }, []);
 
   const installWidget = (e, id, settings) => {
@@ -945,10 +932,10 @@ export const listDataSources = `query listDataSources($filter:TableDataSourceFil
                           <Flex flexDirection="column" marginRight="190px">
                             {widgets.current[selectedWidgetIndex].dataSources
                               .length > 0 && (
-                              <Text color={colors.textMuted}>
-                                {i18n.__("selectAvailableData")}
-                              </Text>
-                            )}
+                                <Text color={colors.textMuted}>
+                                  {i18n.__("selectAvailableData")}
+                                </Text>
+                              )}
                             <Flex paddingTop="31px">
                               {widgets.current[
                                 selectedWidgetIndex

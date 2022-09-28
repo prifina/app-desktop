@@ -15,7 +15,9 @@ import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
-import { useHistory } from "react-router-dom";
+
+const { pathname, search } = useLocation();
+const navigate = useNavigate();
 
 import config from "../config";
 
@@ -65,7 +67,9 @@ const continents = {
 const popularList = ["US", "GB", "FI"];
 
 const CreateAccount = props => {
-  const history = useHistory();
+
+  const navigate = useNavigate();
+
   const alerts = useToast();
 
   const { AUTHConfig } = useAppContext();
@@ -82,9 +86,11 @@ const CreateAccount = props => {
 
   const uuid = uuidv4();
 
+  const searchKeys = new URLSearchParams(search);
+
   const appDebug =
-    process.env.REACT_APP_DEBUG === "true" &&
-    history.location.search === "?debug=true";
+    process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true"
+  //history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
   const { colors } = useTheme();
@@ -569,7 +575,8 @@ const CreateAccount = props => {
     }
   };
   const loginLink = e => {
-    history.replace("/login");
+    //history.replace("/login");
+    navigate("/login", { replace: true })
     e.preventDefault();
   };
   const nextStepAction = step => {

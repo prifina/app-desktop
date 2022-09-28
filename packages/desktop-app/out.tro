@@ -1,0 +1,154 @@
+yarn run v1.22.19
+$ cross-env PORT=3000 node ./scripts/start.js
+Starting the development server...
+
+ [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. 
+ Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:60510) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. 
+Please use the 'setupMiddlewares' option.
+
+Compiled with warnings.
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/depTrackingCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/depTrackingCache.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fixPolyfills.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fixPolyfills.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fragmentMatcher.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fragmentMatcher.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/inMemoryCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/inMemoryCache.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/index.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/objectCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/objectCache.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/optimism.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/optimism.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/queryKeyMaker.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/queryKeyMaker.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/readFromStore.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/readFromStore.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/recordingCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/recordingCache.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/writeToStore.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/writeToStore.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/ApolloClient.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/ApolloClient.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/ObservableQuery.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/ObservableQuery.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/QueryManager.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/QueryManager.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/networkStatus.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/networkStatus.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/types.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/mutations.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/mutations.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/queries.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/queries.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/store.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/store.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/errors/ApolloError.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/errors/ApolloError.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/index.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/scheduler/scheduler.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/scheduler/scheduler.ts'
+
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/util/Observable.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/util/Observable.ts'
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/depTrackingCache.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/depTrackingCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/depTrackingCache.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/fixPolyfills.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fixPolyfills.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fixPolyfills.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/fragmentMatcher.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fragmentMatcher.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/fragmentMatcher.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/inMemoryCache.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/inMemoryCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/inMemoryCache.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/index.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/index.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/objectCache.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/objectCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/objectCache.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/optimism.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/optimism.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/optimism.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/queryKeyMaker.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/queryKeyMaker.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/queryKeyMaker.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/readFromStore.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/readFromStore.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/readFromStore.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/recordingCache.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/recordingCache.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/recordingCache.ts'
+
+WARNING in ../../node_modules/apollo-cache-inmemory/lib/writeToStore.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/writeToStore.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/apollo-cache-inmemory/src/writeToStore.ts'
+
+WARNING in ../../node_modules/apollo-client/ApolloClient.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/ApolloClient.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/ApolloClient.ts'
+
+WARNING in ../../node_modules/apollo-client/core/ObservableQuery.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/ObservableQuery.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/ObservableQuery.ts'
+
+WARNING in ../../node_modules/apollo-client/core/QueryManager.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/QueryManager.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/QueryManager.ts'
+
+WARNING in ../../node_modules/apollo-client/core/networkStatus.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/networkStatus.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/networkStatus.ts'
+
+WARNING in ../../node_modules/apollo-client/core/types.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/types.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/core/types.ts'
+
+WARNING in ../../node_modules/apollo-client/data/mutations.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/mutations.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/mutations.ts'
+
+WARNING in ../../node_modules/apollo-client/data/queries.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/queries.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/queries.ts'
+
+WARNING in ../../node_modules/apollo-client/data/store.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/store.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/data/store.ts'
+
+WARNING in ../../node_modules/apollo-client/errors/ApolloError.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/errors/ApolloError.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/errors/ApolloError.ts'
+
+WARNING in ../../node_modules/apollo-client/index.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/index.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/index.ts'
+
+WARNING in ../../node_modules/apollo-client/scheduler/scheduler.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/scheduler/scheduler.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/scheduler/scheduler.ts'
+
+WARNING in ../../node_modules/apollo-client/util/Observable.js
+Module Warning (from ../../node_modules/source-map-loader/dist/cjs.js):
+Failed to parse source map from '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/util/Observable.ts' file: Error: ENOENT: no such file or directory, open '/Users/Tero/react-projects/local-development/prifina-development/app-desktop/node_modules/src/util/Observable.ts'
+
+webpack compiled with 23 warnings

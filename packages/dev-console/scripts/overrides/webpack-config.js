@@ -7,17 +7,18 @@ const CopyPlugin = require("copy-webpack-plugin");
 const override = config => {
   config.plugins.push(new CopyPlugin({
     patterns: [
-     // { from: "/Users/Tero/react-projects/digiole/data-modelling/plugins/packages/json-view/dist", to: "dist" },
-    // { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dataTest-v2/dist", to: "dist" },
-   // { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/imessage-v2/dist", to: "dist" },
-   //{ from: "/Users/Tero/react-projects/digiole/data-modelling/testing/my-app/build", to: "dist" },
+      // { from: "/Users/Tero/react-projects/digiole/data-modelling/plugins/packages/json-view/dist", to: "dist" },
+      { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dataTest-v2/dist", to: "dist" },
 
-   //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/cra-starter/build", to: "dist" },
-   //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/webpack-starter/dist", to: "dist" },
-   { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/weather-v2/dist", to: "dist" },
-  ],
+      // { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/imessage-v2/dist", to: "dist" },
+      //{ from: "/Users/Tero/react-projects/digiole/data-modelling/testing/my-app/build", to: "dist" },
+
+      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/cra-starter/build", to: "dist" },
+      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/webpack-starter/dist", to: "dist" },
+      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/weather-v2/dist", to: "dist" },
+    ],
   }));
-  
+
   config.plugins.push(new ModuleFederationPlugin(require("../../modulefederation.config.js")));
   /*
   config.plugins.push(new CopyPlugin({
@@ -26,7 +27,7 @@ const override = config => {
     ],
   }));
   */
-  config.output.publicPath = "auto";
+  //config.output.publicPath = "auto";
   /*
   config.resolve.fallback = {
     http: require.resolve("stream-http"),
@@ -39,7 +40,8 @@ const override = config => {
     'react': require.resolve('./node_modules/react'),
 'react-dom': require.resolve('./node_modules/react-dom'),
   */
-  config.resolve.fallback= { "http": false, "https": false }
+  config.resolve.fallback = { "http": false, "https": false }
+
   return config;
 };
 

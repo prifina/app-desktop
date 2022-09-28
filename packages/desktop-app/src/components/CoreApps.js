@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { PrifinaProvider, PrifinaContext } from "@prifina/hooks";
+import { PrifinaProvider, PrifinaContext } from "@prifina/hooks-v2";
 
 import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 
@@ -23,7 +23,7 @@ import gql from "graphql-tag";
 
 import config from "../config";
 
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import PropTypes from "prop-types";
 
@@ -33,7 +33,7 @@ const appPaths = {
   "display-app": "DisplayApp",
   settings: "Settings",
   "app-market": "AppMarket",
-  "dev-console": "DevConsole",
+  "app-studio": "DevConsole",
   "data-console": "DataConsole",
   "profile-cards": "ProfileCards",
   "smart-search": "SmartSearch",
@@ -66,7 +66,7 @@ const Content = ({
   useEffect(() => {
     userMenu.show({
       initials: initials,
-      effect: { hover: { width: 42 } },
+      //effect: { hover: { width: 42 } },
       notifications: notificationCount,
       RecentApps: [],
       PrifinaGraphQLHandler: GRAPHQL,
@@ -86,7 +86,7 @@ Content.propTypes = {
 };
 const CoreApps = props => {
   console.log("CORE COMPONENT --->", props, props.hasOwnProperty("app"));
-  const history = useHistory();
+
   const { AUTHConfig, APIConfig, userAuth } = useAppContext();
   const { app } = props;
   let coreApp = "";
@@ -255,13 +255,13 @@ const CoreApps = props => {
             };
           });
           let data = [];
-          let viewSettings=[];
+          let viewSettings = [];
           if (currentPrifinaUser.data.getPrifinaUser?.viewSettings) {
-            viewSettings=JSON.parse(currentPrifinaUser.data.getPrifinaUser.viewSettings);
+            viewSettings = JSON.parse(currentPrifinaUser.data.getPrifinaUser.viewSettings);
           }
-          
-          if (viewSettings.length===0) {
-            viewSettings.push({"widgets":{},"view":{"title": `${appProfile.name}'s home`}});
+
+          if (viewSettings.length === 0) {
+            viewSettings.push({ "widgets": {}, "view": { "title": `${appProfile.name}'s home` } });
           }
 
           if (
@@ -275,10 +275,12 @@ const CoreApps = props => {
             );
 
             let widgetCounts = {};
-         
 
-            data = installedWidgets.map((w,wi) => {
-              if (widgetCounts.hasOwnProperty(w.id)) {
+
+            console.info("INSTALLED WIDGETS ", installedWidgets, widgetData);
+
+            data = installedWidgets.map((w, wi) => {
+              if (widgetCounts?.[w.id]) {
                 widgetCounts[w.id]++;
               } else {
                 widgetCounts[w.id] = 0;
@@ -303,7 +305,7 @@ const CoreApps = props => {
                   });
                 }
               }
-
+              /*
               const remoteUrl = [
                 "https:/",
                 process.env.REACT_APP_PRIFINA_APPS_BUCKET + ".s3.amazonaws.com",
@@ -311,13 +313,22 @@ const CoreApps = props => {
                 widgetData[w.id].version,
                 "main.bundle.js",
               ].join("/");
+              */
+              const remoteUrl = [
+                "https:/",
+                process.env.REACT_APP_PRIFINA_APPS_BUCKET + ".s3.amazonaws.com",
+                w.id,
+                widgetData[w.id].version,
+                "remoteEntry.js",
+              ].join("/");
+              //https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/xkn9NGTH6eNyWUbaLxtMe1/0.0.1/remoteEntry.js
 
-              
+
               // default view includes all installed widgets, if view is still not created... 
-              if (currentPrifinaUser.data.getPrifinaUser.viewSettings===null || currentPrifinaUser.data.getPrifinaUser.viewSettings.length===0) {
-                viewSettings[0].widgets[w.id]={
+              if (currentPrifinaUser.data.getPrifinaUser.viewSettings === null || currentPrifinaUser.data.getPrifinaUser.viewSettings.length === 0) {
+                viewSettings[0].widgets[w.id] = {
                   order: wi,
-                  currentSettings:defaultValues,
+                  currentSettings: defaultValues,
                   settingsExists: widgetData[w.id].settings.length > 0,
                 };
               }
@@ -339,7 +350,7 @@ const CoreApps = props => {
                   image: [
                     "https:/",
                     process.env.REACT_APP_PRIFINA_APPS_BUCKET +
-                      ".s3.amazonaws.com",
+                    ".s3.amazonaws.com",
                     w.id,
                     widgetData[w.id].image,
                   ].join("/"),
@@ -351,7 +362,7 @@ const CoreApps = props => {
                   icon: [
                     "https:/",
                     process.env.REACT_APP_PRIFINA_APPS_BUCKET +
-                      ".s3.amazonaws.com",
+                    ".s3.amazonaws.com",
                     w.id,
                     widgetData[w.id].icon,
                   ].join("/"),

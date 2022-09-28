@@ -1,48 +1,40 @@
 /* eslint-disable react/display-name */
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+
+import AuthLayout from "./AuthLayout";
+import UnAuthLayout from "./UnAuthLayout";
 
 import { NotFoundPage } from "@prifina-apps/utils";
-import AuthenticatedRoute from "./AuthenticatedRoute";
-import UnauthenticatedRoute from "./UnauthenticatedRoute";
 import { ToastContextProvider } from "@blend-ui/toast";
 
 const Home = React.lazy(() => import("../pages/Home"));
+//import Home from "../pages/Home";
+
+const CoreApps = React.lazy(() => import("../components/CoreApps"));
+const Landing = React.lazy(() => import("../pages/Landing"));
 
 const Logout = React.lazy(() => import("../pages/Logout"));
-import CoreApps from "../components/CoreApps";
-import Landing from "../pages/Landing";
+//import CoreApps from "../components/CoreApps";
+//import Landing from "../pages/Landing";
 
 const Login = React.lazy(() => import("../pages/Login"));
 
-export default props => (
-  <React.Suspense fallback={"Loading routing..."}>
-    <Switch>
-      <AuthenticatedRoute path="/core/:app" exact>
-        <CoreApps {...props} />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/home" exact>
-        <Home />
-      </AuthenticatedRoute>
-      <AuthenticatedRoute path="/" exact>
-        <Home />
-      </AuthenticatedRoute>
-      <UnauthenticatedRoute path="/" exact>
-        <Landing />
-      </UnauthenticatedRoute>
-      <UnauthenticatedRoute path="/login" exact>
-        {/* TOAST CONTEXT PROVIDER TEMPORARY HERE */}
-        <ToastContextProvider>
-          <Login />
-        </ToastContextProvider>
-      </UnauthenticatedRoute>
-      <UnauthenticatedRoute path="/register" exact>
-        <Landing />
-      </UnauthenticatedRoute>
-      <AuthenticatedRoute path="/logout" exact>
-        <Logout />
-      </AuthenticatedRoute>
-      <Route component={NotFoundPage} />
-    </Switch>
-  </React.Suspense>
+export default (props) => (
+  <Routes>
+    <Route element={<AuthLayout />} >
+      <Route path="/system/:app" element={<CoreApps {...props} />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/logout" element={<Logout />} />
+    </Route>
+
+    <Route element={<UnAuthLayout />} >
+      <Route path="/login" element={<ToastContextProvider><Login /></ToastContextProvider>} />
+      <Route path="/register" element={<Landing />} />
+      <Route path="/" element={<Landing />} />
+    </Route>
+
+    <Route path="*" element={<NotFoundPage />} />
+  </Routes>
 );

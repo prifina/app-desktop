@@ -22,7 +22,11 @@ import {
 } from "@prifina-apps/utils";
 
 import { API as GRAPHQL, Auth } from "aws-amplify";
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
+//import { redirect } from "react-router-dom";
+
 
 import { StyledBox, StyledBackground } from "../components/DefaultBackground";
 import { PrifinaLogo } from "../components/PrifinaLogo";
@@ -38,7 +42,8 @@ const array_chunks = (array, chunk_size) =>
     .map(begin => array.slice(begin, begin + chunk_size));
 
 const Content = ({ clientHandler, currentUser, activeUser }) => {
-  const history = useHistory();
+  //const history = useHistory();
+  const navigate = useNavigate();
   const userMenu = useUserMenu();
 
   console.log("CURRENT USER ", currentUser);
@@ -65,7 +70,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
         prifinaAppsData2.data.listAppMarket.items.forEach(item => {
           prifinaAppsJSON[item.id] = item;
           if (item.appType === 3) {
-            prifinaAppsJSON[item.id].route = "core/" + item.route;
+            prifinaAppsJSON[item.id].route = "system/" + item.route;
           }
         });
 
@@ -95,7 +100,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
 
         userMenu.show({
           initials: initials,
-          effect: { hover: { width: 42 } },
+          //effect: { hover: { width: 42 } },
           notifications:
             notificationCountResult.data.getSystemNotificationCount,
           RecentApps: [],
@@ -229,7 +234,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
           {loadingStatus && <div />}
           {!loadingStatus && (
             <animated.div
-              style={{ opacity: opacity.interpolate(o => (o > 0.6 ? 1 : o)) }}
+              style={{ opacity: opacity.to(o => (o > 0.6 ? 1 : o)) }}
             >
               <Box m={8} mt={77} style={{ zIndex: 3 }}>
                 <CssGrid id="home-appsGrid" columns={gridCols} flow="column">
@@ -248,9 +253,16 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
                                 "APP CLICK ",
                                 prifinaApps.current[appIcon.name].route,
                               );
+                              navigate("/" + prifinaApps.current[appIcon.name].route, { replace: true });
+                              //return redirect("/" + prifinaApps.current[appIcon.name].route);
+                              //window.location.replace("/" + prifinaApps.current[appIcon.name].route);
+                              //window.location.href = "/" + prifinaApps.current[appIcon.name].route;
+                              //window.location.href = "/logout";
+                              /*
                               history.push(
                                 "/" + prifinaApps.current[appIcon.name].route,
                               );
+                              */
                             }}
                           >
                             {appIcon.component}
@@ -275,7 +287,7 @@ Content.propTypes = {
 };
 
 const Home = props => {
-  const history = useHistory();
+
   const { userAuth, currentUser } = useAppContext();
   console.log("HOME ", currentUser);
   const clientHandler = useRef(null);
@@ -338,53 +350,58 @@ const Home = props => {
     return Promise.resolve(client);
   };
 
-  useEffect(async () => {
-    if (Object.keys(currentUser).length > 0) {
-      const currentPrifinaUser = await getPrifinaUserQuery(
-        GRAPHQL,
-        currentUser.prifinaID,
-      );
+  useEffect(() => {
 
-      let appProfile = JSON.parse(
-        currentPrifinaUser.data.getPrifinaUser.appProfile,
-      );
-
-      let clientEndpoint = "";
-      let clientRegion = "";
-
-      if (!appProfile.hasOwnProperty("endpoint")) {
-        const defaultProfileUpdate = await updateUserProfileMutation(
+    async function init() {
+      if (Object.keys(currentUser).length > 0) {
+        const currentPrifinaUser = await getPrifinaUserQuery(
           GRAPHQL,
           currentUser.prifinaID,
         );
-        console.log("PROFILE UPDATE ", defaultProfileUpdate);
-        appProfile = JSON.parse(
-          defaultProfileUpdate.data.updateUserProfile.appProfile,
+
+        let appProfile = JSON.parse(
+          currentPrifinaUser.data.getPrifinaUser.appProfile,
         );
+
+        let clientEndpoint = "";
+        let clientRegion = "";
+
+        if (!appProfile.hasOwnProperty("endpoint")) {
+          const defaultProfileUpdate = await updateUserProfileMutation(
+            GRAPHQL,
+            currentUser.prifinaID,
+          );
+          console.log("PROFILE UPDATE ", defaultProfileUpdate);
+          appProfile = JSON.parse(
+            defaultProfileUpdate.data.updateUserProfile.appProfile,
+          );
+        }
+        clientEndpoint = appProfile.endpoint;
+        clientRegion = appProfile.region;
+
+        const _currentSession = await Auth.currentSession();
+
+        const client = await createClient(
+          clientEndpoint,
+          clientRegion,
+          _currentSession,
+        );
+
+        userData.current = currentPrifinaUser.data.getPrifinaUser;
+
+        activeUser.current = {
+          name: appProfile.name,
+          uuid: currentUser.prifinaID,
+          endpoint: clientEndpoint,
+          region: clientRegion,
+        };
+
+        clientHandler.current = client;
+        setInitClient(true);
       }
-      clientEndpoint = appProfile.endpoint;
-      clientRegion = appProfile.region;
-
-      const _currentSession = await Auth.currentSession();
-
-      const client = await createClient(
-        clientEndpoint,
-        clientRegion,
-        _currentSession,
-      );
-
-      userData.current = currentPrifinaUser.data.getPrifinaUser;
-
-      activeUser.current = {
-        name: appProfile.name,
-        uuid: currentUser.prifinaID,
-        endpoint: clientEndpoint,
-        region: clientRegion,
-      };
-
-      clientHandler.current = client;
-      setInitClient(true);
     }
+    init();
+
   }, [currentUser]);
 
   return (

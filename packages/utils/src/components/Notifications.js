@@ -83,15 +83,18 @@ export const NotificationHeader = ({
         <Flex width={1 / 2} alignItems={"center"}>
           <StyledNotificationHeader>{title}</StyledNotificationHeader>
         </Flex>
-        <Flex width={1 / 2} justifyContent={"flex-end"} alignItems={"center"}>
+        <Flex width={1 / 2} justifyContent={"flex-end"} alignItems={"center"}
+          style={{ cursor: "pointer" }}>
+
           <BlendIcon
+
             iconify={bxChevronRightCircle}
             color={"#00847A"}
             height={"14px"}
             width={"14px"}
             onClick={closeClick}
-            style={{ cursor: "pointer" }}
           />
+
         </Flex>
       </Flex>
       <Flex flexDirection={"row"} mt={"25px"}>
@@ -135,9 +138,11 @@ export const NotificationCard = ({
       <Flex flexDirection={"row"}>
         <StyledBar />
         <Flex p={10} width={1}>
+          {/* 
           <Flex width={"32px"}>
             <AppIcon width={"20px"} height={"20px"} />
           </Flex>
+          */}
           <Flex width={"233px"} height={"92px"} flexDirection={"column"}>
             <Flex flexDirection={"row"}>
               <Flex width={1 / 2} alignItems={"center"}>
