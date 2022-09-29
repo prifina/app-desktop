@@ -476,7 +476,7 @@ const Main = ({ data, currentUser }) => {
                 </div>
               )}
               <Flex
-                marginTop="35px"
+                marginTop="75px"
                 width="1027px"
                 justifyContent="space-between"
               >
