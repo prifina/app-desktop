@@ -73,7 +73,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
         appType: appType,
       });
       // history.push("/");
-      // location.reload();
+      location.reload();
     } catch (e) {
       console.log("error ", e);
     }
@@ -123,7 +123,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => { }}
+                      onChange={() => {}}
                       onClick={() => {
                         setAppType(1);
                       }}
@@ -133,7 +133,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => { }}
+                      onChange={() => {}}
                       onClick={() => {
                         setAppType(2);
                       }}

@@ -6,7 +6,6 @@ import {
   createSearchParams,
   useNavigate,
   useSearchParams,
-  useLocation,
 } from "react-router-dom";
 
 import { Box, Flex, Text, Button, Image, useTheme } from "@blend-ui/core";
@@ -25,22 +24,13 @@ import {
   withUsermenu,
   i18n,
   createClient,
-  SidebarMenu,
+  // SidebarMenu,
 } from "@prifina-apps/utils";
 
 i18n.init();
 
-//import { useAppContext } from "../lib/contextLib";
 import { API as GRAPHQL, Auth } from "aws-amplify";
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-
-//import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
-
-import { StyledBox } from "../components/DefaultBackground";
-
-//import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
-
-//import withUsermenu from "../components/UserMenu";
 
 import UploadApp from "../components/UploadApp";
 
@@ -161,7 +151,7 @@ const Main = ({ data, currentUser }) => {
   let [searchParams, setSearchParams] = useSearchParams();
 
   const openProject = props => {
-    setSearchParams(createSearchParams({ projectId: props.row.values.id }));
+    setSearchParams(createSearchParams({ appID: props.row.values.id }));
     setStep(3);
   };
 
@@ -281,33 +271,36 @@ const Main = ({ data, currentUser }) => {
   };
 
   const menuItems = [
-    {
-      label: i18n.__("dashboard"),
-      icon: viewDashboard,
-      onClick: () => {
-        setStep(0);
-      },
-    },
+    // {
+    //   label: i18n.__("dashboard"),
+    //   icon: viewDashboard,
+    //   onClick: () => {
+    //     setStep(0);
+    //     setSearchParams({});
+    //   },
+    // },
     {
       label: i18n.__("projects"),
       icon: mdiWidget,
       onClick: () => {
         setStep(2);
+        setSearchParams({});
       },
     },
-    {
-      label: i18n.__("resources"),
-      icon: mdiBookOpenVariant,
-      badgeText: "New",
-      onClick: () => {
-        setStep(4);
-      },
-    },
-    {
-      label: "Profiles",
-      icon: mdiSitemap,
-      disabled: true,
-    },
+    // {
+    //   label: i18n.__("resources"),
+    //   icon: mdiBookOpenVariant,
+    //   badgeText: "New",
+    //   onClick: () => {
+    //     setStep(4);
+    //     setSearchParams({});
+    //   },
+    // },
+    // {
+    //   label: "Profiles",
+    //   icon: mdiSitemap,
+    //   disabled: true,
+    // },
   ];
 
   const resourceCardItems = [
@@ -345,10 +338,10 @@ const Main = ({ data, currentUser }) => {
       console.log("updated apps", updatedApps);
     }
     fetchData();
-  }, [data]);
+  }, [step]);
 
   useEffect(() => {
-    const showProjects = searchParams.get("projectId");
+    const showProjects = searchParams.get("appID");
 
     if (showProjects !== null) {
       setStep(3);
@@ -361,10 +354,8 @@ const Main = ({ data, currentUser }) => {
       <C.NavbarContainer bg="basePrimary">
         <DevConsoleLogo className="appStudio" />
       </C.NavbarContainer>
-
-      {/* <StyledBox> */}
       <C.ContentContainer>
-        {step === 0 && (
+        {/* {step === 0 && (
           <>
             {projectDialogOpen && (
               <CreateProjectModal
@@ -373,33 +364,7 @@ const Main = ({ data, currentUser }) => {
                 // isOpen={projectDialogOpen}
               />
             )}
-            <Flex flexDirection="column" alignItems="center" mt="42px">
-              <Image src={dashboardBanner} style={{ position: "relative" }} />
-              <Flex
-                textAlign="center"
-                width="506px"
-                height="196px"
-                flexDirection="column"
-                justifyContent="space-between"
-                alignItems="center"
-                position="absolute"
-                top="243px"
-              >
-                <Text fontSize="xl">{i18n.__("createYourFirstProject")}</Text>
-                <Text color={colors.textMuted} fontSize={20}>
-                  {i18n.__("dashboardText")}
-                </Text>
-                <Button
-                  size="sm"
-                  bg={colors.baseAccent}
-                  onClick={() => {
-                    setProjectDialogOpen(true);
-                  }}
-                >
-                  {i18n.__("newProject")}
-                </Button>
-              </Flex>
-            </Flex>
+            
             <Box paddingLeft="62px" paddingTop="100px">
               <Text fontSize="xl">{i18n.__("keyResourcesHeading")}</Text>
               <Text fontSize="md" mt="12px">
@@ -422,8 +387,8 @@ const Main = ({ data, currentUser }) => {
               </Flex>
             </Box>
           </>
-        )}
-        {/* PROJECTS */}
+        )} */}
+
         {step === 2 && (
           <>
             {projectDialogOpen && (
@@ -433,25 +398,73 @@ const Main = ({ data, currentUser }) => {
                 // isOpen={projectDialogOpen}
               />
             )}
-            <Flex paddingTop="48px">
-              <Flex
-                bg="baseMuted"
-                flexDirection="column"
-                borderRadius="10px"
-                padding="16px"
-              >
-                {upload && (
-                  <UploadApp row={selectedRow.current} close={closeClick} />
-                )}
-                {!upload && (
-                  <>
+
+            <Box marginTop="48px">
+              {updatedData.length > 0 && (
+                <Flex
+                  bg="baseMuted"
+                  flexDirection="column"
+                  borderRadius="10px"
+                  padding="16px"
+                >
+                  {upload && (
+                    <UploadApp row={selectedRow.current} close={closeClick} />
+                  )}
+                  {!upload && (
+                    <>
+                      <Flex
+                        alignItems="center"
+                        justifyContent="space-between"
+                        marginBottom="40px"
+                      >
+                        <Text textStyle="h3">{i18n.__("projects")}</Text>
+                        <Button
+                          onClick={() => {
+                            setProjectDialogOpen(true);
+                          }}
+                        >
+                          {i18n.__("newProject")}
+                        </Button>
+                      </Flex>
+                      <div className="tableWrap">
+                        <Table columns={Columns} data={updatedData} />
+                      </div>
+                    </>
+                  )}
+                </Flex>
+              )}
+
+              {updatedData.length === 0 && (
+                <div
+                  style={{
+                    //same as table
+                    width: 1000,
+                  }}
+                >
+                  <Flex flexDirection="column" alignItems="center" mt="42px">
+                    <Image
+                      src={dashboardBanner}
+                      style={{ position: "relative" }}
+                    />
                     <Flex
-                      alignItems="center"
+                      textAlign="center"
+                      width="506px"
+                      height="196px"
+                      flexDirection="column"
                       justifyContent="space-between"
-                      marginBottom="40px"
+                      alignItems="center"
+                      position="absolute"
+                      top="243px"
                     >
-                      <Text textStyle="h3">{i18n.__("projects")}</Text>
+                      <Text fontSize="xl">
+                        {i18n.__("createYourFirstProject")}
+                      </Text>
+                      <Text color={colors.textMuted} fontSize={20}>
+                        {i18n.__("dashboardText")}
+                      </Text>
                       <Button
+                        size="sm"
+                        bg={colors.baseAccent}
                         onClick={() => {
                           setProjectDialogOpen(true);
                         }}
@@ -459,25 +472,25 @@ const Main = ({ data, currentUser }) => {
                         {i18n.__("newProject")}
                       </Button>
                     </Flex>
-                    <div className="tableWrap">
-                      {updatedData.length === 0 && (
-                        <div
-                          style={{
-                            //same as table
-                            width: 1000,
-                          }}
-                        >
-                          <Text m={2}>{i18n.__("noApps")}</Text>
-                        </div>
-                      )}
-                      {updatedData.length > 0 && (
-                        <Table columns={Columns} data={updatedData} />
-                      )}
-                    </div>
-                  </>
-                )}
+                  </Flex>
+                </div>
+              )}
+              <Flex
+                marginTop="35px"
+                width="1027px"
+                justifyContent="space-between"
+              >
+                {resourceCardItems.map((item, index) => (
+                  <C.ResourceCard
+                    key={index}
+                    marginRight="42px"
+                    src={item.src}
+                    title={item.title}
+                    description={item.description}
+                  />
+                ))}
               </Flex>
-            </Flex>
+            </Box>
           </>
         )}
         {step === 3 && (
@@ -488,14 +501,12 @@ const Main = ({ data, currentUser }) => {
             />
           </>
         )}
-        {/* RESOURCES */}
-        {step === 4 && (
+        {/* {step === 4 && (
           <>
             <Resources />
           </>
-        )}
+        )} */}
       </C.ContentContainer>
-      {/* </StyledBox> */}
     </React.Fragment>
   );
 };

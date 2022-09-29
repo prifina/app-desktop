@@ -18,6 +18,7 @@ const override = config => {
         //  { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/weather-v2/dist", to: "dist" },
         {
           from: "/Users/hamza/Prifina/widgets/packages/weather-v2/dist",
+          // from: "/Users/hamza/Prifina/widgets/packages/oura-activity-v2/dist",
           to: "dist",
         },
       ],
@@ -34,7 +35,7 @@ const override = config => {
     ],
   }));
   */
-  config.output.publicPath = "auto";
+  // config.output.publicPath = "auto";
   /*
   config.resolve.fallback = {
     http: require.resolve("stream-http"),

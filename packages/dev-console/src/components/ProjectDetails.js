@@ -90,32 +90,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
   const [param] = useSearchParams();
 
-  const [allValues, setAllValues] = useState({
-    name: "",
-    id: "",
-    appType: "",
-    version: "",
-    publisher: "",
-    category: "",
-    deviceSupport: "",
-    languages: "",
-    age: "",
-    keyFeatures: [],
-    shortDescription: "",
-    longDescription: "",
-    userHeld: [],
-    userGenerated: [],
-    public: [],
-    icon: "",
-    dataSources: [],
-    remoteUrl: "",
-    status,
-  });
-
-  // const allValues = param.get("id");
-  // console.log("params", param.get("projectId"));
-
-  const appID = param.get("projectId");
+  const appID = param.get("appID");
 
   const { currentUser } = useAppContext();
 
@@ -132,13 +107,34 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
   const [newUserGenerated, setNewUserGenerated] = useState([]);
   const [newPublic, setNewPublic] = useState([]);
 
-  const [isEqual, setIsEqual] = useState();
+  //in progress..
+  const [isEqual, setIsEqual] = useState(false);
 
   const [activeTab, setActiveTab] = useState(0);
 
   const tabClick3 = (e, tab) => {
     setActiveTab(tab);
   };
+
+  const [assetsS3Path, setAssetsS3Path] = useState("");
+
+  const [newDataSources, setNewDataSources] = useState([]);
+  console.log("new data sources", newDataSources);
+
+  let defaultSettings = [
+    {
+      field: "sizes",
+      value: '[{"option":"300x300","value":"300x300"}]',
+      label: "Sizes",
+      type: "select",
+    },
+    {
+      field: "theme",
+      value: '[{"option":"Light","value":"light"}]',
+      label: "Theme",
+      type: "select",
+    },
+  ];
 
   useEffect(() => {
     async function fetchData() {
@@ -161,10 +157,20 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
       setNewValues(result[0]);
 
-      setNewKeyFeatures(result[0].keyFeatures);
-      setNewUserHeld(result[0].userHeld);
-      setNewUserGenerated(result[0].userGenerated);
-      setNewPublic(result[0].public);
+      setNewKeyFeatures(
+        result[0].keyFeatures === null ? [] : result[0].keyFeatures,
+      );
+      setNewUserHeld(result[0].userHeld === null ? [] : result[0].userHeld);
+      setNewUserGenerated(
+        result[0].userGenerated === null ? [] : result[0].userGenerated,
+      );
+      setNewPublic(result[0].public === null ? [] : result[0].public);
+
+      setNewDataSources(result[0].dataSources);
+
+      setAssetsS3Path(
+        `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${result[0].id}/assets`,
+      );
 
       setIsLoading(false);
     }
@@ -177,16 +183,17 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 
   console.log("KEY FEATURES", newKeyFeatures);
 
-  useEffect(() => {
-    let eq = JSON.stringify(newValues) === JSON.stringify(appData);
-    console.log("eq", eq);
+  //in progress..
+  // useEffect(() => {
+  //   let eq = JSON.stringify(newValues) === JSON.stringify(appData);
+  //   console.log("eq", eq);
 
-    if (eq) {
-      setIsEqual(true);
-    } else if (!eq) {
-      setIsEqual(false);
-    }
-  }, [newValues]);
+  //   if (eq) {
+  //     setIsEqual(true);
+  //   } else if (!eq) {
+  //     setIsEqual(false);
+  //   }
+  // }, [newValues]);
 
   const handleValueChange = event => {
     let value = event.target.value;
@@ -241,6 +248,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
       icon: icon,
       remoteUrl: newRemoteUrl,
       dataSources: JSON.stringify(newDataSources),
+      settings: defaultSettings,
     }).then(res => {
       console.log("SUCCESS", res);
       toast.success("Project details updated", {});
@@ -382,21 +390,16 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
     }
   };
 
-  console.log("all", allValues);
+  // const passAssetInfo = title => {
+  //   console.log("pass", title);
 
-  const passAssetInfo = title => {
-    console.log("pass", title);
-
-    setNewValues({
-      ...newValues,
-      icon: allValues.id + "-" + "icon" + "-" + title,
-    });
-  };
+  //   setNewValues({
+  //     ...newValues,
+  //     icon: appData.id + "-" + "icon" + "-" + title,
+  //   });
+  // };
 
   //---------------------------------------------------------
-
-  const [newDataSources, setNewDataSources] = useState(allValues.dataSources);
-  console.log("new data sources", newDataSources);
 
   const [dataConnectors, setDataConnectors] = useState([]);
   const [publicSources, setPublicSources] = useState([]);
@@ -512,8 +515,6 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
     setFontColor(colors.textMuted);
   };
 
-  const assetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${allValues.id}/assets`;
-
   return (
     <>
       {!isLoading ? (
@@ -524,7 +525,6 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
             style={{
               top: 65,
               position: "sticky",
-              // outline: `24px solid ${colors.basePrimary}`,
               boxShadow: `0px 15px 20px ${colors.basePrimary}`,
             }}
           >
@@ -621,7 +621,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                   Build deployment package
                 </Text>
 
-                <UploadFile widgetId={appData.id} />
+                <UploadFile widgetId="hehe" />
               </Box>
               <Box ml={25}>
                 <Text fontSize="xs" color={colors.textMuted}>
@@ -784,11 +784,6 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                   defaultValue={appData.deviceSupport}
                   onChange={handleValueChange}
                   color={colors.textPrimary}
-                  style={
-                    {
-                      // background: "transparent",
-                    }
-                  }
                 />
               </Box>
             </Flex>
@@ -832,7 +827,7 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                 id={appData.id}
                 type="icon"
                 numId="1"
-                passAssetInfo={passAssetInfo}
+                // passAssetInfo={passAssetInfo}
               />
             </Flex>
             <Image
@@ -865,9 +860,18 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
               />
             </Flex>
             <Flex width="700px" justifyContent="space-between">
-              <ImageZoom src={`${assetsS3Path}/screenshot-1.png`} />
-              <ImageZoom src={`${assetsS3Path}/screenshot-2.png`} />
-              <ImageZoom src={`${assetsS3Path}/screenshot-3.png`} />
+              <ImageZoom
+                src={`${assetsS3Path}/screenshot-1.png`}
+                onError={e => (e.target.style.display = "none")}
+              />
+              <ImageZoom
+                src={`${assetsS3Path}/screenshot-2.png`}
+                onError={e => (e.target.style.display = "none")}
+              />
+              <ImageZoom
+                src={`${assetsS3Path}/screenshot-3.png`}
+                onError={e => (e.target.style.display = "none")}
+              />
             </Flex>
           </C.ProjectContainer>
           <C.ProjectContainer alt="dataSources" mb={24}>
@@ -1009,11 +1013,19 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
                               border: `2px solid ${colors.baseLink}`,
                             }}
                           >
-                            <Text>{i18n.__("noDataText")}</Text>
-                            <Link href="www.prifina.com">
-                              {i18n.__("learnMoreHere")}
-                            </Link>
+                            <Flex>
+                              <Text>{i18n.__("noDataText")}</Text>
+                              <Button
+                                variation="link"
+                                onClick={() => {
+                                  window.open("https://prifina.com");
+                                }}
+                              >
+                                {i18n.__("learnMoreHere")}
+                              </Button>
+                            </Flex>
                           </Box>
+
                           <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
                         </Flex>
                       </div>
@@ -1124,7 +1136,6 @@ const ProjectDetails = ({ setStep, setSearchParams, ...props }) => {
 };
 
 ProjectDetails.propTypes = {
-  allValues: PropTypes.object,
   setStep: PropTypes.func,
   setSearchParams: PropTypes.func,
 };
