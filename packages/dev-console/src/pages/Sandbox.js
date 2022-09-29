@@ -403,9 +403,11 @@ const Content = forwardRef((props, ref) => {
               <Remote ref={ref}
                 componentProps={{ ...settingsInit }}
                 system={{
-                  //remote: "x866fscSq5Ae7bPgUtb6ffB",
+                  //remote: "x3LSdcSs1kcPskBWBJvqGto",
+                  //remote: "sCUiMz2m9JsRSnRJ5favnP",
+                  remote: "csd88KWnuft8fHfMrKSBAD",
 
-                  remote: appID,
+                  //remote: appID,
                   url: "dist/remoteEntry.js",
                   //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
                   //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",

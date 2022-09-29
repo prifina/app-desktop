@@ -5,7 +5,10 @@ import { IconField } from "@blend-ui/icon-field";
 import bxKey from "@iconify/icons-bx/bx-key";
 import { PhoneIcon } from "./assets/phone";
 
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
+import { useLocation } from "react-router-dom";
 import { useToast } from "@blend-ui/toast";
 
 import { i18n, useFormFields, useFocus, onlyDigitChars } from "../";
@@ -15,16 +18,27 @@ import PropTypes from "prop-types";
 i18n.init();
 
 const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
-  const history = useHistory();
+  //const history = useHistory();
+
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
   const alerts = useToast();
 
   const { colors } = useTheme();
 
+
+  const searchKeys = new URLSearchParams(search);
+
+  const appDebug =
+    process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true"
+  //history.location.search === "?debug=true";
+  console.log("APP DEBUG ", appDebug);
+  /*
   const appDebug =
     process.env.REACT_APP_DEBUG === "true" &&
     history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
-
+*/
   const [confirmationFields, handleChange] = useFormFields({
     confirmationCode: "",
   });
@@ -68,8 +82,8 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
         const mfa = await authOptions.Auth.setPreferredMFA(loggedUser, "NOMFA");
         console.log("MFA ", mfa);
       }
-
-      history.replace("/home");
+      navigate("/home", { replace: true })
+      //history.replace("/home");
       authOptions.setAuth(true);
     } catch (e) {
       console.log("ERR", e);
@@ -155,7 +169,7 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
               id="createAccountButton"
               color={colors.textLink}
               variation="link"
-              // onClick={createAccountClick}
+            // onClick={createAccountClick}
             >
               Send another code
             </Button>

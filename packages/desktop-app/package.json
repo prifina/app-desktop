@@ -44,7 +44,7 @@
     "@blend-ui/core": "1.1.68-alpha.0",
     "@blend-ui/css-grid": "1.0.7-alpha.0",
     "@blend-ui/icon-field": "^1.0.1-alpha.0",
-    "@blend-ui/icons": "1.1.9-alpha.0",
+    "@blend-ui/icons": "^1.1.10-alpha.0",
     "@blend-ui/modal": "1.0.14-alpha.0",
     "@blend-ui/progress": "1.0.12-alpha.0",
     "@blend-ui/search-select": "^1.0.1-alpha.0",
