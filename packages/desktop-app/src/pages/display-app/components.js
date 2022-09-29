@@ -23,6 +23,10 @@ import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 
 import mdiTrashCanOutline from "@iconify/icons-mdi/trash-can-outline";
 
+import mdiPlusBoxMultipleOutline from "@iconify/icons-mdi/plus-box-multiple-outline";
+import mdiEyeOffOutline from "@iconify/icons-mdi/eye-off-outline";
+import mdiGearOutline from "@iconify/icons-mdi/gear-outline";
+
 import { API_KEY, GOOGLE_URL, SEARCH_ENGINE } from "../../config";
 
 import { i18n, useFetch, useFormFields } from "@prifina-apps/utils";
@@ -90,8 +94,8 @@ export const IconDiv = styled.div`
   top: 20px;
   */
   position: absolute;
-  left: 275px;
-  top: 15px;
+  left: 282px;
+  top: 24px;
 
   opacity: 1;
   cursor: ${props => (props.open ? "default" : "pointer")};
@@ -304,65 +308,75 @@ export const DotLoader = props => {
   );
 };
 
-// export const WidgetList = React.memo(
-//   ({ widgetList, widgetData, currentUser, dataSources }) => {
-//     // currentUser
-//     // localization
-//     // settings
-//     console.log("WIDGET LIST ", widgetList);
-//     console.log("WIDGET DATA", widgetData);
-//     console.log("WIDGET USER", currentUser);
-//     console.log("DATASOURCES", dataSources);
 
-//     return (
-//       <>
-//         {widgetList.map((Widget, i) => {
-//           const size = widgetData[i].widget.size.split("x");
-
-//           return (
-//             <Widget
-//               data={{
-//                 settings: widgetData[i].currentSettings,
-//                 currentUser: currentUser,
-//               }}
-//               key={"prifina-widget-" + i}
-//             />
-//           );
-//         })}
-//       </>
-//     );
-//   },
-// );
+const OverlayStyles = styled.div`
+ position: relative;
+ /*
+ width:100%;
+ height:100%;
+ */
+`;
 
 export const WidgetList = ({
   widgetList,
   widgetData,
   currentUser,
   dataSources,
+  openWidgetMenu
 }) => {
   console.log("WIDGET LIST ", widgetList);
   console.log("WIDGET DATA", widgetData);
   console.log("WIDGET USER", currentUser);
   console.log("DATASOURCES", dataSources);
 
+  const toggleWidgetMenu = (elem) => {
+    //console.log(e.currentTarget.getBoundingClientRect());
+    const menuProps = elem.getBoundingClientRect();
+    const idx = parseInt(elem.dataset["widgetIdx"]);
+    //console.log("CLICK ", idx, menuProps);
+    openWidgetMenu(menuProps, idx);
+  }
+
   return (
     <>
       {widgetList.length === widgetData.length &&
         widgetList.map((Widget, i) => {
           // const size = widgetData[i].widget.size.split("x");
+          const w = widgetData[i];
 
           return (
-            <Widget
-              data={{
-                settings:
-                  widgetData.length === 1
-                    ? widgetData[0].currentSettings
-                    : widgetData[i].currentSettings,
-                // settings: widgetData[i].currentSettings,
-                currentUser: currentUser,
-              }}
-              key={"prifina-widget-" + i}
-            />
+            <OverlayStyles key={"prifina-widget-" + i}>
+              <div style={{ position: "absolute", top: 0, left: 0 }}>
+
+                {w.settingsExists && (
+                  <>
+                    <IconDiv
+                      widgetTheme={w.widget.theme}
+                      data-widget-idx={i}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        //console.log(e.currentTarget.getBoundingClientRect());
+                        //const itemIndex = parseInt(e.currentTarget.dataset["widgetIdx"]);
+                        toggleWidgetMenu(e.currentTarget);
+                      }}
+                    />
+
+                  </>
+                )}
+              </div>
+              <Widget
+
+                data={{
+                  settings:
+                    widgetData.length === 1
+                      ? widgetData[0].currentSettings
+                      : widgetData[i].currentSettings,
+                  // settings: widgetData[i].currentSettings,
+                  currentUser: currentUser,
+                }}
+
+              />
+            </OverlayStyles>
           );
         })}
     </>
@@ -1022,17 +1036,30 @@ export const InteractiveListItem = styled(Flex)`
   }
 `;
 
+
+const menuProps = (props) => {
+  //console.log("MENU POS ", props);
+  const menuPos = {
+    left: props.pos_x - 86,
+    top: props.pos_y - 16
+
+  }
+  return [menuPos];
+}
+
 export const WidgetDropDownContainer = styled(Flex)`
   width: 36px;
   height: 32px;
   cursor: pointer;
   justify-content: center;
   // align-items: center;
-  position: relative;
+  position: absolute;
   border-radius: 8px;
 
   margin: 0 auto;
-  bottom: 35px;
+  //bottom: 35px;
+
+  ${menuProps};
 `;
 
 export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
