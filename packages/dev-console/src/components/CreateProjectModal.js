@@ -26,7 +26,7 @@ import {
 
 import * as C from "./components";
 
-const short = require("short-uuid");
+import { randomAppId } from "../pages/NewApp";
 
 i18n.init();
 
@@ -52,7 +52,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
   const { colors } = useTheme();
 
   const [appFields, handleChange] = useFormFields({
-    appId: short.generate(),
+    appId: randomAppId(),
     name: "",
     title: "",
     version: 1,

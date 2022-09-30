@@ -16,7 +16,7 @@ import { useNavigate } from "react-router";
 
 const short = require("short-uuid");
 
-function randomAppId() {
+export function randomAppId() {
   const idPart = short.generate();
   const chars = "abcdefghijklmnopqrzxvwABCDEFGHIJKLMNOPQRZXVW";
   let randomChar = "A";

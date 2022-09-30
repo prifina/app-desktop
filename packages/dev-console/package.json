@@ -57,7 +57,7 @@
     "@iconify/react": "^3.2.1",
     "@prifina-apps/remote": "^0.0.0-alpha.1",
     "@prifina-apps/utils": "^0.0.2-alpha.0",
-    "@prifina/hooks-v2": "^0.0.2",
+    "@prifina/hooks-v2": "^0.0.4",
     "@styled-system/theme-get": "^5.1.2",
     "@svgr/webpack": "^6.2.1",
     "@testing-library/jest-dom": "^5.14.1",

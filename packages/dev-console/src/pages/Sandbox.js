@@ -183,6 +183,7 @@ const TypeBadge = styled.span`
 const Content = forwardRef((props, ref) => {
   const { appSyncClient, url, prifinaID, updateDebug, appSettings, appID } = props;
   const {
+    stage,
     check,
     currentUser,
     getLocalization,
@@ -197,7 +198,18 @@ const Content = forwardRef((props, ref) => {
   } = usePrifina();
   const { update } = useContext(SandboxContext);
 
-  console.log("APP-ID", appID);
+  console.log("APP-ID", appID, stage);
+  //https://prifina-apps-352681697435-eu-west-1.s3.eu-west-1.amazonaws.com/x866fscSq5Ae7bPgUtb6ffB/0.0.1/remoteEntry.js
+  //REACT_APP_PRIFINA_APPS_BUCKET=prifina-apps-352681697435-eu-west-1
+  /*
+  const remoteUrl = [
+    "https:/",
+    process.env.REACT_APP_PRIFINA_APPS_BUCKET + ".s3.amazonaws.com",
+    w.id,
+    widgetData[w.id].version,
+    "remoteEntry.js",
+  ].join("/");
+  */
 
   console.log("appsett", appSettings);
 
@@ -403,12 +415,15 @@ const Content = forwardRef((props, ref) => {
               <Remote ref={ref}
                 componentProps={{ ...settingsInit }}
                 system={{
+                  //remote: "x866fscSq5Ae7bPgUtb6ffB",
+
                   //remote: "x3LSdcSs1kcPskBWBJvqGto",
                   //remote: "sCUiMz2m9JsRSnRJ5favnP",
-                  remote: "csd88KWnuft8fHfMrKSBAD",
+                  //remote: "csd88KWnuft8fHfMrKSBAD",
 
-                  //remote: appID,
-                  url: "dist/remoteEntry.js",
+                  remote: appID,
+                  url: appSettings.remoteUrl,
+                  //url: "dist/remoteEntry.js",
                   //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
                   //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
                   //https://github.com/tro9999/module-federation-examples/blob/master/dynamic-system-host/app2/dist/remoteEntry.js

@@ -6347,10 +6347,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
-"@prifina/hooks-v2@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@prifina/hooks-v2/-/hooks-v2-0.0.2.tgz#c27edc5b57e7db6c35569a0191750cce5fb54720"
-  integrity sha512-sfGSLe4VVtaVw65ihQDMfAzpnewnCeqxSFB2rB3Kq3BzOeTWbtzPZL8ENO6A0LpzUXivNmW3ylsvK/va3GkBjw==
+"@prifina/hooks-v2@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@prifina/hooks-v2/-/hooks-v2-0.0.4.tgz#589aa27ec3de19390e94c61a15862e57edfeaded"
+  integrity sha512-6DnjswjM6to+K/ED7tWJoAudUjBsJdUmrWs/+Vx5TExuOBL+RxvEv2SsVOQnMAQRZjfVrtm3tKYdxO6RWJzzww==
   dependencies:
     graphql-tag "^2.12.6"
 
