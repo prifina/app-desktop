@@ -4745,7 +4745,7 @@
   resolved "https://registry.yarnpkg.com/@blend-ui/core/-/core-1.1.68-alpha.0.tgz#83b370c783da81b7a774f0816d80ffe40e215a3e"
   integrity sha512-VdOnnQLM0HvkYhMftzW68C/h8RXD4ZhO+gqLbjqF3+vi7XczIEU2+RpIJTKdhzK4iO2Fee9/9FdAaa0NH+JZWw==
 
-"@blend-ui/css-grid@1.0.7-alpha.0":
+"@blend-ui/css-grid@1.0.7-alpha.0", "@blend-ui/css-grid@^1.0.7-alpha.0":
   version "1.0.7-alpha.0"
   resolved "https://registry.yarnpkg.com/@blend-ui/css-grid/-/css-grid-1.0.7-alpha.0.tgz#4cf72120b6f5d44d72eb2be9f7c059edafde57c9"
   integrity sha512-qDrfOUEvI8B8e6QEp2AFWam3l/X/2por3otezpCi6sS6Wg73NHwhng7vMEcwjvW+3RtVdRFvUkxxNx646a7xZw==

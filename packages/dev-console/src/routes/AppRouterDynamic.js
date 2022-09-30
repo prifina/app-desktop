@@ -31,6 +31,7 @@ export default () => (
       <Route path="/admin" element={<Admin />} />
       <Route path="/sandbox" element={<Sandbox />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/project/:app" element={<Home />} />
       <Route path="/register" element={<Register />} />
     </Route>
     <Route element={<UnAuthLayout />} >

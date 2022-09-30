@@ -6,7 +6,6 @@ import {
   createSearchParams,
   useNavigate,
   useSearchParams,
-  useLocation
 } from "react-router-dom";
 
 import { Box, Flex, Text, Button, Image, useTheme } from "@blend-ui/core";
@@ -61,44 +60,6 @@ import ProjectDetails from "../components/ProjectDetails";
 
 import Resources from "../components/Resources";
 
-import { CssGrid as Grid, CssCell as Cell } from "@blend-ui/css-grid";
-
-
-
-const resourceCardItems = [
-  {
-    src: docs,
-    title: i18n.__("prifinaDocsResourcesCardHeading"),
-    description: i18n.__("docsResourcesCardPara"),
-  },
-  {
-    src: starterResources,
-    title: i18n.__("gitResourcesResourcesCardHeading"),
-    description: i18n.__("gitResourcesCardPara"),
-  },
-  {
-    src: zendeskResources,
-    title: i18n.__("zenDeskResourcesCardHeading"),
-    description: i18n.__("zenResourcesCardPara"),
-  },
-  {
-    src: slackResources,
-    title: i18n.__("slackResourcesCardHeading"),
-    description: i18n.__("slackResourcesCardPara"),
-  },
-];
-
-
-const versionStatus = [
-  "init",
-  "received",
-  "review",
-  "review",
-  "review",
-  "published",
-];
-
-
 const Content = ({
   Component,
   initials,
@@ -149,12 +110,21 @@ Content.propTypes = {
   data: PropTypes.instanceOf(Array),
 };
 
-const Main2 = ({ data, currentUser }) => {
+const Main = ({ data, currentUser }) => {
   const navigate = useNavigate();
 
   const { colors } = useTheme();
 
   const toast = useToast();
+
+  const versionStatus = [
+    "init",
+    "received",
+    "review",
+    "review",
+    "review",
+    "published",
+  ];
 
   // const appTypes = ["Widget", "App"];
 
@@ -313,10 +283,8 @@ const Main2 = ({ data, currentUser }) => {
       label: i18n.__("projects"),
       icon: mdiWidget,
       onClick: () => {
-        /*
         setStep(2);
         setSearchParams({});
-        */
       },
     },
     // {
@@ -333,6 +301,29 @@ const Main2 = ({ data, currentUser }) => {
     //   icon: mdiSitemap,
     //   disabled: true,
     // },
+  ];
+
+  const resourceCardItems = [
+    {
+      src: docs,
+      title: i18n.__("prifinaDocsResourcesCardHeading"),
+      description: i18n.__("docsResourcesCardPara"),
+    },
+    {
+      src: starterResources,
+      title: i18n.__("gitResourcesResourcesCardHeading"),
+      description: i18n.__("gitResourcesCardPara"),
+    },
+    {
+      src: zendeskResources,
+      title: i18n.__("zenDeskResourcesCardHeading"),
+      description: i18n.__("zenResourcesCardPara"),
+    },
+    {
+      src: slackResources,
+      title: i18n.__("slackResourcesCardHeading"),
+      description: i18n.__("slackResourcesCardPara"),
+    },
   ];
 
   const [updatedData, setUpdatedData] = useState(data);
@@ -364,6 +355,39 @@ const Main2 = ({ data, currentUser }) => {
         <DevConsoleLogo className="appStudio" />
       </C.NavbarContainer>
       <C.ContentContainer>
+        {/* {step === 0 && (
+          <>
+            {projectDialogOpen && (
+              <CreateProjectModal
+                onClose={onDialogClose}
+                onButtonClick={onDialogClick}
+                // isOpen={projectDialogOpen}
+              />
+            )}
+            
+            <Box paddingLeft="62px" paddingTop="100px">
+              <Text fontSize="xl">{i18n.__("keyResourcesHeading")}</Text>
+              <Text fontSize="md" mt="12px">
+                {i18n.__("keyResourcesPara")}
+              </Text>
+              <Flex
+                paddingTop="35px"
+                width="1027px"
+                justifyContent="space-between"
+              >
+                {resourceCardItems.map((item, index) => (
+                  <C.ResourceCard
+                    key={index}
+                    marginRight="42px"
+                    src={item.src}
+                    title={item.title}
+                    description={item.description}
+                  />
+                ))}
+              </Flex>
+            </Box>
+          </>
+        )} */}
 
         {step === 2 && (
           <>
@@ -477,244 +501,21 @@ const Main2 = ({ data, currentUser }) => {
             />
           </>
         )}
-
+        {/* {step === 4 && (
+          <>
+            <Resources />
+          </>
+        )} */}
       </C.ContentContainer>
     </React.Fragment>
   );
 };
 
-Main2.propTypes = {
+Main.propTypes = {
   data: PropTypes.instanceOf(Array),
   currentUser: PropTypes.instanceOf(Object),
   cell: PropTypes.instanceOf(Array),
   row: PropTypes.instanceOf(Array),
-};
-
-
-const Main = ({ data, currentUser }) => {
-
-  const navigate = useNavigate();
-  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
-
-
-  const [updatedData, setUpdatedData] = useState(data);
-
-  const openProject = props => {
-
-    console.log("APP SELECTED ", props);
-    navigate("/project/" + props.row.values.id);
-
-    //setSearchParams(createSearchParams({ appID: props.row.values.id }));
-
-  };
-
-  const Columns = [
-    {
-      Header: "Name",
-      accessor: "name",
-      Cell: props => {
-        console.log("props", props);
-
-        return (
-          <Text
-            onClick={() => {
-              openProject(props);
-            }}
-          >
-            {props.cell.value}
-          </Text>
-        );
-      },
-    },
-    {
-      Header: "App ID",
-      accessor: "id",
-      Cell: props => {
-        return <Text>{props.cell.value}</Text>;
-      },
-    },
-    {
-      Header: "Type",
-      accessor: "appType",
-      className: "appType",
-      Cell: props => {
-        return props.cell.value === 1 ? "App" : "Widget";
-      },
-    },
-
-    {
-      Header: "Title",
-      accessor: "title",
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      className: "status",
-      Cell: cellProp => versionStatus[cellProp.row.values.status],
-    },
-    {
-      Header: "Version",
-      accessor: "version",
-      className: "version",
-    },
-    {
-      Header: "Next Version",
-      accessor: "nextVersion",
-      className: "nextVersion",
-    },
-    {
-      Header: "Modified",
-      accessor: "modifiedAt",
-      className: "date",
-      Cell: props => {
-        return <Text>{props.cell.value}</Text>;
-      },
-    },
-    {
-      Header: () => null, // No header
-      id: "edit",
-      Cell: props => {
-        return (
-          <Button
-            size="xs"
-            onClick={() => {
-              openProject(props);
-            }}
-          >
-            Edit
-          </Button>
-        );
-      },
-    },
-  ];
-
-  useEffect(() => {
-    async function fetchData() {
-      const prifinaApps = await listAppsQuery(GRAPHQL, {
-        filter: { prifinaId: { eq: currentUser.prifinaID } },
-      });
-      let updatedApps = prifinaApps.data.listApps.items;
-      setUpdatedData(updatedApps);
-      console.log("updated apps", updatedApps);
-    }
-    fetchData();
-  }, []);
-
-  const onDialogClose = e => {
-    setProjectDialogOpen(false);
-    e.preventDefault();
-  };
-
-  const onDialogClick = async e => {
-    setProjectDialogOpen(false);
-
-    e.preventDefault();
-  };
-  return (
-    <>
-      <Box height={"100vh"}>
-        {projectDialogOpen && (
-          <CreateProjectModal
-            onClose={onDialogClose}
-            onButtonClick={onDialogClick}
-          />
-        )}
-
-        <Box>
-          <Flex
-            alignItems="center"
-            justifyContent="space-between"
-            marginBottom="40px"
-            marginTop={"20px"}
-            marginRight={"25px"}
-          >
-            <Text textStyle="h3">{i18n.__("projects")}</Text>
-            <Button
-              onClick={() => {
-                setProjectDialogOpen(true);
-              }}
-            >
-              {i18n.__("newProject")}
-            </Button>
-          </Flex>
-        </Box>
-        <Box bg="baseMuted" marginRight={"25px"} padding={"5px"}>
-          <div className="tableWrap">
-            <Table columns={Columns} data={updatedData} />
-          </div>
-        </Box>
-        <Box marginTop="48px" marginLeft={"20px"}>
-          <Grid columns="repeat(auto-fit,minmax(120px,1fr))">
-            {resourceCardItems.map((item, index) => (
-              <Cell key={"card-" + index}>
-                <C.ResourceCard
-                  src={item.src}
-                  title={item.title}
-                  description={item.description}
-                />
-              </Cell>
-            ))}
-          </Grid>
-        </Box>
-      </Box>
-    </>
-  )
-}
-
-Main.propTypes = {
-  data: PropTypes.instanceOf(Array),
-  currentUser: PropTypes.instanceOf(Object)
-};
-
-
-const Header = ({
-  initials,
-  notificationCount,
-  updateNotificationHandler,
-  appSyncClient,
-  activeUser,
-  ...props
-}) => {
-  const userMenu = useUserMenu();
-  console.log(
-    "USERMENU DEV APP INIT  ",
-    { ...props },
-
-    initials,
-    notificationCount,
-    typeof updateNotificationHandler,
-    appSyncClient,
-    activeUser,
-  );
-
-  userMenu.setClientHandler(appSyncClient);
-  userMenu.setActiveUser(activeUser);
-  useEffect(() => {
-    userMenu.show({
-      initials: initials,
-      //effect: { hover: { width: 42 } },
-      notifications: notificationCount,
-      RecentApps: [],
-      PrifinaGraphQLHandler: GRAPHQL,
-      prifinaID: activeUser.uuid,
-    });
-  }, []);
-
-  updateNotificationHandler(userMenu.onUpdate);
-
-  return <>
-    <C.NavbarContainer bg="basePrimary">
-      <DevConsoleLogo className="appStudio" />
-    </C.NavbarContainer>
-  </>
-};
-Header.propTypes = {
-  initials: PropTypes.string,
-  notificationCount: PropTypes.number,
-  updateNotificationHandler: PropTypes.func,
-  appSyncClient: PropTypes.instanceOf(Object),
-  activeUser: PropTypes.instanceOf(Object),
-  currentUser: PropTypes.instanceOf(Object)
 };
 
 const Home = props => {
@@ -729,10 +530,6 @@ const Home = props => {
 
   console.log("HOME ", currentUser);
 
-  const { pathname, search } = useLocation();
-  //coreApp = appPaths[pathname.split("/").pop()];
-  console.log("APP HOME ", pathname);
-
   const [initClient, setInitClient] = useState(false);
 
   const isMountedRef = useIsMountedRef();
@@ -740,20 +537,7 @@ const Home = props => {
   const componentProps = useRef({});
   const activeUser = useRef({});
   const notificationCount = useRef(0);
-  const appProps = useRef({});
-  let AppComponent = null;
-
-  if (pathname.startsWith("/project")) {
-    // /project/J2Q3FoSU1BKmCemMwTUWEbg
-    const selectedAppID = pathname.split("/").pop();
-    appProps.current = { appID: selectedAppID };
-    AppComponent = ProjectDetails;
-  } else {
-    appProps.current = { data: componentProps.current.data, currentUser: componentProps.current.currentUser }
-    AppComponent = Main
-  }
-
-
+  let AppComponent = Main;
 
 
   const updateNotification = useCallback(handler => {
@@ -836,64 +620,12 @@ const Home = props => {
     fetchData();
   }, [isMountedRef.current]);
 
-  const menuItems = [
-    // {
-    //   label: i18n.__("dashboard"),
-    //   icon: viewDashboard,
-    //   onClick: () => {
-    //     setStep(0);
-    //     setSearchParams({});
-    //   },
-    // },
-    {
-      label: i18n.__("projects"),
-      icon: mdiWidget,
-      onClick: () => {
-        /*
-        setStep(2);
-        setSearchParams({});
-        */
-      },
-    },
-    // {
-    //   label: i18n.__("resources"),
-    //   icon: mdiBookOpenVariant,
-    //   badgeText: "New",
-    //   onClick: () => {
-    //     setStep(4);
-    //     setSearchParams({});
-    //   },
-    // },
-    // {
-    //   label: "Profiles",
-    //   icon: mdiSitemap,
-    //   disabled: true,
-    // },
-  ];
-
   return (
     <>
       <ToastContextProvider>
         {initClient && (
           <>
-            <Grid
-              bg="basePrimary"
-              columns={"280px 1fr"}
-              rows={"45px 1fr"}
-              areas={[
-                "header header",
-                "menu content"
-              ]}>
-              <Cell area="header"><Header {...componentProps.current} /></Cell>
-              <Cell area="content" ><AppComponent {...appProps.current} /></Cell>
-              <Cell area="menu">
-                <DevConsoleSidebar items={menuItems} />
-              </Cell>
-            </Grid>
-
-            {/* 
             <Content Component={AppComponent} {...componentProps.current} />
-            */}
           </>
         )}
       </ToastContextProvider>

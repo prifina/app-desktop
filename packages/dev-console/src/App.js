@@ -22,6 +22,7 @@ import {
   deletePrifinaSessionMutation,
   AppContext,
   cognitoCredentials,
+  mergeDeep,
 } from "@prifina-apps/utils";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
@@ -308,27 +309,6 @@ function App() {
 
   const { currentUser, isAuthenticating, isAuthenticated, s3UploadClient } =
     state;
-
-  function mergeDeep(...objects) {
-    const isObject = obj => obj && typeof obj === "object";
-
-    return objects.reduce((prev, obj) => {
-      Object.keys(obj).forEach(key => {
-        const pVal = prev[key];
-        const oVal = obj[key];
-
-        if (Array.isArray(pVal) && Array.isArray(oVal)) {
-          prev[key] = pVal.concat(...oVal);
-        } else if (isObject(pVal) && isObject(oVal)) {
-          prev[key] = mergeDeep(pVal, oVal);
-        } else {
-          prev[key] = oVal;
-        }
-      });
-
-      return prev;
-    }, {});
-  }
 
   const mergedTheme = mergeDeep(defaultTheme, newTheme);
   //const remoteRef=useRef();
