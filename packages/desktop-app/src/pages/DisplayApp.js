@@ -195,6 +195,9 @@ const DisplayApp = ({
   ///transition animation///////////////////////////////////
   const [isVisible, setIsVisible] = useState(false);
 
+  const [widgetMenuOpen, setWidgetMenu] = useState(-1);
+  const widgetMenuPos = useRef({});
+
   const transition = useTransition(isVisible, {
     from: {
       transform: "translateY(100%) rotateX(90deg)",
@@ -213,6 +216,13 @@ const DisplayApp = ({
       opacity: 0,
     },
   });
+
+  const openWidgetMenu = (pos, idx) => {
+    console.log("OPEN ", pos);
+    widgetMenuPos.current = { pos_x: pos.x, pos_y: pos.y };
+    setWidgetMenu(widgetMenuOpen === idx ? -1 : idx);
+  }
+
   ///////////////////////////////////////////////////////
   ///settings config
   const openSettings = w => {
@@ -417,9 +427,6 @@ const DisplayApp = ({
           console.log("W ", props);
           console.log("W 2", w);
 
-          const [widgetMenu, setWidgetMenu] = useState(false);
-          const toggleWidgetMenu = () => setWidgetMenu(!widgetMenu);
-          let widgetMenuRef = useRef();
           // save this to currentViewConfig 
           let widgetRef = useRef();
 
@@ -466,6 +473,7 @@ const DisplayApp = ({
                 }}
               >
                 <div>
+                  {/* 
                   <div>
                     {w.settingsExists && (
                       <C.IconDiv
@@ -521,6 +529,7 @@ const DisplayApp = ({
 
                     {!w.settingsExists && <C.EmptyDiv />}
                   </div>
+                  */}
                   <div
                     style={{
                       position: "absolute",
@@ -1195,6 +1204,7 @@ const DisplayApp = ({
                               widgetData={state.widgetConfig}
                               currentUser={currentUser}
                               dataSources={dataSources}
+                              openWidgetMenu={openWidgetMenu}
                             />
 
                             {state.widgetList.length <= 7 ? (
@@ -1221,6 +1231,50 @@ const DisplayApp = ({
           </C.CustomTabs>
         </div>
       </C.PageContainer>
+
+      {widgetMenuOpen > -1 && (
+        <C.WidgetDropDownContainer {...widgetMenuPos.current}
+          /* ref={widgetMenuRef} */
+          className="dropdown-menu+1"
+        >
+          <C.DropDownListContainer>
+            <C.DropDownList>
+              <C.InteractiveMenuItem
+                title="Duplicate"
+                iconify={mdiPlusBoxMultipleOutline}
+              />
+
+              <C.InteractiveMenuItem
+                title="Remove"
+                iconify={mdiEyeOffOutline}
+                data-widgetindex={widgetMenuOpen}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const idx = parseInt(e.currentTarget.dataset['widgetindex']);
+                  openWidgetMenu({}, idx);
+                  //toggleWidgetMenu(parseInt(e.currentTarget.dataset['widgetindex']));
+                  removeWidget(idx);
+                }}
+              />
+              <Divider as="div" />
+              <C.InteractiveMenuItem
+                title="Settings >"
+                iconify={mdiGearOutline}
+                data-widgetindex={widgetMenuOpen}
+                onClick={(e) => {
+                  e.preventDefault();
+                  //console.log("SETTINGS CLICK ",e.currentTarget.dataset,e.currentTarget.dataset['widgetindex']);
+                  const idx = parseInt(e.currentTarget.dataset['widgetindex']);
+                  openWidgetMenu({}, idx);
+                  openSettings(idx);
+                  //toggleWidgetMenu(parseInt(e.currentTarget.dataset['widgetindex']));
+                  //openSettings(parseInt(e.currentTarget.dataset['widgetindex']));
+                }}
+              />
+            </C.DropDownList>
+          </C.DropDownListContainer>
+        </C.WidgetDropDownContainer>
+      )}
     </>
   );
 };
