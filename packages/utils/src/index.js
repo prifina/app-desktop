@@ -17,7 +17,7 @@ export {
 export { default as withUsermenu } from "./components/UserMenu";
 export { default as NotFoundPage } from "./components/NotFoundPage";
 export { default as LogoutDialog } from "./components/LogoutDialog";
-export { default as Notifications } from "./components/Notifications";
+//export { default as Notifications } from "./components/Notifications";
 export { default as SidebarMenu } from "./components/SidebarMenu";
 export { default as Navbar } from "./components/Navbar";
 export { default as PasswordField } from "./components/PasswordField";

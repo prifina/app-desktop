@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import { Flex, Box, Button, Text, TextArea, useTheme } from "@blend-ui/core";
 
+import PropTypes from "prop-types";
+
 const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
   const theme = useTheme();
 
@@ -53,5 +55,11 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
     </div>
   );
 };
+
+
+SettingsSandbox.propTypes = {
+  onClick:PropTypes.func,
+  appSettings:PropTypes.object
+}  
 
 export default SettingsSandbox;

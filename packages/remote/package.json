@@ -1,0 +1,38 @@
+{
+  "name": "@prifina-apps/remote",
+  "version": "0.0.0-beta.1",
+  "description": "Remote components",
+  "author": "Tero <tero@prifina.com>",
+  "license": "MIT",
+  "files": [
+    "./dist",
+    "./src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/cjs/index.js",
+  "scripts": {
+    "build": "rimraf dist && GENERATE_SOURCEMAP=true && yarn build:cjs",
+    "build:cjs": "cross-env NODE_ENV=development BABEL_ENV=cjs babel ./src --out-dir ./dist/cjs",
+    "xbuild": "node_modules/.bin/webpack --config webpack.config.js --mode=production",
+    "xdev": "node_modules/.bin/webpack --config webpack.config.js --mode=development",
+    "watch": "node_modules/.bin/webpack --config webpack.config.js --mode=development -w",
+    "prebuild:dev": "rimraf dist"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/preset-react": "^7.18.6",
+    "babel-loader": "^8.2.5",
+    "rimraf": "3.0.2",
+    "webpack": "5.64.3",
+    "webpack-cli": "4.9.1",
+    "webpack-dev-server": "4.5.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

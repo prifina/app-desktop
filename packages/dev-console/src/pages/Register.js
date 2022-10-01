@@ -1,7 +1,6 @@
 import React, { useState, useReducer, useEffect } from "react";
 import { Flex, Box, Text, Button, Image, useTheme } from "@blend-ui/core";
 
-import { useHistory } from "react-router-dom";
 
 import {
   useAppContext,
@@ -26,7 +25,6 @@ import formPrifinaLogo from "../assets/formPrifina.svg";
 i18n.init();
 
 const Register = props => {
-  const history = useHistory();
 
   const { userAuth, currentUser, isAuthenticated, mobileApp } = useAppContext();
 

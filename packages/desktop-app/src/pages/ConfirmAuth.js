@@ -7,7 +7,9 @@ import { ReactComponent as Phone } from "../assets/phone.svg";
 
 import ProgressContainer from "../components/ProgressContainer";
 
-import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
+import { useLocation } from "react-router-dom";
 import { useToast } from "@blend-ui/toast";
 
 import {
@@ -22,12 +24,17 @@ import PropTypes from "prop-types";
 i18n.init();
 
 const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
-  const history = useHistory();
+
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
   const alerts = useToast();
 
+
+  const searchKeys = new URLSearchParams(search);
+
   const appDebug =
-    process.env.REACT_APP_DEBUG === "true" &&
-    history.location.search === "?debug=true";
+    process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true"
+  //history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
   const [confirmationFields, handleChange] = useFormFields({
@@ -74,7 +81,8 @@ const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
         console.log("MFA ", mfa);
       }
 
-      history.replace("/home");
+      //history.replace("/home");
+      navigate("/home", { replace: true })
       authOptions.setAuth(true);
     } catch (e) {
       console.log("ERR", e);

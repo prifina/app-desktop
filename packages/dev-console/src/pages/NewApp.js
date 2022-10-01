@@ -10,17 +10,33 @@ import {
   newAppVersionMutation,
 } from "@prifina-apps/utils";
 
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
+
+import { useNavigate } from "react-router";
 
 const short = require("short-uuid");
 
+export function randomAppId() {
+  const idPart = short.generate();
+  const chars = "abcdefghijklmnopqrzxvwABCDEFGHIJKLMNOPQRZXVW";
+  let randomChar = "A";
+
+  const rnum = Math.floor(Math.random() * chars.length);
+  randomChar = chars.substring(rnum, rnum + 1);
+
+  // to make sure appID doesn't begin with number... valid module name requirement. 
+  return randomChar + idPart;
+}
+
 const NewApp = () => {
   const { currentUser } = useAppContext();
-  const history = useHistory();
+  //const history = useHistory();
+
+  const navigate = useNavigate();
   console.log("NEW APP ", currentUser);
 
   const [appFields, handleChange] = useFormFields({
-    appId: short.generate(),
+    appId: randomAppId(),
     name: "",
     title: "",
     //version: "",
@@ -37,7 +53,8 @@ const NewApp = () => {
         identityPool: currentUser.identityPool,
         //version: appFields.version,
       });
-      history.push("/");
+      //history.push("/");
+      navigate("/", { replace: true })
     } catch (e) {
       console.log("error ", e);
     }
@@ -75,7 +92,8 @@ const NewApp = () => {
           <Button
             mr={5}
             onClick={() => {
-              history.push("/");
+              //history.push("/");
+              navigate("/", { replace: true })
             }}
           >
             Back

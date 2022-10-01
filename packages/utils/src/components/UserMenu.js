@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-import { useHistory } from "react-router-dom";
-
 import { useAppContext } from "../lib/contextLib";
 
 import UserMenuContextProvider from "./FloatingUserMenu";
@@ -21,7 +19,6 @@ const config = process.env.REACT_APP_STAGE === "prod" ? prod : dev;
 
 const withUsermenu = () => WrappedComponent => {
   const WithUsermenu = props => {
-    const history = useHistory();
     const { userAuth, Auth } = useAppContext();
     const [logout, setLogout] = useState(false);
 
@@ -62,9 +59,8 @@ const withUsermenu = () => WrappedComponent => {
     );
   };
 
-  WithUsermenu.displayName = `WithUsermenu(${
-    WrappedComponent.displayName || WrappedComponent.name || "Component"
-  })`;
+  WithUsermenu.displayName = `WithUsermenu(${WrappedComponent.displayName || WrappedComponent.name || "Component"
+    })`;
 
   return WithUsermenu;
 };

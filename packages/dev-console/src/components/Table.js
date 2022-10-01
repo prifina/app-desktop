@@ -21,7 +21,7 @@ const Styles = styled(Box)`
 /* This is required to make the table full-width */
 display: block;
 // max-width: 100%;
-width:1000px;
+width:100%;
 color: ${props => props.theme.colors.textPrimary};
 font-size: 12px;
 
@@ -34,7 +34,7 @@ font-size: 12px;
 }
 
 table {
-  width:1000px;
+  width:100%;
   border-spacing: 0;
   // border: 1px solid white;
   padding-left: 15px;

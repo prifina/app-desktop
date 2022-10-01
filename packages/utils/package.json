@@ -13,9 +13,9 @@
     "src"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && GENERATE_SOURCEMAP=false && yarn build:cjs",
-    "build:esm": "cross-env NODE_ENV=production BABEL_ENV=esm babel ./src --out-dir ./dist/esm",
-    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=cjs babel ./src --out-dir ./dist/cjs",
+    "build": "rm -rf ./dist && GENERATE_SOURCEMAP=true && yarn build:cjs",
+    "build:esm": "cross-env NODE_ENV=development BABEL_ENV=esm babel ./src --out-dir ./dist/esm",
+    "build:cjs": "cross-env NODE_ENV=development BABEL_ENV=cjs babel ./src --out-dir ./dist/cjs",
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=es babel ./src --out-dir ./dist/es",
     "storybook": "start-storybook"
   },
@@ -29,20 +29,21 @@
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
     "prop-types": "^15.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "peerDependencies": {
     "@blend-ui/core": "1.1.68-alpha.0",
-    "@blend-ui/icons": "1.1.9-alpha.0",
+    "@blend-ui/icons": "1.1.10-alpha.0",
     "@blend-ui/modal": "1.0.14-alpha.0",
-    "@iconify/icons-bx": "^1.1.2",
+    "@iconify/icons-bx": "^1.2.3",
+    "@iconify/icons-fe": "^1.2.1",
     "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",
     "aws-amplify": "^4.3.19",
     "graphql-tag": "^2.12.5",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "styled-components": "^5.3.1",
     "styled-system": "^5.1.5"
   },

@@ -264,7 +264,8 @@ const iconsList = [
 ];
 
 // eslint-disable-next-line
-const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const emailRegex =
+  /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 export function validEmail(email) {
   return emailRegex.test(String(email).toLowerCase());
@@ -605,3 +606,24 @@ checkNumber: async function(phone) {
     return Promise.resolve(result)
 }
 */
+
+export function mergeDeep(...objects) {
+  const isObject = obj => obj && typeof obj === "object";
+
+  return objects.reduce((prev, obj) => {
+    Object.keys(obj).forEach(key => {
+      const pVal = prev[key];
+      const oVal = obj[key];
+
+      if (Array.isArray(pVal) && Array.isArray(oVal)) {
+        prev[key] = pVal.concat(...oVal);
+      } else if (isObject(pVal) && isObject(oVal)) {
+        prev[key] = mergeDeep(pVal, oVal);
+      } else {
+        prev[key] = oVal;
+      }
+    });
+
+    return prev;
+  }, {});
+}

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useReducer, useRef } from "react";
 
-import { withRouter, useLocation, useHistory } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { useLocation } from "react-router-dom";
 import Routes from "./routes/AppRouterDynamic";
 
 import { API, Auth } from "aws-amplify";
@@ -20,6 +21,7 @@ import {
 } from "@prifina-apps/utils";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
+
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -57,7 +59,8 @@ function App() {
   Auth.configure(AUTHConfig);
   API.configure(APIConfig);
   const { pathname, search } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
+
 
   const userAgent =
     typeof window.navigator === "undefined" ? "" : navigator.userAgent;
@@ -97,15 +100,15 @@ function App() {
 
       const lastAuthUser = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
-          config.cognito.APP_CLIENT_ID +
-          ".LastAuthUser",
+        config.cognito.APP_CLIENT_ID +
+        ".LastAuthUser",
       );
       const currentIdToken = localStorage.getItem(
         "CognitoIdentityServiceProvider." +
-          config.cognito.APP_CLIENT_ID +
-          "." +
-          lastAuthUser +
-          ".idToken",
+        config.cognito.APP_CLIENT_ID +
+        "." +
+        lastAuthUser +
+        ".idToken",
       );
       const lastIdentityPool = localStorage.getItem("LastSessionIdentityPool");
 
@@ -152,9 +155,9 @@ function App() {
               if (
                 key.startsWith(
                   "CognitoIdentityServiceProvider." +
-                    config.cognito.APP_CLIENT_ID +
-                    "." +
-                    lastAuthUser,
+                  config.cognito.APP_CLIENT_ID +
+                  "." +
+                  lastAuthUser,
                 )
               ) {
                 tokens[key] = localStorage.getItem(key);
@@ -166,8 +169,8 @@ function App() {
               if (
                 key.startsWith(
                   "CognitoIdentityServiceProvider." +
-                    config.cognito.APP_CLIENT_ID +
-                    ".LastAuthUser",
+                  config.cognito.APP_CLIENT_ID +
+                  ".LastAuthUser",
                 )
               ) {
                 tokens[key] = localStorage.getItem(key);
@@ -223,19 +226,23 @@ function App() {
             console.log("REDIRECT SEARCH", search);
             // ?redirect=/
             if (search.startsWith("?redirect")) {
-              history.replace("/login" + search);
+              //history.replace("/login" + search);
+              navigate("/login" + search, { replace: true })
             } else if (
               pathname.startsWith("/login") &&
               search.startsWith("?debug")
             ) {
-              history.replace("/login" + search);
+              //history.replace("/login" + search);
+              navigate("/login" + search, { replace: true })
             } else if (
               pathname.startsWith("/register") &&
               search.startsWith("?debug")
             ) {
-              history.replace("/register" + search);
+              //history.replace("/register" + search);
+              navigate("/register" + search, { replace: true })
             } else {
-              history.replace("/login?redirect=" + pathname + search);
+              //history.replace("/login?redirect=" + pathname + search);
+              navigate("/login?redirect=" + pathname + search, { replace: true })
             }
           } else {
             let tokens = JSON.parse(prifinaSession.data.getSession.tokens);
@@ -272,7 +279,9 @@ function App() {
       deletePrifinaSessionMutation(API, tracker).then(() => {
         Auth.signOut().then(() => {
           setState({ isAuthenticated: auth });
-          history.replace("/");
+          //history.replace("/");
+          navigate("/", { replace: true })
+
         });
       });
     } else {
@@ -305,4 +314,4 @@ function App() {
   );
 }
 
-export default withRouter(App);
+export default App;

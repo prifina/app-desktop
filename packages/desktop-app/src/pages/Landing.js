@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+//import { useLocation } from "react-router-dom";
+
 import { useLocation } from "react-router-dom";
+
 import { Box, Flex, Text, useTheme } from "@blend-ui/core";
 
 import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
@@ -16,7 +19,6 @@ import styled from "styled-components";
 import CreateAccount from "./CreateAccount";
 import Login from "./Login";
 
-import { useHistory } from "react-router-dom";
 
 import Home from "./Home";
 
@@ -56,7 +58,7 @@ const StyledPlate = styled(Box)`
 
 const Landing = props => {
   console.log("LANDING ", props);
-  const history = useHistory();
+
   const { isAuthenticated, mobileApp } = useAppContext();
   const { pathname, search } = useLocation();
   console.log("LOCATION ", pathname, search);

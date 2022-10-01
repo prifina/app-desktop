@@ -22,11 +22,11 @@ import {
   newAppVersionMutation,
 } from "@prifina-apps/utils";
 
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
 
 import * as C from "./components";
 
-const short = require("short-uuid");
+import { randomAppId } from "../pages/NewApp";
 
 i18n.init();
 
@@ -47,13 +47,12 @@ const StyledBox = styled(Box)`
 
 const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
   const { currentUser } = useAppContext();
-  const history = useHistory();
   console.log("NEW APP ", currentUser);
 
   const { colors } = useTheme();
 
   const [appFields, handleChange] = useFormFields({
-    appId: short.generate(),
+    appId: randomAppId(),
     name: "",
     title: "",
     version: 1,
@@ -124,7 +123,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => {}}
+                      onChange={() => { }}
                       onClick={() => {
                         setAppType(1);
                       }}
@@ -134,7 +133,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => {}}
+                      onChange={() => { }}
                       onClick={() => {
                         setAppType(2);
                       }}

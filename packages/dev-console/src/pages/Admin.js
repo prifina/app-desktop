@@ -11,7 +11,6 @@ import {
 } from "@prifina-apps/utils";
 
 import { API } from "aws-amplify";
-import { useHistory } from "react-router-dom";
 
 import styled from "styled-components";
 import { useTable } from "react-table";
@@ -194,7 +193,7 @@ Content.propTypes = {
 };
 
 const Admin = props => {
-  const history = useHistory();
+
   const { userAuth, currentUser, isAuthenticated, mobileApp } = useAppContext();
 
   console.log("ADMIN ", currentUser);

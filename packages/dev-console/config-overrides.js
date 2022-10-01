@@ -1,3 +1,7 @@
+const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+
+const deps = require('./package.json').dependencies;
+
 module.exports = function override(config) {
   config.resolve.fallback = {
     http: require.resolve("stream-http"),
@@ -11,6 +15,15 @@ module.exports = function override(config) {
   //     fullySpecified: false,
   //   },
   // });
+  config.plugins.push(
+    new ModuleFederationPlugin({
+      name: 'host',
+      shared: {
+        react: { singleton: true, eager:false, requiredVersion: deps['react'] },
+        'react-dom': { singleton: true,eager:false,requiredVersion: deps['react'] }
+      },
+    })
+  )
 
   return config;
 };

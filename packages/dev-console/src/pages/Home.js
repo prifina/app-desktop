@@ -3,17 +3,13 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import {
-  Box,
-  Flex,
-  Text,
-  Button,
-  Image,
-  Link,
-  Divider,
-  Input,
-  Radio,
-  useTheme,
-} from "@blend-ui/core";
+  createSearchParams,
+  useNavigate,
+  useSearchParams,
+  useLocation
+} from "react-router-dom";
+
+import { Box, Flex, Text, Button, Image, useTheme } from "@blend-ui/core";
 
 import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
@@ -29,24 +25,13 @@ import {
   withUsermenu,
   i18n,
   createClient,
-  SidebarMenu,
+  // SidebarMenu,
 } from "@prifina-apps/utils";
 
 i18n.init();
 
-//import { useAppContext } from "../lib/contextLib";
 import { API as GRAPHQL, Auth } from "aws-amplify";
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
-
-//import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
-
-import { useHistory } from "react-router-dom";
-
-import { StyledBox } from "../components/DefaultBackground";
-
-//import { listAppsQuery, addAppVersionMutation } from "../graphql/api";
-
-//import withUsermenu from "../components/UserMenu";
 
 import UploadApp from "../components/UploadApp";
 
@@ -67,24 +52,52 @@ import CreateProjectModal from "../components/CreateProjectModal";
 
 import Table from "../components/Table";
 
-/*
-import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
-import mdiZipBoxOutline from "@iconify/icons-mdi/zip-box-outline";
-import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
-import bxsInfoCircle from "@iconify/icons-bx/bxs-info-circle";
-import baselineWeb from "@iconify/icons-mdi/table";
-*/
-//sidebar icons
 import viewDashboard from "@iconify/icons-mdi/view-dashboard";
 import mdiWidget from "@iconify/icons-mdi/widgets";
 import mdiBookOpenVariant from "@iconify/icons-mdi/book-open-variant";
 import mdiSitemap from "@iconify/icons-mdi/sitemap";
 
 import ProjectDetails from "../components/ProjectDetails";
+
 import Resources from "../components/Resources";
 
-// Create a default prop getter
-const defaultPropGetter = () => ({});
+import { CssGrid as Grid, CssCell as Cell } from "@blend-ui/css-grid";
+
+
+
+const resourceCardItems = [
+  {
+    src: docs,
+    title: i18n.__("prifinaDocsResourcesCardHeading"),
+    description: i18n.__("docsResourcesCardPara"),
+  },
+  {
+    src: starterResources,
+    title: i18n.__("gitResourcesResourcesCardHeading"),
+    description: i18n.__("gitResourcesCardPara"),
+  },
+  {
+    src: zendeskResources,
+    title: i18n.__("zenDeskResourcesCardHeading"),
+    description: i18n.__("zenResourcesCardPara"),
+  },
+  {
+    src: slackResources,
+    title: i18n.__("slackResourcesCardHeading"),
+    description: i18n.__("slackResourcesCardPara"),
+  },
+];
+
+
+const versionStatus = [
+  "init",
+  "received",
+  "review",
+  "review",
+  "review",
+  "published",
+];
+
 
 const Content = ({
   Component,
@@ -136,46 +149,41 @@ Content.propTypes = {
   data: PropTypes.instanceOf(Array),
 };
 
-const Main = ({ data, currentUser }) => {
-  const history = useHistory();
+const Main2 = ({ data, currentUser }) => {
+  const navigate = useNavigate();
 
   const { colors } = useTheme();
 
   const toast = useToast();
 
-  const versionStatus = [
-    "init",
-    "received",
-    "review",
-    "review",
-    "review",
-    "published",
-  ];
-
   // const appTypes = ["Widget", "App"];
 
+  const [step, setStep] = useState(0);
+
+  switch (step) {
+    case 0:
+      break;
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    case 5:
+      break;
+    default:
+  }
+
   console.log("is it saved", data);
-  const [allValues, setAllValues] = useState({
-    name: "",
-    id: "",
-    appType: "",
-    version: "",
-    publisher: "",
-    category: "",
-    deviceSupport: "",
-    languages: "",
-    age: "",
-    keyFeatures: [],
-    shortDescription: "",
-    longDescription: "",
-    userHeld: [],
-    userGenerated: [],
-    public: [],
-    icon: "",
-    dataSources: [],
-    remoteUrl: "",
-    status,
-  });
+
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const openProject = props => {
+    setSearchParams(createSearchParams({ appID: props.row.values.id }));
+    setStep(3);
+  };
 
   const Columns = [
     {
@@ -187,29 +195,7 @@ const Main = ({ data, currentUser }) => {
         return (
           <Text
             onClick={() => {
-              setStep(3);
-              setAllValues({
-                ...allValues,
-                name: props.cell.value,
-                id: props.row.values.id,
-                appType: props.row.values.appType,
-                version: props.row.values.version,
-                publisher: props.row.original.publisher,
-                category: props.row.original.category,
-                deviceSupport: props.row.original.deviceSupport,
-                languages: props.row.original.languages,
-                age: props.row.original.age,
-                keyFeatures: props.row.original.keyFeatures,
-                shortDescription: props.row.original.shortDescription,
-                longDescription: props.row.original.longDescription,
-                userHeld: props.row.original.userHeld,
-                userGenerated: props.row.original.userGenerated,
-                public: props.row.original.public,
-                icon: props.row.original.icon,
-                dataSources: props.row.original.dataSources,
-                remoteUrl: props.row.original.remoteUrl,
-                status: props.row.original.status,
-              });
+              openProject(props);
             }}
           >
             {props.cell.value}
@@ -261,23 +247,6 @@ const Main = ({ data, currentUser }) => {
         return <Text>{props.cell.value}</Text>;
       },
     },
-    // {
-    //   Header: () => null, // No header
-    //   id: "sendApp", // It needs an ID
-    //   Cell: cellProp => {
-    //     return (
-    //       <Button
-    //         size="xs"
-    //         onClick={e => {
-    //           console.log(cellProp.row.values);
-    //           sendClick(cellProp.row.values);
-    //         }}
-    //       >
-    //         {i18n.__("submit")}
-    //       </Button>
-    //     );
-    //   },
-    // },
     {
       Header: () => null, // No header
       id: "edit",
@@ -286,28 +255,7 @@ const Main = ({ data, currentUser }) => {
           <Button
             size="xs"
             onClick={() => {
-              setStep(3);
-              setAllValues({
-                ...allValues,
-                name: props.row.values.name,
-                id: props.row.values.id,
-                appType: props.row.values.appType,
-                version: props.row.values.version,
-                publisher: props.row.original.publisher,
-                category: props.row.original.category,
-                deviceSupport: props.row.original.deviceSupport,
-                languages: props.row.original.languages,
-                age: props.row.original.age,
-                keyFeatures: props.row.original.keyFeatures,
-                shortDescription: props.row.original.shortDescription,
-                longDescription: props.row.original.longDescription,
-                userHeld: props.row.original.userHeld,
-                userGenerated: props.row.original.userGenerated,
-                public: props.row.original.public,
-                icon: props.row.original.icon,
-                dataSources: props.row.original.dataSources,
-                remoteUrl: props.row.original.remoteUrl,
-              });
+              openProject(props);
             }}
           >
             Edit
@@ -339,24 +287,6 @@ const Main = ({ data, currentUser }) => {
     }
   };
 
-  const [step, setStep] = useState(0);
-
-  switch (step) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      break;
-    case 4:
-      break;
-    case 5:
-      break;
-    default:
-  }
-
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 
   const onDialogClose = e => {
@@ -371,79 +301,61 @@ const Main = ({ data, currentUser }) => {
   };
 
   const menuItems = [
-    {
-      label: i18n.__("dashboard"),
-      icon: viewDashboard,
-      onClick: () => {
-        setStep(0);
-      },
-    },
+    // {
+    //   label: i18n.__("dashboard"),
+    //   icon: viewDashboard,
+    //   onClick: () => {
+    //     setStep(0);
+    //     setSearchParams({});
+    //   },
+    // },
     {
       label: i18n.__("projects"),
       icon: mdiWidget,
       onClick: () => {
+        /*
         setStep(2);
+        setSearchParams({});
+        */
       },
     },
-    {
-      label: i18n.__("resources"),
-      icon: mdiBookOpenVariant,
-      badgeText: "New",
-      onClick: () => {
-        setStep(4);
-      },
-    },
-    {
-      label: "Profiles",
-      icon: mdiSitemap,
-      disabled: true,
-    },
-  ];
-
-  const resourceCardItems = [
-    {
-      src: docs,
-      title: i18n.__("prifinaDocsResourcesCardHeading"),
-      description: i18n.__("docsResourcesCardPara"),
-    },
-    {
-      src: starterResources,
-      title: i18n.__("gitResourcesResourcesCardHeading"),
-      description: i18n.__("gitResourcesCardPara"),
-    },
-    {
-      src: zendeskResources,
-      title: i18n.__("zenDeskResourcesCardHeading"),
-      description: i18n.__("zenResourcesCardPara"),
-    },
-    {
-      src: slackResources,
-      title: i18n.__("slackResourcesCardHeading"),
-      description: i18n.__("slackResourcesCardPara"),
-    },
+    // {
+    //   label: i18n.__("resources"),
+    //   icon: mdiBookOpenVariant,
+    //   badgeText: "New",
+    //   onClick: () => {
+    //     setStep(4);
+    //     setSearchParams({});
+    //   },
+    // },
+    // {
+    //   label: "Profiles",
+    //   icon: mdiSitemap,
+    //   disabled: true,
+    // },
   ];
 
   const [updatedData, setUpdatedData] = useState(data);
 
-  const fetchDataManually = useCallback(async () => {
-    const prifinaApps = await listAppsQuery(GRAPHQL, {
-      filter: { prifinaId: { eq: currentUser.prifinaID } },
-    });
-    let updatedApps = prifinaApps.data.listApps.items;
-
-    setUpdatedData(updatedApps);
-    console.log("updated apps", updatedApps);
-  }, []);
-
-  let dataLength = data.length;
-
-  console.log("data length", dataLength);
+  useEffect(() => {
+    async function fetchData() {
+      const prifinaApps = await listAppsQuery(GRAPHQL, {
+        filter: { prifinaId: { eq: currentUser.prifinaID } },
+      });
+      let updatedApps = prifinaApps.data.listApps.items;
+      setUpdatedData(updatedApps);
+      console.log("updated apps", updatedApps);
+    }
+    fetchData();
+  }, [step]);
 
   useEffect(() => {
-    console.log("updated apps triggered");
+    const showProjects = searchParams.get("appID");
 
-    fetchDataManually().catch("COULD NOT FETCH DATA", console.error);
-  }, [step]);
+    if (showProjects !== null) {
+      setStep(3);
+    } else setStep(2);
+  }, [searchParams]);
 
   return (
     <React.Fragment>
@@ -451,52 +363,96 @@ const Main = ({ data, currentUser }) => {
       <C.NavbarContainer bg="basePrimary">
         <DevConsoleLogo className="appStudio" />
       </C.NavbarContainer>
-
-      {/* <StyledBox> */}
       <C.ContentContainer>
-        {step === 0 && (
+
+        {step === 2 && (
           <>
             {projectDialogOpen && (
               <CreateProjectModal
                 onClose={onDialogClose}
                 onButtonClick={onDialogClick}
-                // isOpen={projectDialogOpen}
+              // isOpen={projectDialogOpen}
               />
             )}
-            <Flex flexDirection="column" alignItems="center" mt="42px">
-              <Image src={dashboardBanner} style={{ position: "relative" }} />
-              <Flex
-                textAlign="center"
-                width="506px"
-                height="196px"
-                flexDirection="column"
-                justifyContent="space-between"
-                alignItems="center"
-                position="absolute"
-                top="243px"
-              >
-                <Text fontSize="xl">{i18n.__("createYourFirstProject")}</Text>
-                <Text color={colors.textMuted} fontSize={20}>
-                  {i18n.__("dashboardText")}
-                </Text>
-                <Button
-                  size="sm"
-                  bg={colors.baseAccent}
-                  onClick={() => {
-                    setProjectDialogOpen(true);
+
+            <Box marginTop="48px">
+              {updatedData.length > 0 && (
+                <Flex
+                  bg="baseMuted"
+                  flexDirection="column"
+                  borderRadius="10px"
+                  padding="16px"
+                >
+                  {upload && (
+                    <UploadApp row={selectedRow.current} close={closeClick} />
+                  )}
+                  {!upload && (
+                    <>
+                      <Flex
+                        alignItems="center"
+                        justifyContent="space-between"
+                        marginBottom="40px"
+                      >
+                        <Text textStyle="h3">{i18n.__("projects")}</Text>
+                        <Button
+                          onClick={() => {
+                            setProjectDialogOpen(true);
+                          }}
+                        >
+                          {i18n.__("newProject")}
+                        </Button>
+                      </Flex>
+                      <div className="tableWrap">
+                        <Table columns={Columns} data={updatedData} />
+                      </div>
+                    </>
+                  )}
+                </Flex>
+              )}
+
+              {updatedData.length === 0 && (
+                <div
+                  style={{
+                    //same as table
+                    width: 1000,
                   }}
                 >
-                  {i18n.__("newProject")}
-                </Button>
-              </Flex>
-            </Flex>
-            <Box paddingLeft="62px" paddingTop="100px">
-              <Text fontSize="xl">{i18n.__("keyResourcesHeading")}</Text>
-              <Text fontSize="md" mt="12px">
-                {i18n.__("keyResourcesPara")}
-              </Text>
+                  <Flex flexDirection="column" alignItems="center" mt="42px">
+                    <Image
+                      src={dashboardBanner}
+                      style={{ position: "relative" }}
+                    />
+                    <Flex
+                      textAlign="center"
+                      width="506px"
+                      height="196px"
+                      flexDirection="column"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      position="absolute"
+                      top="243px"
+                    >
+                      <Text fontSize="xl">
+                        {i18n.__("createYourFirstProject")}
+                      </Text>
+                      <Text color={colors.textMuted} fontSize={20}>
+                        {i18n.__("dashboardText")}
+                      </Text>
+                      <Button
+                        size="sm"
+                        bg={colors.baseAccent}
+                        onClick={() => {
+                          setProjectDialogOpen(true);
+                        }}
+                      >
+                        {i18n.__("newProject")}
+                      </Button>
+                    </Flex>
+                  </Flex>
+                </div>
+              )}
               <Flex
-                paddingTop="35px"
+                marginTop="75px"
                 width="1027px"
                 justifyContent="space-between"
               >
@@ -513,93 +469,255 @@ const Main = ({ data, currentUser }) => {
             </Box>
           </>
         )}
-        {/* PROJECTS */}
-        {step === 2 && (
-          <>
-            {projectDialogOpen && (
-              <CreateProjectModal
-                onClose={onDialogClose}
-                onButtonClick={onDialogClick}
-                // isOpen={projectDialogOpen}
-              />
-            )}
-            <Flex paddingTop="48px">
-              <Flex
-                bg="baseMuted"
-                flexDirection="column"
-                borderRadius="10px"
-                padding="16px"
-              >
-                {upload && (
-                  <UploadApp row={selectedRow.current} close={closeClick} />
-                )}
-                {!upload && (
-                  <>
-                    <Flex
-                      alignItems="center"
-                      justifyContent="space-between"
-                      marginBottom="40px"
-                    >
-                      <Text textStyle="h3">{i18n.__("projects")}</Text>
-                      <Button
-                        onClick={() => {
-                          setProjectDialogOpen(true);
-                        }}
-                      >
-                        {i18n.__("newProject")}
-                      </Button>
-                    </Flex>
-                    <div className="tableWrap">
-                      {updatedData.length === 0 && (
-                        <div
-                          style={{
-                            //same as table
-                            width: 1000,
-                          }}
-                        >
-                          <Text m={2}>{i18n.__("noApps")}</Text>
-                        </div>
-                      )}
-                      {updatedData.length > 0 && (
-                        <Table columns={Columns} data={updatedData} />
-                      )}
-                    </div>
-                  </>
-                )}
-              </Flex>
-            </Flex>
-          </>
-        )}
         {step === 3 && (
           <>
             <ProjectDetails
-              allValues={allValues}
-              setAllValues={setAllValues}
               setStep={setStep}
+              setSearchParams={setSearchParams}
             />
           </>
         )}
-        {/* RESOURCES */}
-        {step === 4 && (
-          <>
-            <Resources />
-          </>
-        )}
+
       </C.ContentContainer>
-      {/* </StyledBox> */}
     </React.Fragment>
   );
 };
 
-Main.propTypes = {
+Main2.propTypes = {
   data: PropTypes.instanceOf(Array),
   currentUser: PropTypes.instanceOf(Object),
   cell: PropTypes.instanceOf(Array),
   row: PropTypes.instanceOf(Array),
 };
 
+
+const Main = ({ data, currentUser }) => {
+
+  const navigate = useNavigate();
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
+
+
+  const [updatedData, setUpdatedData] = useState(data);
+
+  const openProject = props => {
+
+    console.log("APP SELECTED ", props);
+    navigate("/project/" + props.row.values.id);
+
+    //setSearchParams(createSearchParams({ appID: props.row.values.id }));
+
+  };
+
+  const Columns = [
+    {
+      Header: "Name",
+      accessor: "name",
+      Cell: props => {
+        console.log("props", props);
+
+        return (
+          <Text
+            onClick={() => {
+              openProject(props);
+            }}
+          >
+            {props.cell.value}
+          </Text>
+        );
+      },
+    },
+    {
+      Header: "App ID",
+      accessor: "id",
+      Cell: props => {
+        return <Text>{props.cell.value}</Text>;
+      },
+    },
+    {
+      Header: "Type",
+      accessor: "appType",
+      className: "appType",
+      Cell: props => {
+        return props.cell.value === 1 ? "App" : "Widget";
+      },
+    },
+
+    {
+      Header: "Title",
+      accessor: "title",
+    },
+    {
+      Header: "Status",
+      accessor: "status",
+      className: "status",
+      Cell: cellProp => versionStatus[cellProp.row.values.status],
+    },
+    {
+      Header: "Version",
+      accessor: "version",
+      className: "version",
+    },
+    {
+      Header: "Next Version",
+      accessor: "nextVersion",
+      className: "nextVersion",
+    },
+    {
+      Header: "Modified",
+      accessor: "modifiedAt",
+      className: "date",
+      Cell: props => {
+        return <Text>{props.cell.value}</Text>;
+      },
+    },
+    {
+      Header: () => null, // No header
+      id: "edit",
+      Cell: props => {
+        return (
+          <Button
+            size="xs"
+            onClick={() => {
+              openProject(props);
+            }}
+          >
+            Edit
+          </Button>
+        );
+      },
+    },
+  ];
+
+  useEffect(() => {
+    async function fetchData() {
+      const prifinaApps = await listAppsQuery(GRAPHQL, {
+        filter: { prifinaId: { eq: currentUser.prifinaID } },
+      });
+      let updatedApps = prifinaApps.data.listApps.items;
+      setUpdatedData(updatedApps);
+      console.log("updated apps", updatedApps);
+    }
+    fetchData();
+  }, []);
+
+  const onDialogClose = e => {
+    setProjectDialogOpen(false);
+    e.preventDefault();
+  };
+
+  const onDialogClick = async e => {
+    setProjectDialogOpen(false);
+
+    e.preventDefault();
+  };
+  return (
+    <>
+      <Box height={"100vh"}>
+        {projectDialogOpen && (
+          <CreateProjectModal
+            onClose={onDialogClose}
+            onButtonClick={onDialogClick}
+          />
+        )}
+
+        <Box>
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            marginBottom="40px"
+            marginTop={"20px"}
+            marginRight={"25px"}
+          >
+            <Text textStyle="h3">{i18n.__("projects")}</Text>
+            <Button
+              onClick={() => {
+                setProjectDialogOpen(true);
+              }}
+            >
+              {i18n.__("newProject")}
+            </Button>
+          </Flex>
+        </Box>
+        <Box bg="baseMuted" marginRight={"25px"} padding={"5px"}>
+          <div className="tableWrap">
+            <Table columns={Columns} data={updatedData} />
+          </div>
+        </Box>
+        <Box marginTop="48px" marginLeft={"20px"}>
+          <Grid columns="repeat(auto-fit,minmax(120px,1fr))">
+            {resourceCardItems.map((item, index) => (
+              <Cell key={"card-" + index}>
+                <C.ResourceCard
+                  src={item.src}
+                  title={item.title}
+                  description={item.description}
+                />
+              </Cell>
+            ))}
+          </Grid>
+        </Box>
+      </Box>
+    </>
+  )
+}
+
+Main.propTypes = {
+  data: PropTypes.instanceOf(Array),
+  currentUser: PropTypes.instanceOf(Object)
+};
+
+
+const Header = ({
+  initials,
+  notificationCount,
+  updateNotificationHandler,
+  appSyncClient,
+  activeUser,
+  ...props
+}) => {
+  const userMenu = useUserMenu();
+  console.log(
+    "USERMENU DEV APP INIT  ",
+    { ...props },
+
+    initials,
+    notificationCount,
+    typeof updateNotificationHandler,
+    appSyncClient,
+    activeUser,
+  );
+
+  userMenu.setClientHandler(appSyncClient);
+  userMenu.setActiveUser(activeUser);
+  useEffect(() => {
+    userMenu.show({
+      initials: initials,
+      //effect: { hover: { width: 42 } },
+      notifications: notificationCount,
+      RecentApps: [],
+      PrifinaGraphQLHandler: GRAPHQL,
+      prifinaID: activeUser.uuid,
+    });
+  }, []);
+
+  updateNotificationHandler(userMenu.onUpdate);
+
+  return <>
+    <C.NavbarContainer bg="basePrimary">
+      <DevConsoleLogo className="appStudio" />
+    </C.NavbarContainer>
+  </>
+};
+Header.propTypes = {
+  initials: PropTypes.string,
+  notificationCount: PropTypes.number,
+  updateNotificationHandler: PropTypes.func,
+  appSyncClient: PropTypes.instanceOf(Object),
+  activeUser: PropTypes.instanceOf(Object),
+  currentUser: PropTypes.instanceOf(Object)
+};
+
 const Home = props => {
-  const history = useHistory();
   const {
     userAuth,
     currentUser,
@@ -611,6 +729,10 @@ const Home = props => {
 
   console.log("HOME ", currentUser);
 
+  const { pathname, search } = useLocation();
+  //coreApp = appPaths[pathname.split("/").pop()];
+  console.log("APP HOME ", pathname);
+
   const [initClient, setInitClient] = useState(false);
 
   const isMountedRef = useIsMountedRef();
@@ -618,24 +740,21 @@ const Home = props => {
   const componentProps = useRef({});
   const activeUser = useRef({});
   const notificationCount = useRef(0);
-  let AppComponent = Main;
+  const appProps = useRef({});
+  let AppComponent = null;
 
-  const xcreateClient = (endpoint, region) => {
-    Auth.currentCredentials().then(c => {
-      console.log("DEV USER CLIENT ", c);
-    });
-    const client = new AWSAppSyncClient({
-      url: endpoint,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.AWS_IAM,
-        credentials: () => Auth.currentCredentials(),
-      },
+  if (pathname.startsWith("/project")) {
+    // /project/J2Q3FoSU1BKmCemMwTUWEbg
+    const selectedAppID = pathname.split("/").pop();
+    appProps.current = { appID: selectedAppID };
+    AppComponent = ProjectDetails;
+  } else {
+    appProps.current = { data: componentProps.current.data, currentUser: componentProps.current.currentUser }
+    AppComponent = Main
+  }
 
-      disableOffline: true,
-    });
-    return client;
-  };
+
+
 
   const updateNotification = useCallback(handler => {
     //notificationHandler.current = handler;
@@ -717,16 +836,65 @@ const Home = props => {
     fetchData();
   }, [isMountedRef.current]);
 
+  const menuItems = [
+    // {
+    //   label: i18n.__("dashboard"),
+    //   icon: viewDashboard,
+    //   onClick: () => {
+    //     setStep(0);
+    //     setSearchParams({});
+    //   },
+    // },
+    {
+      label: i18n.__("projects"),
+      icon: mdiWidget,
+      onClick: () => {
+        /*
+        setStep(2);
+        setSearchParams({});
+        */
+      },
+    },
+    // {
+    //   label: i18n.__("resources"),
+    //   icon: mdiBookOpenVariant,
+    //   badgeText: "New",
+    //   onClick: () => {
+    //     setStep(4);
+    //     setSearchParams({});
+    //   },
+    // },
+    // {
+    //   label: "Profiles",
+    //   icon: mdiSitemap,
+    //   disabled: true,
+    // },
+  ];
+
   return (
     <>
       <ToastContextProvider>
         {initClient && (
-          <Content Component={AppComponent} {...componentProps.current} />
-        )}
-        {!initClient && (
-          <div>
-            Home {isAuthenticated ? "Authenticated" : "Unauthenticated"}{" "}
-          </div>
+          <>
+            <Grid
+              bg="basePrimary"
+              columns={"280px 1fr"}
+              rows={"45px 1fr"}
+              areas={[
+                "header header",
+                "menu content"
+              ]}>
+              <Cell area="header"><Header {...componentProps.current} /></Cell>
+              <Cell area="content" ><AppComponent {...appProps.current} /></Cell>
+              <Cell area="menu">
+                <DevConsoleSidebar items={menuItems} />
+              </Cell>
+            </Grid>
+
+            {/* 
+            <Content Component={AppComponent} {...componentProps.current} />
+            */}
+          </>
         )}
       </ToastContextProvider>
     </>

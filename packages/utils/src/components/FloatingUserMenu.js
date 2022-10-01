@@ -13,9 +13,9 @@ import { Portal } from "@blend-ui/modal";
 import styled, { css, ThemeProvider } from "styled-components";
 import { space } from "styled-system";
 
-import { useTheme} from "@blend-ui/core";
+import { useTheme } from "@blend-ui/core";
 
-import {  Avatar } from "@blend-ui/avatar";
+import { Avatar } from "@blend-ui/avatar";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -264,6 +264,7 @@ const UserMenuContextProvider = ({
       },
     );
 
+
     return cardList;
   };
   const iconClick = (e, i) => {
@@ -280,11 +281,13 @@ const UserMenuContextProvider = ({
 
       buttons[i] = true;
       if (i === 1) {
+
         notificationList().then(list => {
           console.log("NEW LIST...", list);
           setNotificationCards(list);
           setIconButtons(buttons);
         });
+
       } else {
         setIconButtons(buttons);
       }
@@ -314,10 +317,12 @@ const UserMenuContextProvider = ({
     if (isOpen) {
       // user menu open click...
       //console.log("USERMENU OPEN....");
+
       notificationList().then(list => {
         console.log("NEW2 LIST...", list);
         setNotificationCards(list);
       });
+
     }
   }, [isOpen]);
   useEffect(() => {
@@ -384,9 +389,9 @@ const UserMenuContextProvider = ({
     prifinaQraphQLHandler.current = handler;
   }, []);
 
-  const notificationSelectChange = e => {};
-  const notificationButtonClick = e => {};
-  const notificationCloseClick = e => {};
+  const notificationSelectChange = e => { };
+  const notificationButtonClick = e => { };
+  const notificationCloseClick = e => { };
   menuContext.current = {
     userMenu,
     show,
@@ -536,6 +541,7 @@ const UserMenuContextProvider = ({
                         }}
                       />
                     </IconBar>
+
                     {iconButtons[1] && (
                       <div style={{ margin: "25px" }}>
                         <NotificationHeader
@@ -556,6 +562,7 @@ const UserMenuContextProvider = ({
                         </div>
                       </div>
                     )}
+
                     {iconButtons[2] && <div>{userMenu.options.RecentApps}</div>}
                   </MenuBase>
                 </React.Fragment>

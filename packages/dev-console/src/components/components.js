@@ -22,19 +22,20 @@ import styled from "styled-components";
 import { i18n } from "@prifina-apps/utils";
 
 const SidebarContainer = styled(Flex)`
-  width: 286px;
+  width: 270px;
   height: 100%;
   z-index: 1;
-  padding-left: 64px;
+  padding-left: 44px;
   padding-right: 24px;
-  padding-top: 80px;
+  /* padding-top: 80px; */
   position: fixed;
-  border-radius: 0 40px -40px 0;
+  /* border-radius: 0 40px -40px 0; */
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
   border-right: 1px solid #343233;
 
+  /*
   ::before,
   ::after {
     position: absolute;
@@ -63,6 +64,7 @@ const SidebarContainer = styled(Flex)`
   ::after {
     box-shadow: -6px 5px 0 ${props => props.theme.colors.basePrimary};
   }
+  */
 `;
 
 export const ListMenuItem = styled.li`
@@ -201,9 +203,9 @@ export const DevConsoleSidebar = ({
               style={
                 disabled
                   ? {
-                      pointerEvents: "none",
-                      opacity: 0.5,
-                    }
+                    pointerEvents: "none",
+                    opacity: 0.5,
+                  }
                   : null
               }
               pointerBackground={pointerBackground}

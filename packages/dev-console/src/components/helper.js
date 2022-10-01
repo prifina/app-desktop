@@ -6,15 +6,12 @@ import PropTypes from "prop-types";
 
 import { i18n } from "@prifina-apps/utils";
 
-import bxsEdit from "@iconify/icons-bx/bx-edit-alt";
-import bxsXCircle from "@iconify/icons-bx/bx-x-circle";
 import addCircle from "@iconify/icons-mdi/add-circle";
 import trashCan from "@iconify/icons-mdi/trash-can";
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 
 import styled from "styled-components";
 
-import * as C from "./components";
 
 i18n.init();
 
@@ -187,7 +184,7 @@ export function ControlAddedDataSources({
 }
 
 ControlAddedDataSources.propTypes = {
-  // dataSource: PropTypes.instanceOf(Array),
+  dataSource: PropTypes.object,
   index: PropTypes.number,
   uncompleteDataSource: PropTypes.func,
   editControled: PropTypes.bool,
@@ -245,7 +242,8 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
 }
 
 DataSourceForm.propTypes = {
-  // addDataSource: PropTypes.instanceOf(Array),
+  addDataSource: PropTypes.function,
+  selectOptions: PropTypes.array
 };
 
 export function ApiForm({ addApi, selectOptions }) {
@@ -305,5 +303,6 @@ export function ApiForm({ addApi, selectOptions }) {
 }
 
 ApiForm.propTypes = {
-  // addApi: PropTypes.string,
+  addApi: PropTypes.func,
+  selectOptions:PropTypes.array
 };

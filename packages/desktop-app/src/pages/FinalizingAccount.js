@@ -6,7 +6,7 @@ import { Box, Text, Flex } from "@blend-ui/core";
 
 import { Auth } from "aws-amplify";
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { i18n, useAppContext } from "@prifina-apps/utils";
 
 import { useToast } from "@blend-ui/toast";
@@ -29,7 +29,8 @@ const LoaderBox = styled(Box)`
 `;
 
 const FinalizingAccount = ({ currentUser, ...props }) => {
-  const history = useHistory();
+
+  const navigate = useNavigate();
   const { AUTHConfig, userAuth } = useAppContext();
   Auth.configure(AUTHConfig);
 
@@ -47,7 +48,7 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
           password: currentUser.accountPassword.value,
           attributes: {
             email: currentUser.emailVerified,
-            phone_number: '+'+currentUser.phoneVerified.replace(/\D/g, ''),  // cognito doesn't accept formatted phone numbers
+            phone_number: '+' + currentUser.phoneVerified.replace(/\D/g, ''),  // cognito doesn't accept formatted phone numbers
             family_name: currentUser.lastName.value,
             given_name: currentUser.firstName.value,
             name: currentUser.username.value,
@@ -56,7 +57,9 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
         console.log("Creating... ", _newUser);
         const { user } = await Auth.signUp(_newUser);
         console.log(user);
-        history.replace("/login");
+        //history.replace("/login");
+
+        navigate("/login", { replace: true })
       } catch (e) {
         console.log("ERR ", e);
         if (e.code === "AuthError" || e.code === "UsernameExistsException") {
