@@ -400,7 +400,28 @@ const Content = forwardRef((props, ref) => {
             position: "relative",
           }}
         >
-          <IconDiv open={false} widgetTheme={"light"} />
+          <IconDiv widgetTheme={"light"} onClick={() => {
+            // test sending settings... 
+
+            const settingsUpdate = {
+              "settings": {
+                "city": "Helsinki"
+              }
+            };
+
+            const c = getCallbacks();
+            console.log("CALLBACKS ", c);
+            if (
+              c.hasOwnProperty(appID) &&
+              typeof c[appID][0] === "function"
+            ) {
+              console.log("FOUND CALLBACK ");
+
+              c[appID][0](settingsUpdate);
+
+            }
+
+          }} />
           <div
             style={{
               position: "absolute",
@@ -409,6 +430,7 @@ const Content = forwardRef((props, ref) => {
               width: "100%",
               height: "100%",
             }}
+
           >
             <WidgetWrapper>
 
@@ -417,11 +439,11 @@ const Content = forwardRef((props, ref) => {
                 system={{
                   //remote: "x866fscSq5Ae7bPgUtb6ffB",
 
-                  //remote: "x3LSdcSs1kcPskBWBJvqGto",
+                  //remote: "cECGHdLTCpjaimqviz7N2s",
                   //remote: "sCUiMz2m9JsRSnRJ5favnP",
                   //remote: "csd88KWnuft8fHfMrKSBAD",
 
-                  remote: appID,
+                  //remote: appID,
                   url: appSettings.remoteUrl,
                   //url: "dist/remoteEntry.js",
                   //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",

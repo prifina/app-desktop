@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
@@ -24,11 +24,12 @@ import {
   deleteAppVersionMutation,
   listDataSourcesQuery,
   i18n,
-  listAppsQuery,
+  getAppVersionQuery,
   useAppContext,
+  //checkUrl
 } from "@prifina-apps/utils";
 
-import { API as GRAPHQL } from "aws-amplify";
+import { API as GRAPHQL, Storage } from "aws-amplify";
 
 import config from "../config";
 
@@ -66,6 +67,7 @@ const ImageZoomContainer = styled(Image)`
 `;
 
 const ImageZoom = ({ src }) => {
+  console.log("ZOOM IMAGE ", src)
   return (
     <ImageZoomContainer
       src={src}
@@ -83,70 +85,49 @@ ImageZoom.propTypes = {
 };
 
 
-const radioButtons = (appData, setNewValues) => {
-  if (appData.appType === 1) {
-    return (
-      <Flex flexDirection="row" alignItems="center" mr="20px">
-        <Flex flexDirection="row" alignItems="center" mr="15px">
-          <Radio
-            fontSize="8px"
-            onChange={() => { }}
-            onClick={() => {
-              setNewValues({ ...newValues, appType: 2 });
-            }}
-          />
-          <Text fontSize="xs">{i18n.__("widget")}</Text>
-        </Flex>
-        <Flex flexDirection="row" alignItems="center">
-          <Radio
-            fontSize="10px"
-            onChange={() => { }}
-            checked
-            onClick={() => {
-              setNewValues({ ...newValues, appType: 1 });
-            }}
-          />
-          <Text fontSize="xs">Application</Text>
-        </Flex>
-      </Flex>
-    );
-  } else if (appData.appType === 2) {
-    return (
-      <Flex flexDirection="row" alignItems="center" mr="20px">
-        <Flex flexDirection="row" alignItems="center" mr="15px">
-          <Radio
-            checked
-            fontSize="10px"
-            onChange={() => { }}
-            value="1"
-            onClick={() => {
-              setNewValues({ ...newValues, appType: 2 });
-            }}
-          />
-          <Text fontSize="xs">{i18n.__("widget")}</Text>
-        </Flex>
-        <Flex flexDirection="row" alignItems="center">
-          <Radio
-            fontSize="10px"
-            onChange={() => { }}
-            value="2"
-            onClick={() => {
-              setNewValues({ ...newValues, appType: 1 });
-            }}
-          />
-          <Text fontSize="xs">Application</Text>
-        </Flex>
-      </Flex>
-    );
-  }
+const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+
+Storage.configure({
+  bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+  region: userRegion,
+});
+
+
+const getImage = (s3Key) => {
+
+  console.log("GET IMAGE URL ", s3Key);
+  return new Promise(function (resolve, reject) {
+    Storage.get(s3Key, { level: "public", download: false })
+      .then(url => {
+        var myRequest = new Request(url);
+        fetch(myRequest).then(function (response) {
+          if (response.status === 200) {
+            console.log("URL ", url);
+            resolve(url);
+          } else {
+            reject(response.status);
+          }
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        reject(err);
+      });
+  });
 };
 
+const listAssets = (s3Key) => {
+  console.log("S3 ", s3Key);
+
+  return Storage.list(s3Key, { level: "public", });
+
+}
 
 const ProjectDetails = (props) => {
 
   console.log("DETAILS ", props);
   const { colors } = useTheme();
-
+  //console.log("THEME COLORS  ", colors);
   //const history = useHistory();
   const navigate = useNavigate();
 
@@ -176,7 +157,26 @@ const ProjectDetails = (props) => {
     setActiveTab(tab);
   };
 
-  const [assetsS3Path, setAssetsS3Path] = useState("");
+  //const [assetsS3Path, setAssetsS3Path] = useState("");
+
+  const assetsS3Path = `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${appID}/assets`;
+
+  //const [assetStatuses, setAssetStatus] = useState([]);
+
+  // can't use object/array for controlling state change reloading...
+  // this method allows to "pack" those state variables into one state
+  // replace this later with zustand... 
+  const [state, setState] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    {
+
+      icon: false,
+      screenShot1: false,
+      screenShot2: false,
+      screenShot3: false
+    });
+
+  const [imageUrls, setImageUrl] = useState(new Array(4).fill(""));
 
   const [newDataSources, setNewDataSources] = useState([]);
   console.log("new data sources", newDataSources);
@@ -198,41 +198,101 @@ const ProjectDetails = (props) => {
 
   useEffect(() => {
     async function fetchData() {
-      const prifinaApps = await listAppsQuery(GRAPHQL, {
-        filter: { prifinaId: { eq: currentUser.prifinaID } },
-      });
-      let updatedApps = prifinaApps.data.listApps.items;
+      const result = await getAppVersionQuery(GRAPHQL, appID);
+      const currentApp = result.data.getAppVersion;
+      console.log("filtered app", currentApp);
+      delete currentApp.modifiedAt;
+      delete currentApp.createdAt;
 
-      console.log("updated apps", updatedApps);
+      // noSQL doesn't have all attributes, which are in schema object, if those attributes doesn't have values... 
+      if (!currentApp?.icon) {
+        currentApp.icon = "";
+      }
+      if (!currentApp?.screenshots) {
+        currentApp.screenshots = new Array(3).fill("");
+      }
+      // native assets...
+      if (!currentApp?.assets) {
+        currentApp.assets = [];
+      }
 
-      var result = updatedApps.filter(obj => {
-        return obj.id === appID;
-      });
+      setAppData(currentApp);
 
-      console.log("filtered app", result[0]);
-      delete result[0].modifiedAt;
-      delete result[0].createdAt;
-
-      setAppData(result[0]);
-
-      setNewValues(result[0]);
+      setNewValues(currentApp);
 
       setNewKeyFeatures(
-        result[0].keyFeatures === null ? [] : result[0].keyFeatures,
+        currentApp.keyFeatures === null ? [] : currentApp.keyFeatures,
       );
-      setNewUserHeld(result[0].userHeld === null ? [] : result[0].userHeld);
+      setNewUserHeld(currentApp.userHeld === null ? [] : currentApp.userHeld);
       setNewUserGenerated(
-        result[0].userGenerated === null ? [] : result[0].userGenerated,
+        currentApp.userGenerated === null ? [] : currentApp.userGenerated,
       );
-      setNewPublic(result[0].public === null ? [] : result[0].public);
+      setNewPublic(currentApp.public === null ? [] : currentApp.public);
 
-      setNewDataSources(result[0].dataSources);
+      if (currentApp?.dataSources && currentApp.dataSources != null && currentApp.dataSources.length > 0) {
+        console.log("DATASOURCES FOUND ", currentApp.dataSources, typeof currentApp.dataSources);
+        setNewDataSources(JSON.parse(currentApp.dataSources));
+      }
 
-      setAssetsS3Path(
-        `https://prifina-data-${config.prifinaAccountId}-${config.main_region}.s3.${config.main_region}.amazonaws.com/public/${result[0].id}/assets`,
-      );
 
+      const assetList = await listAssets(appID + "/assets/");
+      //      console.log("PROCESS THIS ", assetList);
+      if (assetList.length > 0) {
+        const statuses = new Array(4).fill(false);
+        const checkList = ["icon-1.png",
+          "screenshot-1.png",
+          "screenshot-2.png",
+          "screenshot-3.png"];
+        let images = [];
+        assetList.forEach(asset => {
+          const assetKey = asset.key.split("/").pop();
+          const idx = checkList.indexOf(assetKey);
+          if (idx > -1) {
+            statuses[idx] = true;
+            images.push(getImage(appID + "/assets/" + assetKey));
+          }
+        })
+
+        await Promise.all(images).then(res => {
+          //console.log("URLS ", res);
+          let urls = imageUrls;
+          res.forEach(url => {
+            checkList.forEach((img, i) => {
+              if (url.indexOf(img) > -1) {
+                urls[i] = url;
+              }
+            });
+          });
+          console.log("ASSETS STATUS ", urls, statuses, assetList)
+
+          setState({ icon: statuses[0], screenShot1: statuses[1], screenShot2: statuses[2], screenShot3: statuses[3] })
+          setImageUrl(urls);
+        })
+        /*
+        await Promise.all(images).then(urls=>{
+  
+          let urls = imageUrls;
+          urls[idx] = url;
+          setImageUrl(urls);
+      
+        }) 
+     
+      */
+
+        /* 
+         const images = ['icon-1.png', 'screenshot-1.png', 'screenshot-2.png', 'screenshot-3.png'];
+ 
+ 
+         getImage(appID + "/assets/" + images[idx], (url) => {
+           let urls = imageUrls;
+           urls[idx] = url;
+           setImageUrl(urls);
+ */
+        // console.log("STATUSES ", statuses, assetList);
+
+      }
       setIsLoading(false);
+
     }
     fetchData();
   }, []);
@@ -286,6 +346,7 @@ const ProjectDetails = (props) => {
     newUserGenerated,
     newPublic,
     icon,
+    screenshots,
     newRemoteUrl,
     newDataSources,
   ) => {
@@ -306,6 +367,7 @@ const ProjectDetails = (props) => {
       userGenerated: newUserGenerated,
       public: newPublic,
       icon: icon,
+      screenshots: screenshots,
       remoteUrl: newRemoteUrl,
       dataSources: JSON.stringify(newDataSources),
       settings: defaultSettings,
@@ -371,6 +433,7 @@ const ProjectDetails = (props) => {
                 newUserGenerated,
                 newPublic,
                 newValues.icon,
+                newValues.screenshots,
                 newValues.newRemoteUrl,
                 newDataSources,
               );
@@ -451,6 +514,7 @@ const ProjectDetails = (props) => {
   //can make them reusable
   const addDataSource = (source, sourceType) => {
     const newSourceData = [...dataSourcePreview, { source, sourceType }];
+    console.log("NEW DATASOURCE ADDED ", newSourceData);
     setDataSourcePreview(newSourceData);
   };
 
@@ -461,7 +525,8 @@ const ProjectDetails = (props) => {
   };
 
   const completeDataSource = index => {
-    const newSourceData = [...dataSourcePreview];
+    console.log("COMPLETE DATA SOURCE CLICK ", dataSourcePreview);
+    const newSourceData = newDataSources.concat(dataSourcePreview);
     setNewDataSources(newSourceData);
   };
 
@@ -517,6 +582,40 @@ const ProjectDetails = (props) => {
     setFontColor(colors.textMuted);
   };
 
+  const updateAssetStatus = (status, idx) => {
+    // 
+    const keys = Object.keys(state);
+    //console.log(keys, keys[idx]);
+    //{status:false,url:""},
+    //{`${assetsS3Path}/icon-1.png`}
+    console.log("ASSET UPLOAD ", idx);
+    const images = ['icon-1.png', 'screenshot-1.png', 'screenshot-2.png', 'screenshot-3.png'];
+    getImage(appID + "/assets/" + images[idx]).then(url => {
+      //console.log("UPDATE ASSET ", url);
+      let urls = imageUrls;
+      urls[idx] = url;
+      setImageUrl(urls);
+      setState({ [keys[idx]]: status });
+      let name = "icon";
+      let asset = "icon-1.png";
+      if (idx != 0) {
+        name = 'screenshots';
+        const currentScreenShots = newValues.screenshots;
+        currentScreenShots[idx - 1] = images[idx];
+        asset = currentScreenShots;
+      }
+      console.log("UPDATE VALUES ", name, asset)
+      setNewValues(existing => {
+        return {
+          ...existing,
+          [name]: asset,
+        };
+      });
+    })
+
+
+  }
+
   return (
     <>
       {!isLoading ? (
@@ -547,7 +646,34 @@ const ProjectDetails = (props) => {
               onChange={handleValueChange}
             />
             <Flex>
-              {radioButtons(appData, setNewValues)}
+
+              <Flex flexDirection="row" alignItems="center" mr="20px">
+                <Flex flexDirection="row" alignItems="center" mr="15px">
+                  <Radio
+                    fontSize="8px"
+                    onChange={() => { }}
+                    onClick={() => {
+                      setNewValues((existing) => { return { ...existing, appType: 1 } });
+                    }}
+                    checked={newValues.appType === 1 ? "checked" : null}
+                  />
+                  <Text fontSize="xs">{i18n.__("application")}</Text>
+                </Flex>
+                <Flex flexDirection="row" alignItems="center">
+                  <Radio
+                    fontSize="10px"
+                    onChange={() => { }}
+
+                    onClick={() => {
+                      setNewValues((existing) => { return { ...existing, appType: 2 } });
+                      //setNewValues({ ...newValues, appType: 2 });
+                    }}
+                    checked={newValues.appType === 2 ? "checked" : null}
+                  />
+                  <Text fontSize="xs">{i18n.__("widget")}</Text>
+                </Flex>
+              </Flex>
+
               {detailsSaveStatus()}
             </Flex>
             <Button
@@ -657,7 +783,9 @@ const ProjectDetails = (props) => {
                   Native Assets
                 </Text>
               </Box>
-              <UploadAsset variant="native" id={appData.id} />
+              <UploadAsset variant="native" id={appData.id} onFinish={() => {
+
+              }} />
             </Flex>
             <Flex alignItems="flex-end" mb={16}>
               <Box>
@@ -823,17 +951,24 @@ const ProjectDetails = (props) => {
                   Icon
                 </Text>
               </Box>
+
               <UploadAsset
                 id={appData.id}
                 type="icon"
                 numId="1"
+                onFinish={updateAssetStatus}
+
               // passAssetInfo={passAssetInfo}
               />
             </Flex>
-            <Image
-              src={`${assetsS3Path}/icon-1.png`}
-              onError={e => (e.target.style.display = "none")}
-            />
+
+            {state.icon &&
+              <Image
+                src={imageUrls[0]}
+                onError={e => (e.target.style.display = "none")}
+              />
+            }
+
             <Flex alignItems="flex-end" mb={16}>
               <Box>
                 <Text fontSize="sm" mb={5}>
@@ -844,34 +979,44 @@ const ProjectDetails = (props) => {
                 id={appData.id}
                 type="screenshot"
                 numId="1"
+                onFinish={updateAssetStatus}
               // passAssetInfo={passAssetInfo}
               />
               <UploadAsset
                 id={appData.id}
                 type="screenshot"
                 numId="2"
+                onFinish={updateAssetStatus}
               // passAssetInfo={passAssetInfo}
               />
               <UploadAsset
                 id={appData.id}
                 type="screenshot"
                 numId="3"
+                onFinish={updateAssetStatus}
               // passAssetInfo={passAssetInfo}
               />
             </Flex>
             <Flex width="700px" justifyContent="space-between">
-              <ImageZoom
-                src={`${assetsS3Path}/screenshot-1.png`}
-                onError={e => (e.target.style.display = "none")}
-              />
-              <ImageZoom
-                src={`${assetsS3Path}/screenshot-2.png`}
-                onError={e => (e.target.style.display = "none")}
-              />
-              <ImageZoom
-                src={`${assetsS3Path}/screenshot-3.png`}
-                onError={e => (e.target.style.display = "none")}
-              />
+              {state.screenShot1 &&
+                <ImageZoom
+                  src={imageUrls[1]}
+                  onError={e => (e.target.style.display = "none")}
+                />
+              }
+
+              {state.screenShot2 &&
+                <ImageZoom
+                  src={imageUrls[2]}
+                  onError={e => (e.target.style.display = "none")}
+                />
+              }
+              {state.screenShot3 &&
+                <ImageZoom
+                  src={imageUrls[3]}
+                  onError={e => (e.target.style.display = "none")}
+                />
+              }
             </Flex>
           </C.ProjectContainer>
           <C.ProjectContainer alt="dataSources" mb={24}>
@@ -1050,23 +1195,18 @@ const ProjectDetails = (props) => {
               appData.dataSources !== 0 &&
               appData.dataSources !== ["[null]"] ? (
               <Flex flexDirection="column" justifyContent="center">
-                {checkJson(newDataSources)
-                  ? JSON.parse(newDataSources).map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))
-                  : newDataSources.map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))}
+
+                {newDataSources.length > 0 && newDataSources.map((item, index) => (
+                  <ControlAddedDataSources
+                    key={index}
+                    keyIndex={index}
+                    dataSource={item}
+                    uncompleteDataSource={uncompleteDataSource}
+                    editControled={editControled}
+                  />
+                ))}
+
+                {newDataSources.length === 0 && <div>No datasources </div>}
               </Flex>
             ) : (
               <Flex flexDirection="column" justifyContent="center">
@@ -1129,7 +1269,9 @@ const ProjectDetails = (props) => {
           </C.ActionContainer>
         </Flex>
       ) : (
-        <Text>Loading...</Text>
+        <Box marginTop={"50px"} height={"100vh"} bg={colors.basePrimary}>
+          <Text>Loading...</Text>
+        </Box>
       )}
     </>
   );

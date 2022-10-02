@@ -159,7 +159,6 @@ const DisplayApp = ({
 
   const widgetSettings = useRef([]);
 
-  const savedViews = localStorage.getItem("localViews");
 
   const viewSettings = useRef(widgetViewSettings);
   //const viewSettings=useRef(JSON.parse(savedViews).views);
@@ -276,6 +275,7 @@ const DisplayApp = ({
           const widgetIndex = widgetSettings.current.findIndex(
             w => w.appId === currentAppId,
           );
+          console.log("WIDGET SETTINGS CHECK ", widgetIndex, widgetSettings.current);
           const widgetInstallCount = widgetSettings.current[widgetIndex].installCount;
 
           console.log(widgetIndex, widgetInstallCount);
@@ -294,6 +294,7 @@ const DisplayApp = ({
         },
         error: error => {
           console.log("ATHENA SUBS ERROR ");
+          console.log("WIDGET SETTINGS ", widgetSettings.current);
           console.error(error);
           // handle this error ???
           ///message: "Connection failed: com.amazon.coral.service#ExpiredTokenException"
@@ -335,8 +336,7 @@ const DisplayApp = ({
 
           if (viewSettings.current[activeTab].widgets?.[w.widget.appID]) {
 
-
-
+            //console.log("ADD WIDGET IN VIEW ", viewSettings.current[activeTab])
             const { theme, size } = getSystemSettings(
               w.widget.settings, // config settings... 
               viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings
@@ -662,7 +662,9 @@ const DisplayApp = ({
                           system={{
 
                             remote: w.widget.appID,
+                            //remote: "x3LSdcSs1kcPskBWBJvqGto",
                             url: w.url,
+                            //url: "dist/remoteEntry.js",
 
                             module: "./App",
                           }} />
@@ -675,7 +677,9 @@ const DisplayApp = ({
                           system={{
 
                             remote: w.widget.appID,
+                            //remote: "x3LSdcSs1kcPskBWBJvqGto",
                             url: w.url,
+                            //url: "dist/remoteEntry.js",
 
                             module: "./App",
                           }} />
@@ -923,7 +927,27 @@ const DisplayApp = ({
 
     // later should also know the installCount index... if multiple widgets are installed on same view
     delete currentViewSettings.widgets[selectedWidgetAppId];
-    viewSettings.current[activeTab] = currentViewSettings;
+
+
+
+    // set widget order on view... this is bit more complex as it should support manual reordering later
+    const sortedOrder = Object.keys(currentViewSettings.widgets).sort(function (a, b) {
+      let x = currentViewSettings.widgets[a].order;
+      let y = currentViewSettings.widgets[b].order;
+
+      if (x > y) { return 1; }
+      if (x < y) { return -1; }
+
+      return 0
+    });
+
+    const sortedWidgets = { view: currentViewSettings.view, widgets: {} };
+    sortedOrder.forEach((w, i) => {
+      sortedWidgets.widgets[w] = currentViewSettings.widgets[w];
+      sortedWidgets.widgets[w].order = i;
+    })
+
+    viewSettings.current[activeTab] = sortedWidgets;
 
     saveViewSettings(prifinaID, viewSettings.current).then(res => {
       setReloadViewWidgets(!reloadViewWidgets);

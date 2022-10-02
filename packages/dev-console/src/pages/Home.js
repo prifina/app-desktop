@@ -9,7 +9,7 @@ import {
   useLocation
 } from "react-router-dom";
 
-import { Box, Flex, Text, Button, Image, useTheme } from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image, useTheme, } from "@blend-ui/core";
 
 import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
@@ -92,9 +92,9 @@ const resourceCardItems = [
 const versionStatus = [
   "init",
   "received",
-  "review",
-  "review",
-  "review",
+  "review-stage-1",
+  "review-stage-2",
+  "review-stage-3",
   "published",
 ];
 
@@ -496,6 +496,8 @@ const Main = ({ data, currentUser }) => {
   const navigate = useNavigate();
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 
+  //const { colors } = useTheme();
+  //console.log("THEME COLORS ", colors);
 
   const [updatedData, setUpdatedData] = useState(data);
 
@@ -729,6 +731,11 @@ const Home = props => {
 
   console.log("HOME ", currentUser);
 
+
+  const { colors } = useTheme();
+  console.log("HOME THEME COLORS ", colors);
+
+  const navigate = useNavigate();
   const { pathname, search } = useLocation();
   //coreApp = appPaths[pathname.split("/").pop()];
   console.log("APP HOME ", pathname);
@@ -849,10 +856,7 @@ const Home = props => {
       label: i18n.__("projects"),
       icon: mdiWidget,
       onClick: () => {
-        /*
-        setStep(2);
-        setSearchParams({});
-        */
+        navigate("/", { replacec: true });
       },
     },
     // {

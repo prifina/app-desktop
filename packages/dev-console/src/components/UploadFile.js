@@ -36,7 +36,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const list=(files) =>{
+const list = (files) => {
   const label = file =>
     `'${file.name}' of size '${file.size}' and type '${file.type}'`;
   return files.map(file => (
@@ -55,11 +55,11 @@ const FileList = ({ files }) => {
 };
 
 FileList.propTypes = {
-  files:PropTypes.object,
+  files: PropTypes.array,
 }
 
-const TargetBox = (onDrop,colors) => {
-  
+const TargetBox = (onDrop, colors) => {
+
 
   const buttonUploadFile = async e => {
     try {
@@ -105,7 +105,7 @@ const TargetBox = (onDrop,colors) => {
       canDrop(item) {
         return true;
       },
-      hover(item) {},
+      hover(item) { },
       collect: monitor => {
         const item = monitor.getItem();
         if (item) {
@@ -149,11 +149,11 @@ const TargetBox = (onDrop,colors) => {
 };
 
 TargetBox.propTypes = {
-  onDrop:PropTypes.func,
-  colors:PropTypes.object
+  onDrop: PropTypes.func,
+  colors: PropTypes.object
 }
 
-const UploadFile = ({  widgetId }) => {
+const UploadFile = ({ widgetId }) => {
   const { colors } = useTheme();
 
   const toast = useToast();
@@ -169,7 +169,7 @@ const UploadFile = ({  widgetId }) => {
   window.LOG_LEVEL = "DEBUG";
 
   console.log("log", NativeTypes);
-  
+
 
   const handleFileDrop = useCallback(
     item => {
@@ -228,7 +228,7 @@ const UploadFile = ({  widgetId }) => {
     }
   };
 
-  useEffect( () => {
+  useEffect(() => {
     if (droppedFiles.length > 0) {
       uploadFile();
     }
@@ -253,7 +253,7 @@ const UploadFile = ({  widgetId }) => {
 };
 
 UploadFile.propTypes = {
-  widgetId:PropTypes.string,
+  widgetId: PropTypes.string,
   row: PropTypes.array,
   close: PropTypes.func,
 };

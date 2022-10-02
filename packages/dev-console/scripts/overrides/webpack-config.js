@@ -6,21 +6,23 @@ const webpackConfig = require(webpackConfigPath);
 
 const override = config => {
   /*
-  config.plugins.push(new CopyPlugin({
-    patterns: [
-      // { from: "/Users/Tero/react-projects/digiole/data-modelling/plugins/packages/json-view/dist", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dataTest-v2/dist", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dry-run-v2/dist", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/holistic-health-v2/dist", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/oura-activity-v2/dist", to: "dist" },
-      // { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/imessage-v2/dist", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/digiole/data-modelling/testing/my-app/build", to: "dist" },
-
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/cra-starter/build", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/webpack-starter/dist", to: "dist" },
-      //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/weather-v2/dist", to: "dist" },
-    ],
-  }));
+    config.plugins.push(new CopyPlugin({
+      patterns: [
+        { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/oura-sleep-v2/dist", to: "dist" },
+  
+        // { from: "/Users/Tero/react-projects/digiole/data-modelling/plugins/packages/json-view/dist", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dataTest-v2/dist", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/dry-run-v2/dist", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/holistic-health-v2/dist", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/oura-activity-v2/dist", to: "dist" },
+        // { from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/imessage-v2/dist", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/digiole/data-modelling/testing/my-app/build", to: "dist" },
+  
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/cra-starter/build", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/webpack-starter/dist", to: "dist" },
+        //{ from: "/Users/Tero/react-projects/local-development/prifina-development/widgets/packages/weather-v2/dist", to: "dist" },
+      ],
+    }));
   */
 
   config.plugins.push(new ModuleFederationPlugin(require("../../modulefederation.config.js")));

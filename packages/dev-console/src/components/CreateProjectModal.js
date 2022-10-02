@@ -58,7 +58,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
     version: 1,
   });
 
-  const [appType, setAppType] = useState(1);
+  const [appType, setAppType] = useState(2);
 
   const createApp = async e => {
     try {
@@ -88,6 +88,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
     onClose(e, action);
     e.preventDefault();
   };
+
 
   return (
     <React.Fragment>
@@ -127,6 +128,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                       onClick={() => {
                         setAppType(1);
                       }}
+                      checked={appType === 1 ? "checked" : null}
                     />
                     <Text fontSize="xs">{i18n.__("application")}</Text>
                   </Flex>
@@ -137,6 +139,7 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                       onClick={() => {
                         setAppType(2);
                       }}
+                      checked={appType === 2 ? "checked" : null}
                     />
                     <Text fontSize="xs">{i18n.__("widget")}</Text>
                   </Flex>
@@ -165,11 +168,13 @@ const CreateProjectModal = ({ onClose, onButtonClick, ...props }) => {
                 <StyledBox>
                   <Box paddingLeft="16px" paddingTop="10px">
                     <Flex>
+                      {/* 
                       <BlendIcon
                         // iconify={bxsInfoCircle}
                         color={"#580F57"}
                         size={"20"}
                       />
+                      */}
                       <Text fontSize="md" paddingBottom="5px" paddingLeft="8px">
                         {i18n.__("prifinaAppId")}
                       </Text>

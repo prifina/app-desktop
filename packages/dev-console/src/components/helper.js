@@ -90,11 +90,13 @@ export function AddRemoveDataSources({
             iconify={addCircle}
             color={colors.baseBright}
             onClick={() => completeDataSource(index)}
+            style={{ cursor: "pointer" }}
           />
           <BlendIcon
             iconify={trashCan}
             color={colors.baseBright}
             onClick={() => removeDataSource(index)}
+            style={{ cursor: "pointer" }}
           />
         </Flex>
       </Flex>
@@ -111,7 +113,7 @@ AddRemoveDataSources.propTypes = {
 
 export function ControlAddedDataSources({
   dataSource,
-  index,
+  keyIndex,
   uncompleteDataSource,
   editControled,
 }) {
@@ -144,7 +146,7 @@ export function ControlAddedDataSources({
         <BlendIcon
           iconify={mdiPowerPlug}
           color={colors.baseBright}
-          onClick={() => completeDataSource(index)}
+          onClick={() => completeDataSource(keyIndex)}
         />
         {/* <Flex
           ml={8}
@@ -175,7 +177,8 @@ export function ControlAddedDataSources({
           <BlendIcon
             iconify={trashCan}
             color={colors.baseBright}
-            onClick={() => uncompleteDataSource(index)}
+            onClick={() => uncompleteDataSource(keyIndex)}
+            style={{ cursor: "pointer" }}
           />
         </Flex>
       </Flex>
@@ -185,7 +188,7 @@ export function ControlAddedDataSources({
 
 ControlAddedDataSources.propTypes = {
   dataSource: PropTypes.object,
-  index: PropTypes.number,
+  keyIndex: PropTypes.number,
   uncompleteDataSource: PropTypes.func,
   editControled: PropTypes.bool,
 };
@@ -242,7 +245,7 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
 }
 
 DataSourceForm.propTypes = {
-  addDataSource: PropTypes.function,
+  addDataSource: PropTypes.func,
   selectOptions: PropTypes.array
 };
 
@@ -304,5 +307,5 @@ export function ApiForm({ addApi, selectOptions }) {
 
 ApiForm.propTypes = {
   addApi: PropTypes.func,
-  selectOptions:PropTypes.array
+  selectOptions: PropTypes.array
 };

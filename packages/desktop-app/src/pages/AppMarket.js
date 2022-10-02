@@ -685,7 +685,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                       marginLeft="16px"
                       onClick={() => {
                         window.location.replace(
-                          config.APP_URL + "/core/display-app",
+                          config.APP_URL + "/system/display-app",
                         );
                       }}
                     >

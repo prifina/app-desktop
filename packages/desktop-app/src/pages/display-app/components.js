@@ -343,7 +343,7 @@ export const WidgetList = ({
         widgetList.map((Widget, i) => {
           // const size = widgetData[i].widget.size.split("x");
           const w = widgetData[i];
-
+          console.log("WIDGET RENDER ", w)
           return (
             <OverlayStyles key={"prifina-widget-" + i}>
               <div style={{ position: "absolute", top: 0, left: 0 }}>

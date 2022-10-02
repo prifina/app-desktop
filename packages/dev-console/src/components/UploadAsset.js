@@ -23,7 +23,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const UploadAsset = ({ id, type, numId, variant, ...props }) => {
+const UploadAsset = ({ id, type, numId, variant, onFinish, ...props }) => {
   const { s3UploadClient } = useAppContext();
 
   const [uploaded, setUploaded] = useState("");
@@ -52,7 +52,7 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
       const nativePath = id + "/native-assets/" + file.name;
 
       const s3Key = variant === "native" ? nativePath : regularPath;
-
+      const assetIndex = type === "icon" ? numId - 1 : numId;
       //add assets to path
       //for id unique id
       //edit extension
@@ -92,7 +92,8 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
 
         parallelUploads3.on("httpUploadProgress", progress => {
           console.log(progress);
-          setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
+          //setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
+          setUploaded(`Progress: ${Math.floor(progress.loaded / progress.total * 100)}%`);
         });
 
         const uploadResult = await parallelUploads3.done();
@@ -112,6 +113,7 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
         );
 
         toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
+        onFinish(true, assetIndex);
       } else {
         S3Storage.configure({
           bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
@@ -128,7 +130,8 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
 
           progressCallback(progress) {
             //console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
-            setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
+            //setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
+            setUploaded(`Progress: ${Math.floor(progress.loaded / progress.total * 100)}%`);
           },
           customPrefix: {
             //public: "uploads/",
@@ -136,18 +139,20 @@ const UploadAsset = ({ id, type, numId, variant, ...props }) => {
           },
         });
 
-        
+
 
         console.log("success ");
         toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
 
         console.log(s3Status);
+        onFinish(true, assetIndex);
       }
 
       // props.close(true, file.name);
     } catch (e) {
       console.log("OOPS ", e);
       toast.error("Upload failed", {});
+      onFinish(false, assetIndex);
     }
   };
 
@@ -177,10 +182,11 @@ UploadAsset.defaultProps = {
 UploadAsset.propTypes = {
   row: PropTypes.instanceOf(Array),
   close: PropTypes.func,
-  id:PropTypes.string,
-  type:PropTypes.string,
-  numId:PropTypes.string,
-  variant:PropTypes.string
+  id: PropTypes.string,
+  type: PropTypes.string,
+  numId: PropTypes.string,
+  variant: PropTypes.string,
+  onFinish: PropTypes.func
 };
 
 UploadAsset.displayName = "UploadAsset";
