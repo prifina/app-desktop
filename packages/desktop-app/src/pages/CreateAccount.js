@@ -16,9 +16,9 @@ import ProgressContainer from "../components/ProgressContainer";
 import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
 
-const { pathname, search } = useLocation();
-const navigate = useNavigate();
 
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router";
 import config from "../config";
 
 import {
@@ -68,6 +68,7 @@ const popularList = ["US", "GB", "FI"];
 
 const CreateAccount = props => {
 
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
 
   const alerts = useToast();
