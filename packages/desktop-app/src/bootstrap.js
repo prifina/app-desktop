@@ -1,5 +1,7 @@
 import React from "react";
 
+
+//import { render } from "react-dom";
 import ReactDOM from "react-dom/client";
 import { default as App } from "./App";
 import * as serviceWorker from "./serviceWorker";
@@ -10,6 +12,14 @@ import ErrorBoundary from "./ErrorBoundary";
 
 
 //import reportWebVitals from "./reportWebVitals";
+/*
+render(
+  <Router>
+    <App />
+  </Router>,
+  document.getElementById("root")
+);
+*/
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

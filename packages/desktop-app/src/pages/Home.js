@@ -226,8 +226,10 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     let copy = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
     return copy;
   };
+
   return (
     <React.Fragment>
+
       <StyledBox>
         <PrifinaLogo />
         <StyledBackground id="home-styledBackground">

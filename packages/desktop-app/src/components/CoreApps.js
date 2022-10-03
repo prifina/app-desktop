@@ -111,7 +111,6 @@ const CoreApps = props => {
   const [settingsReady, setSettingsReady] = useState(false);
 
   Auth.configure(AUTHConfig);
-  Amplify.configure(APIConfig);
 
   console.log("AUTH CONFIG ", AUTHConfig);
 
@@ -132,7 +131,6 @@ const CoreApps = props => {
     return client;
   };
 
-  // get user auth...
   useEffect(() => {
     async function fetchData() {
       try {
@@ -419,7 +417,7 @@ const CoreApps = props => {
         if (typeof e === "string" && e === "No current user") {
         }
 
-        console.log("AUTH ", e);
+        console.log("INIT ", e);
       }
     }
     fetchData();

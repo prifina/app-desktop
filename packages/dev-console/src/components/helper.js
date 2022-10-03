@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Box, Flex, Text, Button, Input, useTheme, Link } from "@blend-ui/core";
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -36,6 +36,7 @@ export function AddRemoveDataSources({
   removeDataSource,
 }) {
   console.log("data source", dataSource);
+
 
   const { colors } = useTheme();
 
@@ -195,8 +196,8 @@ ControlAddedDataSources.propTypes = {
 
 export function DataSourceForm({ addDataSource, selectOptions }) {
   const [value, setValue] = useState("");
-  const [sourceType, setSourceType] = useState("");
-
+  const [sourceType, setSourceType] = useState(selectOptions[0].sourceType);
+  const selectRef = useRef();
   const handleSubmit = e => {
     e.preventDefault();
     if (!value) return;
@@ -223,7 +224,7 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
   return (
     <form onSubmit={handleSubmit}>
       <Flex alignItems="center">
-        <CustomSelect onChange={handleChange}>
+        <CustomSelect ref={selectRef} onChange={handleChange}>
           {selectOptions.map((item, index) => (
             <option key={index}>{item.source}</option>
           ))}
@@ -231,10 +232,10 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
         <Button
           size="xs"
           ml={4}
-          onChange={e => {
-            console.log("CLICK ", e.target.value);
-
-            setValue(e.target.value);
+          onClick={e => {
+            //console.log("CLICK ", e.target.value);
+            //console.log("REF ", selectRef.current.value);
+            setValue(selectRef.current.value);
           }}
         >
           Add
