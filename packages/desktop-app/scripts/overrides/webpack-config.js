@@ -45,6 +45,8 @@ const override = config => {
   */
   config.resolve.fallback = { "http": false, "https": false }
   config.devtool = 'eval-cheap-module-source-map';
+
+  config.output.clean = true;
   return config;
 };
 

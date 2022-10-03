@@ -48,6 +48,7 @@ const override = config => {
   */
   config.resolve.fallback = { "http": false, "https": false }
 
+  config.output.clean = true;
   return config;
 };
 

@@ -16,16 +16,20 @@ export const Remote = forwardRef((props, ref) => {
   } = props;
 
   if (!system || !remote || !url || !module) {
+    console.log("SYSTEM ", system)
+    console.log("REMOTE ", remote,)
+    console.log("URL ", url,)
+    console.log("MODULE ", module)
     return <h2>No system specified</h2>;
   }
 
   // remote =>name (webpack name),sharedScope,module (shared component),url
   const Component = React.lazy(loadComponent(remote, "default", module, url));
-  const Fallback = Loading|| "Loading...";
+  const Fallback = Loading || "Loading...";
   return (
     <React.Suspense fallback={Fallback} >
       <div ref={ref}>
-         <Component {...componentProps} />
+        <Component {...componentProps} />
       </div>
 
     </React.Suspense>

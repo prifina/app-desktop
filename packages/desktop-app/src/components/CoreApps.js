@@ -218,7 +218,7 @@ const CoreApps = props => {
           }
 
           const prifinaWidgets = await listAppMarketQuery(GRAPHQL, {
-            filter: { appType: { eq: 1 } },
+            filter: { appType: { eq: 2 } },
           });
 
           const prifinaDataSources = await listDataSourcesQuery(GRAPHQL, {});

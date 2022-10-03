@@ -443,7 +443,7 @@ const Content = forwardRef((props, ref) => {
                   //remote: "sCUiMz2m9JsRSnRJ5favnP",
                   //remote: "csd88KWnuft8fHfMrKSBAD",
 
-                  //remote: appID,
+                  remote: appID,
                   url: appSettings.remoteUrl,
                   //url: "dist/remoteEntry.js",
                   //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
