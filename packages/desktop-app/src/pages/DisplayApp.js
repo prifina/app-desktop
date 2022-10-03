@@ -676,10 +676,10 @@ const DisplayApp = ({
                           componentProps={{ ...props }}
                           system={{
 
-                            //remote: w.widget.appID,
-                            remote: "x3LSdcSs1kcPskBWBJvqGto",
-                            //url: w.url,
-                            url: "dist/remoteEntry.js",
+                            remote: w.widget.appID,
+                            //remote: "x3LSdcSs1kcPskBWBJvqGto",
+                            url: w.url,
+                            //url: "dist/remoteEntry.js",
 
                             module: "./App",
                           }} />
