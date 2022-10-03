@@ -60,7 +60,7 @@ const UploadAsset = ({ id, type, numId, variant, onFinish, ...props }) => {
       //exclude progress update info
 
       const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
-
+      //console.log("USER REGION ", userRegion, config.cognito)
       console.log("Upload Size", file.size);
       const maxPartSize = 5 * 1024 * 1024;
       if (file.size > maxPartSize && Object.keys(s3UploadClient).length) {

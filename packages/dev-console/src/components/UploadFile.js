@@ -58,31 +58,44 @@ FileList.propTypes = {
   files: PropTypes.array,
 }
 
-const TargetBox = (onDrop, colors) => {
+const TargetBox = ({ onDrop, colors, widgetId }) => {
 
+
+  const toast = useToast();
+
+  const [uploaded, setUploaded] = useState("");
 
   const buttonUploadFile = async e => {
+
+    console.log("UPLOAD CLICK...")
     try {
       //check file info
       const file = e.target.files[0];
       console.log("Upload ", file);
 
+      const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+
+      const s3Key = widgetId + "/packages/" + widgetId + ".zip";
+
       S3Storage.configure({
         bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
         region: userRegion,
       });
+      console.log("S3 KEY ", s3Key);
 
       const s3Status = await S3Storage.put(s3Key, file, {
         level: "public", // private doesn't work
         metadata: { created: new Date().toISOString(), "alt-name": file.name },
 
         progressCallback(progress) {
-          setUploaded(`${progress.loaded}/${progress.total}`);
+
+          setUploaded(`${Math.floor(progress.loaded / progress.total)}%`);
         },
         customPrefix: {
           public: "uploads/",
         },
       });
+
       console.log("success ");
       toast.success(`Package uploaded - Progress: ${uploaded}`, {});
 
@@ -150,7 +163,8 @@ const TargetBox = (onDrop, colors) => {
 
 TargetBox.propTypes = {
   onDrop: PropTypes.func,
-  colors: PropTypes.object
+  colors: PropTypes.object,
+  widgetId: PropTypes.string
 }
 
 const UploadFile = ({ widgetId }) => {
@@ -163,13 +177,11 @@ const UploadFile = ({ widgetId }) => {
   const [uploaded, setUploaded] = useState("");
   //console.log("PROPS ", props);
 
-  const [appFields, handleChange] = useFormFields({
-    version: "",
-  });
   window.LOG_LEVEL = "DEBUG";
 
   console.log("log", NativeTypes);
 
+  console.log("UPLOAD FILE ", widgetId);
 
   const handleFileDrop = useCallback(
     item => {
@@ -182,7 +194,7 @@ const UploadFile = ({ widgetId }) => {
     [setDroppedFiles],
   );
 
-  const s3Key = widgetId + "/packages/" + "build-package" + ".zip";
+  const s3Key = widgetId + "/packages/" + widgetId + ".zip";
 
   const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
 
@@ -210,7 +222,7 @@ const UploadFile = ({ widgetId }) => {
         },
 
         progressCallback(progress) {
-          setUploaded(`${progress.loaded}/${progress.total}`);
+          setUploaded(`${Math.floor(progress.loaded / progress.total)}%`);
         },
         customPrefix: {
           public: "uploads/",
@@ -240,7 +252,7 @@ const UploadFile = ({ widgetId }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <>
-        <TargetBox onDrop={handleFileDrop} colors={colors} />
+        <TargetBox onDrop={handleFileDrop} colors={colors} widgetId={widgetId} />
         <FileList files={droppedFiles} />
         {uploaded !== "" ? (
           <Text fontSize="xs" color={colors.baseSuccess}>

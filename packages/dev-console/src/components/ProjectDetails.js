@@ -204,6 +204,8 @@ const ProjectDetails = (props) => {
       delete currentApp.modifiedAt;
       delete currentApp.createdAt;
 
+      // note currentApp.version should not be updated.... nextVersion instead.
+
       // noSQL doesn't have all attributes, which are in schema object, if those attributes doesn't have values... 
       if (!currentApp?.icon) {
         currentApp.icon = "";
@@ -333,7 +335,7 @@ const ProjectDetails = (props) => {
     id,
     appType,
     name,
-    version,
+    nextVersion,
     publisher,
     newCategory,
     deviceSupport,
@@ -354,7 +356,7 @@ const ProjectDetails = (props) => {
       id: id,
       appType: appType,
       name: name,
-      nextVersion: version,
+      nextVersion: nextVersion,
       publisher: publisher,
       category: newCategory,
       deviceSupport: deviceSupport,
@@ -420,7 +422,7 @@ const ProjectDetails = (props) => {
                 newValues.id,
                 newValues.appType,
                 newValues.name,
-                newValues.version,
+                newValues.nextVersion,
                 newValues.publisher,
                 newValues.category,
                 newValues.deviceSupport,
@@ -724,8 +726,8 @@ const ProjectDetails = (props) => {
                   onFocus={handleFocusColor}
                   onBlur={handleBlurColor}
                   label="text"
-                  name="version"
-                  defaultValue={appData.version || "undefined"}
+                  name="nextVersion"
+                  defaultValue={appData.nextVersion || "undefined"}
                   onChange={handleValueChange}
                   color={colors.textPrimary}
                   style={{
@@ -747,7 +749,7 @@ const ProjectDetails = (props) => {
                   Build deployment package
                 </Text>
 
-                <UploadFile widgetId="hehe" />
+                <UploadFile widgetId={appID} />
               </Box>
               <Box ml={25}>
                 <Text fontSize="xs" color={colors.textMuted}>
