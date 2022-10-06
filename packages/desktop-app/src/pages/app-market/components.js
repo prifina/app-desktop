@@ -305,6 +305,7 @@ export const NavbarContainer = styled(Flex)`
 `;
 
 export const Card = ({ title, value }) => {
+  console.log("CARD VALUE ", value, title)
   return (
     <Flex width="100px" flexDirection="column">
       <Flex
@@ -318,7 +319,7 @@ export const Card = ({ title, value }) => {
         <Text fontSize="10px">{title}</Text>
       </Flex>
       <Flex justifyContent="center">
-        <Text fontSize="12px">{value}</Text>
+        <Text fontSize="12px">{typeof value === "array" ? value.join(",") : value}</Text>
       </Flex>
     </Flex>
   );
@@ -326,7 +327,11 @@ export const Card = ({ title, value }) => {
 
 Card.propTypes = {
   title: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.array
+  ]),
+
 };
 
 export const InstalledText = styled(Text)`

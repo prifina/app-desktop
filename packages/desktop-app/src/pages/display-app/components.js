@@ -129,7 +129,8 @@ display: flex;
   position: relative;
   top: 0px;
   left: 0px;
-  overflow-y: auto;
+  /*overflow-y: auto; */
+  padding-bottom:200px; // to prevent container shaking, if overlay elements are outside widget container
 `;
 
 export const InfoBox = styled(Flex)`

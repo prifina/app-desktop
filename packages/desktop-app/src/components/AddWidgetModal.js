@@ -159,7 +159,7 @@ const AddWidgetModal = ({
           <Text mb={8}>Find widgets for ‘{viewName}’</Text>
           <ModalBody style={{ overflow: "hidden" }}>
             <Flex>
-              <Box style={{ height: "100%", width: 264 }}>
+              <Box style={{ height: "100%", width: 264, overflowY: "scroll" }}>
                 {availableWidgets.length === 0 &&
                   <Text fontSize="sm" color={colors.textMuted}>
                     No available widgets
@@ -169,7 +169,7 @@ const AddWidgetModal = ({
                   <Text fontSize="sm" color={colors.textMuted}>
                     Available now
                   </Text>
-                  <Box style={{ overflowY: "scroll" }}>
+                  <Box>
 
                     <List>
                       {availableWidgets.map((item, index) => (

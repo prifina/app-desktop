@@ -477,11 +477,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   const [addingDataSource, setAddingDataSource] = useState(-1);
 
   const onDialogClose = e => {
+    console.log("DIALOG CLOSE...", e);
     setAddingDataSource(-1);
     e.preventDefault();
   };
   const onDialogClick = async e => {
     ///...further logic on adding data source data
+    console.log("DIALOG CLICK...", e);
     setAddingDataSource(-1);
 
     e.preventDefault();
@@ -565,8 +567,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         <>
           {addingDataSource > -1 && (
             <DataSourceModal
-              onClose={onDialogClose}
-              onButtonClick={onDialogClick}
+              onClose={setAddingDataSource}
               dataSourceItems={widgets.current[selectedWidgetIndex].dataSources}
               selectedDataSourceIndex={addingDataSource}
               GraphQLClient={GraphQLClient}
@@ -766,7 +767,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                               <C.Card
                                 title={i18n.__("dataTypes")}
                                 value={
-                                  widgets.current[selectedWidgetIndex].dataTypes
+                                  widgets.current[selectedWidgetIndex]?.dataTypes
                                 }
                               />
                               <C.Card
@@ -778,8 +779,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                               <C.Card
                                 title={i18n.__("deviceSupport")}
                                 value={
-                                  widgets.current[selectedWidgetIndex]
-                                    .deviceSupport
+                                  widgets.current[selectedWidgetIndex].deviceSupport
                                 }
                               />
                               <C.Card

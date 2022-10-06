@@ -33,7 +33,7 @@ export const getRequestTokenQuery = (API, id, source) => {
 */
 const DataSourceModal = ({
   onClose,
-  onButtonClick,
+
   dataSourceItems,
   selectedDataSourceIndex,
   GraphQLClient,
@@ -52,19 +52,23 @@ const DataSourceModal = ({
 
   console.log("DS MODAL ", dataSourceItems);
   console.log("DS MODAL ", selectedDataSourceIndex);
-  useEffect(async () => {
-    const result = await getRequestTokenQuery(
-      GraphQLClient,
-      prifinaID,
-      dataSourceItem.id,
-      2,
-    );
+  useEffect(() => {
+    async function init() {
+      const result = await getRequestTokenQuery(
+        GraphQLClient,
+        prifinaID,
+        dataSourceItem.id,
+        2,
+      );
 
-    setRequestUrl(result.data.getRequestToken.requestURL);
+      setRequestUrl(result.data.getRequestToken.requestURL);
+    }
+    init();
+
   }, []);
   const onCloseCheck = (e, action) => {
     console.log("MODAL CLOSE ", e, action);
-    onClose(e, action);
+    onClose(-1);
     e.preventDefault();
   };
 
@@ -99,7 +103,7 @@ const DataSourceModal = ({
                 justifyContent: "center",
               }}
             >
-              <Text textStyle={"h5"} textStyle="h3">
+              <Text textStyle={"h5"} >
                 {i18n.__("connect")} {dataSourceItem.title}
               </Text>
             </Flex>
@@ -168,9 +172,12 @@ const DataSourceModal = ({
                 variation={"outline"}
                 colorStyle={"error"}
                 onClick={e => {
-                  setDialogOpen(false);
-                  onButtonClick(e, "cancel");
                   e.preventDefault();
+                  setDialogOpen(false);
+                  setTimeout(function () {
+                    onClose(-1);
+                  }, 500);
+
                 }}
               >
                 {i18n.__("cancelButton")}
@@ -183,10 +190,9 @@ const DataSourceModal = ({
                 href={requestUrl}
                 ml={20}
                 onClick={e => {
+                  setDialogOpen(false);
                   setTimeout(function () {
-                    setDialogOpen(false);
-                    onButtonClick(e, "logout");
-                    e.preventDefault();
+                    onClose(-1);
                   }, 500);
                 }}
               >
@@ -202,7 +208,7 @@ const DataSourceModal = ({
 
 DataSourceModal.propTypes = {
   onClose: PropTypes.func.isRequired,
-  onButtonClick: PropTypes.func.isRequired,
+  //onButtonClick: PropTypes.func.isRequired,
   dataSourceItems: PropTypes.instanceOf(Array),
   selectedDataSourceIndex: PropTypes.number.isRequired,
   GraphQLClient: PropTypes.instanceOf(Object),
