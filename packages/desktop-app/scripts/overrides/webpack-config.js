@@ -22,6 +22,7 @@ const override = config => {
     }));
   */
 
+
   config.plugins.push(new ModuleFederationPlugin(require("../../modulefederation.config.js")));
   /*
   config.plugins.push(new CopyPlugin({

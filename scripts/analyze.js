@@ -1,6 +1,9 @@
 process.env.NODE_ENV = "production";
-
+const { ModuleFederationPlugin } = require("webpack").container;
 const webpack = require("webpack");
+
+const path = require('path');
+
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
 const webpackConfigProd = require("react-scripts/config/webpack.config")(
@@ -14,6 +17,10 @@ const green = text => {
   return chalk.green.bold(text);
 };
 
+const modConfig = path.resolve(__dirname, '../packages/desktop-app/modulefederation.config.js');
+console.log(modConfig);
+
+webpackConfigProd.plugins.push(new ModuleFederationPlugin(require(modConfig)));
 // pushing BundleAnalyzerPlugin to plugins array
 webpackConfigProd.plugins.push(new BundleAnalyzerPlugin());
 

@@ -397,6 +397,7 @@ export const SettingsDialog = ({
   widgetIndex,
   widgetSettings,
   onUpdate,
+  onBack,
   ...props
 }) => {
   console.log("SETTINGS ", widgetIndex, widgetSettings);
@@ -441,14 +442,17 @@ export const SettingsDialog = ({
     });
   }
 
+
+  const [activeTab, setActiveTab] = useState(Object.keys(inputFields.current).length > 0 ? 0 : 1);
+
   // 1== widget settings, 2== system settings like theme,size...
-  const settingsType = 1;
+  //const settingsType = 1;
 
   const [fields, handleChange] = useFormFields(
-    settingsType === 1 ? inputFields.current : systemFields.current,
+    activeTab === 0 ? inputFields.current : systemFields.current,
   );
 
-  console.log("RENDER FIELDS ", fields, inputFields);
+  console.log("RENDER FIELDS ", fields, inputFields, activeTab);
 
   if (timezones.current.length > 0) {
     const tzOffset = moment.tz(fields.tz).utcOffset();
@@ -470,8 +474,6 @@ export const SettingsDialog = ({
     }
   }
 
-  const [activeTab, setActiveTab] = useState(1);
-
   const tabClick = (e, tab) => {
     console.log("Click", e);
     console.log("TAB", tab);
@@ -485,7 +487,6 @@ export const SettingsDialog = ({
     //history.push("https://docs.prifina.com");
   }
 
-  let number = 0;
 
   return (
     <SettingsDialogBox>
@@ -495,7 +496,7 @@ export const SettingsDialog = ({
 
             iconify={mdiArrowLeft}
             width="18px"
-            onClick={props.onBack}
+            onClick={onBack}
           />
           <Text textStyle={"h3"} mt={10} ml={15} mb={15}>
             {widgetSettings.title}
@@ -514,20 +515,26 @@ export const SettingsDialog = ({
             variant="rectangle"
           >
             <TabList>
-              {number === 1 ? (
+
+              <Tab>
+                {Object.keys(inputFields.current).length > 0 ? (
+                  <Tab>
+                    <Text>User Settings</Text>
+                  </Tab>
+                ) : null}
+
+              </Tab>
+              {Object.keys(systemFields.current).length > 0 ? (
                 <Tab>
                   <Text>System Settings</Text>
                 </Tab>
               ) : null}
               <Tab>
-                <Text>User Settings</Text>
-              </Tab>
-              <Tab>
                 <Text>About this widget</Text>
               </Tab>
             </TabList>
             <TabPanelList>
-              <TabPanel>System Settings</TabPanel>
+
               <TabPanel
                 style={
                   {
@@ -540,7 +547,7 @@ export const SettingsDialog = ({
                   <Box mt={10} ml={5} mr={5}>
                     {widgetSettings.settings.map((setting, i) => {
                       if (
-                        settingsType === 1 &&
+
                         Object.keys(inputFields.current).indexOf(
                           setting.field,
                         ) > -1
@@ -590,12 +597,105 @@ export const SettingsDialog = ({
                           </React.Fragment>
                         );
                       }
-                      if (
-                        settingsType === 2 &&
-                        Object.keys(systemFields.current).indexOf(
-                          setting.field,
-                        ) > -1
-                      ) {
+
+                    })}
+                    <Box mt={10}>
+                      <Button
+                        // width={"100%"}
+                        onClick={e => {
+                          console.log("UPDATE BUTTON ", fields);
+
+                          if (
+                            timezones.length > 0 &&
+                            fields.hasOwnProperty("tz")
+                          ) {
+                            onUpdate({
+                              tz: fields.tz,
+                              offset: moment.tz(fields.tz).utcOffset(),
+                            });
+                          } else {
+                            onUpdate(fields);
+                          }
+                        }}
+                      >
+                        Update
+                      </Button>
+                    </Box>
+                  </Box>
+
+                </div>
+              </TabPanel>
+              <TabPanel>
+
+                <Box mt={10} ml={5} mr={5}>
+                  <Label key={"setting-label-sizes"} mt={10}>
+                    Size
+                  </Label>
+                  <Select
+                    mb={10}
+                    size={"sm"}
+                    width={"90px"}
+                    id={"system-setting-sizes"}
+                    name={"system-setting-sizes"}
+                    defaultValue={systemFields.current.sizes}
+                    onChange={handleChange}
+                  >
+
+                    <option value="300x300">
+                      300x300
+                    </option>
+                    <option value="600x300">
+                      600x300
+                    </option>
+                    <option value="300x600">
+                      300x600
+                    </option>
+                    <option value="600x600">
+                      600x600
+                    </option>
+                  </Select>
+                </Box>
+                <Box mt={10} ml={5} mr={5}>
+                  <Label key={"setting-label-theme"} mt={10}>
+                    Theme
+                  </Label>
+                  <Select
+                    mb={10}
+                    size={"sm"}
+                    width={"90px"}
+                    id={"system-setting-theme"}
+                    name={"system-setting-theme"}
+                    defaultValue={systemFields.current.theme}
+                    onChange={handleChange}
+                  >
+
+                    <option value="dark">
+                      Dark
+                    </option>
+                    <option value="light">
+                      Light
+                    </option>
+
+                  </Select>
+                </Box>
+                <Box mt={10}>
+                  <Button
+                    // width={"100%"}
+                    onClick={e => {
+                      console.log("UPDATE BUTTON ", fields);
+                      if ((systemFields.current["sizes"] !== fields["system-setting-sizes"] && fields?.["system-setting-sizes"]) || (systemFields.current["theme"] !== fields["system-setting-theme"] && fields?.["system-setting-theme"])) {
+                        const updates = { "sizes": fields?.["system-setting-sizes"] ? fields["system-setting-sizes"] : systemFields.current["sizes"], "theme": fields?.["system-setting-theme"] ? fields["system-setting-theme"] : systemFields.current["theme"] };
+                        //console.log("UPDATE THIS ", updates)
+                        onUpdate(updates);
+                      }
+
+                    }}
+                  >
+                    Update
+                  </Button>
+                </Box>
+
+                {/* 
                         let defaultValue = "";
                         let selectOptions = [];
                         let currentField = setting.field;
@@ -664,34 +764,7 @@ export const SettingsDialog = ({
                               </>
                             )}
                           </React.Fragment>
-                        );
-                      }
-                    })}
-                    <Box mt={10}>
-                      <Button
-                        // width={"100%"}
-                        onClick={e => {
-                          console.log("UPDATE BUTTON ", fields);
-
-                          if (
-                            timezones.length > 0 &&
-                            fields.hasOwnProperty("tz")
-                          ) {
-                            onUpdate({
-                              tz: fields.tz,
-                              offset: moment.tz(fields.tz).utcOffset(),
-                            });
-                          } else {
-                            onUpdate(fields);
-                          }
-                        }}
-                      >
-                        Update
-                      </Button>
-                    </Box>
-                  </Box>
-
-                </div>
+                     */}
               </TabPanel>
               <TabPanel
                 style={{
@@ -792,8 +865,9 @@ export const SettingsDialog = ({
 
 SettingsDialog.propTypes = {
   widgetIndex: PropTypes.number.isRequired,
-  // widgetSettings: PropTypes.instanceOf(Object).isRequired,
+  widgetSettings: PropTypes.instanceOf(Object).isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onBack: PropTypes.func.isRequired
 };
 
 export const SearchBox = forwardRef(
