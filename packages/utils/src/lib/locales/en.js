@@ -181,7 +181,7 @@ const strings = {
     codeMissing: "Didn't receive the code?",
     sendAgainLinkText: "Click here.",
     invalidCode: "Incorrect code, please enter the correct code.",
-    verifySUpportLink: "Still didn't receive the code",
+    verifySupportLink: "Still didn't receive the code",
     /* Email verification */
     emailVerificationTitle: "Setup email verification",
     emailVerificationText:

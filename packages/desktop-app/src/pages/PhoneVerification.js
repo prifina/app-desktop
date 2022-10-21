@@ -188,7 +188,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
 
             <Box>
               <Link href={invalidLink} target="_blank" fontSize={"10px"}>
-                {i18n.__("verifySUpportLink")}
+                {i18n.__("verifySupportLink")}
               </Link>
             </Box>
           </Box>

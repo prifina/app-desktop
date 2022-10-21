@@ -1,0 +1,87 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": [
+    "react-app",
+    "react-app/jest",
+    "plugin:react/recommended",
+    // "plugin:prettier/recommended",
+    "airbnb",
+    "plugin:react/jsx-runtime",
+    "plugin:storybook/recommended"
+    // "prettier"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "quotes": [
+      "error",
+      "double",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "react/jsx-one-expression-per-line": 0,
+    "react/react-in-jsx-scope": 0,
+    "react/jsx-uses-react": "error",
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "import/no-unresolved": 0,
+    "arrow-parens": [
+      "error",
+      "as-needed"
+    ],
+    "react/function-component-definition": 0,
+    "implicit-arrow-linebreak": "off",
+    "import/prefer-default-export": 0,
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": 0, // prop-types warning ?
+    "no-plusplus": 0,
+    "indent": 0,
+    "no-underscore-dangle": 0,
+    "react/jsx-props-no-spreading": 0,
+    "react/require-default-props": 0,
+    "react/forbid-prop-types": 0,
+    "react/no-array-index-key": 0,
+    "prettier/prettier": 0,
+    "react/jsx-indent": 0,
+    "jsx-a11y/aria-role": [
+      2,
+      {
+        "allowedInvalidRoles": [
+          "text"
+        ],
+        "ignoreNonDOM": true
+      }
+    ]
+    /*
+    "prettier/prettier": ["error", {}, {
+      "usePrettierrc": false
+    }]
+    */
+  },
+  "ignorePatterns": [
+    "jest.config.js",
+    "**/vendor/*.js",
+    "**/__tests__/*.js",
+    "**/stories/*.js"
+  ]
+}

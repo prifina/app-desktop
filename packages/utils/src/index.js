@@ -3,6 +3,7 @@ export * from "./graphql/mutations";
 export * from "./graphql/queries";
 export * from "./graphql/subscriptions";
 export { default as i18n } from "./lib/i18n";
+export { default as useTranslate } from "./lib/i18n-v2";
 export { default as useFetch } from "./lib/hooks/useFetch";
 export * from "./lib/formFields";
 export * from "./lib/componentUtils";

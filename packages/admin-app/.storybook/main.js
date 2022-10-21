@@ -3,12 +3,12 @@ const {
   withStorybookModuleFederation,
 } = require('storybook-module-federation');
 
-//const deps = require("../package.json").dependencies;
+const deps = require("../package.json").dependencies;
 
 const storybookConfig = {
   stories: [
-    "../src/stories/**/*.stories.mdx",
-    "../src/stories/**/*.stories.@(js|jsx|ts|tsx)",
+    "../src/stories/*.stories.mdx",
+    "../src/stories/*.stories.@(js|jsx|ts|tsx)",
   ],
   addons: [
     "@storybook/addon-links",
@@ -43,8 +43,7 @@ const storybookConfig = {
    */
 
 };
-const moduleFederationConfig = require("../modulefederation.config");
-/*
+
 const moduleFederationConfig = {
   name: 'host',
   shared: {
@@ -53,7 +52,6 @@ const moduleFederationConfig = {
   },
 
 };
-*/
 
 const CustomWebpack = {
   ...storybookConfig,
@@ -74,15 +72,3 @@ module.exports = withStorybookModuleFederation(moduleFederationConfig)(
   //storybookConfig
   CustomWebpack
 );
-
-/*
-module.exports = {
-  stories: ["../src/stories/*.stories.@(js|jsx|ts|tsx)"],
-  addons: [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@storybook/preset-create-react-app",
-  ],
-};
-
-*/

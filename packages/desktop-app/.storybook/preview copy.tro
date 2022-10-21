@@ -1,0 +1,97 @@
+import { ThemeProvider, theme } from "@blend-ui/core";
+
+import { addDecorator, addParameters } from "@storybook/react";
+
+import { BrowserRouter as Router, MemoryRouter, } from 'react-router-dom';
+
+import {
+  mergeDeep
+} from "@prifina-apps/utils";
+import newTheme from "../src/theme";
+
+const mergedTheme = mergeDeep(theme, newTheme);
+
+//import { theme } from "@builder/lib";
+
+//import { BrowserRouter as Router,  MemoryRouter ,} from 'react-router-dom';
+// console.log("PREV ", theme);
+
+const themeProviderDecorator = (story) => (
+  <ThemeProvider mobileApp={false} theme={mergedTheme}>{story()}</ThemeProvider>
+);
+//<React.Fragment>{story()}</React.Fragment>
+addDecorator(themeProviderDecorator);
+
+export const parameters = {
+  /* 
+   chakra: {
+     theme: theme,
+   },
+   */
+
+  actions: { argTypesRegex: "^on[A-Z].*" },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/,
+    },
+  },
+};
+
+export const decorators = [
+  (Story) => (
+    <MemoryRouter initialEntries={["/"]}>
+      <Story />
+    </MemoryRouter>
+  ),
+];
+
+
+/*
+export const decorators = [
+  (Story) => (
+    <MemoryRouter initialEntries={["/home","/post/test","/visualisation/mfeApp2"]}>
+      <Story />
+    </MemoryRouter>
+  ),
+];
+*/
+
+
+
+import React from "react";
+//import { addDecorator } from '@storybook/react';
+import { INITIAL_VIEWPORTS } from "@storybook/addon-viewport";
+import { addDecorator, addParameters } from "@storybook/react";
+import { ThemeProvider } from "@blend-ui/core";
+
+//import { PrifinaProvider } from "@prifina/hooks";
+
+const themeProviderDecorator = (story) => (
+  <ThemeProvider mobileApp={false}>{story()}</ThemeProvider>
+);
+//<React.Fragment>{story()}</React.Fragment>
+addDecorator(themeProviderDecorator);
+/*
+<ThemeProvider mobileApp={false}>
+    <PrifinaProvider>{story()}</PrifinaProvider>
+  </ThemeProvider>
+const customViewports = {
+  iPhoneX: {
+    name: "iPhone X",
+    styles: {
+      width: "375px",
+      height: "812px",
+    },
+  },
+};
+*/
+export const parameters = {
+  actions: { argTypesRegex: "^on[A-Z].*" },
+  viewport: {
+    viewports: {
+      ...INITIAL_VIEWPORTS,
+      /* ...customViewports, */
+    },
+  },
+};

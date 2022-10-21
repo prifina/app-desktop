@@ -109,7 +109,7 @@ const WidgetBox = ({
             <Text className="title" textStyle={"h2"} fontWeight={"semiBold"}>
               {title}
             </Text>
-            <Text fontSize="xs" mt="8px" mt="15px">
+            <Text fontSize="xs" mt="8px">
               {shortDescription}
             </Text>
             {/*
@@ -145,7 +145,6 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   const [installedWidgets, setInstalledWidgets] = useState([]);
 
   const { colors } = useTheme();
-
 
   const s3path = `https://prifina-apps-${config.prifinaAccountId}-${config.main_region}.s3.amazonaws.com`;
 
