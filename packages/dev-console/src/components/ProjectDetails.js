@@ -12,7 +12,6 @@ import {
   Input,
   Radio,
   TextArea,
-  Select,
   useTheme,
 } from "@blend-ui/core";
 
@@ -619,65 +618,62 @@ const ProjectDetails = props => {
             style={{
               top: 65,
               position: "sticky",
+              outline: 2,
               boxShadow: `0px 15px 20px ${colors.basePrimary}`,
             }}
           >
             <C.CustomShape bg="brandAccent" />
-            <BlendIcon
-              style={{ cursor: "pointer" }}
-              color={colors.textPrimary}
-              iconify={mdiArrowLeft}
-              width="24px"
-              onClick={() => {
-                navigate(-1);
-              }}
-            />
-            <Input
-              width="200px"
-              name="name"
-              defaultValue={appData.name}
-              onChange={handleValueChange}
-            />
-            <Flex>
-              <Flex flexDirection="row" alignItems="center" mr="20px">
-                <Flex flexDirection="row" alignItems="center" mr="15px">
-                  <Radio
-                    fontSize="8px"
-                    onChange={() => {}}
-                    onClick={() => {
-                      setNewValues(existing => {
-                        return { ...existing, appType: 1 };
-                      });
-                    }}
-                    checked={newValues.appType === 1 ? "checked" : null}
-                  />
-                  <Text fontSize="xs">{i18n.__("application")}</Text>
-                </Flex>
-                <Flex flexDirection="row" alignItems="center">
-                  <Radio
-                    fontSize="10px"
-                    onChange={() => {}}
-                    onClick={() => {
-                      setNewValues(existing => {
-                        return { ...existing, appType: 2 };
-                      });
-                      //setNewValues({ ...newValues, appType: 2 });
-                    }}
-                    checked={newValues.appType === 2 ? "checked" : null}
-                  />
-                  <Text fontSize="xs">{i18n.__("widget")}</Text>
+            <Flex alignItems="center">
+              <BlendIcon
+                style={{ cursor: "pointer" }}
+                color={colors.textPrimary}
+                iconify={mdiArrowLeft}
+                width="24px"
+                onClick={() => {
+                  navigate(-1);
+                }}
+              />
+              <Input
+                style={{ marginLeft: 8 }}
+                width="200px"
+                name="name"
+                defaultValue={appData.name}
+                onChange={handleValueChange}
+              />
+              <Flex ml={16}>
+                <Flex flexDirection="row" alignItems="center" mr="20px">
+                  <Flex flexDirection="row" alignItems="center" mr="15px">
+                    <Radio
+                      fontSize="8px"
+                      onChange={() => {}}
+                      onClick={() => {
+                        setNewValues(existing => {
+                          return { ...existing, appType: 1 };
+                        });
+                      }}
+                      checked={newValues.appType === 1 ? "checked" : null}
+                    />
+                    <Text fontSize="xs">{i18n.__("application")}</Text>
+                  </Flex>
+                  <Flex flexDirection="row" alignItems="center">
+                    <Radio
+                      fontSize="10px"
+                      onChange={() => {}}
+                      onClick={() => {
+                        setNewValues(existing => {
+                          return { ...existing, appType: 2 };
+                        });
+                        //setNewValues({ ...newValues, appType: 2 });
+                      }}
+                      checked={newValues.appType === 2 ? "checked" : null}
+                    />
+                    <Text fontSize="xs">{i18n.__("widget")}</Text>
+                  </Flex>
                 </Flex>
               </Flex>
-
-              {detailsSaveStatus()}
             </Flex>
-            <Button
-              onClick={() => {
-                navigate("/sandbox", { state: { allValues: appData } });
-              }}
-            >
-              Launch Sandbox
-            </Button>
+
+            {detailsSaveStatus()}
           </C.ActionContainer>
           <C.ProjectContainer mb={24}>
             <Box
@@ -724,7 +720,14 @@ const ProjectDetails = props => {
                 </Text>
               </Box>
 
-              <Button variation="outline">Launch Sandbox</Button>
+              <Button
+                variation="outline"
+                onClick={() => {
+                  navigate("/sandbox", { state: { allValues: appData } });
+                }}
+              >
+                Launch Sandbox
+              </Button>
             </Flex>
           </C.ProjectContainer>
           <C.ProjectContainer mb={24}>
@@ -1087,45 +1090,63 @@ const ProjectDetails = props => {
                 <Text style={{ textTransform: "uppercase" }}>
                   4. Product description
                 </Text>
-                <Text mt={5} color={colors.textSecondary}>
+                <Text mt={5} mb={40} color={colors.textSecondary}>
                   Packaged version of your application, including manifest file.
                 </Text>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                      Short Description
-                    </Text>
-                    <TextArea
-                      expand
-                      height={83}
-                      width="451px"
-                      label="text"
-                      name="shortDescription"
-                      defaultValue={appData.shortDescription}
-                      onChange={handleValueChange}
-                    />
-                  </Box>
-                </Flex>
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  Short Description
+                </Text>
+                <Box mb={40}>
+                  <Flex alignItems="center">
+                    <Box>
+                      <TextArea
+                        placeholder="Heads up widget for showing you the weather in relevant locations to you."
+                        expand
+                        height={83}
+                        width="451px"
+                        label="text"
+                        name="shortDescription"
+                        defaultValue={appData.shortDescription}
+                        onChange={handleValueChange}
+                      />
+                    </Box>
+                    <Box>
+                      <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                        A concise description of your product.
+                      </Text>
+                      <Text fontSize="xs" ml={25} color={fontColor}>
+                        This will be used standalone on the widget directory
+                        page and along with the long description in your
+                        marketplace listing page.
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Text fontSize="xs" color={colors.textSecondary}>
+                    Max 50 words
+                  </Text>
+                </Box>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
                   Long Description
                 </Text>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <TextArea
-                      expand
-                      height={208}
-                      width="451px"
-                      label="text"
-                      name="longDescription"
-                      defaultValue={
-                        appData.longDescription !== null
-                          ? appData.longDescription
-                          : "hehe"
-                      }
-                      onChange={handleValueChange}
-                    />
-                  </Box>
-                </Flex>
+                <Box mb={40}>
+                  <Flex alignItems="flex-end">
+                    <Box>
+                      <TextArea
+                        placeholder="This simple widget gives you insight into the weather in different locations you choose. You can access it in your account from wherever you access the internet."
+                        expand
+                        height={208}
+                        width="451px"
+                        label="text"
+                        name="longDescription"
+                        defaultValue={appData.longDescription}
+                        onChange={handleValueChange}
+                      />
+                    </Box>
+                  </Flex>
+                  <Text fontSize="xs" color={colors.textSecondary}>
+                    Max 50 words
+                  </Text>
+                </Box>
                 <Flex alignItems="flex-end" mb={16}>
                   <Box>
                     <Text fontSize="sm" mb={5} color={colors.textSecondary}>
@@ -1420,8 +1441,8 @@ const ProjectDetails = props => {
               </div>
               <Box width="320px">
                 <Text fontSize="13px">
-                  Let us know how your application uses data by logging your
-                  sources (or lack of) here.
+                  Search for public data sources in our list or add them if they
+                  are not there yet.
                 </Text>
                 <Text mt="15px" fontSize="13px">
                   This information helps us provide quality support and helps
