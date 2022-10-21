@@ -42,7 +42,6 @@ import { useToast } from "@blend-ui/toast";
 
 //import { useRemoteComponent } from "../useRemoteComponent";
 
-
 import { Remote } from "@prifina-apps/remote";
 import styled, { keyframes } from "styled-components";
 import ReactJson from "react-json-view";
@@ -59,6 +58,8 @@ import ErrorStateScreen from "../components/ErrorStateScreen";
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import mdiArrowExpand from "@iconify/icons-mdi/arrow-expand";
+
+import UploadAsset from "../components/UploadAsset";
 
 const SandboxContext = createContext(null);
 
@@ -176,12 +177,12 @@ const TypeBadge = styled.span`
   color: ${props => (props.type === 2 ? "#FC62C1" : "#CB8E12")};
 `;
 
-
 //const Widget = forwardRef((props, ref) => {
 
 //const Content = ({ appSyncClient, url, prifinaID, ...props }) => {
 const Content = forwardRef((props, ref) => {
-  const { appSyncClient, url, prifinaID, updateDebug, appSettings, appID } = props;
+  const { appSyncClient, url, prifinaID, updateDebug, appSettings, appID } =
+    props;
   const {
     stage,
     check,
@@ -400,28 +401,29 @@ const Content = forwardRef((props, ref) => {
             position: "relative",
           }}
         >
-          <IconDiv widgetTheme={"light"} onClick={() => {
-            // test sending settings... 
+          <IconDiv
+            widgetTheme={"light"}
+            onClick={() => {
+              // test sending settings...
 
-            const settingsUpdate = {
-              "settings": {
-                "city": "Helsinki"
+              const settingsUpdate = {
+                settings: {
+                  city: "Helsinki",
+                },
+              };
+
+              const c = getCallbacks();
+              console.log("CALLBACKS ", c);
+              if (
+                c.hasOwnProperty(appID) &&
+                typeof c[appID][0] === "function"
+              ) {
+                console.log("FOUND CALLBACK ");
+
+                c[appID][0](settingsUpdate);
               }
-            };
-
-            const c = getCallbacks();
-            console.log("CALLBACKS ", c);
-            if (
-              c.hasOwnProperty(appID) &&
-              typeof c[appID][0] === "function"
-            ) {
-              console.log("FOUND CALLBACK ");
-
-              c[appID][0](settingsUpdate);
-
-            }
-
-          }} />
+            }}
+          />
           <div
             style={{
               position: "absolute",
@@ -430,11 +432,10 @@ const Content = forwardRef((props, ref) => {
               width: "100%",
               height: "100%",
             }}
-
           >
             <WidgetWrapper>
-
-              <Remote ref={ref}
+              <Remote
+                ref={ref}
                 componentProps={{ ...settingsInit }}
                 system={{
                   //remote: "x866fscSq5Ae7bPgUtb6ffB",
@@ -451,16 +452,19 @@ const Content = forwardRef((props, ref) => {
                   //https://github.com/tro9999/module-federation-examples/blob/master/dynamic-system-host/app2/dist/remoteEntry.js
 
                   module: "./App",
-                }} />
+                }}
+              />
             </WidgetWrapper>
           </div>
         </div>
       </>
     );
   } else {
-    return null
-    {/* return <RemoteContent url={url} ref={ref} {...settingsInit} />;
-  */}
+    return null;
+    {
+      /* return <RemoteContent url={url} ref={ref} {...settingsInit} />;
+       */
+    }
   }
 });
 
@@ -470,7 +474,6 @@ Content.propTypes = {
   url: PropTypes.string.isRequired,
   prifinaID: PropTypes.string.isRequired,
 };
-
 
 const Sandbox = props => {
   console.log("SANDBOX --->", props, props.hasOwnProperty("app"));
@@ -529,7 +532,6 @@ const Sandbox = props => {
   console.log("check remote link valid", remoteLink);
   console.log("check valid status", validStatus);
 
-
   useEffect(() => {
     async function init() {
       // const remoteAppUrl = localStorage.getItem("remoteWidget")
@@ -581,7 +583,6 @@ const Sandbox = props => {
       componentProps.current.url = remoteAppUrl;
       componentProps.current.widget = true;
       componentProps.current.appID = currentAppId;
-
 
       console.log("COMPONENT PROPS....", componentProps);
 
@@ -759,7 +760,7 @@ const Sandbox = props => {
                 height={"100%"}
               >
                 {currentAppRef.current.remoteUrl !== null ||
-                  currentAppRef.current.remoteUrl !== "" ? (
+                currentAppRef.current.remoteUrl !== "" ? (
                   <>
                     {ready && (
                       <Content
@@ -847,6 +848,9 @@ const Sandbox = props => {
                           <Text>Debugger</Text>
                         </Tab>
                         <Tab>
+                          <Text>Native assets</Text>
+                        </Tab>
+                        <Tab>
                           <Text>Support</Text>
                         </Tab>
                       </TabList>
@@ -903,7 +907,7 @@ const Sandbox = props => {
                                       </Text>
                                     )}
                                     {remoteLink !=
-                                      allValues.remoteUrl ? null : (
+                                    allValues.remoteUrl ? null : (
                                       <Text fontSize="xxs" color="red">
                                         This remote link already exists
                                       </Text>
@@ -921,8 +925,8 @@ const Sandbox = props => {
                                 <Button
                                   disabled={
                                     validUrl &&
-                                      remoteLink.length > 0 &&
-                                      remoteLink != allValues.remoteUrl
+                                    remoteLink.length > 0 &&
+                                    remoteLink != allValues.remoteUrl
                                       ? false
                                       : true
                                   }
@@ -962,7 +966,51 @@ const Sandbox = props => {
                             <ReactJson key={state.updated} src={asyncContent} />
                           </div>
                         </TabPanel>
+                        <TabPanel>
+                          <Box>
+                            <Text
+                              style={{ textTransform: "uppercase" }}
+                              mb={15}
+                            >
+                              Native assets
+                            </Text>
+                            <Box width="650px">
+                              <Text color={colors.textSecondary} mb={30}>
+                                If your application requires any addtional
+                                assets to keep it lightweight consider using
+                                native assets rather than having them in the
+                                build deployment package.
+                              </Text>
+                            </Box>
+                            <Flex alignItems="center">
+                              <UploadAsset
+                                variant="native"
+                                id={allValues.id}
+                                onFinish={() => {}}
+                              />
 
+                              <Box width="340px">
+                                <Text
+                                  fontSize="xs"
+                                  ml={25}
+                                  color={colors.textSecondary}
+                                >
+                                  Upload native assets for use in your project.
+                                  Test them out in sandbox mode before packaging
+                                  up in you application package.
+                                </Text>
+                                <Text
+                                  fontSize="xs"
+                                  ml={25}
+                                  color={colors.textSecondary}
+                                >
+                                  For more information on using native assets
+                                  visit our documentation
+                                </Text>
+                              </Box>
+                            </Flex>
+                          </Box>
+                        </TabPanel>
                       </TabPanelList>
                     </Tabs>
                   </div>

@@ -21,6 +21,9 @@ import styled from "styled-components";
 
 import { i18n } from "@prifina-apps/utils";
 
+import UploadAsset from "./UploadAsset";
+import placeholderImage from "../assets/placeholder-image.svg";
+
 const SidebarContainer = styled(Flex)`
   width: 270px;
   height: 100%;
@@ -203,9 +206,9 @@ export const DevConsoleSidebar = ({
               style={
                 disabled
                   ? {
-                    pointerEvents: "none",
-                    opacity: 0.5,
-                  }
+                      pointerEvents: "none",
+                      opacity: 0.5,
+                    }
                   : null
               }
               pointerBackground={pointerBackground}
@@ -256,7 +259,7 @@ export const NavbarContainer = styled(Flex)`
   height: 65px;
   width: 100%;
   padding-left: 64px;
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 1;
 `;
@@ -376,14 +379,12 @@ export const ActionContainer = styled(Flex)`
 
 export const ProjectContainer = styled(Box)`
   width: 1008px;
-  min-height: 491px;
+  // min-height: 491px;
 
   border-radius: 15px;
   background: ${props => props.theme.colors.baseMuted};
-  padding-right: 40px;
-  padding-left: 40px;
-  padding-top: 24px;
-  padding-bottom: 24px;
+
+  padding: 24px 40px 24px 40px;
 `;
 
 export const CustomShape = styled(Box)`
@@ -414,4 +415,130 @@ export const OutlineButton = styled(Button)`
 
     background-color: transparent;
   }
+`;
+
+const ImageZoomContainer = styled(Image)`
+  transition: transform 0.2s;
+
+  height: 114px;
+  width: 151px;
+  &:hover {
+    transform: scale(1.5, 1.5);
+  }
+  cursor: pointer;
+`;
+
+export const ImageZoom = ({ src }) => {
+  console.log("ZOOM IMAGE ", src);
+  return (
+    <ImageZoomContainer
+      src={src}
+      height="150px"
+      onError={e => (e.target.style.display = "none")}
+      onClick={() => {
+        window.open(src);
+      }}
+    />
+  );
+};
+
+ImageZoom.propTypes = {
+  src: PropTypes.string,
+};
+
+export const AssetContainer = ({
+  state,
+  src,
+  id,
+  type,
+  numId,
+  onFinish,
+  colors,
+}) => {
+  return (
+    <>
+      <Flex
+        mb={5}
+        style={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "24px 0px 24px 0px",
+          // width: "700px",
+        }}
+      >
+        <Flex style={{ alignItems: "center" }}>
+          <Box width="185px">
+            {state ? (
+              <ImageZoom
+                src={src}
+                onError={e => (e.target.style.display = "none")}
+              />
+            ) : (
+              <Image width="151px" src={placeholderImage} />
+            )}
+          </Box>
+
+          <Box ml={16} mr={16}>
+            <Text
+              fontSize="sm"
+              mb={5}
+              style={{ textTransform: "uppercase" }}
+              color={colors.textSecondary}
+            >
+              Product Image {numId}
+            </Text>
+            <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+              Add images which represent key elements of your product
+              experience.
+            </Text>
+            <Text fontSize="sm" mb={5}>
+              Images should be .jpg or .PNG and high enough resolution to
+              display @ 284x213px on retina displays.
+            </Text>
+          </Box>
+        </Flex>
+        <UploadAsset
+          id={id}
+          type={type}
+          numId={numId}
+          onFinish={onFinish}
+          state={state}
+          // passAssetInfo={passAssetInfo}
+        />
+      </Flex>
+    </>
+  );
+};
+
+AssetContainer.propTypes = {
+  src: PropTypes.string,
+};
+
+export const CustomSelect = styled.select`
+  border-radius: 8px;
+  border: 1px solid: #6B6669;
+  color: #F5F8F7DE;
+  padding: 5px;
+  font-size: 12px;
+  background: transparent;
+  height: 32px;
+  width: 450px;
+  outline: none;
+  cursor:pointer;
+
+`;
+
+export const FieldContainer = styled(Flex)`
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 40px;
+`;
+
+export const InnerContainer = styled(Box)`
+  width: 100%;
+  border: 1px solid #393838;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 `;
