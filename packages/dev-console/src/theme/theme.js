@@ -4,11 +4,15 @@ const basePrimary = "#1E1D1D";
 const baseSecondary = "#AA076B";
 const baseTertiary = "#272727";
 
+const textSecondary = "#ADA9AB";
+
 const brandAccent = "#E33FA4";
 
 const baseWhite = "#F5F8F7DE";
 const baseHover = "#c91684";
 const baseMuted = "#292828";
+
+const borderPrimary = "#393838";
 
 const baseBright = "#4B4B4B";
 
@@ -26,6 +30,7 @@ const sandboxGradient =
 const colors = {
   textPrimary: baseWhite,
   textMuted: textMuted,
+  textSecondary: textSecondary,
   brandAccent,
   brandAccentGradient: gradientPurple,
   basePrimary,
@@ -99,7 +104,7 @@ const componentStyles = {
     },
     outline: {
       backgroundColor: "transparent",
-      color: "#F5F8F7",
+      color: brandAccent,
       border: "0.0625rem solid #c91684",
     },
     link: {
