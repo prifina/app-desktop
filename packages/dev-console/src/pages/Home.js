@@ -6,10 +6,10 @@ import {
   createSearchParams,
   useNavigate,
   useSearchParams,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 
-import { Box, Flex, Text, Button, Image, useTheme, } from "@blend-ui/core";
+import { Box, Flex, Text, Button, Image, useTheme } from "@blend-ui/core";
 
 import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
@@ -63,8 +63,6 @@ import Resources from "../components/Resources";
 
 import { CssGrid as Grid, CssCell as Cell } from "@blend-ui/css-grid";
 
-
-
 const resourceCardItems = [
   {
     src: docs,
@@ -88,7 +86,6 @@ const resourceCardItems = [
   },
 ];
 
-
 const versionStatus = [
   "init",
   "received",
@@ -97,7 +94,6 @@ const versionStatus = [
   "review-stage-3",
   "published",
 ];
-
 
 const Content = ({
   Component,
@@ -359,19 +355,18 @@ const Main2 = ({ data, currentUser }) => {
 
   return (
     <React.Fragment>
-      <DevConsoleSidebar items={menuItems} />
-      <C.NavbarContainer bg="basePrimary">
+      {/* <DevConsoleSidebar items={menuItems} /> */}
+      {/* <C.NavbarContainer bg="basePrimary">
         <DevConsoleLogo className="appStudio" />
-      </C.NavbarContainer>
+      </C.NavbarContainer> */}
       <C.ContentContainer>
-
         {step === 2 && (
           <>
             {projectDialogOpen && (
               <CreateProjectModal
                 onClose={onDialogClose}
                 onButtonClick={onDialogClick}
-              // isOpen={projectDialogOpen}
+                // isOpen={projectDialogOpen}
               />
             )}
 
@@ -477,7 +472,6 @@ const Main2 = ({ data, currentUser }) => {
             />
           </>
         )}
-
       </C.ContentContainer>
     </React.Fragment>
   );
@@ -490,9 +484,7 @@ Main2.propTypes = {
   row: PropTypes.instanceOf(Array),
 };
 
-
 const Main = ({ data, currentUser }) => {
-
   const navigate = useNavigate();
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
 
@@ -502,12 +494,10 @@ const Main = ({ data, currentUser }) => {
   const [updatedData, setUpdatedData] = useState(data);
 
   const openProject = props => {
-
     console.log("APP SELECTED ", props);
     navigate("/project/" + props.row.values.id);
 
     //setSearchParams(createSearchParams({ appID: props.row.values.id }));
-
   };
 
   const Columns = [
@@ -660,14 +650,13 @@ const Main = ({ data, currentUser }) => {
         </Box>
       </Box>
     </>
-  )
-}
+  );
+};
 
 Main.propTypes = {
   data: PropTypes.instanceOf(Array),
-  currentUser: PropTypes.instanceOf(Object)
+  currentUser: PropTypes.instanceOf(Object),
 };
-
 
 const Header = ({
   initials,
@@ -704,11 +693,13 @@ const Header = ({
 
   updateNotificationHandler(userMenu.onUpdate);
 
-  return <>
-    <C.NavbarContainer bg="basePrimary">
-      <DevConsoleLogo className="appStudio" />
-    </C.NavbarContainer>
-  </>
+  return (
+    <>
+      <C.NavbarContainer bg="basePrimary">
+        <DevConsoleLogo className="appStudio" />
+      </C.NavbarContainer>
+    </>
+  );
 };
 Header.propTypes = {
   initials: PropTypes.string,
@@ -716,7 +707,7 @@ Header.propTypes = {
   updateNotificationHandler: PropTypes.func,
   appSyncClient: PropTypes.instanceOf(Object),
   activeUser: PropTypes.instanceOf(Object),
-  currentUser: PropTypes.instanceOf(Object)
+  currentUser: PropTypes.instanceOf(Object),
 };
 
 const Home = props => {
@@ -730,7 +721,6 @@ const Home = props => {
   } = useAppContext();
 
   console.log("HOME ", currentUser);
-
 
   const { colors } = useTheme();
   console.log("HOME THEME COLORS ", colors);
@@ -756,12 +746,12 @@ const Home = props => {
     appProps.current = { appID: selectedAppID };
     AppComponent = ProjectDetails;
   } else {
-    appProps.current = { data: componentProps.current.data, currentUser: componentProps.current.currentUser }
-    AppComponent = Main
+    appProps.current = {
+      data: componentProps.current.data,
+      currentUser: componentProps.current.currentUser,
+    };
+    AppComponent = Main;
   }
-
-
-
 
   const updateNotification = useCallback(handler => {
     //notificationHandler.current = handler;
@@ -884,12 +874,14 @@ const Home = props => {
               bg="basePrimary"
               columns={"280px 1fr"}
               rows={"45px 1fr"}
-              areas={[
-                "header header",
-                "menu content"
-              ]}>
-              <Cell area="header"><Header {...componentProps.current} /></Cell>
-              <Cell area="content" ><AppComponent {...appProps.current} /></Cell>
+              areas={["header header", "menu content"]}
+            >
+              <Cell area="header">
+                <Header {...componentProps.current} />
+              </Cell>
+              <Cell area="content">
+                <AppComponent {...appProps.current} />
+              </Cell>
               <Cell area="menu">
                 <DevConsoleSidebar items={menuItems} />
               </Cell>

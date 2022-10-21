@@ -16,14 +16,24 @@ import { CopyObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 
 const StyledButton = styled(Button)`
+  border: 1px solid;
+
   &:hover {
     color: ${props => props.theme.colors.baseHover}!important;
     background-color: transparent !important;
-    border: 0 !important;
+    // border: 0 !important;
   }
 `;
 
-const UploadAsset = ({ id, type, numId, variant, onFinish, ...props }) => {
+const UploadAsset = ({
+  id,
+  type,
+  numId,
+  variant,
+  onFinish,
+  state,
+  ...props
+}) => {
   const { s3UploadClient } = useAppContext();
 
   const [uploaded, setUploaded] = useState("");
@@ -93,7 +103,11 @@ const UploadAsset = ({ id, type, numId, variant, onFinish, ...props }) => {
         parallelUploads3.on("httpUploadProgress", progress => {
           console.log(progress);
           //setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
-          setUploaded(`Progress: ${Math.floor(progress.loaded / progress.total * 100)}%`);
+          setUploaded(
+            `Progress: ${Math.floor(
+              (progress.loaded / progress.total) * 100,
+            )}%`,
+          );
         });
 
         const uploadResult = await parallelUploads3.done();
@@ -131,15 +145,17 @@ const UploadAsset = ({ id, type, numId, variant, onFinish, ...props }) => {
           progressCallback(progress) {
             //console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
             //setUploaded(`Progress: ${progress.loaded}/${progress.total}`);
-            setUploaded(`Progress: ${Math.floor(progress.loaded / progress.total * 100)}%`);
+            setUploaded(
+              `Progress: ${Math.floor(
+                (progress.loaded / progress.total) * 100,
+              )}%`,
+            );
           },
           customPrefix: {
             //public: "uploads/",
             // private: "apps/",
           },
         });
-
-
 
         console.log("success ");
         toast.success(`Asset uploaded - Progress: ${uploaded}`, {});
@@ -164,7 +180,7 @@ const UploadAsset = ({ id, type, numId, variant, onFinish, ...props }) => {
         </StyledButton>
       ) : (
         <StyledButton accept={".png"} onChange={uploadFile} variation={"file"}>
-          Upload file
+          {state ? "Replace file" : "Upload file"}
         </StyledButton>
       )}
 
@@ -186,7 +202,7 @@ UploadAsset.propTypes = {
   type: PropTypes.string,
   numId: PropTypes.string,
   variant: PropTypes.string,
-  onFinish: PropTypes.func
+  onFinish: PropTypes.func,
 };
 
 UploadAsset.displayName = "UploadAsset";

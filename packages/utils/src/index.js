@@ -9,6 +9,7 @@ export * from "./lib/componentUtils";
 export * from "./lib/contextLib";
 export * from "./lib/utils";
 export * from "./lib/helperFunctions";
+export * from "./lib/categorization";
 export {
   default as UserMenuContextProvider,
   useUserMenu,
