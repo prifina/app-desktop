@@ -23,13 +23,13 @@ module.exports = {
 module.exports = {
   name: "host",
   shared: {
-    react:{singleton: true,requiredVersion: deps.react},
-    "react-dom":{singleton: true,requiredVersion: deps["react-dom"]},
-    '@prifina/hooks-v2': {
-      import: '@prifina/hooks-v2'
-    }  
-    //react:{requiredVersion: deps.react},
-    //"react-dom":{requiredVersion: deps["react-dom"]}
+    react: { singleton: true, requiredVersion: deps.react },
+    "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
+    "@prifina/hooks-v2": {
+      import: "@prifina/hooks-v2",
+    },
+    // react:{requiredVersion: deps.react},
+    // "react-dom":{requiredVersion: deps["react-dom"]}
     /*
     react: {
       singleton: true,
