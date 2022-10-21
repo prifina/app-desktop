@@ -327,6 +327,7 @@ const ProjectDetails = props => {
     languages,
     age,
     newKeyFeatures,
+    title,
     shortDescription,
     longDescription,
     newUserHeld,
@@ -348,6 +349,7 @@ const ProjectDetails = props => {
       languages: languages,
       age: age,
       keyFeatures: newKeyFeatures,
+      title: title,
       shortDescription: shortDescription,
       longDescription: longDescription,
       userHeld: newUserHeld,
@@ -414,6 +416,7 @@ const ProjectDetails = props => {
                 newValues.languages,
                 newValues.age,
                 newKeyFeatures,
+                newValues.title,
                 newValues.shortDescription,
                 newValues.longDescription,
                 newUserHeld,
@@ -734,7 +737,7 @@ const ProjectDetails = props => {
             <Box
               style={{
                 padding: "4px 224px 16px 24px",
-                marginBottom: 16,
+                marginBottom: 40,
               }}
             >
               <Text
@@ -762,14 +765,14 @@ const ProjectDetails = props => {
                 <Text style={{ textTransform: "uppercase" }}>
                   1.Build deployment
                 </Text>
-                <Text mt={5} mb={16} color={colors.textSecondary}>
+                <Text mt={5} mb={32} color={colors.textSecondary}>
                   Upload a packaged version of your application.
                 </Text>
                 <Box mb={16}>
-                  <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  <Text fontSize="sm" color={colors.textSecondary}>
                     Version number
                   </Text>
-                  <Flex alignItems="baseline">
+                  <Flex alignItems="center">
                     <Input
                       onFocus={handleFocusColor}
                       onBlur={handleBlurColor}
@@ -784,57 +787,60 @@ const ProjectDetails = props => {
                         width: 451,
                       }}
                     />
-                    <Text fontSize="xs" ml={25} color={fontColor}>
-                      This version number is for your internal use so can follow
-                      whatever logic you choose.
-                    </Text>
+                    <Box>
+                      <Text fontSize="xs" ml={25} color={fontColor}>
+                        This version number is for your internal use.
+                      </Text>
+                      <Text fontSize="xs" ml={25} color={fontColor}>
+                        Formatting must follow semantic versioning format
+                      </Text>
+                    </Box>
                   </Flex>
                 </Box>
-                <Flex mb={16} alignItems="baseline">
+                <Text fontSize="sm" color={colors.textSecondary}>
+                  App ID
+                </Text>
+                <Flex mb={53} alignItems="center">
+                  <Input
+                    onFocus={handleFocusColor}
+                    onBlur={handleBlurColor}
+                    disabled
+                    width="451px"
+                    label="text"
+                    value={appData.id}
+                    color={colors.textSecondary}
+                    style={{ background: "transparent" }}
+                  />
                   <Box>
-                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                      App ID
-                    </Text>
-                    <Input
-                      onFocus={handleFocusColor}
-                      onBlur={handleBlurColor}
-                      disabled
-                      width="451px"
-                      label="text"
-                      value={appData.id}
-                      color={colors.textSecondary}
-                      style={{ background: "transparent" }}
-                    />
-                  </Box>
-                  <Box>
-                    <Text fontSize="xs" ml={25} color={fontColor} mb={10}>
-                      This version number is for your internal use so can follow
-                      whatever logic you choose.
+                    <Text fontSize="xs" ml={25} color={fontColor} mb={8}>
+                      Unique project identifier. Add this to your build
+                      deployment package.
                     </Text>
                     <Text fontSize="xs" ml={25} color={fontColor}>
                       Visit our docs for more information
                     </Text>
                   </Box>
                 </Flex>
-
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  Build deployment package
+                </Text>
                 <Flex alignItems="center" justifyContent="center" mb={16}>
                   <Box ml="5px">
-                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                      Build deployment package
-                    </Text>
-
                     <UploadFile widgetId={appID} />
                   </Box>
                   <Box ml={25}>
-                    <Text fontSize="xs" color={colors.textMuted}>
+                    <Text fontSize="xs" color={colors.textMuted} mb={10}>
                       The build deployment package is a package version of your
                       local build. It must include:
                     </Text>
                     <Text fontSize="xs" color={colors.textMuted}>
-                      1. Your Prifina App ID
+                      Your Prifina App ID (as the filename)
+                    </Text>
+                    <Text fontSize="xs" color={colors.textMuted} mb={10}>
+                      Your Prifina App ID (in the codebase)
                     </Text>
                     <Text fontSize="xs" color={colors.textMuted}>
-                      2. Come in a .zip with a maximum file size of 5MB
+                      Visit our docs for more information
                     </Text>
                   </Box>
                 </Flex>
@@ -870,10 +876,11 @@ const ProjectDetails = props => {
             <C.InnerContainer>
               <Box>
                 <Text style={{ textTransform: "uppercase" }}>
-                  1.Publisher Details
+                  1. Publisher Details
                 </Text>
-                <Text mt={5} mb={15} color={colors.textSecondary}>
-                  Packaged version of your application, including manifest file.
+                <Text mt={5} mb={32} color={colors.textSecondary}>
+                  The name users will see associated with all your applications
+                  in the App Marketplace.
                 </Text>
                 <Flex alignItems="flex-end" mb={16}>
                   <Box>
@@ -998,9 +1005,9 @@ const ProjectDetails = props => {
             </C.InnerContainer>
             <C.InnerContainer>
               <Box>
-                <Box mb={30}>
+                <Box mb={40}>
                   <Text mb={10} style={{ textTransform: "uppercase" }}>
-                    3.Application data
+                    3. Application data
                   </Text>
                   <Text mb={15} color={colors.textSecondary}>
                     Tell your users what specific data your application requires
@@ -1091,9 +1098,40 @@ const ProjectDetails = props => {
                   4. Product description
                 </Text>
                 <Text mt={5} mb={40} color={colors.textSecondary}>
-                  Packaged version of your application, including manifest file.
+                  Add descriptions of your product and list it’s features. This
+                  information will be shown under the ‘details’ tab of your
+                  product page.
                 </Text>
-                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                <Box mb={40}>
+                  <Text fontSize="sm" color={colors.textSecondary}>
+                    Application name
+                  </Text>
+                  <Flex alignItems="center">
+                    <Input
+                      onFocus={handleFocusColor}
+                      onBlur={handleBlurColor}
+                      label="text"
+                      name="title"
+                      defaultValue={appData.title || "undefined"}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        width: 470,
+                      }}
+                    />
+                    <Box>
+                      <Text fontSize="xs" ml={25} color={fontColor}>
+                        The name users will see on the App Marketplace.
+                      </Text>
+                      <Text fontSize="xs" ml={25} color={fontColor}>
+                        The application name is also your project name in the
+                        App Studio
+                      </Text>
+                    </Box>
+                  </Flex>
+                </Box>
+                <Text fontSize="sm" color={colors.textSecondary}>
                   Short Description
                 </Text>
                 <Box mb={40}>
@@ -1103,14 +1141,14 @@ const ProjectDetails = props => {
                         placeholder="Heads up widget for showing you the weather in relevant locations to you."
                         expand
                         height={83}
-                        width="451px"
+                        width="470px"
                         label="text"
                         name="shortDescription"
                         defaultValue={appData.shortDescription}
                         onChange={handleValueChange}
                       />
                     </Box>
-                    <Box>
+                    <Box width="340px">
                       <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
                         A concise description of your product.
                       </Text>
@@ -1129,46 +1167,67 @@ const ProjectDetails = props => {
                   Long Description
                 </Text>
                 <Box mb={40}>
-                  <Flex alignItems="flex-end">
-                    <Box>
-                      <TextArea
-                        placeholder="This simple widget gives you insight into the weather in different locations you choose. You can access it in your account from wherever you access the internet."
-                        expand
-                        height={208}
-                        width="451px"
-                        label="text"
-                        name="longDescription"
-                        defaultValue={appData.longDescription}
-                        onChange={handleValueChange}
-                      />
+                  <Flex alignItems="center">
+                    <TextArea
+                      placeholder="This simple widget gives you insight into the weather in different locations you choose. You can access it in your account from wherever you access the internet."
+                      expand
+                      height={208}
+                      width="470px"
+                      label="text"
+                      name="longDescription"
+                      defaultValue={appData.longDescription}
+                      onChange={handleValueChange}
+                    />
+
+                    <Box width="340px">
+                      <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                        Go into more detail about your product and the value it
+                        offers users.
+                      </Text>
+                      <Text fontSize="xs" ml={25} color={fontColor}>
+                        This will be used along with the short description on
+                        your product’s listing page. You can treat the short
+                        description as an introduction and the long as more
+                        details.
+                      </Text>
                     </Box>
                   </Flex>
-                  <Text fontSize="xs" color={colors.textSecondary}>
+                  <Text fontSize="xs" mt={6} color={colors.textSecondary}>
                     Max 50 words
                   </Text>
                 </Box>
-                <Flex alignItems="flex-end" mb={16}>
-                  <Box>
-                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                      Key Features
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  Features list
+                </Text>
+                <Flex alignItems="center" mb={32}>
+                  <TagInput
+                    tags={newKeyFeatures}
+                    setTags={setNewKeyFeatures}
+                    style={{
+                      backgroundColor: colors.baseTertiary,
+                      height: 110,
+                      width: 470,
+                    }}
+                  />
+                  <Box width="340px">
+                    <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                      Type to add features, these will be translated into a
+                      simple nubered list.
                     </Text>
-                    <TagInput
-                      tags={newKeyFeatures}
-                      setTags={setNewKeyFeatures}
-                      style={{
-                        background: colors.baseTertiary,
-                      }}
-                    />
+                    <Text fontSize="xs" ml={25} color={fontColor}>
+                      The order you enter features in here will be the order
+                      reflected in your product’s listing page.
+                    </Text>
                   </Box>
                 </Flex>
               </Box>
             </C.InnerContainer>
             <C.InnerContainer>
               <Box>
-                <Text style={{ textTransform: "uppercase" }}>
+                <Text style={{ textTransform: "uppercase" }} mb={5}>
                   5. Marketing assets
                 </Text>
-                <Text mt={5} color={colors.textSecondary}>
+                <Text mb={40} color={colors.textSecondary}>
                   Add your App icon and screenshots for your marketplace
                   listing.
                 </Text>
@@ -1178,20 +1237,21 @@ const ProjectDetails = props => {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "24px 8px 24px 8px",
-                    width: "700px",
                   }}
                 >
                   <Flex style={{ alignItems: "center" }}>
                     {state.icon ? (
-                      <Image
-                        width="30px"
-                        src={imageUrls[0]}
-                        onError={e => (e.target.style.display = "none")}
-                      />
+                      <Box width="92px">
+                        <Image
+                          width="56px"
+                          src={imageUrls[0]}
+                          onError={e => (e.target.style.display = "none")}
+                        />
+                      </Box>
                     ) : (
-                      <Image src={placeholderImage} />
+                      <Image width="92px" src={placeholderImage} />
                     )}
-                    <Box ml={16}>
+                    <Box ml={16} mr={16}>
                       <Text
                         fontSize="sm"
                         mb={5}
@@ -1218,7 +1278,7 @@ const ProjectDetails = props => {
                     // passAssetInfo={passAssetInfo}
                   />
                 </Flex>
-                <Divider as={"div"} color="#393838" />
+                <Divider as={"div"} color="#393838" mb={56} />
                 <Box>
                   <Text style={{ textTransform: "uppercase" }}>
                     Product Images
