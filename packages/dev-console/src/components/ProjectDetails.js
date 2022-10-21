@@ -12,10 +12,12 @@ import {
   Input,
   Radio,
   TextArea,
+  Select,
   useTheme,
 } from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
+import { IconField } from "@blend-ui/icon-field";
 
 import { TagInput } from "@blend-ui/tag-input";
 
@@ -26,7 +28,8 @@ import {
   i18n,
   getAppVersionQuery,
   useAppContext,
-  //checkUrl
+  appCategory,
+  ageAppropriate,
 } from "@prifina-apps/utils";
 
 import { API as GRAPHQL, Storage } from "aws-amplify";
@@ -46,8 +49,12 @@ import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import hazardSymbol from "@iconify/icons-mdi/warning";
 import successTick from "@iconify/icons-mdi/tick-circle";
 
+import mdiLockOutline from "@iconify/icons-mdi/lock-outline";
+
 import UploadAsset from "./UploadAsset";
 import UploadFile from "./UploadFile";
+
+import placeholderImage from "../assets/placeholder-image.svg";
 
 import {
   AddRemoveDataSources,
@@ -56,35 +63,6 @@ import {
   ApiForm,
 } from "./helper";
 
-const ImageZoomContainer = styled(Image)`
-  transition: transform 0.2s;
-
-  height: 142px;
-  &:hover {
-    transform: scale(1.5, 1.5);
-  }
-  cursor: pointer;
-`;
-
-const ImageZoom = ({ src }) => {
-  console.log("ZOOM IMAGE ", src)
-  return (
-    <ImageZoomContainer
-      src={src}
-      height="150px"
-      onError={e => (e.target.style.display = "none")}
-      onClick={() => {
-        window.open(src);
-      }}
-    />
-  );
-};
-
-ImageZoom.propTypes = {
-  src: PropTypes.string,
-};
-
-
 const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
 
 Storage.configure({
@@ -92,9 +70,7 @@ Storage.configure({
   region: userRegion,
 });
 
-
-const getImage = (s3Key) => {
-
+const getImage = s3Key => {
   console.log("GET IMAGE URL ", s3Key);
   return new Promise(function (resolve, reject) {
     Storage.get(s3Key, { level: "public", download: false })
@@ -116,15 +92,13 @@ const getImage = (s3Key) => {
   });
 };
 
-const listAssets = (s3Key) => {
+const listAssets = s3Key => {
   console.log("S3 ", s3Key);
 
-  return Storage.list(s3Key, { level: "public", });
+  return Storage.list(s3Key, { level: "public" });
+};
 
-}
-
-const ProjectDetails = (props) => {
-
+const ProjectDetails = props => {
   console.log("DETAILS ", props);
   const { colors } = useTheme();
   //console.log("THEME COLORS  ", colors);
@@ -165,16 +139,16 @@ const ProjectDetails = (props) => {
 
   // can't use object/array for controlling state change reloading...
   // this method allows to "pack" those state variables into one state
-  // replace this later with zustand... 
+  // replace this later with zustand...
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
-
       icon: false,
       screenShot1: false,
       screenShot2: false,
-      screenShot3: false
-    });
+      screenShot3: false,
+    },
+  );
 
   const [imageUrls, setImageUrl] = useState(new Array(4).fill(""));
 
@@ -206,7 +180,7 @@ const ProjectDetails = (props) => {
 
       // note currentApp.version should not be updated.... nextVersion instead.
 
-      // noSQL doesn't have all attributes, which are in schema object, if those attributes doesn't have values... 
+      // noSQL doesn't have all attributes, which are in schema object, if those attributes doesn't have values...
       if (!currentApp?.icon) {
         currentApp.icon = "";
       }
@@ -231,20 +205,29 @@ const ProjectDetails = (props) => {
       );
       setNewPublic(currentApp.public === null ? [] : currentApp.public);
 
-      if (currentApp?.dataSources && currentApp.dataSources != null && currentApp.dataSources.length > 0) {
-        console.log("DATASOURCES FOUND ", currentApp.dataSources, typeof currentApp.dataSources);
+      if (
+        currentApp?.dataSources &&
+        currentApp.dataSources != null &&
+        currentApp.dataSources.length > 0
+      ) {
+        console.log(
+          "DATASOURCES FOUND ",
+          currentApp.dataSources,
+          typeof currentApp.dataSources,
+        );
         setNewDataSources(JSON.parse(currentApp.dataSources));
       }
-
 
       const assetList = await listAssets(appID + "/assets/");
       //      console.log("PROCESS THIS ", assetList);
       if (assetList.length > 0) {
         const statuses = new Array(4).fill(false);
-        const checkList = ["icon-1.png",
+        const checkList = [
+          "icon-1.png",
           "screenshot-1.png",
           "screenshot-2.png",
-          "screenshot-3.png"];
+          "screenshot-3.png",
+        ];
         let images = [];
         assetList.forEach(asset => {
           const assetKey = asset.key.split("/").pop();
@@ -253,7 +236,7 @@ const ProjectDetails = (props) => {
             statuses[idx] = true;
             images.push(getImage(appID + "/assets/" + assetKey));
           }
-        })
+        });
 
         await Promise.all(images).then(res => {
           //console.log("URLS ", res);
@@ -265,11 +248,16 @@ const ProjectDetails = (props) => {
               }
             });
           });
-          console.log("ASSETS STATUS ", urls, statuses, assetList)
+          console.log("ASSETS STATUS ", urls, statuses, assetList);
 
-          setState({ icon: statuses[0], screenShot1: statuses[1], screenShot2: statuses[2], screenShot3: statuses[3] })
+          setState({
+            icon: statuses[0],
+            screenShot1: statuses[1],
+            screenShot2: statuses[2],
+            screenShot3: statuses[3],
+          });
           setImageUrl(urls);
-        })
+        });
         /*
         await Promise.all(images).then(urls=>{
   
@@ -291,10 +279,8 @@ const ProjectDetails = (props) => {
            setImageUrl(urls);
  */
         // console.log("STATUSES ", statuses, assetList);
-
       }
       setIsLoading(false);
-
     }
     fetchData();
   }, []);
@@ -585,13 +571,18 @@ const ProjectDetails = (props) => {
   };
 
   const updateAssetStatus = (status, idx) => {
-    // 
+    //
     const keys = Object.keys(state);
     //console.log(keys, keys[idx]);
     //{status:false,url:""},
     //{`${assetsS3Path}/icon-1.png`}
     console.log("ASSET UPLOAD ", idx);
-    const images = ['icon-1.png', 'screenshot-1.png', 'screenshot-2.png', 'screenshot-3.png'];
+    const images = [
+      "icon-1.png",
+      "screenshot-1.png",
+      "screenshot-2.png",
+      "screenshot-3.png",
+    ];
     getImage(appID + "/assets/" + images[idx]).then(url => {
       //console.log("UPDATE ASSET ", url);
       let urls = imageUrls;
@@ -601,22 +592,22 @@ const ProjectDetails = (props) => {
       let name = "icon";
       let asset = "icon-1.png";
       if (idx != 0) {
-        name = 'screenshots';
+        name = "screenshots";
         const currentScreenShots = newValues.screenshots;
         currentScreenShots[idx - 1] = images[idx];
         asset = currentScreenShots;
       }
-      console.log("UPDATE VALUES ", name, asset)
+      console.log("UPDATE VALUES ", name, asset);
       setNewValues(existing => {
         return {
           ...existing,
           [name]: asset,
         };
       });
-    })
+    });
+  };
 
-
-  }
+  console.log("app", appCategory);
 
   return (
     <>
@@ -648,14 +639,15 @@ const ProjectDetails = (props) => {
               onChange={handleValueChange}
             />
             <Flex>
-
               <Flex flexDirection="row" alignItems="center" mr="20px">
                 <Flex flexDirection="row" alignItems="center" mr="15px">
                   <Radio
                     fontSize="8px"
-                    onChange={() => { }}
+                    onChange={() => {}}
                     onClick={() => {
-                      setNewValues((existing) => { return { ...existing, appType: 1 } });
+                      setNewValues(existing => {
+                        return { ...existing, appType: 1 };
+                      });
                     }}
                     checked={newValues.appType === 1 ? "checked" : null}
                   />
@@ -664,10 +656,11 @@ const ProjectDetails = (props) => {
                 <Flex flexDirection="row" alignItems="center">
                   <Radio
                     fontSize="10px"
-                    onChange={() => { }}
-
+                    onChange={() => {}}
                     onClick={() => {
-                      setNewValues((existing) => { return { ...existing, appType: 2 } });
+                      setNewValues(existing => {
+                        return { ...existing, appType: 2 };
+                      });
                       //setNewValues({ ...newValues, appType: 2 });
                     }}
                     checked={newValues.appType === 2 ? "checked" : null}
@@ -687,86 +680,35 @@ const ProjectDetails = (props) => {
             </Button>
           </C.ActionContainer>
           <C.ProjectContainer mb={24}>
-            <Flex justifyContent="space-between" alignItems="center">
-              <Text style={{ textTransform: "uppercase" }}>
-                Project resources
+            <Box
+              style={{
+                padding: "4px 224px 16px 24px",
+                marginBottom: 16,
+              }}
+            >
+              <Text style={{ textTransform: "uppercase" }} mb={8}>
+                Remote Link Testing
               </Text>
-            </Flex>
-            <Box width="584px">
-              <Text fontSize="xs">
-                Add your .Zip build deployment package and information regarding
-                your apps data useage here to prepare for handoff to a nominated
-                publisher account.
+
+              <Text color={colors.textSecondary}>
+                Link your local build to Prifina’s testing environment and
+                dynamic data connectors by adding a remote link below.
               </Text>
             </Box>
-            <Divider mb={24} mt={24} color={colors.textMuted} />
-            <Text mb={24}>Build deployment</Text>
 
-            <Flex mb={16}>
+            <Flex
+              width="584px"
+              style={{
+                border: "1px solid #393838",
+                padding: 24,
+                width: "100%",
+                borderRadius: 8,
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Box>
-                <Text fontSize="sm" mb={5}>
-                  App ID
-                </Text>
-                <Input
-                  disabled
-                  width="451px"
-                  label="text"
-                  value={appData.id}
-                  color={colors.textPrimary}
-                  style={{ background: "transparent" }}
-                />
-              </Box>
-            </Flex>
-            <Box mb={16}>
-              <Text fontSize="sm" mb={5}>
-                Version number
-              </Text>
-              <Flex alignItems="center">
-                <Input
-                  onFocus={handleFocusColor}
-                  onBlur={handleBlurColor}
-                  label="text"
-                  name="nextVersion"
-                  defaultValue={appData.nextVersion || "undefined"}
-                  onChange={handleValueChange}
-                  color={colors.textPrimary}
-                  style={{
-                    background: "transparent",
-                    minWidth: "451px",
-                    width: 451,
-                  }}
-                />
-                <Text fontSize="xs" ml={25} color={fontColor}>
-                  This version number is for your internal use so can follow
-                  whatever logic you choose.
-                </Text>
-              </Flex>
-            </Box>
-
-            <Flex alignItems="center" justifyContent="center" mb={16}>
-              <Box ml="5px">
-                <Text fontSize="sm" mb={5}>
-                  Build deployment package
-                </Text>
-
-                <UploadFile widgetId={appID} />
-              </Box>
-              <Box ml={25}>
-                <Text fontSize="xs" color={colors.textMuted}>
-                  The build deployment package is a package version of your
-                  local build. It must include:
-                </Text>
-                <Text fontSize="xs" color={colors.textMuted}>
-                  1. Your Prifina App ID
-                </Text>
-                <Text fontSize="xs" color={colors.textMuted}>
-                  2. Come in a .zip with a maximum file size of 5MB
-                </Text>
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
                   Remote Link
                 </Text>
                 <Input
@@ -775,255 +717,551 @@ const ProjectDetails = (props) => {
                   name="newRemoteUrl"
                   defaultValue={appData.remoteUrl}
                   onChange={handleValueChange}
-                  color={colors.textPrimary}
+                  color={colors.textSecondary}
                 />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Native Assets
-                </Text>
-              </Box>
-              <UploadAsset variant="native" id={appData.id} onFinish={() => {
-
-              }} />
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Publisher
-                </Text>
-                <Input
-                  width="451px"
-                  label="text"
-                  name="publisher"
-                  defaultValue={appData.publisher}
-                  onChange={handleValueChange}
-                  color={colors.textPrimary}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Category
-                </Text>
-                <Input
-                  width="451px"
-                  label="text"
-                  name="category"
-                  defaultValue={appData.category}
-                  onChange={handleValueChange}
-                  color={colors.textPrimary}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Short Description
-                </Text>
-                <TextArea
-                  expand
-                  height={50}
-                  width="451px"
-                  label="text"
-                  name="shortDescription"
-                  defaultValue={appData.shortDescription}
-                  onChange={handleValueChange}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Long Description
-                </Text>
-                <TextArea
-                  expand
-                  height={100}
-                  width="451px"
-                  label="text"
-                  name="longDescription"
-                  defaultValue={appData.longDescription}
-                  onChange={handleValueChange}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Key Features
-                </Text>
-                <TagInput
-                  tags={newKeyFeatures}
-                  setTags={setNewKeyFeatures}
-                  style={{
-                    background: colors.baseTertiary,
-                  }}
-                />
-              </Box>
-            </Flex>
-
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  User Held
-                </Text>
-                <TagInput
-                  tags={newUserHeld}
-                  setTags={setNewUserHeld}
-                  style={{ backgroundColor: colors.baseTertiary }}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  User Generated
-                </Text>
-                <TagInput
-                  tags={newUserGenerated}
-                  setTags={setNewUserGenerated}
-                  style={{ backgroundColor: colors.baseTertiary }}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Public
-                </Text>
-                <TagInput
-                  tags={newPublic}
-                  setTags={setNewPublic}
-                  style={{ backgroundColor: colors.baseTertiary }}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Device support
-                </Text>
-                <Input
-                  width="451px"
-                  label="text"
-                  name="deviceSupport"
-                  defaultValue={appData.deviceSupport}
-                  onChange={handleValueChange}
-                  color={colors.textPrimary}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Languages
-                </Text>
-                <Input
-                  width="451px"
-                  label="text"
-                  name="languages"
-                  defaultValue={appData.languages}
-                  onChange={handleValueChange}
-                  color={colors.textPrimary}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Age
-                </Text>
-                <Input
-                  width="451px"
-                  label="text"
-                  name="age"
-                  defaultValue={appData.age}
-                  onChange={handleValueChange}
-                  color={colors.textPrimary}
-                />
-              </Box>
-            </Flex>
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Icon
+                <Text fontSize="xxs" mt={5} color={colors.textSecondary}>
+                  Links your local build to the App Studio
                 </Text>
               </Box>
 
-              <UploadAsset
-                id={appData.id}
-                type="icon"
-                numId="1"
-                onFinish={updateAssetStatus}
-
-              // passAssetInfo={passAssetInfo}
-              />
-            </Flex>
-
-            {state.icon &&
-              <Image
-                src={imageUrls[0]}
-                onError={e => (e.target.style.display = "none")}
-              />
-            }
-
-            <Flex alignItems="flex-end" mb={16}>
-              <Box>
-                <Text fontSize="sm" mb={5}>
-                  Screenshot
-                </Text>
-              </Box>
-              <UploadAsset
-                id={appData.id}
-                type="screenshot"
-                numId="1"
-                onFinish={updateAssetStatus}
-              // passAssetInfo={passAssetInfo}
-              />
-              <UploadAsset
-                id={appData.id}
-                type="screenshot"
-                numId="2"
-                onFinish={updateAssetStatus}
-              // passAssetInfo={passAssetInfo}
-              />
-              <UploadAsset
-                id={appData.id}
-                type="screenshot"
-                numId="3"
-                onFinish={updateAssetStatus}
-              // passAssetInfo={passAssetInfo}
-              />
-            </Flex>
-            <Flex width="700px" justifyContent="space-between">
-              {state.screenShot1 &&
-                <ImageZoom
-                  src={imageUrls[1]}
-                  onError={e => (e.target.style.display = "none")}
-                />
-              }
-
-              {state.screenShot2 &&
-                <ImageZoom
-                  src={imageUrls[2]}
-                  onError={e => (e.target.style.display = "none")}
-                />
-              }
-              {state.screenShot3 &&
-                <ImageZoom
-                  src={imageUrls[3]}
-                  onError={e => (e.target.style.display = "none")}
-                />
-              }
+              <Button variation="outline">Launch Sandbox</Button>
             </Flex>
           </C.ProjectContainer>
+          <C.ProjectContainer mb={24}>
+            <Box
+              style={{
+                padding: "4px 224px 16px 24px",
+                marginBottom: 16,
+              }}
+            >
+              <Text
+                style={{ textTransform: "uppercase" }}
+                mb={12}
+                fontSize="lgx"
+              >
+                Application package
+              </Text>
+
+              <Text mb={20} color={colors.textSecondary}>
+                To get your application published in our App Market, you will
+                need to supply the Prifina team a .Zip build deployment package,
+                manifest file, UI inputs and settings as-well-as any native
+                assets. For more information visit our documentation
+              </Text>
+              <Text color={colors.textSecondary}>
+                After you submit everything your application will be reviewed by
+                our App Market team.
+              </Text>
+            </Box>
+
+            <C.InnerContainer>
+              <Box>
+                <Text style={{ textTransform: "uppercase" }}>
+                  1.Build deployment
+                </Text>
+                <Text mt={5} mb={16} color={colors.textSecondary}>
+                  Upload a packaged version of your application.
+                </Text>
+                <Box mb={16}>
+                  <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                    Version number
+                  </Text>
+                  <Flex alignItems="baseline">
+                    <Input
+                      onFocus={handleFocusColor}
+                      onBlur={handleBlurColor}
+                      label="text"
+                      name="nextVersion"
+                      defaultValue={appData.nextVersion || "undefined"}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                      style={{
+                        background: "transparent",
+                        minWidth: "451px",
+                        width: 451,
+                      }}
+                    />
+                    <Text fontSize="xs" ml={25} color={fontColor}>
+                      This version number is for your internal use so can follow
+                      whatever logic you choose.
+                    </Text>
+                  </Flex>
+                </Box>
+                <Flex mb={16} alignItems="baseline">
+                  <Box>
+                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                      App ID
+                    </Text>
+                    <Input
+                      onFocus={handleFocusColor}
+                      onBlur={handleBlurColor}
+                      disabled
+                      width="451px"
+                      label="text"
+                      value={appData.id}
+                      color={colors.textSecondary}
+                      style={{ background: "transparent" }}
+                    />
+                  </Box>
+                  <Box>
+                    <Text fontSize="xs" ml={25} color={fontColor} mb={10}>
+                      This version number is for your internal use so can follow
+                      whatever logic you choose.
+                    </Text>
+                    <Text fontSize="xs" ml={25} color={fontColor}>
+                      Visit our docs for more information
+                    </Text>
+                  </Box>
+                </Flex>
+
+                <Flex alignItems="center" justifyContent="center" mb={16}>
+                  <Box ml="5px">
+                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                      Build deployment package
+                    </Text>
+
+                    <UploadFile widgetId={appID} />
+                  </Box>
+                  <Box ml={25}>
+                    <Text fontSize="xs" color={colors.textMuted}>
+                      The build deployment package is a package version of your
+                      local build. It must include:
+                    </Text>
+                    <Text fontSize="xs" color={colors.textMuted}>
+                      1. Your Prifina App ID
+                    </Text>
+                    <Text fontSize="xs" color={colors.textMuted}>
+                      2. Come in a .zip with a maximum file size of 5MB
+                    </Text>
+                  </Box>
+                </Flex>
+                <Text>Status</Text>
+              </Box>
+            </C.InnerContainer>
+          </C.ProjectContainer>
+          <C.ProjectContainer mb={24}>
+            <Box
+              style={{
+                padding: "4px 224px 16px 24px",
+                marginBottom: 16,
+              }}
+            >
+              <Text
+                style={{ textTransform: "uppercase" }}
+                mb={8}
+                fontSize="lgx"
+              >
+                Marketplace Listing
+              </Text>
+
+              <Text mb={32} color={colors.textSecondary}>
+                All applications published on our platform have a listing page
+                in the Prifina App Marketplace. This is what users will see when
+                they are deciding wether or not to install your app.
+              </Text>
+              <Text color={colors.textSecondary}>
+                For context you can visit the App Marketplace and see how this
+                information will be displayed.
+              </Text>
+            </Box>
+            <C.InnerContainer>
+              <Box>
+                <Text style={{ textTransform: "uppercase" }}>
+                  1.Publisher Details
+                </Text>
+                <Text mt={5} mb={15} color={colors.textSecondary}>
+                  Packaged version of your application, including manifest file.
+                </Text>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                      Publisher Name
+                    </Text>
+                    <Input
+                      width="451px"
+                      label="text"
+                      name="publisher"
+                      defaultValue={appData.publisher}
+                      onChange={handleValueChange}
+                      color={colors.textPrimary}
+                    />
+                  </Box>
+                </Flex>
+              </Box>
+            </C.InnerContainer>
+            <C.InnerContainer>
+              <Text style={{ textTransform: "uppercase" }} mb={5}>
+                2. Categorization and Support
+              </Text>
+              <Text color={colors.textSecondary} mb={40}>
+                Packaged version of your application, including manifest file.
+              </Text>
+              <Text fontSize="sm" color={colors.textSecondary}>
+                Language support
+              </Text>
+              <C.FieldContainer>
+                <Box>
+                  <Input
+                    width="451px"
+                    label="text"
+                    name="languages"
+                    // defaultValue={appData.languages}
+                    value="en"
+                    onChange={handleValueChange}
+                    color={colors.textPrimary}
+                    disabled
+                  />
+                </Box>
+                <Text fontSize="xs" ml={25} color={fontColor}>
+                  Prifina only currently supports English but we have plans to
+                  add other languages soon!
+                </Text>
+              </C.FieldContainer>
+              <Text fontSize="sm" color={colors.textSecondary}>
+                Device support
+              </Text>
+              <C.FieldContainer>
+                <Box>
+                  <Input
+                    width="451px"
+                    label="text"
+                    name="deviceSupport"
+                    // defaultValue={appData.deviceSupport}
+                    value="Desktop devices"
+                    onChange={handleValueChange}
+                    color={colors.textPrimary}
+                    disabled
+                  />
+                </Box>
+                <Text fontSize="xs" ml={25} color={fontColor}>
+                  Prifina only currently supports desktop but we have plans to
+                  expand to other devices and screensizes soon!
+                </Text>
+              </C.FieldContainer>
+
+              <Text fontSize="sm" color={colors.textSecondary}>
+                Application category (select 1)
+              </Text>
+              <Flex alignItems="center" mb={24}>
+                <Box>
+                  <C.CustomSelect
+                    name="category"
+                    defaultValue={
+                      appData.category === null
+                        ? "Choose category"
+                        : appData.category
+                    }
+                    onChange={handleValueChange}
+                    showList={true}
+                    width={"150px"}
+                  >
+                    {appCategory.map((item, index) => (
+                      <option key={index}>{item}</option>
+                    ))}
+                  </C.CustomSelect>
+                </Box>
+                <Box>
+                  <Text fontSize="xs" mb={10} ml={25} color={fontColor}>
+                    Select the category which best fits your product.
+                  </Text>
+                  <Text fontSize="xs" ml={25} color={fontColor}>
+                    If none fit choose ‘other’
+                  </Text>
+                </Box>
+              </Flex>
+              <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                Age appropriate (select 1)
+              </Text>
+              <Flex alignItems="center" mb={32}>
+                <Box>
+                  <C.CustomSelect
+                    name="age"
+                    defaultValue={
+                      appData.age === null ? "Choose category" : appData.age
+                    }
+                    onChange={handleValueChange}
+                    showList={true}
+                    width={"150px"}
+                  >
+                    {ageAppropriate.map((item, index) => (
+                      <option key={index}>{item}</option>
+                    ))}
+                  </C.CustomSelect>
+                </Box>
+                <Text fontSize="xs" ml={25} color={fontColor}>
+                  Select the appropriate age your product.
+                </Text>
+              </Flex>
+            </C.InnerContainer>
+            <C.InnerContainer>
+              <Box>
+                <Box mb={30}>
+                  <Text mb={10} style={{ textTransform: "uppercase" }}>
+                    3.Application data
+                  </Text>
+                  <Text mb={15} color={colors.textSecondary}>
+                    Tell your users what specific data your application requires
+                    or generates. This information will be shown under the “data
+                    requirements” tab in your product page.
+                  </Text>
+                  <Text color={colors.textSecondary}>
+                    For more detail on data types and detailing data use visit
+                    our docs
+                  </Text>
+                </Box>
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  Public data
+                </Text>
+                <Flex alignItems="center" mb={40}>
+                  <TagInput
+                    placeholder="e.g.“City name”"
+                    tags={newPublic}
+                    setTags={setNewPublic}
+                    style={{
+                      backgroundColor: colors.baseTertiary,
+                      height: 110,
+                      width: 470,
+                    }}
+                  />
+
+                  <Box width="340px">
+                    <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                      Detail any attributes your application uses from public
+                      data sources. For example “Open weather API”.
+                    </Text>
+                    <Text fontSize="xs" ml={25} color={fontColor}>
+                      For examples of public sources visit our documentation
+                    </Text>
+                  </Box>
+                </Flex>
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  User Held
+                </Text>
+                <Flex alignItems="center" mb={40}>
+                  <TagInput
+                    placeholder="e.g.“Avg HR”"
+                    tags={newUserHeld}
+                    setTags={setNewUserHeld}
+                    style={{
+                      backgroundColor: colors.baseTertiary,
+                      height: 110,
+                      width: 470,
+                    }}
+                  />
+                  <Box width="340px">
+                    <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                      Detail any attributes your application uses from the user
+                      via our data connectors. For example from the “Oura” data
+                      connector you might have “Deep sleep”.
+                    </Text>
+                    <Text fontSize="xs" ml={25} color={fontColor}>
+                      For examples of user-held data visit our documentation
+                    </Text>
+                  </Box>
+                </Flex>
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  User Generated
+                </Text>
+                <Flex alignItems="center" mb={32}>
+                  <TagInput
+                    placeholder="e.g.“Height”"
+                    tags={newUserGenerated}
+                    setTags={setNewUserGenerated}
+                    style={{
+                      backgroundColor: colors.baseTertiary,
+                      height: 110,
+                      width: 470,
+                    }}
+                  />
+                  <Box width="340px">
+                    <Text fontSize="xs" ml={25} color={fontColor}>
+                      This name will be associated with your products on the App
+                      Marketplace.
+                    </Text>
+                  </Box>
+                </Flex>
+              </Box>
+            </C.InnerContainer>
+            <C.InnerContainer>
+              <Box>
+                <Text style={{ textTransform: "uppercase" }}>
+                  4. Product description
+                </Text>
+                <Text mt={5} color={colors.textSecondary}>
+                  Packaged version of your application, including manifest file.
+                </Text>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                      Short Description
+                    </Text>
+                    <TextArea
+                      expand
+                      height={83}
+                      width="451px"
+                      label="text"
+                      name="shortDescription"
+                      defaultValue={appData.shortDescription}
+                      onChange={handleValueChange}
+                    />
+                  </Box>
+                </Flex>
+                <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                  Long Description
+                </Text>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <TextArea
+                      expand
+                      height={208}
+                      width="451px"
+                      label="text"
+                      name="longDescription"
+                      defaultValue={
+                        appData.longDescription !== null
+                          ? appData.longDescription
+                          : "hehe"
+                      }
+                      onChange={handleValueChange}
+                    />
+                  </Box>
+                </Flex>
+                <Flex alignItems="flex-end" mb={16}>
+                  <Box>
+                    <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                      Key Features
+                    </Text>
+                    <TagInput
+                      tags={newKeyFeatures}
+                      setTags={setNewKeyFeatures}
+                      style={{
+                        background: colors.baseTertiary,
+                      }}
+                    />
+                  </Box>
+                </Flex>
+              </Box>
+            </C.InnerContainer>
+            <C.InnerContainer>
+              <Box>
+                <Text style={{ textTransform: "uppercase" }}>
+                  5. Marketing assets
+                </Text>
+                <Text mt={5} color={colors.textSecondary}>
+                  Add your App icon and screenshots for your marketplace
+                  listing.
+                </Text>
+                <Flex
+                  mb={5}
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "24px 8px 24px 8px",
+                    width: "700px",
+                  }}
+                >
+                  <Flex style={{ alignItems: "center" }}>
+                    {state.icon ? (
+                      <Image
+                        width="30px"
+                        src={imageUrls[0]}
+                        onError={e => (e.target.style.display = "none")}
+                      />
+                    ) : (
+                      <Image src={placeholderImage} />
+                    )}
+                    <Box ml={16}>
+                      <Text
+                        fontSize="sm"
+                        mb={5}
+                        style={{ textTransform: "uppercase" }}
+                        color={colors.textSecondary}
+                      >
+                        App Icon
+                      </Text>
+                      <Text fontSize="sm" mb={5} color={colors.textSecondary}>
+                        Add a unique icon which represents your product
+                        experience.
+                      </Text>
+                      <Text fontSize="sm" mb={5}>
+                        Images should be .jpg or .PNG and high enough resolution
+                        to display @ 56x56px on retina displays.
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <UploadAsset
+                    id={appData.id}
+                    type="icon"
+                    numId="1"
+                    onFinish={updateAssetStatus}
+                    // passAssetInfo={passAssetInfo}
+                  />
+                </Flex>
+                <Divider as={"div"} color="#393838" />
+                <Box>
+                  <Text style={{ textTransform: "uppercase" }}>
+                    Product Images
+                  </Text>
+
+                  <Text mt={5} fontSize="xs" color={colors.textSecondary}>
+                    Upload three screenshots of key screens in your application.
+                    Images should be 284 x 214px and high resolution.
+                  </Text>
+                  <Text mt={5} fontSize="xs" color={colors.textSecondary}>
+                    These screenshots will be in your product’s App Marketplace
+                    listing page. Images will be shown top-to-bottom based of
+                    the numerical order below.
+                  </Text>
+                  <Text mt={5} fontSize="xs" color={colors.textSecondary}>
+                    For guidelines on creating acceptable images visit our
+                    documentation
+                  </Text>
+                </Box>
+                <C.AssetContainer
+                  state={state.screenShot1}
+                  src={imageUrls[1]}
+                  id={appData.id}
+                  type="screenshot"
+                  numId="1"
+                  onFinish={updateAssetStatus}
+                  colors={colors}
+                />
+                <Divider as={"div"} color="#393838" />
+
+                <C.AssetContainer
+                  state={state.screenShot2}
+                  src={imageUrls[2]}
+                  id={appData.id}
+                  type="screenshot"
+                  numId="2"
+                  onFinish={updateAssetStatus}
+                  colors={colors}
+                />
+                <Divider as={"div"} color="#393838" />
+
+                <C.AssetContainer
+                  state={state.screenShot3}
+                  src={imageUrls[3]}
+                  id={appData.id}
+                  type="screenshot"
+                  numId="3"
+                  onFinish={updateAssetStatus}
+                  colors={colors}
+                />
+              </Box>
+            </C.InnerContainer>
+          </C.ProjectContainer>
+
           <C.ProjectContainer alt="dataSources" mb={24}>
             <Flex justifyContent="space-between" alignItems="center" mb={45}>
-              <Text style={{ textTransform: "uppercase" }}>Data sources</Text>
+              <Text style={{ textTransform: "uppercase" }}>
+                Data Resources survey (optional)
+              </Text>
+              <Text mt={5} color={colors.textSecondary}>
+                Let us know how your application uses data by logging your
+                sources (or lack of) here. This information helps us provide
+                quality support and helps direct our product roadmap.
+              </Text>
             </Flex>
             <Flex>
               <div
@@ -1193,20 +1431,20 @@ const ProjectDetails = (props) => {
             </Flex>
 
             {appData.dataSources !== null &&
-              appData.dataSources !== "[]" &&
-              appData.dataSources !== 0 &&
-              appData.dataSources !== ["[null]"] ? (
+            appData.dataSources !== "[]" &&
+            appData.dataSources !== 0 &&
+            appData.dataSources !== ["[null]"] ? (
               <Flex flexDirection="column" justifyContent="center">
-
-                {newDataSources.length > 0 && newDataSources.map((item, index) => (
-                  <ControlAddedDataSources
-                    key={index}
-                    keyIndex={index}
-                    dataSource={item}
-                    uncompleteDataSource={uncompleteDataSource}
-                    editControled={editControled}
-                  />
-                ))}
+                {newDataSources.length > 0 &&
+                  newDataSources.map((item, index) => (
+                    <ControlAddedDataSources
+                      key={index}
+                      keyIndex={index}
+                      dataSource={item}
+                      uncompleteDataSource={uncompleteDataSource}
+                      editControled={editControled}
+                    />
+                  ))}
 
                 {newDataSources.length === 0 && <div>No datasources </div>}
               </Flex>
@@ -1280,7 +1518,7 @@ const ProjectDetails = (props) => {
 };
 
 ProjectDetails.propTypes = {
-  appID: PropTypes.string.isRequired
+  appID: PropTypes.string.isRequired,
 };
 
 ProjectDetails.displayName = "ProjectDetails";
