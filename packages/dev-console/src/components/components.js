@@ -420,7 +420,8 @@ export const OutlineButton = styled(Button)`
 const ImageZoomContainer = styled(Image)`
   transition: transform 0.2s;
 
-  height: 142px;
+  height: 114px;
+  width: 151px;
   &:hover {
     transform: scale(1.5, 1.5);
   }
@@ -468,15 +469,13 @@ export const AssetContainer = ({
         <Flex style={{ alignItems: "center" }}>
           {state ? (
             <ImageZoom
-              width="151px"
-              height="114px"
               src={src}
               onError={e => (e.target.style.display = "none")}
             />
           ) : (
-            <Image src={placeholderImage} />
+            <Image width="151px" height="114px" src={placeholderImage} />
           )}
-          <Box ml={16}>
+          <Box ml={16} mr={16}>
             <Text
               fontSize="sm"
               mb={5}
