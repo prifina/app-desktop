@@ -974,23 +974,40 @@ const Sandbox = props => {
                             >
                               Native assets
                             </Text>
-                            <Text color={colors.textSecondary}>
-                              If your application requires any addtional assets
-                              to keep it lightweight consider using native
-                              assets rather than having them in the build
-                              deployment package.
-                            </Text>
-                            <Flex alignItems="flex-end" mb={16}>
-                              <Box>
-                                <Text fontSize="sm" mb={5}>
-                                  Native Assets
-                                </Text>
-                              </Box>
+                            <Box width="650px">
+                              <Text color={colors.textSecondary} mb={30}>
+                                If your application requires any addtional
+                                assets to keep it lightweight consider using
+                                native assets rather than having them in the
+                                build deployment package.
+                              </Text>
+                            </Box>
+                            <Flex alignItems="center">
                               <UploadAsset
                                 variant="native"
                                 id={allValues.id}
                                 onFinish={() => {}}
                               />
+
+                              <Box width="340px">
+                                <Text
+                                  fontSize="xs"
+                                  ml={25}
+                                  color={colors.textSecondary}
+                                >
+                                  Upload native assets for use in your project.
+                                  Test them out in sandbox mode before packaging
+                                  up in you application package.
+                                </Text>
+                                <Text
+                                  fontSize="xs"
+                                  ml={25}
+                                  color={colors.textSecondary}
+                                >
+                                  For more information on using native assets
+                                  visit our documentation
+                                </Text>
+                              </Box>
                             </Flex>
                           </Box>
                         </TabPanel>

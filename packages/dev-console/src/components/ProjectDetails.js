@@ -169,6 +169,9 @@ const ProjectDetails = props => {
     },
   ];
 
+  const lang = "en";
+  const devSupport = "Desktop devices";
+
   useEffect(() => {
     async function fetchData() {
       const result = await getAppVersionQuery(GRAPHQL, appID);
@@ -412,8 +415,10 @@ const ProjectDetails = props => {
                 newValues.nextVersion,
                 newValues.publisher,
                 newValues.category,
-                newValues.deviceSupport,
-                newValues.languages,
+                // newValues.deviceSupport,
+                // newValues.languages,
+                devSupport,
+                lang,
                 newValues.age,
                 newKeyFeatures,
                 newValues.title,
@@ -724,7 +729,6 @@ const ProjectDetails = props => {
               </Box>
 
               <Button
-                variation="outline"
                 onClick={() => {
                   navigate("/sandbox", { state: { allValues: appData } });
                 }}
@@ -937,7 +941,9 @@ const ProjectDetails = props => {
                     label="text"
                     name="deviceSupport"
                     // defaultValue={appData.deviceSupport}
-                    value="Desktop devices"
+
+                    defaultValue="Desktop devices"
+                    // value="Desktop devices"
                     onChange={handleValueChange}
                     color={colors.textPrimary}
                     disabled
