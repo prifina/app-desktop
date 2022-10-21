@@ -1246,17 +1246,18 @@ const ProjectDetails = props => {
                   }}
                 >
                   <Flex style={{ alignItems: "center" }}>
-                    {state.icon ? (
-                      <Box width="92px">
+                    <Box width="92px">
+                      {state.icon ? (
                         <Image
-                          width="56px"
+                          // width="92px"
                           src={imageUrls[0]}
                           onError={e => (e.target.style.display = "none")}
                         />
-                      </Box>
-                    ) : (
-                      <Image width="92px" src={placeholderImage} />
-                    )}
+                      ) : (
+                        <Image width="92px" src={placeholderImage} />
+                      )}
+                    </Box>
+
                     <Box ml={16} mr={16}>
                       <Text
                         fontSize="sm"
