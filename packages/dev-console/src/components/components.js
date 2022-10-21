@@ -462,19 +462,22 @@ export const AssetContainer = ({
         style={{
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "24px 8px 24px 8px",
+          padding: "24px 0px 24px 0px",
           // width: "700px",
         }}
       >
         <Flex style={{ alignItems: "center" }}>
-          {state ? (
-            <ImageZoom
-              src={src}
-              onError={e => (e.target.style.display = "none")}
-            />
-          ) : (
-            <Image width="151px" height="114px" src={placeholderImage} />
-          )}
+          <Box width="185px">
+            {state ? (
+              <ImageZoom
+                src={src}
+                onError={e => (e.target.style.display = "none")}
+              />
+            ) : (
+              <Image width="151px" src={placeholderImage} />
+            )}
+          </Box>
+
           <Box ml={16} mr={16}>
             <Text
               fontSize="sm"
