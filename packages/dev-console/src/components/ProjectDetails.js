@@ -792,10 +792,10 @@ const ProjectDetails = props => {
                       }}
                     />
                     <Box>
-                      <Text fontSize="xs" ml={25} color={fontColor}>
+                      <Text fontSize="xs" ml={25} color={colors.textMuted}>
                         This version number is for your internal use.
                       </Text>
-                      <Text fontSize="xs" ml={25} color={fontColor}>
+                      <Text fontSize="xs" ml={25} color={colors.textMuted}>
                         Formatting must follow semantic versioning format
                       </Text>
                     </Box>
@@ -816,11 +816,11 @@ const ProjectDetails = props => {
                     style={{ background: "transparent" }}
                   />
                   <Box>
-                    <Text fontSize="xs" ml={25} color={fontColor} mb={8}>
+                    <Text fontSize="xs" ml={25} color={colors.textMuted} mb={8}>
                       Unique project identifier. Add this to your build
                       deployment package.
                     </Text>
-                    <Text fontSize="xs" ml={25} color={fontColor}>
+                    <Text fontSize="xs" ml={25} color={colors.textMuted}>
                       Visit our docs for more information
                     </Text>
                   </Box>
@@ -926,7 +926,7 @@ const ProjectDetails = props => {
                     disabled
                   />
                 </Box>
-                <Text fontSize="xs" ml={25} color={fontColor}>
+                <Text fontSize="xs" ml={25} color={colors.textMuted}>
                   Prifina only currently supports English but we have plans to
                   add other languages soon!
                 </Text>
@@ -949,7 +949,7 @@ const ProjectDetails = props => {
                     disabled
                   />
                 </Box>
-                <Text fontSize="xs" ml={25} color={fontColor}>
+                <Text fontSize="xs" ml={25} color={colors.textMuted}>
                   Prifina only currently supports desktop but we have plans to
                   expand to other devices and screensizes soon!
                 </Text>
@@ -977,10 +977,10 @@ const ProjectDetails = props => {
                   </C.CustomSelect>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" mb={10} ml={25} color={fontColor}>
+                  <Text fontSize="xs" mb={10} ml={25} color={colors.textMuted}>
                     Select the category which best fits your product.
                   </Text>
-                  <Text fontSize="xs" ml={25} color={fontColor}>
+                  <Text fontSize="xs" ml={25} color={colors.textMuted}>
                     If none fit choose ‘other’
                   </Text>
                 </Box>
@@ -1004,7 +1004,7 @@ const ProjectDetails = props => {
                     ))}
                   </C.CustomSelect>
                 </Box>
-                <Text fontSize="xs" ml={25} color={fontColor}>
+                <Text fontSize="xs" ml={25} color={colors.textMuted}>
                   Select the appropriate age your product.
                 </Text>
               </Flex>
@@ -1041,11 +1041,16 @@ const ProjectDetails = props => {
                   />
 
                   <Box width="340px">
-                    <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                    <Text
+                      fontSize="xs"
+                      ml={25}
+                      mb={10}
+                      color={colors.textMuted}
+                    >
                       Detail any attributes your application uses from public
                       data sources. For example “Open weather API”.
                     </Text>
-                    <Text fontSize="xs" ml={25} color={fontColor}>
+                    <Text fontSize="xs" ml={25} color={colors.textMuted}>
                       For examples of public sources visit our documentation
                     </Text>
                   </Box>
@@ -1065,12 +1070,17 @@ const ProjectDetails = props => {
                     }}
                   />
                   <Box width="340px">
-                    <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                    <Text
+                      fontSize="xs"
+                      ml={25}
+                      mb={10}
+                      color={colors.textMuted}
+                    >
                       Detail any attributes your application uses from the user
                       via our data connectors. For example from the “Oura” data
                       connector you might have “Deep sleep”.
                     </Text>
-                    <Text fontSize="xs" ml={25} color={fontColor}>
+                    <Text fontSize="xs" ml={25} color={colors.textMuted}>
                       For examples of user-held data visit our documentation
                     </Text>
                   </Box>
@@ -1090,7 +1100,7 @@ const ProjectDetails = props => {
                     }}
                   />
                   <Box width="340px">
-                    <Text fontSize="xs" ml={25} color={fontColor}>
+                    <Text fontSize="xs" ml={25} color={colors.textMuted}>
                       This name will be associated with your products on the App
                       Marketplace.
                     </Text>
@@ -1127,10 +1137,10 @@ const ProjectDetails = props => {
                       }}
                     />
                     <Box>
-                      <Text fontSize="xs" ml={25} color={fontColor}>
+                      <Text fontSize="xs" ml={25} color={colors.textMuted}>
                         The name users will see on the App Marketplace.
                       </Text>
-                      <Text fontSize="xs" ml={25} color={fontColor}>
+                      <Text fontSize="xs" ml={25} color={colors.textMuted}>
                         The application name is also your project name in the
                         App Studio
                       </Text>
@@ -1155,10 +1165,15 @@ const ProjectDetails = props => {
                       />
                     </Box>
                     <Box width="340px">
-                      <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                      <Text
+                        fontSize="xs"
+                        ml={25}
+                        mb={10}
+                        color={colors.textMuted}
+                      >
                         A concise description of your product.
                       </Text>
-                      <Text fontSize="xs" ml={25} color={fontColor}>
+                      <Text fontSize="xs" ml={25} color={colors.textMuted}>
                         This will be used standalone on the widget directory
                         page and along with the long description in your
                         marketplace listing page.
@@ -1186,11 +1201,16 @@ const ProjectDetails = props => {
                     />
 
                     <Box width="340px">
-                      <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                      <Text
+                        fontSize="xs"
+                        ml={25}
+                        mb={10}
+                        color={colors.textMuted}
+                      >
                         Go into more detail about your product and the value it
                         offers users.
                       </Text>
-                      <Text fontSize="xs" ml={25} color={fontColor}>
+                      <Text fontSize="xs" ml={25} color={colors.textMuted}>
                         This will be used along with the short description on
                         your product’s listing page. You can treat the short
                         description as an introduction and the long as more
@@ -1216,11 +1236,16 @@ const ProjectDetails = props => {
                     }}
                   />
                   <Box width="340px">
-                    <Text fontSize="xs" ml={25} mb={10} color={fontColor}>
+                    <Text
+                      fontSize="xs"
+                      ml={25}
+                      mb={10}
+                      color={colors.textMuted}
+                    >
                       Type to add features, these will be translated into a
                       simple nubered list.
                     </Text>
-                    <Text fontSize="xs" ml={25} color={fontColor}>
+                    <Text fontSize="xs" ml={25} color={colors.textMuted}>
                       The order you enter features in here will be the order
                       reflected in your product’s listing page.
                     </Text>
@@ -1341,7 +1366,7 @@ const ProjectDetails = props => {
           </C.ProjectContainer>
 
           <C.ProjectContainer alt="dataSources" mb={24}>
-            <Flex justifyContent="space-between" alignItems="center" mb={45}>
+            <Box mb={45}>
               <Text style={{ textTransform: "uppercase" }}>
                 Data Resources survey (optional)
               </Text>
@@ -1350,218 +1375,229 @@ const ProjectDetails = props => {
                 sources (or lack of) here. This information helps us provide
                 quality support and helps direct our product roadmap.
               </Text>
-            </Flex>
-            <Flex>
-              <div
-                style={{
-                  overflow: "hidden",
-                  width: 600,
-                }}
-              >
-                <Tabs
-                  activeTab={activeTab}
-                  onClick={tabClick3}
+            </Box>
+            <C.InnerContainer>
+              <Flex>
+                <div
                   style={{
-                    height: "100%",
-                    background: "transparent",
-                    padding: 0,
+                    overflow: "hidden",
+                    width: 600,
                   }}
-                  variant="rectangle"
                 >
-                  <TabList>
-                    <Tab>
-                      <Text>{i18n.__("publicApi")}</Text>
-                    </Tab>
-                    <Tab>
-                      <Text>{i18n.__("prifinaUserCloud")}</Text>
-                    </Tab>
-                    <Tab>
-                      <Text>{i18n.__("noData")}</Text>
-                    </Tab>
-                  </TabList>
-                  <TabPanelList style={{ backgroundColor: null }}>
-                    <TabPanel
-                      style={{
-                        height: "100vh",
-                        paddingBottom: "50px",
-                        overflow: "auto",
-                      }}
-                    >
-                      <div style={{ overflow: "auto" }}>
-                        <Flex>
-                          <ApiForm
-                            addApi={addApiSource}
-                            selectOptions={publicSources}
-                          />
-                        </Flex>
+                  <Tabs
+                    activeTab={activeTab}
+                    onClick={tabClick3}
+                    style={{
+                      height: "100%",
+                      background: "transparent",
+                      padding: 0,
+                    }}
+                    variant="rectangle"
+                  >
+                    <TabList>
+                      <Tab>
+                        <Text>{i18n.__("publicApi")}</Text>
+                      </Tab>
+                      <Tab>
+                        <Text>{i18n.__("prifinaUserCloud")}</Text>
+                      </Tab>
+                      <Tab>
+                        <Text>{i18n.__("noData")}</Text>
+                      </Tab>
+                    </TabList>
+                    <TabPanelList style={{ backgroundColor: null }}>
+                      <TabPanel
+                        style={{
+                          height: "100vh",
+                          paddingBottom: "50px",
+                          overflow: "auto",
+                        }}
+                      >
+                        <div style={{ overflow: "auto" }}>
+                          <Flex>
+                            <ApiForm
+                              addApi={addApiSource}
+                              selectOptions={publicSources}
+                            />
+                          </Flex>
 
-                        {/* Box with state change */}
-                        <Flex>
-                          {apiDataPreview.length > 0 && (
-                            <Flex
-                              width="100%"
-                              flexDirection="column"
-                              padding="10px"
-                              style={{
-                                marginTop: 15,
-                                borderRadius: 10,
-                              }}
-                            >
-                              <Text textStyle="h6" mb="10px">
-                                {i18n.__("chooseToAddSources")}
-                              </Text>
-                              <Flex>
-                                <Flex flexDirection="column">
-                                  {apiDataPreview.map((event, index) => (
-                                    <AddRemoveDataSources
-                                      key={index}
-                                      index={index}
-                                      dataSource={event}
-                                      removeDataSource={removeApiSource}
-                                      completeDataSource={completeApiSource}
-                                    />
-                                  ))}
-                                </Flex>
-                              </Flex>
-                            </Flex>
-                          )}
-                        </Flex>
-                      </div>
-                    </TabPanel>
-                    <TabPanel>
-                      <div style={{ overflow: "auto" }}>
-                        <Flex>
-                          <DataSourceForm
-                            addDataSource={addDataSource}
-                            // addFunctions={addFunction}
-                            selectOptions={dataConnectors}
-                          />
-                        </Flex>
-                        <Flex>
-                          {dataSourcePreview.length > 0 && (
-                            <Flex
-                              width="100%"
-                              flexDirection="column"
-                              padding="10px"
-                              style={{
-                                backgroundColor: colors.baseMuted,
-                                marginTop: 15,
-                                borderRadius: 10,
-                              }}
-                            >
-                              <Text textStyle="h6" mt="10px" mb="10px">
-                                {i18n.__("dataConectorResults")}
-                              </Text>
-
-                              <Flex>
-                                <Flex flexDirection="column">
-                                  {dataSourcePreview.map((item, index) => (
-                                    <>
+                          {/* Box with state change */}
+                          <Flex>
+                            {apiDataPreview.length > 0 && (
+                              <Flex
+                                width="100%"
+                                flexDirection="column"
+                                padding="10px"
+                                style={{
+                                  marginTop: 15,
+                                  borderRadius: 10,
+                                }}
+                              >
+                                <Text textStyle="h6" mb="10px">
+                                  {i18n.__("chooseToAddSources")}
+                                </Text>
+                                <Flex>
+                                  <Flex flexDirection="column">
+                                    {apiDataPreview.map((event, index) => (
                                       <AddRemoveDataSources
                                         key={index}
                                         index={index}
-                                        dataSource={item}
-                                        removeDataSource={removeDataSource}
-                                        completeDataSource={completeDataSource}
+                                        dataSource={event}
+                                        removeDataSource={removeApiSource}
+                                        completeDataSource={completeApiSource}
                                       />
-                                    </>
-                                  ))}
+                                    ))}
+                                  </Flex>
                                 </Flex>
                               </Flex>
-                            </Flex>
-                          )}
-                        </Flex>
-                      </div>
-                    </TabPanel>
-                    <TabPanel>
-                      <div style={{ overflow: "auto" }}>
-                        <Flex>
-                          <Box
-                            width="426px"
-                            height="76px"
-                            borderRadius="6px"
-                            paddingLeft="10px"
-                            bg={colors.baseLinkHover}
-                            style={{
-                              border: `2px solid ${colors.baseLink}`,
-                            }}
-                          >
-                            <Flex>
-                              <Text>{i18n.__("noDataText")}</Text>
-                              <Button
-                                variation="link"
-                                onClick={() => {
-                                  window.open("https://prifina.com");
+                            )}
+                          </Flex>
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div style={{ overflow: "auto" }}>
+                          <Flex>
+                            <DataSourceForm
+                              addDataSource={addDataSource}
+                              // addFunctions={addFunction}
+                              selectOptions={dataConnectors}
+                            />
+                          </Flex>
+                          <Flex>
+                            {dataSourcePreview.length > 0 && (
+                              <Flex
+                                width="100%"
+                                flexDirection="column"
+                                padding="10px"
+                                style={{
+                                  backgroundColor: colors.baseMuted,
+                                  marginTop: 15,
+                                  borderRadius: 10,
                                 }}
                               >
-                                {i18n.__("learnMoreHere")}
-                              </Button>
-                            </Flex>
-                          </Box>
+                                <Text textStyle="h6" mt="10px" mb="10px">
+                                  {i18n.__("dataConectorResults")}
+                                </Text>
 
-                          <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
-                        </Flex>
-                      </div>
-                    </TabPanel>
-                  </TabPanelList>
-                </Tabs>
-              </div>
-              <Box width="320px">
-                <Text fontSize="13px">
-                  Search for public data sources in our list or add them if they
-                  are not there yet.
-                </Text>
-                <Text mt="15px" fontSize="13px">
-                  This information helps us provide quality support and helps
-                  direct our product roadmap.
-                </Text>
-              </Box>
-            </Flex>
+                                <Flex>
+                                  <Flex flexDirection="column">
+                                    {dataSourcePreview.map((item, index) => (
+                                      <>
+                                        <AddRemoveDataSources
+                                          key={index}
+                                          index={index}
+                                          dataSource={item}
+                                          removeDataSource={removeDataSource}
+                                          completeDataSource={
+                                            completeDataSource
+                                          }
+                                        />
+                                      </>
+                                    ))}
+                                  </Flex>
+                                </Flex>
+                              </Flex>
+                            )}
+                          </Flex>
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div style={{ overflow: "auto" }}>
+                          <Flex>
+                            <Box
+                              width="426px"
+                              height="76px"
+                              borderRadius="6px"
+                              paddingLeft="10px"
+                              bg={colors.baseLinkHover}
+                              style={{
+                                border: `2px solid ${colors.baseLink}`,
+                              }}
+                            >
+                              <Flex>
+                                <Text>{i18n.__("noDataText")}</Text>
+                                <Button
+                                  variation="link"
+                                  onClick={() => {
+                                    window.open("https://prifina.com");
+                                  }}
+                                >
+                                  {i18n.__("learnMoreHere")}
+                                </Button>
+                              </Flex>
+                            </Box>
 
-            {appData.dataSources !== null &&
-            appData.dataSources !== "[]" &&
-            appData.dataSources !== 0 &&
-            appData.dataSources !== ["[null]"] ? (
-              <Flex flexDirection="column" justifyContent="center">
-                {newDataSources.length > 0 &&
-                  newDataSources.map((item, index) => (
-                    <ControlAddedDataSources
-                      key={index}
-                      keyIndex={index}
-                      dataSource={item}
-                      uncompleteDataSource={uncompleteDataSource}
-                      editControled={editControled}
-                    />
-                  ))}
-
-                {newDataSources.length === 0 && <div>No datasources </div>}
+                            <Flex ml="10px">{/* <CheckboxStateful /> */}</Flex>
+                          </Flex>
+                        </div>
+                      </TabPanel>
+                    </TabPanelList>
+                  </Tabs>
+                </div>
+                <Box width="320px">
+                  <Text fontSize="13px">
+                    Search for public data sources in our list or add them if
+                    they are not there yet.
+                  </Text>
+                  <Text mt="15px" fontSize="13px">
+                    This information helps us provide quality support and helps
+                    direct our product roadmap.
+                  </Text>
+                </Box>
               </Flex>
-            ) : (
-              <Flex flexDirection="column" justifyContent="center">
-                <Text mt="20px" mb="20px">
-                  Data sources used in your project
-                </Text>
-                <Flex
-                  style={{
-                    border: "1px dashed #BC31EA",
-                    width: 684,
-                    height: 132,
-                    borderRadius: 4,
-                    background: "#F7DEFF",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text fontSize="lg" color="#BC31EA">
-                    Search and select data sources
-                  </Text>
-                  <Text mt="10px" color="#BC31EA">
-                    Data sources you add will show up here
-                  </Text>
+
+              {appData.dataSources !== null &&
+              appData.dataSources !== "[]" &&
+              appData.dataSources !== 0 &&
+              appData.dataSources !== ["[null]"] ? (
+                <Flex flexDirection="column" justifyContent="center">
+                  {newDataSources.length > 0 &&
+                    newDataSources.map((item, index) => (
+                      <ControlAddedDataSources
+                        key={index}
+                        keyIndex={index}
+                        dataSource={item}
+                        uncompleteDataSource={uncompleteDataSource}
+                        editControled={editControled}
+                      />
+                    ))}
+
+                  {/* {newDataSources.length === 0 && <div>No datasources </div>} */}
                 </Flex>
-              </Flex>
-            )}
+              ) : (
+                <Flex flexDirection="column" justifyContent="center">
+                  <Text mt="20px" mb="20px">
+                    Data sources used in your project
+                  </Text>
+
+                  <Flex
+                    style={{
+                      border: "1px dashed #373436",
+                      width: 438,
+                      height: 272,
+                      borderRadius: 4,
+                      background: "#6B6669",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Image
+                      width="238px"
+                      src={placeholderImage}
+                      height="120px"
+                    />
+
+                    <Text fontSize="lg" mt={16}>
+                      Search and select data sources
+                    </Text>
+                    <Text mt="10px" color={colors.textSecondary}>
+                      Data sources you add will show up here
+                    </Text>
+                  </Flex>
+                </Flex>
+              )}
+            </C.InnerContainer>
           </C.ProjectContainer>
 
           <C.ActionContainer mb={32} justifyContent="space-between">

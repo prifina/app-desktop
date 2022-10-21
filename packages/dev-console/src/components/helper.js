@@ -10,8 +10,9 @@ import addCircle from "@iconify/icons-mdi/add-circle";
 import trashCan from "@iconify/icons-mdi/trash-can";
 import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 
-import styled from "styled-components";
+import * as C from "../components/components";
 
+import styled from "styled-components";
 
 i18n.init();
 
@@ -36,7 +37,6 @@ export function AddRemoveDataSources({
   removeDataSource,
 }) {
   console.log("data source", dataSource);
-
 
   const { colors } = useTheme();
 
@@ -116,7 +116,6 @@ export function ControlAddedDataSources({
   dataSource,
   keyIndex,
   uncompleteDataSource,
-  editControled,
 }) {
   const theme = useTheme();
 
@@ -224,11 +223,11 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
   return (
     <form onSubmit={handleSubmit}>
       <Flex alignItems="center">
-        <CustomSelect ref={selectRef} onChange={handleChange}>
+        <C.CustomSelect ref={selectRef} onChange={handleChange}>
           {selectOptions.map((item, index) => (
             <option key={index}>{item.source}</option>
           ))}
-        </CustomSelect>
+        </C.CustomSelect>
         <Button
           size="xs"
           ml={4}
@@ -247,7 +246,7 @@ export function DataSourceForm({ addDataSource, selectOptions }) {
 
 DataSourceForm.propTypes = {
   addDataSource: PropTypes.func,
-  selectOptions: PropTypes.array
+  selectOptions: PropTypes.array,
 };
 
 export function ApiForm({ addApi, selectOptions }) {
@@ -284,11 +283,11 @@ export function ApiForm({ addApi, selectOptions }) {
   return (
     <form onSubmit={handleSubmit}>
       <Flex>
-        <CustomSelect onChange={handleChange}>
+        <C.CustomSelect onChange={handleChange}>
           {selectOptions.map((item, index) => (
             <option key={index}>{item.name}</option>
           ))}
-        </CustomSelect>
+        </C.CustomSelect>
         <Button
           disabled
           size="xs"
@@ -308,5 +307,5 @@ export function ApiForm({ addApi, selectOptions }) {
 
 ApiForm.propTypes = {
   addApi: PropTypes.func,
-  selectOptions: PropTypes.array
+  selectOptions: PropTypes.array,
 };
