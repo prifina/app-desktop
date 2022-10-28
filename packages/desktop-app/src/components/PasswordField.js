@@ -132,7 +132,7 @@ const PasswordField = forwardRef(
           >
             <div ref={setArrowElement} style={styles.arrow} className="arrow" />
             <Text fontSize={"xs"} bold>
-              Create a password that:
+              {i18n.__("passwordRequirementsText")}
               <UnorderedList>
                 <ListItem verified={verifications[0]} theme={theme}>
                   <Text as={"span"} fontSize={"xxs"}>
@@ -141,23 +141,23 @@ const PasswordField = forwardRef(
                 </ListItem>
                 <ListItem verified={verifications[1]} theme={theme}>
                   <Text as={"span"} fontSize={"xxs"}>
-                    Contains both lower (a-z) and upper case letters (A-Z)
+                    {i18n.__("passwordRequirement1")}
                   </Text>
                 </ListItem>
 
                 <ListItem verified={verifications[2]} theme={theme}>
                   <Text as={"span"} fontSize={"xxs"}>
-                    Contains at least one number (0-9) and a symbol
+                    {i18n.__("passwordRequirement2")}
                   </Text>
                 </ListItem>
                 <ListItem verified={verifications[3]} theme={theme}>
                   <Text as={"span"} fontSize={"xxs"}>
-                    Does not contain your name or email address
+                    {i18n.__("passwordRequirement3")}
                   </Text>
                 </ListItem>
                 <ListItem verified={verifications[4]} theme={theme}>
                   <Text as={"span"} fontSize={"xxs"}>
-                    Is not commonly used
+                    {i18n.__("passwordRequirement4")}
                   </Text>
                 </ListItem>
               </UnorderedList>

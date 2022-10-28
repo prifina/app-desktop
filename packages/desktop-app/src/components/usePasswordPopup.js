@@ -80,7 +80,7 @@ const Popup = ({ floating, strategy, x, y, arrowRef, arrowX, className, verifica
       }}
     >
       <Text fontSize={"xs"} bold>
-        Create a password that:
+        {i18n.__("passwordRequirementsText")}
         <UnorderedList>
           <ListItem data-testid="condition-1" verified={verifications[0]} >
             <Text as={"span"} fontSize={"xxs"}>
@@ -89,18 +89,18 @@ const Popup = ({ floating, strategy, x, y, arrowRef, arrowX, className, verifica
           </ListItem>
           <ListItem data-testid="condition-2" verified={verifications[1]} >
             <Text as={"span"} fontSize={"xxs"}>
-              Contains both lower (a-z) and upper case letters (A-Z)
+              {i18n.__("passwordRequirement1")}
             </Text>
           </ListItem>
 
           <ListItem data-testid="condition-3" verified={verifications[2]} >
             <Text as={"span"} fontSize={"xxs"}>
-              Contains at least one number (0-9) and a symbol
+              {i18n.__("passwordRequirement2")}
             </Text>
           </ListItem>
           <ListItem data-testid="condition-4" verified={verifications[3]} >
             <Text as={"span"} fontSize={"xxs"}>
-              Does not contain your name or email address
+              {i18n.__("passwordRequirement3")}
             </Text>
           </ListItem>
           {/* 

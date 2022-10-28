@@ -15,6 +15,13 @@ const strings = {
     loginLink: "Login",
     proceedButton: "Proceed",
     closeButton: "Close",
+    activateButton: "Activate",
+    learnMoreButton: "Learn More",
+    developerButton: "Developer Website",
+    addWidgetButton: "Add Widget +",
+    changeEmailButton: "Change email",
+    changeNumberButton: "Change number",
+
     /* Create account */
     invalidEntry: "Value is required",
     invalidPhoneNumber: "Invalid or existing phone number",
@@ -182,16 +189,21 @@ const strings = {
     sendAgainLinkText: "Click here.",
     invalidCode: "Incorrect code, please enter the correct code.",
     verifySupportLink: "Still didn't receive the code",
+    sendCodeText: "Send another code",
+    verifyNumberModalHeader: "Verify your new phone number",
+    
     /* Email verification */
     emailVerificationTitle: "Setup email verification",
     emailVerificationText:
       "Please provide your email address and phone number to keep your account secure",
     emailMissing: "Didn't receive the code?",
     emailVerificatioSent: "Email verification code was sent.",
+    
     /* Decline dialog */
     declineTitle: "Decline Prifina’s Terms of Use?",
     declineText:
       "By declining Prifina's Terms of Use you will not be able to use the Prifina application.",
+    
     /* Login */
     loginPage: "Login to your account",
     invalidLogin: "Incorrect username or password.",
@@ -202,13 +214,21 @@ const strings = {
     authConfirmTitle: "Enter authentication code",
     authConfirmationText:
       "We've sent you the authentication code. Please enter it below to login.",
+    authConfirmationText2:
+     "We've sent you the authentication code. Please enter it below to verify this number.",
     confirmationCodeSent:
       "Authentication code was sent to your verified phone number.",
+    noAccText: "Don’t have an account?",
+    passwordFormLabel: "Password",
+    usernameFormLabel: "Username",
+    loginSupportingText: "Welcome back! Please enter your details.",
+    loginPrifinaText: "Prifina",
 
     /* Logout dialog */
     logoutTitle: "Are you sure you want to sign out?",
     logoutText:
       "You are also logged out from your personal cloud and any local data apps open in this browser.",
+    
     /* Recover Username */
     recoverUsernameTitle: "Recover username",
     recoverUsernameText1:
@@ -216,6 +236,7 @@ const strings = {
     recoverUsernameText2:
       "If a user account with that phone number exists, we have sent a username to that number.",
     useEmail: "Do you want to use your email adress?",
+    
     /* Reset Password */
     resetPasswordTitle: "Reset password code",
     resetPasswordText:
@@ -232,6 +253,7 @@ const strings = {
     codeMissing2: "Did not receive your code?",
     sendAgainLinkText2: "Click here to resend.",
     forgotUsername2: "Forgot your username?",
+    
     /* App Market */
     dataOnYourSide: "Data on your side",
     appMarketText:
@@ -376,6 +398,7 @@ const strings = {
     createPubAccCTATitle: "Publisher account",
     createPubAccCTAText:
       "Ready to release your project to the world? Create a Publisher account to get started.",
+    
     /* Developer account creation page */
     createAppStudioAccount: "Create App Studio account",
     appStudioAccount: "App Studio account",
@@ -384,6 +407,7 @@ const strings = {
       "To get access to Prifina’s Developer Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
     appStudioDisclaimer:
       "Disclaimer message or T&C’s if required Console and its features  you will need to create a seperate account. But don’t worry, the process is quick and easy and you can use your existing Prifina account to get setup.",
+    
     /* Data Cloud */
     dataCloudHomeHeading: "Bring all your data into Data Cloud",
     dataCloudHomeText:
@@ -409,7 +433,6 @@ const strings = {
     dailyRecommended: "Daily (recommended)",
 
     /* Developer agreement */
-
     devTermsTitle: "Developer Agreement",
     devTermsText1:
       "THIS IS A LEGAL AGREEMENT BETWEEN YOU AND PRIFINA INC. ('PRIFINA') STATING THE TERMS THAT GOVERN YOUR PARTICIPATION AS A DEVELOPER IN THE PRIFINA PLATFORM. PLEASE READ THIS PRIFINA DEVELOPER AGREEMENT (“AGREEMENT”) BEFORE PRESSING THE 'AGREE' BUTTON AND CHECKING THE BOX AT THE BOTTOM OF THIS PAGE. BY PRESSING 'AGREE,' YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS AGREEMENT. IF YOU DO NOT AGREE TO THE TERMS OF THIS AGREEMENT, PRESS 'CANCEL'.",
@@ -479,6 +502,62 @@ const strings = {
     devMiscellaneousTitle: "18. Miscellaneous",
     devMiscellaneousText:
       "No delay or failure to take action under this Agreement will constitute a waiver unless expressly waived in writing, signed by a duly authorized representative of Prifina, and no single waiver will constitute a continuing or subsequent waiver. This Agreement will bind your successors but may not be assigned, in whole or part, by you without the written approval of an authorized representative of Prifina. Any non-conforming assignment shall be null and void. If any provision is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary so that this Agreement shall otherwise remain in full force and effect and enforceable. This Agreement constitutes the entire agreement between the parties with respect to its subject matter and supersedes all prior or contemporaneous understandings regarding such subject matter. No addition to or removal or modification of any of the provisions of this Agreement will be binding upon Prifina unless made in writing and signed by an authorized representative of Prifina. The parties hereto confirm that they have requested that this Agreement and all attachments and related documents be drafted in English.",
+
+    /* Settings */
+    badgeTextAlwaysOn: "always on",
+    badgeTextVerified: "verified",
+    emailPlaceholder: "Email",
+    securingYourAccountPara: 
+      "Primary communication channels used for multifactor authentication, to verify changes in account credentials and other account related communication.",
+    subSectionParaWeWillSendEmail: "We will send an one time code to your verified email address",
+    subSectionHeadingPrimaryEmail: "Primary email",
+    subSectionHeadingMobilePhoneNumber: "Mobile Phone Number",
+    subSectionParaWeWillSendSMS: "We will send an one time SMS code to your verified phone number",
+    sectionHeadingSecuringYourAccount: "Securing Your Account",
+    sectionAccountSecurity: "Account security",
+
+    /* ProfineCard */
+    appNameProfileCards: "Profile cards", 
+
+    /* DisplayApp */
+    processingData: "Prosessing your data...",
+    processDataNotifcationText: "You will be notified as soon as the data becomes available in your cloud.",
+    dropDownText: "Your Views",
+
+    /* display-app components */
+    themeLabel: "Theme",
+    themeOptionDark: "Dark",
+    themeOptionLight: "Light",
+
+    systemSettingsTabText: "System Settings",
+    systemSettingsTabText2: "About this widget",
+    systemSettingsLabel: "User Settings",
+    systemSizeTabText: "Size",
+    systemVersionTabText: "Version",
+    systemAuthorTabText: "Author",
+    systemSearchResults: "Search results",
+    systemSearchHistory: "Search history",
+    authorDetails: "Author Details",
+    copyright: "Copyright",
+    experiencingProblemQuestion: "Experiencing problems ?",
+    experiencingProblemText: 
+      "If this widget is not working properly the best way to get in touch with the author is through our LEDSupport Slack channel .You can find the widget developers slack details in the table above.",
+    systemLEDSupport: "LEDSupport",
+    systemLEDSupportText: "@LedSupport",
+
+    /* Password Requirements */
+    passwordRequirementsText: "Create a password that:",
+    passwordRequirement1: "Contains both lower (a-z) and upper case letters (A-Z)",
+    passwordRequirement2: "Contains at least one number (0-9) and a symbol",
+    passwordRequirement3: "Does not contain your name or email address",
+    passwordRequirement4: "Is not commonly used",
+
+    /* AddWidgetModal */
+    widgetAvailable: "Available now",
+    widgetNotAvailable: "No available widgets",
+
+
+    appNameSmartSearch: "Smart Search",
   },
 };
 
