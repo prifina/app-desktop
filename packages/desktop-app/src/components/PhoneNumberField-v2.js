@@ -1,5 +1,4 @@
 import React, { useState, useReducer, useEffect, useRef, forwardRef } from "react";
-import useComponentFlagList from "../hooks/UseComponentFlagList";
 
 import { SearchSelect } from "@blend-ui/search-select";
 import { BlendIcon } from "@blend-ui/icons";
@@ -99,8 +98,9 @@ const LeftIcon = styled(props => {
 `;
 
 const PhoneNumberField = forwardRef(
-  ({ defaultRegion,
+  ({
     options,
+    selectOptions,
     disabled, inputState, ...props }, ref) => {
 
     console.log("OPTS ", options);
@@ -109,7 +109,6 @@ const PhoneNumberField = forwardRef(
     const boxRef = useRef();
     const theme = useTheme();
     const alerts = useToast();
-    const { selectOptions, flagsLoading } = useComponentFlagList();
     const selectRef = useRef();
     const [inputError, setInputError] = useState(false);
     const isPhoneNumber = useRef({});
@@ -126,23 +125,12 @@ const PhoneNumberField = forwardRef(
     //console.log("STATES INIT ", inputState, setIsPhoneNumber);
 
     //const [isValid, setIsValid] = useState(true)
-    const [phoneNumber, setPhoneNumber] = useState(defaultRegion);
+
+    const [phoneNumber, setPhoneNumber] = useState("");
+
     const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
     const [invalidTxt, setInvalidTxt] = useState(options.txt.invalidTxt);
     //const [showOptions, setShowOptions] = useState(false);
-
-    /*
-    let regionCodes = [];
-    // no need for state variable as this is updated after flags are loaded...
-    if (!flagsLoading) {
-      selectOptions.forEach(c => {
-        if (regionCodes.indexOf(c.key) === -1 && c.key !== "XX") {
-          regionCodes.push(c.key);
-        }
-      })
-     // console.log("COUNTRIES/REGIONS ", regionCodes);
-    }
-    */
 
     useEffect(() => {
       console.log("UPDATE ", inputError);
@@ -300,9 +288,16 @@ const PhoneNumberField = forwardRef(
       }
     }
     const checkInput = (phoneInput, checkIsValidNumber = false) => {
-      const phone = typeof phoneInput === "string" ? phoneInput : ref.current.value;
+      let phone = typeof phoneInput === "string" ? phoneInput : ref.current.value;
 
-      console.log("INPUT CHECK ", phone, checkIsValidNumber);
+      console.log("INPUT CHECK ", phone, checkIsValidNumber, selectRef.current.value);
+      if (!phone.startsWith("+") && selectRef.current.value !== "") {
+        if (phone.startsWith("0")) {
+          phone = phone.substr(1);
+        }
+        phone = selectRef.current.value + phone;
+      }
+
       //const validatePhoneNumberRegex = /^\+?[1-9][0-9]{7,14}$/;
       //if (!validatePhoneNumberRegex.test(phone)) {
       let checkNumber = phone;
@@ -371,33 +366,33 @@ const PhoneNumberField = forwardRef(
         ref={boxRef}
       >
         <LeftIcon iconify={bxPhone} color={"componentPrimary"} size={"17"} disabled={disabled} inputError={inputError} />
-        {!flagsLoading &&
-          <div
-            style={{
-              display: "inline-block",
-              paddingTop: "2px",
-            }}
-          >
-            <SearchSelect
-              defaultValue={defaultRegion}
-              options={selectOptions}
-              showList={options.showList}
-              searchLength={options.searchLength}
-              size={"sm"}
-              width={"60px"}
-              maxHeight={"200px"}
-              selectOption={options.selectOption}
-              containerRef={boxRef}
-              containerOffset={"-38px"}
-              ref={selectRef}
-              onChange={selectOnChange}
-              data-testid="regioncode"
-              id="region-select"
-              name="region-select"
-              tabIndex="0"
-            />
-          </div>
-        }
+
+        <div
+          style={{
+            display: "inline-block",
+            paddingTop: "2px",
+          }}
+        >
+          <SearchSelect
+            defaultValue={options.defaultRegion}
+            options={selectOptions}
+            showList={options.showList}
+            searchLength={options.searchLength}
+            size={"sm"}
+            width={"60px"}
+            maxHeight={"200px"}
+            selectOption={options.selectOption}
+            containerRef={boxRef}
+            containerOffset={"-38px"}
+            ref={selectRef}
+            onChange={selectOnChange}
+            data-testid="regioncode"
+            id="region-select"
+            name="region-select"
+            tabIndex="0"
+          />
+        </div>
+
         <Input
           ref={ref}
           isIcon={true}
@@ -413,7 +408,7 @@ const PhoneNumberField = forwardRef(
           onBlur={(e) => {
             //console.log("BLUR", e.relatedTarget)
             //console.log("BLUR", e.relatedTarget.firstChild.id)
-            if (e.relatedTarget !== null && e.relatedTarget.firstChild.id === "region-select") {
+            if (e.relatedTarget !== null && e.relatedTarget?.firstChild && e.relatedTarget.firstChild.id === "region-select") {
               console.log("REGION SELECT CLICKED:...");
               // ignore checking phonenumber...
             } else {
@@ -438,7 +433,7 @@ const PhoneNumberField = forwardRef(
         />
 
       </StyledBox>
-      {invalidTxt !== "" && inputError && (
+      {!options.toast && !invalidTxt !== "" && inputError && (
         <Box mt={0} mb={10}>
           <Text textStyle={"caption2"} color={theme.colors.baseError}>
             {invalidTxt}
@@ -452,14 +447,13 @@ const PhoneNumberField = forwardRef(
           </Text>
         </Box>
       )}
-      <div>{inputError ? "ERROR" : "GOOD"}</div>
     </>
   });
 
 PhoneNumberField.propTypes = {
-  defaultRegion: PropTypes.string,
   disabled: PropTypes.bool,
   options: PropTypes.object,
+  selectOptions: PropTypes.array,
   inputState: PropTypes.func
 };
 

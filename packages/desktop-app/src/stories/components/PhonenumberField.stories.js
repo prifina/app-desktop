@@ -19,10 +19,12 @@ export default {
   title: "Components Input/PhoneNumberField",
   component: PhoneNumberField,
   args: {
-    defaultRegion: defaultRegion,
+    selectOptions: [],
+
     id: "phoneNumber",
     name: "phoneNumber",
     options: {
+      defaultRegion: defaultRegion,
       searchLength: 3,
       showList: true,
       selectOption: "key",
@@ -76,7 +78,13 @@ const PhoneNumberFieldDecorator = (story, ctx) => {
   ctx.args.options.checkExists = ctx.args.checkExists;
 
   const [inputIsValid, setInputIsValid] = useState(true);
-  ctx.args.inputState = [inputIsValid, setInputIsValid];
+  ctx.args.inputState = function (input) {
+    console.log("STATE UPDATE", input);
+    console.log("REF DATA ", inputRef.current.dataset['isvalid'])
+    //console.log("EVENT ", event.target.id);
+
+    setInputIsValid(input);
+  };
   //ctx.args.boxRef = boxRef;
   /*
   ctx.args.onChange = (e, code) => {

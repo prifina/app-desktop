@@ -32,8 +32,8 @@ const EmailField = forwardRef(
     const alerts = useToast();
     const [isValid, setIsValid] = useState(true);
     // possibly dynamic change of messages
-    const [promptTxt, setPromptTxt] = useState(options.promptTxt);
-    const [invalidTxt, setInvalidTxt] = useState(options.invalidTxt);
+    const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
+    const [invalidTxt, setInvalidTxt] = useState(options.txt.invalidTxt);
 
 
     useEffect(() => {
@@ -67,12 +67,19 @@ const EmailField = forwardRef(
         ref.current.focus();
       }
       if (options.toast && !emailState) {
-        emailAlert(options.invalidTxt);
+        emailAlert(invalidTxt);
         if (!isValid) {
           inputState(ref.current);
         }
         setIsValid(false);
         ref.current.focus();
+      }
+      if (options.toast && emailState) {
+
+        if (!isValid) {
+          inputState(ref.current);
+        }
+        setIsValid(true);
       }
     }
     const checkEmail = (e) => {
@@ -118,9 +125,7 @@ const EmailField = forwardRef(
           {...props}
           data-isvalid={isValid}
           data-testid="email"
-          placeholder={options.placeholderTxt}
-          id={"email"}
-          name={"email"}
+          placeholder={options.txt.placeholderTxt}
           promptMsg={promptTxt}
           errorMsg={!options.toast ? invalidTxt : ""}
           error={!isValid}

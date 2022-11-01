@@ -17,6 +17,9 @@ export default {
   title: "Components Input/UsernameField",
   component: UsernameField,
   args: {
+
+    id: "username",
+    name: "username",
     options: { value: "", txt: {} },
     toast: false,
     checkExists: false,

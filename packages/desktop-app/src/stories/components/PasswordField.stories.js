@@ -15,7 +15,7 @@ export default {
   title: "Components Input/PasswordField",
   component: PasswordField,
   args: {
-    options: { value: "", txt: {}, checkList: ["firstName", "lastName", "userName"] },
+    options: { addPopup: true, value: "", txt: {}, checkList: () => ["firstName", "lastName", "userName"] },
     toast: false
   },
 
@@ -91,8 +91,77 @@ const PasswordFieldDecorator = (story, ctx) => {
 PasswordFieldSB.decorators = [toastProviderDecorator, PasswordFieldDecorator]
 
 
+export const PasswordFieldConfirmationSB = Template.bind({});
+
+
+const initTexts2 = (t) => {
+  return { "invalidTxt": "", "invalidEntry": t("invalidPassword"), "placeholderTxt": t("confirmPlaceholder"), "promptTxt": "" };
+}
+const PasswordFieldConfirmationDecorator = (story, ctx) => {
+  // console.log("CTX SB ", ctx);
+  const inputRef = useRef();
+
+  const { __ } = useTranslate();
+  ctx.args.options.txt = Object.assign(ctx.args.options.txt, initTexts2(__));
+  ctx.args.options.toast = ctx.args.toast;
+  ctx.args.options.addPopup = false; // confirmation doesn't show popup..
+  ctx.args.options.accoutPassword = () => {
+    return "Password121#";
+  }
+
+  ctx.args.ref = inputRef;
+  ctx.args.id = "passwordConfirm";
+  ctx.args.name = "passwordConfirm";
+
+  const [inputIsValid, setInputIsValid] = useState(true);
+
+  const [passwordStatus, setPasswordStatus] = useState(true);
+  const [passwordValue, setPasswordValue] = useState("");
+
+  ctx.args.inputState = function (input) {
+    console.log("STATE UPDATE", input, input.dataset);
+    console.log("REF DATA ", inputRef.current.dataset['isvalid'])
+    //console.log("EVENT ", event.target.id);
+    setPasswordStatus("STATUS:" + inputRef.current.dataset['isvalid']);
+    setPasswordValue("VALUE:" + inputRef.current.value);
+
+    setInputIsValid(input.dataset['isvalid']);
+  };
+
+
+
+  return <><div style={{
+    display: "flex", height: "600px", width: "100%", justifyContent: "center",
+    alignItems: "center",
+  }}>
+    <div style={{ display: "block", }}>
+      <div style={{ marginBottom: "20px" }}><input ref={accountRef} role="blur-input" autoFocus={true} /></div>
+      <div>{story()}</div>
+    </div>
+  </div><div><button role="check-entry" onClick={() => {
+    //console.log("INPUT ", inputRef.current.dataset, inputRef.current.value, inputIsValid);
+    console.log("INPUT ", inputRef, inputRef.current);
+    //setPasswordStatus(inputRef.current.dataset['isvalid']);
+    //setPasswordValue(inputRef.current.value);
+    //setInputStatus(inputIsValid);
+  }}>CHECK</button></div>
+    <div>{passwordStatus}</div>
+    <div>{passwordValue}</div>
+    <div>STATE:{inputIsValid.toString()}</div>
+  </>
+}
+
+
+PasswordFieldConfirmationSB.decorators = [toastProviderDecorator, PasswordFieldConfirmationDecorator]
+
+PasswordFieldConfirmationSB.storyName = "Confirmation-SB";
+
+// copy args...
+//PasswordFieldConfirmationSB.args = { ...PasswordFieldSB.args }
+
 
 export const PasswordFieldSBInteractive = Template.bind({});
+
 
 
 // copy args...

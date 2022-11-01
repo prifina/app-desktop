@@ -9,6 +9,16 @@ export const MockStore = ({ checkEmail, checkUser, checkPhone, verifyResult = tr
   const phoneCheckResult = checkPhone || false;
   return <Provider createStore={() =>
     create((set, get) => ({
+      activeIndex: -1,
+      setActiveIndex: (newIndex) => {
+        set({ activeIndex: newIndex });
+      },
+      signUp: async (newUser) => {
+        return Promise.resolve({ user: newUser });
+      },
+      getCountryCodeQuery: async () => {
+        return Promise.resolve("FI");
+      },
       checkCognitoAttributeQuery: async (attrName, attrValue) => {
         /*
         API,

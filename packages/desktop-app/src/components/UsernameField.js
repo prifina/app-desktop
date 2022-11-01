@@ -130,9 +130,7 @@ const UsernameField = forwardRef(
           {...props}
           data-isvalid={isValid}
           data-testid="username"
-          placeholder={options.placeholderTxt}
-          id={"username"}
-          name={"username"}
+          placeholder={options.txt.placeholderTxt}
           promptMsg={promptTxt}
           errorMsg={!options.toast ? invalidTxt : ""}
           error={!isValid}

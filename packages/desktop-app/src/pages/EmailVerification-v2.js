@@ -6,6 +6,8 @@ import { useToast } from "@blend-ui/toast";
 
 import { useTranslate, } from "@prifina-apps/utils";
 import VerificationField from "../components/VerificationField";
+
+import { useStore } from "../stores/PrifinaStore";
 import PropTypes from "prop-types";
 
 
@@ -17,6 +19,7 @@ const initTexts = (t) => {
 const EmailVerification = ({ invalidLink, backClick, verifyClick, resendClick, ...props }) => {
   //const { nextStepAction, currentUser } = useAccountContext();
 
+  const setActiveIndex = useStore(state => state.setActiveIndex);
   const alerts = useToast();
   const { __ } = useTranslate();
   const inputRef = useRef();
@@ -26,6 +29,9 @@ const EmailVerification = ({ invalidLink, backClick, verifyClick, resendClick, .
   const [inputIsValid, setInputIsValid] = useState(false);
   //const inputState = [inputIsValid, setInputIsValid];
 
+  useEffect(() => {
+    setActiveIndex(2);
+  }, []);
   const inputState = (input) => {
     console.log("VERIFICATION STATUS ", input);
     console.log(input.value);

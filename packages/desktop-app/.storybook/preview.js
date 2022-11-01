@@ -2,7 +2,7 @@ import { ThemeProvider, theme } from "@blend-ui/core";
 
 import { addDecorator, addParameters } from "@storybook/react";
 
-import { BrowserRouter as Router, MemoryRouter, } from 'react-router-dom';
+//import { BrowserRouter as Router, MemoryRouter, } from 'react-router-dom';
 
 //import { initialize, mswDecorator } from 'msw-storybook-addon';
 /*
@@ -50,6 +50,8 @@ if (typeof global.process === 'undefined') {
 //export const decorators = [mswDecorator];
 
 
+export const decorators = [themeProviderDecorator];
+
 export const parameters = {
   /* 
    chakra: {
@@ -65,12 +67,13 @@ export const parameters = {
     },
   },
 };
-
+/*
 export const decorators = [themeProviderDecorator,
   (Story) => (
-    <MemoryRouter initialEntries={["/"]}>
+    <MemoryRouter initialEntries={["/register/c", "/register/b", "/register", "/"]}>
       <Story />
     </MemoryRouter>
   ),
 ];
 
+*/

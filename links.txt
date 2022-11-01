@@ -6,3 +6,6 @@ https://hackernoon.com/how-to-take-screenshots-in-the-browser-using-javascript-l
 // how to add Intl for Safari....
 https://www.npmjs.com/package/intl
 
+
+// possible, if needs hashroutes... as app only supports one router. 
+https://github.com/imagine10255/bear-react-router-hash

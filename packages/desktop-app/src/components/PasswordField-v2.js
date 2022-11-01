@@ -93,23 +93,36 @@ const PasswordField = forwardRef(
       //console.log("REF ", reference, referenceElement.value)
       const password = typeof passwordInput === "string" ? passwordInput : referenceElement.value;
       //const password = typeof passwordInput === "string" ? passwordInput : "";
-      const passwordCheckResult = checkPassword(password, config.passwordLength, options.checkList);
-      /*
-   Contains at least {config.passwordLength} characters
-   Contains both lower (a-z) and upper case letters (A-Z)
-   Contains at least one number (0-9) and a symbol
-   Does not contain your name or email address
-   Is not commonly used
-*/
-      if (passwordCheckResult.length === 5) {
-        passwordCheckResult.pop();
-      }
-      const invalidPasswordStatus = passwordCheckResult.some((v, i) => {
-        console.log("STEP ", v, i);
-        return v === false;
-      });
+      let invalidPasswordStatus = false;
+      let invalidPassword = options.txt.passwordQuality;
+      console.log("OPTIONS ", options);
 
-      setPasswordVerification(passwordCheckResult);
+      if (options?.accountPassword) {
+        if (password !== options.accountPassword()) {
+          invalidPasswordStatus = true;
+        }
+        invalidPassword = options.txt.invalidEntry;
+
+      } else {
+        const passwordCheckResult = checkPassword(password, config.passwordLength, options.checkList());
+        /*
+     Contains at least {config.passwordLength} characters
+     Contains both lower (a-z) and upper case letters (A-Z)
+     Contains at least one number (0-9) and a symbol
+     Does not contain your name or email address
+     Is not commonly used
+  */
+        if (passwordCheckResult.length === 5) {
+          passwordCheckResult.pop();
+        }
+        invalidPasswordStatus = passwordCheckResult.some((v, i) => {
+          console.log("STEP ", v, i);
+          return v === false;
+        });
+
+        setPasswordVerification(passwordCheckResult);
+      }
+
       if (invalidPasswordStatus) {
         if (!isValid) {
           inputState(ref.current)
@@ -119,7 +132,10 @@ const PasswordField = forwardRef(
         //setIsPassword(false);
         setReferenceElement(password);
         if (showAlert && options.toast) {
-          passwordAlert(options.txt.passwordQuality);
+          passwordAlert(invalidPassword);
+        }
+        if (showAlert && !options.toast) {
+          setInvalidTxt(invalidPassword);
         }
         ref.current = referenceElement;
         //setInvalidTxt(options.txt.passwordQuality);
@@ -129,81 +145,74 @@ const PasswordField = forwardRef(
           inputState(ref.current)
         }
         setIsValid(true)
-        //setIsPassword(true);
+      }
 
-        //setInvalidTxt("");
-      }
-      /*
-      const passwordError = checkPasswordQuality(passwordCheckResult);
-      if (passwordError) {
-        const errorMsg = i18n.__("passwordQuality");
-        if (!alerts.check().some(alert => alert.message === errorMsg))
-          alerts.error(errorMsg, {});
-        return false;
-      } else {
-        return true;
-      }
-      */
       return !invalidPasswordStatus
     };
 
     return <>
-
-      <IconField onClick={onHide}>
-        <IconField.LeftIcon
-          iconify={bxLockAlt}
-          color={"componentPrimary"}
-          size={"17"}
-        />
-        <IconField.InputField
-          type={hidePassword ? "password" : "text"}
-          placeholder={options.txt.placeholderTxt}
-          data-isvalid={isValid}
-          data-testid="password"
-          /*  id and name  in props... */
-          {...props}
-          ref={mergeRefs(setReferenceElement, reference)}
-          /* ref={reference} */
-          onChange={handleChange}
-          onBlur={(e) => {
-            //console.log("BLUR", e.relatedTarget)
-            passwordCheck(false, true);
-            if (e.relatedTarget === null || e.relatedTarget.id !== "hide-icon") {
-              setShowPopup(false);
-            }
-          }}
-          onKeyDown={e => {
-            if (e.key === "Enter") {
-              if (passwordCheck(false, true)) {
-                setShowPopup(false);
-              }
-            }
-          }}
-          errorMsg={!options.toast ? invalidTxt : ""}
-          error={!isValid && password.length > 0}
-          onFocus={() => {
-            setShowPopup(true);
-          }}
-        />
-        <Box
-          display={"inline-flex"}
-          onClick={onHide}
-          className={"PasswordRightIcon"}
-          role="hide-icon"
-          tabIndex="0"  // otherwise onBlur relatedTarget is null
-          id="hide-icon"
-        >
-
-          <IconField.RightIcon
-            iconify={hidePassword ? bxHide : eyeIcon}
+      <div onBlur={(e) => {
+        if (e.target?.id && e.target.id === "hide-icon") {
+          setShowPopup(false);
+        }
+      }} tabIndex="0">
+        <IconField onClick={onHide}  >
+          <IconField.LeftIcon
+            iconify={bxLockAlt}
             color={"componentPrimary"}
             size={"17"}
-            className={hidePassword ? "EyeIcon" : "HideIcon"}
           />
+          <IconField.InputField
+            type={hidePassword ? "password" : "text"}
+            placeholder={options.txt.placeholderTxt}
+            data-isvalid={isValid}
+            data-testid="password"
+            /*  id and name  in props... */
+            {...props}
+            ref={mergeRefs(setReferenceElement, reference)}
+            /* ref={reference} */
+            onChange={handleChange}
+            onBlur={(e) => {
+              //console.log("BLUR", e.relatedTarget)
+              passwordCheck(false, true);
+              if (e.relatedTarget === null || e.relatedTarget.id !== "hide-icon") {
+                setShowPopup(false);
+              }
+            }}
+            onKeyDown={e => {
+              if (e.key === "Enter") {
+                if (passwordCheck(false, true)) {
+                  setShowPopup(false);
+                }
+              }
+            }}
+            promptMsg={!options.toast ? promptTxt : ""}
+            errorMsg={!options.toast ? invalidTxt : ""}
+            error={!isValid && password.length > 0}
+            onFocus={() => {
+              setShowPopup(true);
+            }}
+          />
+          <Box
+            display={"inline-flex"}
+            onClick={onHide}
+            className={"PasswordRightIcon"}
+            role="hide-icon"
+            tabIndex="0"  // otherwise onBlur relatedTarget is null
+            id="hide-icon"
+          >
 
-        </Box>
-      </IconField>
-      {showPopup && TooltipComponent}
+            <IconField.RightIcon
+              iconify={hidePassword ? bxHide : eyeIcon}
+              color={"componentPrimary"}
+              size={"17"}
+              className={hidePassword ? "EyeIcon" : "HideIcon"}
+            />
+
+          </Box>
+        </IconField>
+      </div>
+      {options.addPopup && showPopup && TooltipComponent}
     </>
   });
 
