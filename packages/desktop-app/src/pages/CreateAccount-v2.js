@@ -279,7 +279,6 @@ const Register = ({ loginLink, inputVals }) => {
       <Box mt={28}>
         <EmailField {...emailArgs} />
       </Box>
-
       <Box mt={28}>
         <PhoneNumberField {...phoneArgs} />
       </Box>
@@ -335,7 +334,6 @@ const CreateAccount = () => {
   const { getCountryCodeQuery, resendCode, verifyCode } = useStore((state) => ({ getCountryCodeQuery: state.getCountryCodeQuery, verifyCode: state.verifyCode, resendCode: state.resendCode }),
     shallow
   );
-
 
   /*
   {

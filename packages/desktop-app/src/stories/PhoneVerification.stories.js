@@ -87,7 +87,7 @@ const verificationDecorator = (story, ctx) => {
 
   ctx.parameters["invalidTxt"] = __("codeDigitsError");
 
-  return <>{story()}
+  return <><MockStore>{story()}</MockStore>
     <AddListener />
   </>
 }

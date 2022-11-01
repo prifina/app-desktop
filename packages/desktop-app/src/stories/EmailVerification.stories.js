@@ -98,7 +98,7 @@ const verificationDecorator = (story, ctx) => {
 
   ctx.parameters["invalidTxt"] = __("codeDigitsError");
 
-  return <>{story()}
+  return <><MockStore >{story()}</MockStore>
     <AddListener />
   </>
 }
@@ -134,6 +134,16 @@ EmailVerificationSB.decorators = [toastProviderDecorator, verificationDecorator]
 
 
 export const EmailVerificationSBInteractive = Template.bind({});
+
+
+const activeMockupDecorator = (story, ctx) => {
+
+  //console.log("CTX ",ctx.parameters)
+  const { __ } = useTranslate();
+  ctx.parameters["invalidTxt"] = __("codeDigitsError");
+  // can change verifyResult by using prop "verifyResult", default is true 
+  return <><MockStore ><div>{story()}</div></MockStore></>
+}
 
 
 // copy args...
@@ -217,16 +227,6 @@ const ActiveTemplate = args => {
 
 export const EmailVerificationSBActive = ActiveTemplate.bind({});
 
-
-
-const activeMockupDecorator = (story, ctx) => {
-
-  //console.log("CTX ",ctx.parameters)
-  const { __ } = useTranslate();
-  ctx.parameters["invalidTxt"] = __("codeDigitsError");
-  // can change verifyResult by using prop "verifyResult", default is true 
-  return <><MockStore ><div>{story()}</div></MockStore></>
-}
 
 // copy args...
 EmailVerificationSBActive.args = { ...EmailVerificationSB.args }

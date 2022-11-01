@@ -100,13 +100,15 @@ const initTexts2 = (t) => {
 const PasswordFieldConfirmationDecorator = (story, ctx) => {
   // console.log("CTX SB ", ctx);
   const inputRef = useRef();
+  const accountRef = useRef();
 
   const { __ } = useTranslate();
   ctx.args.options.txt = Object.assign(ctx.args.options.txt, initTexts2(__));
   ctx.args.options.toast = ctx.args.toast;
   ctx.args.options.addPopup = false; // confirmation doesn't show popup..
   ctx.args.options.accoutPassword = () => {
-    return "Password121#";
+    //return "Password121#";
+    return accountRef.current.value;
   }
 
   ctx.args.ref = inputRef;

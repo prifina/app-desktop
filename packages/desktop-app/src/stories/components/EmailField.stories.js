@@ -15,7 +15,7 @@ export default {
   title: "Components Input/EmailField",
   component: EmailField,
   args: {
-    options: { value: "", checkExists: false, toast: false },
+    options: { value: "", checkExists: false, toast: false, txt: {} },
     toast: false,
     checkExists: false,
   }
@@ -46,7 +46,7 @@ const emailFieldDecorator = (story, ctx) => {
 
   const { __ } = useTranslate();
 
-  ctx.args.options = Object.assign(ctx.args.options, initTexts(__));
+  ctx.args.options.txt = Object.assign(ctx.args.options, initTexts(__));
   ctx.args.options.toast = ctx.args.toast;
   ctx.args.options.checkExists = ctx.args.checkExists;
   ctx.args.ref = inputRef;
@@ -71,7 +71,7 @@ const emailFieldInteractiveDecorator = (story, ctx) => {
 
   const { __ } = useTranslate();
 
-  ctx.args.options = Object.assign(ctx.args.options, initTexts(__));
+  ctx.args.options.txt = Object.assign(ctx.args.options, initTexts(__));
   ctx.args.options.toast = ctx.args.toast;
   ctx.args.options.checkExists = ctx.args.checkExists;
   ctx.args.ref = inputRef;
