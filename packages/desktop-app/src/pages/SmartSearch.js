@@ -13,7 +13,7 @@ const SmartSearch = props => {
         height={"100%"}
       >
         <Text textAlign={"center"} textStyle={"h3"}>
-          SmartSearch
+          {i18n.__("appNameSmartSearch")}
         </Text>
       </Flex>
     </Box>

@@ -588,7 +588,7 @@ const Settings = props => {
       )}
       <ContentContainer bg={colors.backgroundLight}>
         <Text textStyle="h3" mb={36}>
-          Account security
+          {i18n.__("sectionAccountSecurity")}
         </Text>
         <SectionContainer
           className="info-container"
@@ -612,7 +612,7 @@ const Settings = props => {
           <Box ml={10}>
             <Flex mb={8}>
               <Text textStyle="h4" mr={10}>
-                Securing Your Account
+                {i18n.__("sectionHeadingSecuringYourAccount")}
               </Text>
               <Badge>
                 <BlendIcon
@@ -620,13 +620,11 @@ const Settings = props => {
                   color="#0D2177"
                   size="10px"
                 />
-                <Text ml={6}>always on</Text>
+                <Text ml={6}>{i18n.__("badgeTextAlwaysOn")}</Text>
               </Badge>
             </Flex>
             <Text>
-              Primary communication channels used for multifactor
-              authentication, to verify changes in account credentials and other
-              account related communication.
+              {i18n.__("securingYourAccountPara")}
             </Text>
           </Box>
         </SectionContainer>
@@ -635,7 +633,7 @@ const Settings = props => {
             <>
               <Box ml={24}>
                 <Text mr={16} mb={5}>
-                  Mobile Phone Number
+                  {i18n.__("sectionHeadingMobilePhoneNumber")}
                 </Text>
                 <Box className="phone-number" width="378px">
                   <PhoneNumberField>
@@ -704,9 +702,9 @@ const Settings = props => {
                   mr={8}
                   onClick={() => setChangeNumber(value => !value)}
                 >
-                  Cancel
+                  {i18n.__("cancelButton")}
                 </Button>
-                <Button onClick={sendCodePhone}>Change number</Button>
+                <Button onClick={sendCodePhone}>{i18n.__("changeNumberButton")}</Button>
               </Flex>
             </>
           ) : (
@@ -723,14 +721,13 @@ const Settings = props => {
                 <Box ml={24}>
                   <Flex>
                     <Text mr={16} fontWeight="600">
-                      Mobile Phone Number
+                      {i18n.__("subSectionHeadingMobilePhoneNumber")}
                     </Text>
-                    <Badge>verified</Badge>
+                    <Badge>{i18n.__("badgeTextVerified")}</Badge>
                   </Flex>
                   <Flex>
                     <Text fontSize="xs" color={colors.textMuted}>
-                      We will send an one time SMS code to your verified phone
-                      number
+                      {i18n.__("subSectionParaWeWillSendSMS")}
                     </Text>
                     <Text fontWeight="600" fontSize="xs" ml={3}>
                       {currentUser.phoneNumber}
@@ -739,7 +736,7 @@ const Settings = props => {
                 </Box>
               </Flex>
               <Button onClick={() => setChangeNumber(value => !value)}>
-                Change number
+              {i18n.__("changeNumberButton")}
               </Button>
             </>
           )}
@@ -752,7 +749,7 @@ const Settings = props => {
             <>
               <Box ml={24}>
                 <Text mr={16} mb={5} fontWeight="600">
-                  Email
+                  {i18n.__("emailPlaceholder")}
                 </Text>
                 <Box className="email" width="378px">
                   <IconField>
@@ -788,10 +785,10 @@ const Settings = props => {
                   mr={8}
                   onClick={() => setChangeEmail(value => !value)}
                 >
-                  Cancel
+                  {i18n.__("cancelButton")}
                 </Button>
 
-                <Button onClick={sendCodeEmail}>Change email</Button>
+                <Button onClick={sendCodeEmail}>{i18n.__("changeEmailButton")}</Button>
               </Flex>
             </>
           ) : (
@@ -808,14 +805,13 @@ const Settings = props => {
                 <Box ml={24}>
                   <Flex>
                     <Text mr={16} fontWeight="600">
-                      Primary email
+                      {i18n.__("subSectionHeadingPrimaryEmail")}
                     </Text>
-                    <Badge>verified</Badge>
+                    <Badge>{i18n.__("badgeTextVerified")}</Badge>
                   </Flex>
                   <Flex>
                     <Text fontSize="xs" color={colors.textMuted}>
-                      We will send an one time code to your verified email
-                      address
+                      {i18n.__("subSectionParaWeWillSendEmail")}
                     </Text>
                     <Text fontWeight="600" fontSize="xs" ml={3}>
                       {currentUser.email}
@@ -824,7 +820,7 @@ const Settings = props => {
                 </Box>
               </Flex>
               <Button onClick={() => setChangeEmail(value => !value)}>
-                Change email
+                {i18n.__("changeEmailButton")}
               </Button>
             </>
           )}

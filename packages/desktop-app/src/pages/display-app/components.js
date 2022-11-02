@@ -519,18 +519,18 @@ export const SettingsDialog = ({
               <Tab>
                 {Object.keys(inputFields.current).length > 0 ? (
                   <Tab>
-                    <Text>User Settings</Text>
+                    <Text>{i18n.__("systemSettingsLabel")}</Text>
                   </Tab>
                 ) : null}
 
               </Tab>
               {Object.keys(systemFields.current).length > 0 ? (
                 <Tab>
-                  <Text>System Settings</Text>
+                  <Text>{i18n.__("systemSettingsTabText")}</Text>
                 </Tab>
               ) : null}
               <Tab>
-                <Text>About this widget</Text>
+                <Text>{i18n.__("systemSettingsTabText2")}</Text>
               </Tab>
             </TabList>
             <TabPanelList>
@@ -657,7 +657,7 @@ export const SettingsDialog = ({
                 </Box>
                 <Box mt={10} ml={5} mr={5}>
                   <Label key={"setting-label-theme"} mt={10}>
-                    Theme
+                    {i18n.__("themeLabel")}
                   </Label>
                   <Select
                     mb={10}
@@ -670,10 +670,10 @@ export const SettingsDialog = ({
                   >
 
                     <option value="dark">
-                      Dark
+                      {i18n.__("themeOptionDark")}
                     </option>
                     <option value="light">
-                      Light
+                      {i18n.__("themeOptionLight")}
                     </option>
 
                   </Select>
@@ -781,10 +781,10 @@ export const SettingsDialog = ({
                     {widgetSettings.shortDescription || ""}
                   </Text>
                   <Text textStyle="h7" bold mb={36}>
-                    Author Details
+                    {i18n.__("authorDetails")}
                   </Text>
                   <Flex justifyContent="space-between" mb={40}>
-                    <Text fontSize="xs">Author</Text>
+                    <Text fontSize="xs">{i18n.__("systemAuthorTabText")}</Text>
                     <Text
                       color={colors.brandAccent}
                       fontSize="xs"
@@ -794,7 +794,7 @@ export const SettingsDialog = ({
                     </Text>
                   </Flex>
                   <Flex justifyContent="space-between" mb={40}>
-                    <Text fontSize="xs">Size</Text>
+                    <Text fontSize="xs">{i18n.__("systemSizeTabText")}</Text>
                     <Text
                       color={colors.brandAccent}
                       fontSize="xs"
@@ -805,7 +805,7 @@ export const SettingsDialog = ({
                   </Flex>
 
                   <Flex justifyContent="space-between" mb={40}>
-                    <Text fontSize="xs">Version</Text>
+                    <Text fontSize="xs">{i18n.__("systemVersionTabText")}</Text>
                     <Text
                       color={colors.brandAccent}
                       fontSize="xs"
@@ -815,7 +815,7 @@ export const SettingsDialog = ({
                     </Text>
                   </Flex>
                   <Flex justifyContent="space-between" mb={40}>
-                    <Text fontSize="xs">Copyright</Text>
+                    <Text fontSize="xs">{i18n.__("copyright")}</Text>
                     <Text
                       color={colors.brandAccent}
                       fontSize="xs"
@@ -830,27 +830,24 @@ export const SettingsDialog = ({
                     mb={40}
                     style={{ color: colors.textLink }}
                   >
-                    Developer Website
+                    {i18n.__("developerButton")}
                   </Button>
                   <Flex justifyContent="space-between" mb={40}>
-                    <Text fontSize="xs">LEDSupport</Text>
+                    <Text fontSize="xs">{i18n.__("systemLEDSupport")}</Text>
                     <Text
                       color={colors.brandAccent}
                       fontSize="xs"
                       style={{ textTransform: "uppercase" }}
                     >
-                      @LedSupport
+                      {i18n.__("systemLEDSupportText")}
                     </Text>
                   </Flex>
                   <InfoBox>
                     <Text textStyle="h7" mb={4}>
-                      Experiencing problems ?
+                      {i18n.__("experiencingProblemQuestion")}
                     </Text>
                     <Text fontSize="12px">
-                      If this widget is not working properly the best way to get
-                      in touch with the author is through our LEDSupport Slack
-                      channel .You can find the widget developers slack details
-                      in the table above.
+                      {i18n.__("experiencingProblemText")}
                     </Text>
                   </InfoBox>
                 </>
@@ -983,7 +980,7 @@ export const SearchResults = props => {
   return (
     <>
       <SearchContainer {...containerProps}>
-        <Text textStyle={"h4"}>Search results</Text>
+        <Text textStyle={"h4"}>{i18n.__("systemSearchResults")}</Text>
         <Divider />
         {content}
       </SearchContainer>
@@ -1013,7 +1010,7 @@ export const SearchHistory = props => {
   return (
     <>
       <SearchContainer {...containerProps}>
-        <Text textStyle={"h4"}>Search history</Text>
+        <Text textStyle={"h4"}>{i18n.__("systemSearchHistory")}</Text>
         <Divider />
         <ol>
           {searchHistory.length > 0 &&
@@ -1046,7 +1043,7 @@ export const AddWidget = ({ onClick, ...props }) => {
       <AddWidgetContainer>
         <AddWidgetLogo />
         <Button mt={34} variation="outline" onClick={onClick}>
-          Add Widget +
+        {i18n.__("addWidgetButton")}
         </Button>
       </AddWidgetContainer>
     </Box>

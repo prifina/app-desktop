@@ -38,7 +38,7 @@ const Logout = props => {
   return (
     <ProgressContainer title={i18n.__("Logout")} progress={100} pr={19}>
       <Box mt={50}>
-        <Button onClick={buttonClick}>Logout</Button>
+        <Button onClick={buttonClick}>{i18n.__("logoutButton")}</Button>
       </Box>
     </ProgressContainer>
   );

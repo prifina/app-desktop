@@ -13,7 +13,7 @@ const ProfileCards = props => {
         height={"100%"}
       >
         <Text textAlign={"center"} textStyle={"h3"}>
-          ProfileCards
+          {i18n.__("appNameProfileCards")}
         </Text>
       </Flex>
     </Box>
