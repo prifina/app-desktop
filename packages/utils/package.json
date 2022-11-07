@@ -14,6 +14,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && GENERATE_SOURCEMAP=true && yarn build:cjs",
+    "winbuild": "del -rf \"./dist\" && set \"GENERATE_SOURCEMAP=false\" && yarn build:cjs",
     "build:esm": "cross-env NODE_ENV=development BABEL_ENV=esm babel ./src --out-dir ./dist/esm",
     "build:cjs": "cross-env NODE_ENV=development BABEL_ENV=cjs babel ./src --out-dir ./dist/cjs",
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=es babel ./src --out-dir ./dist/es",
