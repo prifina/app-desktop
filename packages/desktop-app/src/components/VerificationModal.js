@@ -194,7 +194,7 @@ const VerificationModal = ({
         >
           <Box>
             <Divider>
-              <Text textStyle={"h5"}>Verify your new phone number</Text>
+              <Text textStyle={"h5"}>{i18n.__("verifyNumberModalHeader")}</Text>
             </Divider>
           </Box>
           <ModalBody style={{ marginTop: 35, marginBottom: 45 }}>
@@ -208,10 +208,9 @@ const VerificationModal = ({
             >
               <Image src={phoneImage} />
               <Box ml={42}>
-                <Text fontWeight="600">Enter authentication code</Text>
+                <Text fontWeight="600">{i18n.__("authConfirmTitle")}</Text>
                 <Text fontSize="xxs" mb={18}>
-                  We've sent you the authentication code. Please enter it below
-                  to verify this number.
+                  {i18n.__("authConfirmationText2")}
                 </Text>
                 <IconField width="224px">
                   <IconField.LeftIcon
@@ -241,7 +240,7 @@ const VerificationModal = ({
               <Flex height="34px" width="350px" justifyContent="space-between">
                 <Flex alignItems="center">
                   <Text fontSize="xxs" mr={1}>
-                    Didn’t receive the code?
+                    {i18n.__("codeMissing")}
                   </Text>
                   <Button
                     variation="link"
@@ -253,7 +252,7 @@ const VerificationModal = ({
                     }
                   >
                     <Text fontSize="xxs" ml={3} color={colors.textLink}>
-                      Send another code
+                      {i18n.__("sendCodeText")}
                     </Text>
                   </Button>
                 </Flex>
@@ -274,7 +273,7 @@ const VerificationModal = ({
                   }
                 >
                   {/* {i18n.__("declineButton")} */}
-                  Verify
+                  {i18n.__("verifyButton")}
                 </Button>
               </Flex>
               <Button

@@ -592,7 +592,7 @@ const DisplayApp = ({
                                       : "black"
                                   }
                                 >
-                                  Prosessing your data...
+                                  {i18n.__("processingData")}
                                 </Text>
                                 <Text
                                   textStyle={"caption"}
@@ -602,8 +602,7 @@ const DisplayApp = ({
                                       : "black"
                                   }
                                 >
-                                  You will be notified as soon as the data
-                                  becomes available in your cloud.
+                                  {i18n.__("processDataNotifcationText")}
                                 </Text>
                               </div>
                             </div>
@@ -647,7 +646,7 @@ const DisplayApp = ({
                                   </Button>
                                 )}
                                 {userDataSourceStatus === 1 && (
-                                  <Button>Activate</Button>
+                                  <Button>{i18n.__("activateButton")}</Button>
                                 )}
                               </div>
                             </div>
@@ -1053,7 +1052,7 @@ const DisplayApp = ({
                             padding={10}
 
                           >
-                            <Text fontSize="sm">Your Views</Text>
+                            <Text fontSize="sm">{i18n.__("dropDownText")}</Text>
                             <C.StyledBlendIcon
                               iconify={mdiPencilOutline}
                               onClick={() => setEditView(!editView)}

@@ -177,7 +177,7 @@ const Login = () => {
     //console.log(cognitoIdentityCredentials);
 */
 
-      if ((appDebug && user.preferredMFA === "NOMFA") || (process.env.REACT_APP_STAGE === "dev" && loginFields.username === "test-user")) {
+      if (appDebug && user.preferredMFA === "NOMFA") {
         userAuth(true);
         //history.replace("/home");
         navigate("/home", { replace: true })
@@ -301,7 +301,7 @@ const Login = () => {
               <Flex mt={55} mb={57} alignSelf="flex-start">
                 <Image src={prifinaIcon} width="25px" />
                 <Text ml={3} fontWeight="600">
-                  Prifina
+                  {i18n.__("loginPrifinaText")}
                 </Text>
               </Flex>
               {confirmCode ? (
@@ -313,12 +313,12 @@ const Login = () => {
               ) : (
                 <>
                   <Text mb={4} textStyle="h3">
-                    Log in to your account
+                    {i18n.__("loginPage")}
                   </Text>
-                  <Text mb={32}>Welcome back! Please enter your details.</Text>
+                  <Text mb={32}>{i18n.__("loginSupportingText")}</Text>
                   <Box>
                     <Text fontWeight="600" fontSize="sm">
-                      Username
+                      {i18n.__("usernameFormLabel")}
                     </Text>
                     <IconField>
                       <IconField.LeftIcon
@@ -380,7 +380,7 @@ const Login = () => {
                   </Box>
                   <Box mt={32}>
                     <Text fontWeight="600" fontSize="sm">
-                      Password
+                      {i18n.__("passwordFormLabel")}
                     </Text>
                     <PasswordField
                       placeholder={i18n.__("passwordPlaceholder")}
@@ -509,7 +509,7 @@ const Login = () => {
 
                     <Flex alignItems="baseline" mt={10}>
                       <Text mr={3} fontSize="xs" textAlign="center">
-                        Don’t have an account?
+                        {i18n.__("noAccText")}
                       </Text>
                       <Button
                         className="createAccountButton"

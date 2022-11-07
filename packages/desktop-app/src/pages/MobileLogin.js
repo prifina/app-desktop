@@ -31,9 +31,6 @@ import config from "../config";
 
 i18n.init();
 
-const titleText =
-  "We are a team working on the future of personal applications. This is why we have created this personal cloud environment that will help you implement your boldest ideas while allowing individuals to keep their data.";
-
 const MobileLogin = props => {
   const alerts = useToast();
   const [loginFields, handleChange] = useFormFields({
@@ -307,7 +304,7 @@ const MobileLogin = props => {
             <React.Fragment>
               <Box mt={12} pl={35} pr={35}>
                 <Text textStyle={"body"} style={{ wordBreak: "break-word" }}>
-                  {titleText}
+                  {i18n.__("landingPage")}
                 </Text>
               </Box>
 

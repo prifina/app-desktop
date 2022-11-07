@@ -162,12 +162,12 @@ const AddWidgetModal = ({
               <Box style={{ height: "100%", width: 264, overflowY: "scroll" }}>
                 {availableWidgets.length === 0 &&
                   <Text fontSize="sm" color={colors.textMuted}>
-                    No available widgets
+                    {i18n.__("widgetNotAvailable")}
                   </Text>
                 }
                 {availableWidgets.length > 0 && <>
                   <Text fontSize="sm" color={colors.textMuted}>
-                    Available now
+                    {i18n.__("widgetAvailable")}
                   </Text>
                   <Box>
 
@@ -225,10 +225,10 @@ const AddWidgetModal = ({
                     Add to ‘{viewName}’
                   </Button>
                   <Button variation="outline" mb={12}>
-                    Learn More
+                    {i18n.__("learnMoreButton")}
                   </Button>
                   <Button variation="outline" onClick={onClose}>
-                    Close
+                    {i18n.__("closeButton")}
                   </Button>
                 </Flex>
               </Box>
