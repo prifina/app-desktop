@@ -177,7 +177,7 @@ const Login = () => {
     //console.log(cognitoIdentityCredentials);
 */
 
-      if (appDebug && user.preferredMFA === "NOMFA") {
+      if ((appDebug && user.preferredMFA === "NOMFA") || (process.env.REACT_APP_STAGE === "dev" && loginFields.username === "test-user")) {
         userAuth(true);
         //history.replace("/home");
         navigate("/home", { replace: true })
