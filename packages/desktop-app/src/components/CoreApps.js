@@ -200,11 +200,15 @@ const CoreApps = props => {
             },
           });
 
-          if (
-            addressBookResult.data.getUserAddressBook.hasOwnProperty(
-              "addressBook",
-            ) &&
-            addressBookResult.data.getUserAddressBook.addressBook !== null
+          /*   console.log("ADDRESS BOOK ", addressBookResult);
+            console.log("ADDRESS BOOK ", addressBookResult.data);
+            console.log("ADDRESS BOOK ", addressBookResult.data.getUserAddressBook);
+            console.log("ADDRESS BOOK ", addressBookResult.data.getUserAddressBook?.addressBook);
+  
+            console.log("ADDRESS BOOK ", addressBookResult.data.getUserAddressBook.hasOwnProperty("addressBook"));
+   */
+          if ((addressBookResult.data.getUserAddressBook?.addressBook) &&
+            (addressBookResult.data.getUserAddressBook.addressBook !== null)
           ) {
             JSON.parse(
               addressBookResult.data.getUserAddressBook.addressBook,
