@@ -1,0 +1,11 @@
+{
+  "data": {
+    "getCognitoMetrics": {
+      "result": [
+        "{\"Id\":\"userPool_eu_west_1_uwy3R12FM_2vh4cnj9ksl34q6vu5o56trhbi_SignInSuccesses\",\"Label\":\"SignInSuccesses\",\"Timestamps\":[\"2022-11-05T11:45:00.000Z\",\"2022-11-05T10:45:00.000Z\",\"2022-11-05T09:15:00.000Z\",\"2022-11-04T17:15:00.000Z\",\"2022-11-04T16:45:00.000Z\",\"2022-11-04T12:45:00.000Z\",\"2022-11-04T12:15:00.000Z\",\"2022-11-04T11:45:00.000Z\"],\"Values\":[1,1,1,1,0,0,0,1],\"StatusCode\":\"Complete\"}",
+        "{\"Id\":\"userPool_eu_west_1_uwy3R12FM_2vh4cnj9ksl34q6vu5o56trhbi_SignUpSuccesses\",\"Label\":\"SignUpSuccesses\",\"Timestamps\":[\"2022-10-24T14:15:00.000Z\"],\"Values\":[1],\"StatusCode\":\"Complete\"}",
+        "{\"Id\":\"userPool_eu_west_1_uwy3R12FM_2vh4cnj9ksl34q6vu5o56trhbi_TokenRefreshSuccesses\",\"Label\":\"TokenRefreshSuccesses\",\"Timestamps\":[\"2022-11-06T08:45:00.000Z\"],\"Values\":[2],\"StatusCode\":\"Complete\"}"
+      ]
+    }
+  }
+}

@@ -107,6 +107,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
+    "otpauth": "^9.0.1",
     "react": "^18.2.0",
     "react-dnd": "^14.0.3",
     "react-dnd-html5-backend": "^14.0.1",
@@ -123,7 +124,8 @@
     "styled-components": "^5.3.5",
     "styled-system": "^5.1.5",
     "url-loader": "^4.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "zustand": "^4.1.4"
   },
   "browserslist": {
     "production": [
