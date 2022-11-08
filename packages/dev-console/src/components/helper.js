@@ -71,7 +71,7 @@ export function AddRemoveDataSources({
           }}
         >
           <Text fontSize="xs" color="#28C3E8">
-            USER HELD
+            {i18n.__("devComponentHelperText")}
           </Text>
         </Flex>
         {dataSource.url !== undefined ? (

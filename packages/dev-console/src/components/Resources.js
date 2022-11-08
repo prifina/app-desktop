@@ -54,12 +54,11 @@ const Resources = ({ ...props }) => {
         }}
       >
         <Flex justifyContent="space-between" alignItems="center">
-          <Text textStyle="h3">Getting started</Text>
+          <Text textStyle="h3">{i18n.__("devComponentResourcesTitle")}</Text>
           <BlendIcon iconify={mdiArrowTopRight} size="20px" color="white" />
         </Flex>
         <Text>
-          Read our quick start guide to familiarize yourself with Prifina’s
-          tools and workflows!
+          {i18n.__("devComponentResourcesHeader")}
         </Text>
       </GreetContainer>
 
@@ -81,13 +80,13 @@ const Resources = ({ ...props }) => {
         >
           <TabList>
             <Tab>
-              <Text>Key resources</Text>
+              <Text>{i18n.__("keyResourcesHeading")}</Text>
             </Tab>
             <Tab>
-              <Text>Build resources</Text>
+              <Text>{i18n.__("buildResourcesTabText")}</Text>
             </Tab>
             <Tab>
-              <Text>Test resources</Text>
+              <Text>{i18n.__("testResourcesTabText")}</Text>
             </Tab>
           </TabList>
           <TabPanelList style={{ backgroundColor: null }}>

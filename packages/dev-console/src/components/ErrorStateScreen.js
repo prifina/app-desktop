@@ -8,6 +8,10 @@ import zendIcon from "@iconify/icons-mdi/zend";
 
 import PropTypes from "prop-types";
 
+import { i18n } from "@prifina-apps/utils";
+
+i18n.init();
+
 const CustomBox = ({ icon, title, description, buttonName, onClick }) => {
   return (
     <Flex
@@ -82,17 +86,15 @@ const ErrorStateScreen = () => {
   return (
     <Flex flexDirection="column" alignItems="center">
       <Box textAlign="center" mb={70} width="500px">
-        <Text color={colors.brandAccent}>ERROR MESSAGE</Text>
+        <Text color={colors.brandAccent}>{i18n.__("devComponentErrorScreenTitle")}</Text>
         <Text textStyle="h1" color={"white"} mb={24}>
-          Oops! Something went wrong.
+          {i18n.__("devComponentErrorScreenHeader")}
         </Text>
         <Text color={colors.baseWhite}>
-          There is a problem with the remote link you entered.
+          {i18n.__("devComponentErrorScreenText")}
         </Text>
         <Text color={colors.textMuted}>
-          This could either be a probelm with the link itself or an error with
-          your build. We cannot provide an exact error but here are some
-          solutions to common problems.
+          {i18n.__("devComponentErrorScreenTextBody")}
         </Text>
       </Box>
       <Flex width="1248px" justifyContent="space-between">

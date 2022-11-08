@@ -4,7 +4,7 @@ import { Storage as S3Storage } from "aws-amplify";
 
 import { Box, Button, Text, Input } from "@blend-ui/core";
 import config from "../config";
-import { useFormFields } from "@prifina-apps/utils";
+import { i18n, useFormFields } from "@prifina-apps/utils";
 
 import PropTypes from "prop-types";
 
@@ -100,7 +100,7 @@ const UploadApp = props => {
   return (
     <>
       <Box mt={20} mb={10}>
-        <Text>Upload zip file {props.row.id}.zip</Text>
+        <Text>{i18n.__("devComponentUploadAppText")} {props.row.id}.zip</Text>
       </Box>
       <Box width={"150px"} m={10}>
         <Input

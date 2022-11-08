@@ -139,14 +139,14 @@ const TargetBox = ({ onDrop, colors, widgetId }) => {
         {isActive ? "Release to drop" : "Drag file here"}
       </Text> */}
       {isActive ? (
-        <Text color={colors.textMuted}>Release to drop</Text>
+        <Text color={colors.textMuted}>{i18n.__("devComponentUpload")}</Text>
       ) : (
         <Flex width="167px" alignItems="center" flexDirection="column">
           <Text fontSize="xs" color={colors.textMuted}>
-            Upload a .zip file of your build
+            {i18n.__("devComponentUploadFileTextBuild")}
           </Text>
           <Text fontSize="xs" color={colors.textMuted}>
-            Drag and drop a file here or
+            {i18n.__("dragAndDropText")}
           </Text>
           <StyledButton
             accept={".zip"}
@@ -256,7 +256,7 @@ const UploadFile = ({ widgetId }) => {
         <FileList files={droppedFiles} />
         {uploaded !== "" ? (
           <Text fontSize="xs" color={colors.baseSuccess}>
-            Progress: {uploaded}
+            {i18n.__("devComponentUploadFileProgress")} {uploaded}
           </Text>
         ) : null}
       </>

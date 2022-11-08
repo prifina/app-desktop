@@ -24,6 +24,8 @@ import { i18n } from "@prifina-apps/utils";
 import UploadAsset from "./UploadAsset";
 import placeholderImage from "../assets/placeholder-image.svg";
 
+i18n.init();
+
 const SidebarContainer = styled(Flex)`
   width: 270px;
   height: 100%;
@@ -194,7 +196,7 @@ export const DevConsoleSidebar = ({
       <Divider mb={41} color="#343233" />
 
       <Text fontSize="xs" ml="16px" mb="16px">
-        Developer Account
+        {i18n.__("devComponentSidebarTitle")}
       </Text>
       <ListMenu {...props}>
         {items.map(
@@ -239,7 +241,7 @@ export const DevConsoleSidebar = ({
           <BlendIcon size="18px" iconify={lock} />
         </Flex>
         <Text fontSize="sm" fontWeight="semiBold">
-          Publisher Accounts
+          {i18n.__("createPubAccCTATitle")}
         </Text>
         <Text fontSize="xs">{i18n.__("createPubAccCTAText")}</Text>
       </PublisherCard>
@@ -485,15 +487,13 @@ export const AssetContainer = ({
               style={{ textTransform: "uppercase" }}
               color={colors.textSecondary}
             >
-              Product Image {numId}
+              {i18n.__("devComponentProductImageTitle")} {numId}
             </Text>
             <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-              Add images which represent key elements of your product
-              experience.
+              {i18n.__("devComponentProductImageText")}
             </Text>
             <Text fontSize="sm" mb={5}>
-              Images should be .jpg or .PNG and high enough resolution to
-              display @ 284x213px on retina displays.
+              {i18n.__("productImageHelpText")}
             </Text>
           </Box>
         </Flex>

@@ -61,6 +61,8 @@ import mdiArrowExpand from "@iconify/icons-mdi/arrow-expand";
 
 import UploadAsset from "../components/UploadAsset";
 
+i18n.init();
+
 const SandboxContext = createContext(null);
 
 const breatheAnimation = keyframes`
@@ -715,8 +717,7 @@ const Sandbox = props => {
                   color={colors.textPrimary}
                 />
                 <Text ml={20}>
-                  This is a live Sandbox session you are seeing how your project
-                  will render on Prifina
+                  {i18n.__("sandboxAnnouncementBannerText")}
                 </Text>
               </Flex>
               <Flex
@@ -743,7 +744,7 @@ const Sandbox = props => {
                   {allValues.appType === 1 ? "APPLICATION" : "WIDGET"}
                 </TypeBadge>
                 <Text ml={16} mr={8}>
-                  Session Status
+                  {i18n.__("secctionStatusText")}
                 </Text>
                 {ready && validUrl !== "" && validUrl !== null ? (
                   <Breathe />
@@ -776,7 +777,7 @@ const Sandbox = props => {
                     )}
                     {!ready && (
                       <Text textAlign={"center"} textStyle={"h3"}>
-                        Sandbox
+                        {i18n.__("sandboxLabel")}
                       </Text>
                       // <ErrorStateScreen />
                     )}
@@ -787,7 +788,7 @@ const Sandbox = props => {
                     textStyle={"h3"}
                     colorStyle="error"
                   >
-                    Remote link unavailable
+                    {i18n.__("remoteLinkUnavailable")}
                   </Text>
                 )}
               </Flex>
@@ -836,22 +837,22 @@ const Sandbox = props => {
                         }}
                       >
                         <Tab>
-                          <Text>Test settings</Text>
+                          <Text>{i18n.__("testSettingstabText")}</Text>
                         </Tab>
                         <Tab>
-                          <Text>System settings</Text>
+                          <Text>{i18n.__("systemSettingsTabText")}System settings</Text>
                         </Tab>
                         <Tab>
-                          <Text>Settings</Text>
+                          <Text>{i18n.__("settingTabText")}</Text>
                         </Tab>
                         <Tab>
-                          <Text>Debugger</Text>
+                          <Text>{i18n.__("debuggerTabText")}</Text>
                         </Tab>
                         <Tab>
-                          <Text>Native assets</Text>
+                          <Text>{i18n.__("nativeAssetsTabText")}</Text>
                         </Tab>
                         <Tab>
-                          <Text>Support</Text>
+                          <Text>{i18n.__("supportTabText")}</Text>
                         </Tab>
                       </TabList>
                       <TabPanelList>
@@ -867,7 +868,7 @@ const Sandbox = props => {
                                 <Flex mb={16}>
                                   <Box>
                                     <Text fontSize="sm" mb={5}>
-                                      App ID
+                                      {i18n.__("appId")}
                                     </Text>
                                     <Input
                                       disabled
@@ -882,14 +883,14 @@ const Sandbox = props => {
                                       mt={5}
                                       color={colors.textMuted}
                                     >
-                                      Unique Prifina project identifier
+                                      {i18n.__("prifinaProjectUniqueText")}
                                     </Text>
                                   </Box>
                                 </Flex>
                                 <Flex mb={16}>
                                   <Box>
                                     <Text fontSize="sm" mb={5}>
-                                      Remote link
+                                      {i18n.__("remoteLink")}
                                     </Text>
                                     <Input
                                       width="661px"
@@ -903,13 +904,13 @@ const Sandbox = props => {
                                     />
                                     {validUrl ? null : (
                                       <Text fontSize="xxs" color="red">
-                                        Your remote link is not valid
+                                        {i18n.__("noValidRemoteLinkText")}
                                       </Text>
                                     )}
                                     {remoteLink !=
                                     allValues.remoteUrl ? null : (
                                       <Text fontSize="xxs" color="red">
-                                        This remote link already exists
+                                        {i18n.__("existingRemoteLinkText")}
                                       </Text>
                                     )}
                                     <Text
@@ -917,7 +918,7 @@ const Sandbox = props => {
                                       mt={5}
                                       color={colors.textSecondary}
                                     >
-                                      Links to your build
+                                      {i18n.__("buildRemoteLinkText")}
                                     </Text>
                                   </Box>
                                 </Flex>
@@ -972,14 +973,11 @@ const Sandbox = props => {
                               style={{ textTransform: "uppercase" }}
                               mb={15}
                             >
-                              Native assets
+                              {i18n.__("nativeAssestsTabText")}
                             </Text>
                             <Box width="650px">
                               <Text color={colors.textSecondary} mb={30}>
-                                If your application requires any addtional
-                                assets to keep it lightweight consider using
-                                native assets rather than having them in the
-                                build deployment package.
+                                {i18n.__("subSectionForNaviteAssets")}
                               </Text>
                             </Box>
                             <Flex alignItems="center">
@@ -995,17 +993,14 @@ const Sandbox = props => {
                                   ml={25}
                                   color={colors.textSecondary}
                                 >
-                                  Upload native assets for use in your project.
-                                  Test them out in sandbox mode before packaging
-                                  up in you application package.
+                                  {i18n.__("nativeAssetsUploaderHelperText1")}
                                 </Text>
                                 <Text
                                   fontSize="xs"
                                   ml={25}
                                   color={colors.textSecondary}
                                 >
-                                  For more information on using native assets
-                                  visit our documentation
+                                  {i18n.__("nativeAssetsUploaderHelperText2")}
                                 </Text>
                               </Box>
                             </Flex>

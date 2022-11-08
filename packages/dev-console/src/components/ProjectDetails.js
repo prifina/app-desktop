@@ -62,6 +62,8 @@ import {
   ApiForm,
 } from "./helper";
 
+i18n.init();
+
 const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
 
 Storage.configure({
@@ -403,7 +405,7 @@ const ProjectDetails = props => {
             color="orange"
           />
           <Text fontSize="xs" ml={5} color="#EDA436">
-            Unsaved Changes
+            {i18n.__("unsavedChangesSectionStatusText")}
           </Text>
           <Button
             ml="15px"
@@ -441,7 +443,7 @@ const ProjectDetails = props => {
     } else {
       return (
         <Flex alignItems="center">
-          <Text fontSize="xs">No Unsaved Changes</Text>
+          <Text fontSize="xs">{i18n.__("noUnsavedChangesSectionStatusText")}</Text>
           <Button disabled colorStyle="red" ml="15px">
             Save Changes
           </Button>
@@ -691,12 +693,11 @@ const ProjectDetails = props => {
               }}
             >
               <Text style={{ textTransform: "uppercase" }} mb={8}>
-                Remote Link Testing
+                {i18n.__("devComponentProjectDetailsRemoteLinkTest")}
               </Text>
 
               <Text color={colors.textSecondary}>
-                Link your local build to Prifina’s testing environment and
-                dynamic data connectors by adding a remote link below.
+                {i18n.__("devComponentProjectDetailsRemoteLinkTestDesc")}
               </Text>
             </Box>
 
@@ -713,7 +714,7 @@ const ProjectDetails = props => {
             >
               <Box>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  Remote Link
+                  {i18n.__("remoteLink")}
                 </Text>
                 <Input
                   width="451px"
@@ -724,7 +725,7 @@ const ProjectDetails = props => {
                   color={colors.textSecondary}
                 />
                 <Text fontSize="xxs" mt={5} color={colors.textSecondary}>
-                  Links your local build to the App Studio
+                  {i18n.__("devComponentProjectDetailsInputText")}
                 </Text>
               </Box>
 
@@ -749,32 +750,28 @@ const ProjectDetails = props => {
                 mb={12}
                 fontSize="lgx"
               >
-                Application package
+                {i18n.__("devComponentProjectDetailsTextPackage")}
               </Text>
 
               <Text mb={20} color={colors.textSecondary}>
-                To get your application published in our App Market, you will
-                need to supply the Prifina team a .Zip build deployment package,
-                manifest file, UI inputs and settings as-well-as any native
-                assets. For more information visit our documentation
+                {i18n.__("devComponentProjectDetailsAppDesc")}
               </Text>
               <Text color={colors.textSecondary}>
-                After you submit everything your application will be reviewed by
-                our App Market team.
+                {i18n.__("devComponentProjectDetailsAppDesc2")}
               </Text>
             </Box>
 
             <C.InnerContainer>
               <Box>
                 <Text style={{ textTransform: "uppercase" }}>
-                  1.Build deployment
+                  {i18n.__("subSectionHeadingBuildDeployment")}
                 </Text>
                 <Text mt={5} mb={32} color={colors.textSecondary}>
-                  Upload a packaged version of your application.
+                  {i18n.__("subSectionForBuildDeployment")}
                 </Text>
                 <Box mb={16}>
                   <Text fontSize="sm" color={colors.textSecondary}>
-                    Version number
+                    {i18n.__("versionNumberForLabel")}
                   </Text>
                   <Flex alignItems="center">
                     <Input
@@ -793,16 +790,16 @@ const ProjectDetails = props => {
                     />
                     <Box>
                       <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                        This version number is for your internal use.
+                        {i18n.__("versionNumberForLabelHelp1")}
                       </Text>
                       <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                        Formatting must follow semantic versioning format
+                        {i18n.__("versionNumberForLabelHelp2")}
                       </Text>
                     </Box>
                   </Flex>
                 </Box>
                 <Text fontSize="sm" color={colors.textSecondary}>
-                  App ID
+                  {i18n.__("appIdFormLabel")}
                 </Text>
                 <Flex mb={53} alignItems="center">
                   <Input
@@ -817,16 +814,15 @@ const ProjectDetails = props => {
                   />
                   <Box>
                     <Text fontSize="xs" ml={25} color={colors.textMuted} mb={8}>
-                      Unique project identifier. Add this to your build
-                      deployment package.
+                      {i18n.__("appIDHelperText")}
                     </Text>
                     <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                      Visit our docs for more information
+                      {i18n.__("docLabel")}
                     </Text>
                   </Box>
                 </Flex>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  Build deployment package
+                  {i18n.__("packageUploaderFormLabel")}
                 </Text>
                 <Flex alignItems="center" justifyContent="center" mb={16}>
                   <Box ml="5px">
@@ -834,21 +830,20 @@ const ProjectDetails = props => {
                   </Box>
                   <Box ml={25}>
                     <Text fontSize="xs" color={colors.textMuted} mb={10}>
-                      The build deployment package is a package version of your
-                      local build. It must include:
+                      {i18n.__("buildDeploymentPackageRuleText")}
                     </Text>
                     <Text fontSize="xs" color={colors.textMuted}>
-                      Your Prifina App ID (as the filename)
+                      {i18n.__("buildDeploymentPackageRule1")}
                     </Text>
                     <Text fontSize="xs" color={colors.textMuted} mb={10}>
-                      Your Prifina App ID (in the codebase)
+                      {i18n.__("buildDeploymentPackageRule2")}
                     </Text>
                     <Text fontSize="xs" color={colors.textMuted}>
-                      Visit our docs for more information
+                      {i18n.__("docLabel")}
                     </Text>
                   </Box>
                 </Flex>
-                <Text>Status</Text>
+                <Text>{i18n.__("statusHelperText")}</Text>
               </Box>
             </C.InnerContainer>
           </C.ProjectContainer>
@@ -864,32 +859,28 @@ const ProjectDetails = props => {
                 mb={8}
                 fontSize="lgx"
               >
-                Marketplace Listing
+                {i18n.__("sectionHeadingMarkeplaceListing")}
               </Text>
 
               <Text mb={32} color={colors.textSecondary}>
-                All applications published on our platform have a listing page
-                in the Prifina App Marketplace. This is what users will see when
-                they are deciding wether or not to install your app.
+                {i18n.__("marketplaceListingDecs")}
               </Text>
               <Text color={colors.textSecondary}>
-                For context you can visit the App Marketplace and see how this
-                information will be displayed.
+                {i18n.__("marketPlaceLisitngText")}
               </Text>
             </Box>
             <C.InnerContainer>
               <Box>
                 <Text style={{ textTransform: "uppercase" }}>
-                  1. Publisher Details
+                  {i18n.__("subSectionHeadingPublisherDetails")}
                 </Text>
                 <Text mt={5} mb={32} color={colors.textSecondary}>
-                  The name users will see associated with all your applications
-                  in the App Marketplace.
+                  {i18n.__("subSectionForPublisherDetails")}
                 </Text>
                 <Flex alignItems="flex-end" mb={16}>
                   <Box>
                     <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                      Publisher Name
+                      {i18n.__("publisherNameFormLabel")}
                     </Text>
                     <Input
                       width="451px"
@@ -905,13 +896,13 @@ const ProjectDetails = props => {
             </C.InnerContainer>
             <C.InnerContainer>
               <Text style={{ textTransform: "uppercase" }} mb={5}>
-                2. Categorization and Support
+                {i18n.__("subSectionHeadingCategorization")}
               </Text>
               <Text color={colors.textSecondary} mb={40}>
-                Packaged version of your application, including manifest file.
+                {i18n.__("subSectionForPublisherTextHelp")}
               </Text>
               <Text fontSize="sm" color={colors.textSecondary}>
-                Language support
+                {i18n.__("langSupLabel")}
               </Text>
               <C.FieldContainer>
                 <Box>
@@ -927,12 +918,11 @@ const ProjectDetails = props => {
                   />
                 </Box>
                 <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                  Prifina only currently supports English but we have plans to
-                  add other languages soon!
+                  {i18n.__("langSupportHelpText")}
                 </Text>
               </C.FieldContainer>
               <Text fontSize="sm" color={colors.textSecondary}>
-                Device support
+                {i18n.__("deviceSupLabel")}
               </Text>
               <C.FieldContainer>
                 <Box>
@@ -950,13 +940,12 @@ const ProjectDetails = props => {
                   />
                 </Box>
                 <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                  Prifina only currently supports desktop but we have plans to
-                  expand to other devices and screensizes soon!
+                  {i18n.__("deviceSupHelpText")}
                 </Text>
               </C.FieldContainer>
 
               <Text fontSize="sm" color={colors.textSecondary}>
-                Application category (select 1)
+                {i18n.__("appCatLabel")}
               </Text>
               <Flex alignItems="center" mb={24}>
                 <Box>
@@ -978,15 +967,15 @@ const ProjectDetails = props => {
                 </Box>
                 <Box>
                   <Text fontSize="xs" mb={10} ml={25} color={colors.textMuted}>
-                    Select the category which best fits your product.
+                    {i18n.__("appCatHelpText1")}
                   </Text>
                   <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                    If none fit choose ‘other’
+                    {i18n.__("appCatHelpText2")}
                   </Text>
                 </Box>
               </Flex>
               <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                Age appropriate (select 1)
+                {i18n.__("ageAppropLabel")}
               </Text>
               <Flex alignItems="center" mb={32}>
                 <Box>
@@ -1005,7 +994,7 @@ const ProjectDetails = props => {
                   </C.CustomSelect>
                 </Box>
                 <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                  Select the appropriate age your product.
+                  {i18n.__(ageAppropHelpText)}
                 </Text>
               </Flex>
             </C.InnerContainer>
@@ -1013,20 +1002,17 @@ const ProjectDetails = props => {
               <Box>
                 <Box mb={40}>
                   <Text mb={10} style={{ textTransform: "uppercase" }}>
-                    3. Application data
+                    {i18n.__("subSectionHeadingAppData")}
                   </Text>
                   <Text mb={15} color={colors.textSecondary}>
-                    Tell your users what specific data your application requires
-                    or generates. This information will be shown under the “data
-                    requirements” tab in your product page.
+                    {i18n.__("subSectionForAppData1")}
                   </Text>
                   <Text color={colors.textSecondary}>
-                    For more detail on data types and detailing data use visit
-                    our docs
+                    {i18n.__("subSectionForAppData2")}
                   </Text>
                 </Box>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  Public data
+                  {i18n.__("publicLabel")}
                 </Text>
                 <Flex alignItems="center" mb={40}>
                   <TagInput
@@ -1047,16 +1033,15 @@ const ProjectDetails = props => {
                       mb={10}
                       color={colors.textMuted}
                     >
-                      Detail any attributes your application uses from public
-                      data sources. For example “Open weather API”.
+                      {i18n.__("publicHelpText1")}
                     </Text>
                     <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                      For examples of public sources visit our documentation
+                      {i18n.__("publicHelpText2")}
                     </Text>
                   </Box>
                 </Flex>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  User Held
+                  {i18n.__(devComponentHelperText)}
                 </Text>
                 <Flex alignItems="center" mb={40}>
                   <TagInput
@@ -1076,17 +1061,15 @@ const ProjectDetails = props => {
                       mb={10}
                       color={colors.textMuted}
                     >
-                      Detail any attributes your application uses from the user
-                      via our data connectors. For example from the “Oura” data
-                      connector you might have “Deep sleep”.
+                      {i18n.__("userHeldHelpText1")}
                     </Text>
                     <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                      For examples of user-held data visit our documentation
+                      {i18n.__("userHeldHelpText2")}
                     </Text>
                   </Box>
                 </Flex>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  User Generated
+                  {i18n.__("userGenerateHelpText1")}
                 </Text>
                 <Flex alignItems="center" mb={32}>
                   <TagInput
@@ -1101,8 +1084,7 @@ const ProjectDetails = props => {
                   />
                   <Box width="340px">
                     <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                      This name will be associated with your products on the App
-                      Marketplace.
+                      {i18n.__("userGenerateHelpText2")}
                     </Text>
                   </Box>
                 </Flex>
@@ -1111,16 +1093,14 @@ const ProjectDetails = props => {
             <C.InnerContainer>
               <Box>
                 <Text style={{ textTransform: "uppercase" }}>
-                  4. Product description
+                  {i18n.__("subSectionHeadingProduct")}
                 </Text>
                 <Text mt={5} mb={40} color={colors.textSecondary}>
-                  Add descriptions of your product and list it’s features. This
-                  information will be shown under the ‘details’ tab of your
-                  product page.
+                  {i18n.__("subSectionForHeading")}
                 </Text>
                 <Box mb={40}>
                   <Text fontSize="sm" color={colors.textSecondary}>
-                    Application name
+                    {i18n.__("applicationNameLabel")}
                   </Text>
                   <Flex alignItems="center">
                     <Input
@@ -1138,17 +1118,16 @@ const ProjectDetails = props => {
                     />
                     <Box>
                       <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                        The name users will see on the App Marketplace.
+                        {i18n.__("userAppMarketplaceText1")}
                       </Text>
                       <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                        The application name is also your project name in the
-                        App Studio
+                        {i18n.__("userAppMarketplaceText2")}
                       </Text>
                     </Box>
                   </Flex>
                 </Box>
                 <Text fontSize="sm" color={colors.textSecondary}>
-                  Short Description
+                  {i18n.__("shortDescriptionLabel")}
                 </Text>
                 <Box mb={40}>
                   <Flex alignItems="center">
@@ -1171,21 +1150,19 @@ const ProjectDetails = props => {
                         mb={10}
                         color={colors.textMuted}
                       >
-                        A concise description of your product.
+                        {i18n.__("shortDescriptionHelpText1")}
                       </Text>
                       <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                        This will be used standalone on the widget directory
-                        page and along with the long description in your
-                        marketplace listing page.
+                        {i18n.__("shortDescriptionHelpText2")}
                       </Text>
                     </Box>
                   </Flex>
                   <Text fontSize="xs" color={colors.textSecondary}>
-                    Max 50 words
+                    {i18n.__("wordDescriptionLength")}
                   </Text>
                 </Box>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  Long Description
+                  {i18n.__("longDescriptionLabel")}
                 </Text>
                 <Box mb={40}>
                   <Flex alignItems="center">
@@ -1207,23 +1184,19 @@ const ProjectDetails = props => {
                         mb={10}
                         color={colors.textMuted}
                       >
-                        Go into more detail about your product and the value it
-                        offers users.
+                        {i18n.__("longDescriptionHelpText1")}
                       </Text>
                       <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                        This will be used along with the short description on
-                        your product’s listing page. You can treat the short
-                        description as an introduction and the long as more
-                        details.
+                        {i18n.__("longDescriptionHelpText2")}
                       </Text>
                     </Box>
                   </Flex>
                   <Text fontSize="xs" mt={6} color={colors.textSecondary}>
-                    Max 50 words
+                    {i18n.__("wordDescriptionLength")}
                   </Text>
                 </Box>
                 <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                  Features list
+                  {i18n.__("featuresListLabel")}
                 </Text>
                 <Flex alignItems="center" mb={32}>
                   <TagInput
@@ -1242,12 +1215,10 @@ const ProjectDetails = props => {
                       mb={10}
                       color={colors.textMuted}
                     >
-                      Type to add features, these will be translated into a
-                      simple nubered list.
+                      {i18n.__("featuresListHelpText1")}
                     </Text>
                     <Text fontSize="xs" ml={25} color={colors.textMuted}>
-                      The order you enter features in here will be the order
-                      reflected in your product’s listing page.
+                      {i18n.__("featuresListHelpText2")}
                     </Text>
                   </Box>
                 </Flex>
@@ -1256,11 +1227,10 @@ const ProjectDetails = props => {
             <C.InnerContainer>
               <Box>
                 <Text style={{ textTransform: "uppercase" }} mb={5}>
-                  5. Marketing assets
+                  {i18n.__("subSectionHeadingMarketing")}
                 </Text>
                 <Text mb={40} color={colors.textSecondary}>
-                  Add your App icon and screenshots for your marketplace
-                  listing.
+                  {i18n.__("subSectionForMarketing")}                 
                 </Text>
                 <Flex
                   mb={5}
@@ -1290,15 +1260,13 @@ const ProjectDetails = props => {
                         style={{ textTransform: "uppercase" }}
                         color={colors.textSecondary}
                       >
-                        App Icon
+                        {i18n.__("appIconHeading")}
                       </Text>
                       <Text fontSize="sm" mb={5} color={colors.textSecondary}>
-                        Add a unique icon which represents your product
-                        experience.
+                        {i18n.__("appIconText1")}                       
                       </Text>
                       <Text fontSize="sm" mb={5}>
-                        Images should be .jpg or .PNG and high enough resolution
-                        to display @ 56x56px on retina displays.
+                        {i18n.__("appIconHelpText")}
                       </Text>
                     </Box>
                   </Flex>
@@ -1313,21 +1281,17 @@ const ProjectDetails = props => {
                 <Divider as={"div"} color="#393838" mb={56} />
                 <Box>
                   <Text style={{ textTransform: "uppercase" }}>
-                    Product Images
+                    {i18n.__("productImagesHeader")}
                   </Text>
 
                   <Text mt={5} fontSize="xs" color={colors.textSecondary}>
-                    Upload three screenshots of key screens in your application.
-                    Images should be 284 x 214px and high resolution.
+                    {i18n.__("productImagesHelpText1")}
                   </Text>
                   <Text mt={5} fontSize="xs" color={colors.textSecondary}>
-                    These screenshots will be in your product’s App Marketplace
-                    listing page. Images will be shown top-to-bottom based of
-                    the numerical order below.
+                    {i18n.__("productImagesHelpText2")}
                   </Text>
                   <Text mt={5} fontSize="xs" color={colors.textSecondary}>
-                    For guidelines on creating acceptable images visit our
-                    documentation
+                    {i18n.__("productImagesHelpText3")}
                   </Text>
                 </Box>
                 <C.AssetContainer
@@ -1368,12 +1332,10 @@ const ProjectDetails = props => {
           <C.ProjectContainer alt="dataSources" mb={24}>
             <Box mb={45}>
               <Text style={{ textTransform: "uppercase" }}>
-                Data Resources survey (optional)
+                {i18n.__("dataResourcesSurveyLabel")}
               </Text>
               <Text mt={5} color={colors.textSecondary}>
-                Let us know how your application uses data by logging your
-                sources (or lack of) here. This information helps us provide
-                quality support and helps direct our product roadmap.
+                {i18n.__("dataResourceshelpPara")}
               </Text>
             </Box>
             <C.InnerContainer>
@@ -1536,12 +1498,10 @@ const ProjectDetails = props => {
                 </div>
                 <Box width="320px">
                   <Text fontSize="13px">
-                    Search for public data sources in our list or add them if
-                    they are not there yet.
+                    {i18n.__("publicDataSourcesText1")}
                   </Text>
                   <Text mt="15px" fontSize="13px">
-                    This information helps us provide quality support and helps
-                    direct our product roadmap.
+                    {i18n.__("publicDataSourcesText2")}
                   </Text>
                 </Box>
               </Flex>
@@ -1567,7 +1527,7 @@ const ProjectDetails = props => {
               ) : (
                 <Flex flexDirection="column" justifyContent="center">
                   <Text mt="20px" mb="20px">
-                    Data sources used in your project
+                    {i18n.__("dataSourcesUsed")}
                   </Text>
 
                   <Flex
@@ -1589,10 +1549,10 @@ const ProjectDetails = props => {
                     />
 
                     <Text fontSize="lg" mt={16}>
-                      Search and select data sources
+                      {i18n.__("selectSources")}
                     </Text>
                     <Text mt="10px" color={colors.textSecondary}>
-                      Data sources you add will show up here
+                      {i18n.__("dataSourcesYouAdd")}
                     </Text>
                   </Flex>
                 </Flex>
@@ -1603,9 +1563,9 @@ const ProjectDetails = props => {
           <C.ActionContainer mb={32} justifyContent="space-between">
             <C.CustomShape bg="baseError" />
             <Box width="530px">
-              <Text>PUBLISH PROJECT</Text>
+              <Text>{i18n.__("publishProjectHeading")}</Text>
               <Text mt={5} fontSize="xs">
-                Your App Status is -{" "}
+                {i18n.__("appStatusLabel")}{" "}
                 {appData.status === 1 ? "Published" : "Not Published"}
               </Text>
             </Box>
@@ -1620,11 +1580,9 @@ const ProjectDetails = props => {
           <C.ActionContainer mb={32} justifyContent="space-between">
             <C.CustomShape bg="baseError" />
             <Box width="530px">
-              <Text>DELETE PROJECT</Text>
+              <Text>{i18n.__("deleteProjectLabel")}</Text>
               <Text mt={5} fontSize="xs">
-                Choose this to delete your project and all data associated with
-                your account. This operation is final and all data will be
-                permanently lost.
+                {i18n.__("deleteProjectHelpText")}
               </Text>
             </Box>
             <Button colorStyle="error" onClick={deleteApp}>
@@ -1634,7 +1592,7 @@ const ProjectDetails = props => {
         </Flex>
       ) : (
         <Box marginTop={"50px"} height={"100vh"} bg={colors.basePrimary}>
-          <Text>Loading...</Text>
+          <Text>{i18n.__("loadingLabel")}</Text>
         </Box>
       )}
     </>

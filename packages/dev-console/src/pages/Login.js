@@ -314,7 +314,7 @@ const Login = () => {
               <Flex mb={57} alignSelf="flex-start">
                 <Image src={appStudioIcon} width="25px" />
                 <Text ml={3} fontWeight="600">
-                  App Studio
+                  {i18n.__("appStudio")}
                 </Text>
               </Flex>
               {confirmCode ? (
@@ -327,10 +327,10 @@ const Login = () => {
               ) : (
                 <>
                   <Text mb={4} textStyle="h3">
-                    Log in to your account
+                    {i18n.__("loginAccountText")}
                   </Text>
                   <Text mb={32} color={colors.textMuted}>
-                    Welcome back! Please enter your details.
+                    {i18n.__("loginSupportingText")}
                   </Text>
                   <InnerBox mb={32}>
                     <ImageFlex mb={16}>
@@ -338,14 +338,14 @@ const Login = () => {
                       <Image src={infinityIcon} height="13px" />
                       <Image src={appStudioIcon} />
                     </ImageFlex>
-                    <Text mb={4}>Already have a Prifina account?</Text>
+                    <Text mb={4}>{i18n.__("existingAccCalloutHeader")}</Text>
                     <Text fontSize="sm" color={colors.textMuted}>
-                      Use the same credentials to log in here.
+                      {i18n.__("existingAccCalloutText")}
                     </Text>
                   </InnerBox>
                   <Box>
                     <Text fontWeight="600" fontSize="sm">
-                      Username
+                      {i18n.__("loginUsernameText")}
                     </Text>
                     <IconField>
                       <IconField.LeftIcon
@@ -407,7 +407,7 @@ const Login = () => {
                   </Box>
                   <Box mt={8}>
                     <Text fontWeight="600" fontSize="sm">
-                      Password
+                      {i18n.__("loginPasswordText")}
                     </Text>
                     <PasswordField
                       placeholder={i18n.__("passwordPlaceholder")}
@@ -541,7 +541,7 @@ const Login = () => {
                         textAlign="center"
                         color={colors.textMuted}
                       >
-                        Don’t have an account?
+                        {i18n.__("noAccText")}
                       </Text>
                       <Button
                         className="createAccountButton"

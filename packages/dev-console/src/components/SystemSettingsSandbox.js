@@ -6,6 +6,9 @@ import { Flex, Box, Button, Text, useTheme } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
+import {i18n} from "@prifina-apps/utils";
+
+i18n.init();
 
 const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
   const theme = useTheme();
@@ -54,13 +57,12 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
     <Box width="418px">
       <Box mb={25}>
         <Text fontSize="sm" mb={5}>
-          Tell us what settings are included with your project. Changes here
-          will be saved to your project package.
+          {i18n.__("devComponentSystemSandboxTitle")}
         </Text>
       </Box>
       <Box mb={25}>
         <Text fontSize="sm" mb={5}>
-          Widget sizes
+        {i18n.__("devComponentSystemSandboxText")}
         </Text>
         <Flex justifyContent="space-between" alignItems="center">
           <Flex>
@@ -72,7 +74,7 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
               onChange={handleThemeChange}
               checked
             />
-            <Text>300x300</Text>
+            <Text>{i18n.__("devComponentSystemSandboxSize1")}</Text>
           </Flex>
           <Flex>
             <input
@@ -83,7 +85,7 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
               onChange={handleThemeChange}
               disabled
             />
-            <Text>600x300</Text>
+            <Text>{i18n.__("devComponentSystemSandboxSize2")}</Text>
           </Flex>
           <Flex>
             <input
@@ -94,7 +96,7 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
               onChange={handleThemeChange}
               disabled
             />
-            <Text>300x600</Text>
+            <Text>{i18n.__("devComponentSystemSandboxSize3")}</Text>
           </Flex>
           <Flex>
             <input
@@ -105,14 +107,14 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
               onChange={handleThemeChange}
               disabled
             />
-            <Text>600x600</Text>
+            <Text>{i18n.__("devComponentSystemSandboxSize4")}</Text>
           </Flex>
         </Flex>
       </Box>
       <Flex mb={25}>
         <Box>
           <Text fontSize="sm" mb={5}>
-            Project themes
+          {i18n.__("devComponentSystemSandboxThemes")}
           </Text>
           <Flex>
             <Flex>
@@ -124,7 +126,7 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
                 onChange={handleThemeChange}
                 // checked
               />
-              <Text>Light</Text>
+              <Text>{i18n.__("devComponentSystemSandboxThemes1")}</Text>
             </Flex>
             <Flex ml={16}>
               <input
@@ -135,7 +137,7 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
                 onChange={handleThemeChange}
                 // disabled
               />
-              <Text>Dark</Text>
+              <Text>{i18n.__("devComponentSystemSandboxThemes2")}</Text>
             </Flex>
           </Flex>
         </Box>

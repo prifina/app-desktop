@@ -180,7 +180,7 @@ const Content = ({ data }) => {
       <div>ADMIN...</div>
       <TableStyles>
         <div className="tableWrap">
-          {data.length === 0 && <Text m={2}>"No apps..."</Text>}
+          {data.length === 0 && <Text m={2}>{i18n.__("noApps")}</Text>}
           {data.length > 0 && <Table columns={Columns} data={data} />}
         </div>
       </TableStyles>

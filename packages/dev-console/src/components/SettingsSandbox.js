@@ -4,6 +4,10 @@ import { Flex, Box, Button, Text, TextArea, useTheme } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
+import {i18n} from "@prifina-apps/utils";
+
+i18n.init();
+
 const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
   const theme = useTheme();
 
@@ -32,7 +36,7 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
   return (
     <div>
       <Box mb={16}>
-        <Text mb={5}>Settings</Text>
+        <Text mb={5}>{i18n.__("testSettingsTabText")}</Text>
       </Box>
 
       <TextArea
@@ -43,7 +47,7 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
         onChange={handleChange}
       />
       <Text mt={8} mb={18} fontSize="xs">
-        Generate inputs used in your project (json format)
+        {i18n.__("settingsHelperText")}
       </Text>
       <Button
         onClick={e => {
