@@ -5,3 +5,28 @@ https://blog.bitsrc.io/building-otp-authentication-with-reactjs-and-aws-amplify-
 https://aws.amazon.com/blogs/mobile/build-a-mobile-app-with-passwordless-login-on-top-of-aws-amplify/
 
 https://github.com/aws-samples/amazon-cognito-passwordless-email-auth/blob/master/cognito/template.yaml
+
+https://www.threatstack.com/blog/50-best-aws-cloudwatch-tutorials
+
+https://github.com/cyber-eternal/passwordless-otp-auth-cognito
+
+https://github.com/speakeasyjs/speakeasy/blob/master/README.md
+
+https://stackoverflow.com/questions/63043865/aws-cognito-sign-in-without-password
+
+https://community.f5.com/t5/community-articles/demystifying-time-based-otp/ta-p/294658
+
+https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+
+--- interesting package...
+"@digitalbazaar/totp"
+
+https://github.com/Levminer/speakeasy
+
+
+--- copy cloudwatch logs to S3
+https://github.com/aws-samples/serverless-patterns/tree/main/cloudwatch-logs-subscription-firehose-cdk
+
+https://aws.amazon.com/blogs/devops/building-an-amazon-cloudwatch-dashboard-outside-of-the-aws-management-console/
+
+https://iamjkahn.com/2019/12/invoking-even-more-aws-services-directly-from-aws-appsync.html
