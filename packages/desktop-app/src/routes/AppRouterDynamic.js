@@ -20,17 +20,31 @@ const Logout = React.lazy(() => import("../pages/Logout"));
 
 const Login = React.lazy(() => import("../pages/Login"));
 
-export default (props) => (
+export default props => (
   <Routes>
-    <Route element={<AuthLayout />} >
-      <Route path="/system/:app" element={<CoreApps {...props} />} />
+    <Route element={<AuthLayout />}>
+      <Route
+        path="/system/:app"
+        element={
+          <ToastContextProvider>
+            <CoreApps {...props} />
+          </ToastContextProvider>
+        }
+      />
       <Route path="/home" element={<Home />} />
       <Route path="/" element={<Home />} />
       <Route path="/logout" element={<Logout />} />
     </Route>
 
-    <Route element={<UnAuthLayout />} >
-      <Route path="/login" element={<ToastContextProvider><Login /></ToastContextProvider>} />
+    <Route element={<UnAuthLayout />}>
+      <Route
+        path="/login"
+        element={
+          <ToastContextProvider>
+            <Login />
+          </ToastContextProvider>
+        }
+      />
       <Route path="/register" element={<Landing />} />
       <Route path="/" element={<Landing />} />
     </Route>
