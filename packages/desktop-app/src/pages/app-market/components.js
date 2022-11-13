@@ -305,7 +305,7 @@ export const NavbarContainer = styled(Flex)`
 `;
 
 export const Card = ({ title, value }) => {
-  console.log("CARD VALUE ", value, title)
+  console.log("CARD VALUE ", value, title);
   return (
     <Flex width="100px" flexDirection="column">
       <Flex
@@ -319,7 +319,9 @@ export const Card = ({ title, value }) => {
         <Text fontSize="10px">{title}</Text>
       </Flex>
       <Flex justifyContent="center">
-        <Text fontSize="12px">{typeof value === "array" ? value.join(",") : value}</Text>
+        <Text fontSize="12px">
+          {typeof value === "array" ? value.join(",") : value}
+        </Text>
       </Flex>
     </Flex>
   );
@@ -327,11 +329,7 @@ export const Card = ({ title, value }) => {
 
 Card.propTypes = {
   title: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.array
-  ]),
-
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
 };
 
 export const InstalledText = styled(Text)`
@@ -373,4 +371,107 @@ export const DataSourceButton = styled.img`
   }
   cursor: pointer;
   opacity: ${props => (props.installed ? 0.2 : 1)};
+`;
+
+export const DropDownContainer = styled(Flex)`
+  width: 36px;
+  height: 32px;
+  cursor: pointer;
+  justify-content: center;
+  // align-items: center;
+  position: relative;
+  border-radius: 8px;
+  border: 1px dashed #dbf0ee;
+  margin: 0 auto;
+  bottom: 35px;
+`;
+
+export const DropDownListContainer = styled(Flex)`
+  margin-top: 4px;
+  position: absolute;
+
+  border: 1px solid #bec1c0;
+  height: auto;
+  width: 127px;
+  border-radius: 5px;
+  flex-direction: column;
+  cursor: pointer;
+
+  z-index: 1;
+  // padding: 10px;
+`;
+
+export const DropDownList = styled("ul")`
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  background: #fafafa;
+  font-weight: 500;
+`;
+
+export const ListItem2 = styled(Flex)`
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 2px 14px 2px 12px;
+`;
+
+export const InteractiveListItem = styled(Flex)`
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 10px 12px;
+  height: 30px;
+  pointer: cursor;
+
+  &:active {
+    background: #eff8ff;
+  }
+  &:hover {
+    background: #eff8ff;
+  }
+`;
+
+export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
+  return (
+    <InteractiveListItem
+      justifyContent="space-between"
+      alignItems="center"
+      height="40px"
+      onClick={onClick}
+      {...props}
+    >
+      <Text fontSize="xs">{title}</Text>
+      {/* <BlendIcon iconify={iconify} width="16px" variation="outline" /> */}
+    </InteractiveListItem>
+  );
+};
+
+export const SortingContainer = styled(Flex)`
+  width: 127px;
+  height: 32px;
+
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  border: 1.5px solid #bec1c0;
+  border-radius: 4px;
+  padding: 0px 8px 0px 8px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eff8ff;
+    color: #175cd3;
+    border: 1px solid #175cd3;
+  }
+
+  &:active {
+    background-color: #eff8ff;
+    color: #175cd3;
+    border: 1px solid #175cd3;
+  }
+  &:focus {
+    background-color: #eff8ff;
+    color: #175cd3;
+    border: 1px solid #175cd3;
+  }
 `;
