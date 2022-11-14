@@ -59,6 +59,8 @@ import mdiSort from "@iconify/icons-mdi/sort";
 
 import { PrifinaIcon } from "./app-market/icons";
 
+import { ReactComponent as AppMarketLogo } from "../assets/app-market/app-market-logo.svg";
+
 const propTest = props => {
   console.log("PROP TEST ", props);
   return null;
@@ -508,11 +510,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     }
   };
 
-  const handleSort = (subject, order) => {
-    setFilteredWidgets(
-      _.orderBy(widgets.current, [item => item.toLowerCase()], [{ order }]),
-    );
-  };
+  // const handleSort = order => {
+  //   let arr = Object.values(filteredWidgets);
+
+  //   setFilteredWidgets(
+  //     _.orderBy(arr, [item => item.title.toLowerCase()], ["asc"]),
+  //   );
+  // };
 
   useEffect(() => {
     handleFilter(showAppType);
@@ -522,9 +526,38 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   //   setFilteredWidgets(widgets.current);
   // }, [filteredWidgets]);
 
-  const sorted = _.orderBy(filteredWidgets, ["title"], ["asc"]);
+  // const sorted = Object.keys(filteredWidgets)
+  //   .sort()
+  //   .reduce((accumulator, key) => {
+  //     accumulator[key] = filteredWidgets[key];
 
-  console.log("sorted", sorted);
+  //     return accumulator;
+  //   }, {});
+
+  // const sorted = Object.keys(filteredWidgets).sort();
+
+  const result = _.pickBy(filteredWidgets, (value, key) => {
+    return _.startsWith(key, "c");
+  });
+  console.log("result", result);
+
+  // let sortable = filteredWidgets.sort((a, b) =>
+  //   a.firstname.localeCompare(b.firstname),
+  // );
+
+  // let sortable = [];
+
+  // for (var prop in filteredWidgets) {
+  //   if (filteredWidgets.hasOwnProperty(prop)) {
+  //     var innerObj = {};
+  //     innerObj[prop] = filteredWidgets[prop];
+  //     sortable.push(innerObj);
+  //   }
+  // }
+
+  // console.log(arr);
+
+  // console.log("sorted", sortable);
 
   const [sort, setSort] = useState({
     subject: "",
@@ -559,7 +592,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       <C.GlobalStyle />
       <SidebarMenu items={items} />
       <Navbar backgroundColor="baseWhite">
-        <PrifinaLogo className={"app-market"} title="App Market" />
+        <AppMarketLogo />
       </Navbar>
       {step === 0 && (
         <>
@@ -602,7 +635,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                         handleClickAction={printButtonLabel}
                       />
                     </div>
-                    <Box mr={64}>
+                    {/* <Box mr={64}>
                       <SortingToggle onClick={toggling} />
                       {menuOpen && (
                         <C.DropDownListContainer>
@@ -615,13 +648,14 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                 //   ...sort,
                                 //   suvject:
                                 // })
-                                setFilteredWidgets(
-                                  _.orderBy(
-                                    filteredWidgets,
-                                    ["title"],
-                                    ["asc"],
-                                  ),
-                                );
+                                // setFilteredWidgets(
+                                //   _.orderBy(
+                                //     filteredWidgets,
+                                //     ["title"],
+                                //     ["asc"],
+                                //   ),
+                                // );
+                                handleSort();
                               }}
                             />
                             <C.InteractiveMenuItem
@@ -630,7 +664,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                 e.preventDefault();
                               }}
                             />
-                            {/* <C.InteractiveMenuItem
+                            <C.InteractiveMenuItem
                               title="Type A-Z"
                               onClick={e => {
                                 e.preventDefault();
@@ -641,11 +675,12 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                               onClick={e => {
                                 e.preventDefault();
                               }}
-                            /> */}
+                            /> 
                           </C.DropDownList>
                         </C.DropDownListContainer>
                       )}
-                    </Box>
+                    </Box> 
+                    */}
                   </Flex>
                   <Flex mt="24px" flexDirection="row" flexWrap="wrap">
                     {/* {Object.keys(widgets.current).map(w => { */}
@@ -667,13 +702,11 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                       );
                     })}
                   </Flex>
-                  {!filteredWidgets ? (
-                    <></>
-                  ) : (
+                  {/* {!filteredWidgets === {} null : (
                     <Flex mt="24px" flexDirection="row" flexWrap="wrap">
                       <Text>Coming soon...</Text>
                     </Flex>
-                  )}
+                  )} */}
                 </>
               ) : (
                 <Text>Loading...</Text>

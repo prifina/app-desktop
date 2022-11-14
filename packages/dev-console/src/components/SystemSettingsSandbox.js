@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { useFormFields } from "@prifina-apps/utils";
+import { _ } from "lodash";
 
 import { Flex, Box, Button, Text, useTheme } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
-
 
 const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
   const theme = useTheme();
@@ -33,22 +32,117 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
     });
   }
 
-  console.log("THEME DEFAULT ", defaultTheme);
-  const [themeFields, handleThemeChange] = useFormFields({
-    theme: defaultTheme,
-    size: defaultSize,
+  console.log("DEFAULT SETTINGS", defaultSettings);
+
+  let currentSettings = appSettings.settings;
+
+  console.log("CURRENT SETTINGS", currentSettings[0].value);
+
+  let currentSizes = currentSettings[0].value;
+  let parsedSizes = JSON.parse(currentSizes);
+
+  let currentThemes = currentSettings[1].value;
+  let parsedThemes = JSON.parse(currentThemes);
+
+  console.log("CURRENT SIZES", parsedSizes);
+
+  let activeSizes = parsedSizes.map(items => ({ ...items, checked: true }));
+  let activeThemes = parsedThemes.map(items => ({ ...items, checked: true }));
+
+  console.log("ACTIVE SIZES", activeSizes);
+
+  console.log("ACTIVE THEMES", activeThemes);
+
+  let defaultSizes = [
+    { option: "300x300", value: "300x300" },
+    { option: "600x300", value: "600x300" },
+    { option: "300x600", value: "300x600" },
+    { option: "600x600", value: "600x600" },
+  ];
+
+  let defaultThemes = [
+    { option: "Light", value: "light" },
+    { option: "Dark", value: "dark" },
+  ];
+
+  console.log("DEFAULT SIZES", defaultSizes);
+
+  const checkSelected = (originalArray, updatingArray) => {
+    for (let i = 0, l = originalArray.length; i < l; i++) {
+      for (let j = 0, ll = updatingArray.length; j < ll; j++) {
+        if (originalArray[i].option === updatingArray[j].option) {
+          originalArray.splice(i, 1, updatingArray[j]);
+          break;
+        }
+      }
+    }
+  };
+
+  checkSelected(defaultSizes, activeSizes);
+  checkSelected(defaultThemes, activeThemes);
+
+  const [themeOptions, setThemeOptions] = useState({
+    checked: false,
+    value: defaultThemes,
   });
 
-  const [settingsFields, handleSettingsChange] = useFormFields({
-    type: "text",
-    label: "",
-    field: "",
-    value: "",
+  const [sizeOptions, setSizeOptions] = useState({
+    checked: false,
+    value: defaultSizes,
   });
-  //const settingsListRef = useRef();
-  const [settingsList, setSettings] = useState(defaultSettings);
 
-  console.log("themesize", themeFields);
+  console.log("themeOptions", themeOptions);
+
+  const handleCheck = (e, index, set) => {
+    console.log(e.target.checked, index);
+    set(prev => {
+      let newState = { ...prev };
+      newState.value[index].checked = e.target.checked;
+      return newState;
+    });
+  };
+
+  const settings = [...defaultSettings];
+
+  useEffect(() => {
+    let filteredSize = sizeOptions.value.filter(obj => {
+      return obj.checked === true;
+    });
+
+    console.log("sizes filter", filteredSize);
+
+    const sizeValues = filteredSize.map(({ checked, ...rest }) => ({
+      ...rest,
+    }));
+
+    settings.push({
+      field: "sizes",
+      label: "Sizes",
+      type: "select",
+      value: JSON.stringify(sizeValues),
+    });
+
+    let filteredTheme = themeOptions.value.filter(obj => {
+      return obj.checked === true;
+    });
+
+    console.log("themes filter", filteredTheme);
+
+    const themeValues = filteredTheme.map(({ checked, ...rest }) => ({
+      ...rest,
+    }));
+
+    console.log("res", themeValues);
+
+    settings.push({
+      field: "theme",
+      label: "Theme",
+      type: "select",
+      value: JSON.stringify(themeValues),
+    });
+
+    console.log("settings", settings);
+  }, [themeOptions, sizeOptions]);
 
   return (
     <Box width="418px">
@@ -63,50 +157,16 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
           Widget sizes
         </Text>
         <Flex justifyContent="space-between" alignItems="center">
-          <Flex>
-            <input
-              type="checkbox"
-              id="size"
-              name="size"
-              value="300x300"
-              onChange={handleThemeChange}
-              checked
-            />
-            <Text>300x300</Text>
-          </Flex>
-          <Flex>
-            <input
-              type="checkbox"
-              id="size"
-              name="size"
-              value="600x300"
-              onChange={handleThemeChange}
-              disabled
-            />
-            <Text>600x300</Text>
-          </Flex>
-          <Flex>
-            <input
-              type="checkbox"
-              id="size"
-              name="size"
-              value="300x600"
-              onChange={handleThemeChange}
-              disabled
-            />
-            <Text>300x600</Text>
-          </Flex>
-          <Flex>
-            <input
-              type="checkbox"
-              id="size"
-              name="size"
-              value="600x600"
-              onChange={handleThemeChange}
-              disabled
-            />
-            <Text>600x600</Text>
-          </Flex>
+          {sizeOptions.value.map((item, index) => (
+            <Flex key={index}>
+              <input
+                checked={item?.checked || false}
+                onChange={e => handleCheck(e, index, setSizeOptions)}
+                type="checkbox"
+              />
+              <Text ml={4}>{item.option}</Text>
+            </Flex>
+          ))}
         </Flex>
       </Box>
       <Flex mb={25}>
@@ -115,56 +175,21 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
             Project themes
           </Text>
           <Flex>
-            <Flex>
-              <input
-                type="checkbox"
-                id="theme"
-                name="theme"
-                value="light"
-                onChange={handleThemeChange}
-                // checked
-              />
-              <Text>Light</Text>
-            </Flex>
-            <Flex ml={16}>
-              <input
-                type="checkbox"
-                id="theme"
-                name="theme"
-                value="dark"
-                onChange={handleThemeChange}
-                // disabled
-              />
-              <Text>Dark</Text>
-            </Flex>
+            {themeOptions.value.map((item, index) => (
+              <Flex mr={16} key={index}>
+                <input
+                  checked={item?.checked || false}
+                  onChange={e => handleCheck(e, index, setThemeOptions)}
+                  type="checkbox"
+                />
+                <Text ml={4}>{item.option}</Text>
+              </Flex>
+            ))}
           </Flex>
         </Box>
       </Flex>
       <Button
         onClick={e => {
-          const settings = [...settingsList];
-
-          console.log("CLICK ", settings);
-          console.log("CLICK2 ", themeFields);
-
-          settings.push({
-            field: "sizes",
-            label: "Sizes",
-            type: "select",
-            value: JSON.stringify([
-              { option: themeFields.size, value: themeFields.size },
-            ]),
-          });
-
-          settings.push({
-            field: "theme",
-            label: "Theme",
-            type: "select",
-            value: JSON.stringify([
-              { option: themeFields.theme, value: themeFields.theme },
-            ]),
-          });
-
           onClick(e, settings);
         }}
       >
@@ -174,8 +199,7 @@ const SystemSettingsSandbox = ({ onClick, appSettings, ...props }) => {
   );
 };
 SystemSettingsSandbox.propTypes = {
-  onClick:PropTypes.func,
-  appSettings:PropTypes.object
-}  
+  appSettings: PropTypes.object,
+};
 
 export default SystemSettingsSandbox;
