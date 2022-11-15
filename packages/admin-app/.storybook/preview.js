@@ -1,8 +1,11 @@
+import React from "react";
 import { ThemeProvider, theme } from "@blend-ui/core";
 
 import { addDecorator, addParameters } from "@storybook/react";
 
 import { BrowserRouter as Router, MemoryRouter, } from 'react-router-dom';
+
+import "./normalize.css";
 
 import {
   mergeDeep
@@ -40,9 +43,11 @@ export const parameters = {
 
 export const decorators = [
   (Story) => (
-    <MemoryRouter initialEntries={["/"]}>
-      <Story />
-    </MemoryRouter>
+    <React.StrictMode>
+      <MemoryRouter initialEntries={["/"]}>
+        <Story />
+      </MemoryRouter>
+    </React.StrictMode>
   ),
 ];
 

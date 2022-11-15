@@ -1,13 +1,29 @@
+/* eslint-disable react/jsx-no-constructed-context-values */
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+
+import { GraphQLContext } from "./lib/GraphQLContext";
+import { GraphQLClient, API } from "./lib/Client";
+import { PrifinaStoreProvider } from "./stores/PrifinaStore";
 import reportWebVitals from "./reportWebVitals";
+
+// here can select mockup client instead.... :)
+const PrifinaClient = new GraphQLClient();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <GraphQLContext.Provider value={{ client: PrifinaClient, GRAPHQL: API }}>
+      <PrifinaStoreProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </PrifinaStoreProvider>
+    </GraphQLContext.Provider>
   </React.StrictMode>,
 );
 

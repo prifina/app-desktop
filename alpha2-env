@@ -1,0 +1,36 @@
+REACT_APP_MOBILE_SITE=alpha.app-mobile.prifina.com
+REACT_APP_STAGE=dev
+REACT_APP_DEBUG=true
+# google
+REACT_APP_API_KEY = AIzaSyBCp4P7O-U2yT3GdoqtvqctHK5wjDYA6Rk
+REACT_APP_SEARCH_ENGINE = 011518885767647535886%3Albym43oytli
+
+# user pool region
+REACT_APP_AUTH_REGION=eu-west-1  
+# identity pool region, default appsync region 
+REACT_APP_MAIN_REGION=eu-west-1
+
+# REACT_APP_ACCOUNT_ID=429117803886
+REACT_APP_POOL_ID=eu-west-1_uwy3R12FM
+# users
+REACT_APP_APP_CLIENT_ID= 2vh4cnj9ksl34q6vu5o56trhbi
+# developers
+REACT_APP_DEV_CLIENT_ID= 12j5nttifqf0csfc8ahof3mbb6
+# service
+REACT_APP_SERVICE_CLIENT_ID= 5btq77gpa0junvfudqe8qpaobn
+
+REACT_APP_IDENTITY_POOL_ID= eu-west-1:9589f175-270e-418c-b724-23c136db8a7f 
+REACT_APP_USER_IDENTITY_POOL_ID= eu-west-1:5766f4b7-0043-4a6d-8c85-0ecbd7952c22
+
+REACT_APP_APPSYNC_GRAPHQL_ENDPOINT= https://vwjywyefrjabtcouj3lrraky7q.appsync-api.eu-west-1.amazonaws.com/graphql
+REACT_APP_APPSYNC_AUTH_TYPE= AWS_IAM
+
+REACT_APP_PRIFINA_ACCOUNT= 749067669980
+REACT_APP_PRIFINA_APPS_BUCKET=prifina-apps-352681697435-eu-west-1
+REACT_APP_REFRESH_TOKEN_EXPIRY=30
+SKIP_PREFLIGHT_CHECK=true 
+GENERATE_SOURCEMAP=false
+
+# prifina domains
+REACT_APP_ALPHA_APP=http://alpha.app.prifina.com
+REACT_APP_ALPHA_APP_STUDIO=http://alpha.developer-app.prifina.com

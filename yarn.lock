@@ -8175,6 +8175,18 @@
     "@svgr/plugin-jsx" "^6.3.1"
     "@svgr/plugin-svgo" "^6.3.1"
 
+"@tanstack/react-table@^8.5.27":
+  version "8.5.27"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.5.27.tgz#3e69f9a25ea1a479a903d9c311ad46d2168ed640"
+  integrity sha512-dUl8qRGvWVaJkOk/goUxb3w675FtioY7uh6NalRG04dYBiwIpjHn8a1Jhmp9lE+Puk88GZ0OCF7svCVXIJviqQ==
+  dependencies:
+    "@tanstack/table-core" "8.5.27"
+
+"@tanstack/table-core@8.5.27":
+  version "8.5.27"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.5.27.tgz#8b5167068637d67a585cfb844f233b52f6608a69"
+  integrity sha512-sxGZPV97bNYap+U/ZxYVmx3Uy872Fc/M0qjKl85PzMaqBgikosybtkOEEjLdeJlBthqG5G8VI6zN1/Pej9awWA==
+
 "@testing-library/dom@^8.3.0":
   version "8.18.1"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-8.18.1.tgz#80f91be02bc171fe5a3a7003f88207be31ac2cf3"
@@ -23516,6 +23528,11 @@ web-namespaces@^1.0.0:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/web-namespaces/-/web-namespaces-1.1.4.tgz#bc98a3de60dadd7faefc403d1076d529f5e030ec"
   integrity sha512-wYxSGajtmoP4WxfejAPIr4l0fVh+jeMXZb08wNc0tMg6xsfZXj3cECqIK0G7ZAqUq0PP8WlMDtaOGVBTAWztNw==
+
+web-vitals@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-3.0.4.tgz#a78ea93e95f7d7961dd151e0a76ac132c5dee2c9"
+  integrity sha512-Yau8qf1AJ/dm6MY180Bi0qpCIuWmAfKAnOqmxLecGfIHn0+ND3H4JOhXeY73Pyi9zjSF5J4SNUewHLNUzU7mmA==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

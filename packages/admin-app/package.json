@@ -95,6 +95,7 @@
     "@react-spring/web": "^9.4.4",
     "@styled-system/theme-get": "^5.1.2",
     "@svgr/webpack": "^6.2.1",
+    "@tanstack/react-table": "^8.5.27",
     "@testing-library/jest-dom": "^5.14.1",
     "aria-hidden": "^1.1.1",
     "aws-amplify": "^4.3.19",
@@ -125,6 +126,7 @@
     "styled-system": "^5.1.5",
     "url-loader": "^4.1.1",
     "uuid": "^8.3.2",
+    "web-vitals": "^3.0.4",
     "zustand": "^4.1.4"
   },
   "browserslist": {

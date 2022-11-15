@@ -125,6 +125,8 @@ function App() {
           Auth.configure(currentConfig);
         }
         const _currentSession = await Auth.currentSession();
+        console.log("SESSION ", _currentSession);
+        console.log("CREDS ", await Auth.currentCredentials());
 
         // Auth.currentSession() does not currently support federated identities. Please store the auth0 session info manually(for example, store tokens into the local storage).Auth.currentAuthenticatedUser().then(user => console.log(user));
         Auth.currentCredentials().then(c => {
