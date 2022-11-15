@@ -826,7 +826,7 @@ const Settings = props => {
             style={{
               position: "relative",
               border: 0,
-              minHeight: 66,
+              height: 66,
             }}
           >
             <IconBox>
