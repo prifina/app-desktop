@@ -40,7 +40,14 @@ export const parameters = {
     },
   },
 };
-
+export const decorators = [
+  (Story) => (
+    <MemoryRouter initialEntries={["/"]}>
+      <Story />
+    </MemoryRouter>
+  ),
+];
+/*
 export const decorators = [
   (Story) => (
     <React.StrictMode>
@@ -50,7 +57,7 @@ export const decorators = [
     </React.StrictMode>
   ),
 ];
-
+*/
 
 /*
 export const decorators = [

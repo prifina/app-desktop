@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { GraphQLClient } from "./utils/Client";
+import { GraphQLClient } from "../lib/Client";
 //console.log(theme)
 const client = new GraphQLClient();
 console.log(client);

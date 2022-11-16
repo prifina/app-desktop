@@ -86,7 +86,8 @@ const TableTest = () => {
       return { TS: t, ...tsData[t] };
     });
     //console.log(metricData);
-    console.log(metricData.sort((a, b) => (a.TS > b.TS) ? -1 : 1))
+    //console.log(metricData.sort((a, b) => (a.TS > b.TS) ? -1 : 1))
+    setData(metricData.sort((a, b) => (a.TS > b.TS) ? -1 : 1))
 
   }, [cognitoMetricJSON])
 

@@ -13,7 +13,9 @@ export default function AuthenticatedRoute({ children, ...rest }) {
   // const authenticated = getAuthStatus();
   // const { isAuthenticated, currentUser } = useAppContext();
   /*
-   const { getCountryCodeQuery, resendCode, verifyCode } = useStore((state) => ({ getCountryCodeQuery: state.getCountryCodeQuery, verifyCode: state.verifyCode, resendCode: state.resendCode }),
+   const { getCountryCodeQuery, resendCode, verifyCode } = useStore((state) =>
+   ({ getCountryCodeQuery: state.getCountryCodeQuery, verifyCode: state.verifyCode,
+    resendCode: state.resendCode }),
    shallow
   );
   */

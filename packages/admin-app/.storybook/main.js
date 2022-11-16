@@ -27,6 +27,11 @@ const storybookConfig = {
     //builder: "@storybook/builder-webpack5",
     builder: 'webpack5',
   },
+  /*
+  reactOptions: {
+    strictMode: true,
+  }
+  */
   /* refs: {
     '@chakra-ui/react': { disable: true }
   }, */
