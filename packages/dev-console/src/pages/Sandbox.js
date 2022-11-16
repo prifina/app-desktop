@@ -59,7 +59,14 @@ import mdiPowerPlug from "@iconify/icons-mdi/power-plug";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 import mdiArrowExpand from "@iconify/icons-mdi/arrow-expand";
 
+import bxSun from "@iconify/icons-bx/sun";
+import bxMoon from "@iconify/icons-bx/moon";
+
+import feClose from "@iconify/icons-fe/close";
+
 import UploadAsset from "../components/UploadAsset";
+
+import * as C from "../components/components";
 
 const SandboxContext = createContext(null);
 
@@ -141,14 +148,17 @@ const IconDiv = styled.div`
   top: 20px;
   */
   position: absolute;
-  left: 275px;
-  top: 15px;
+  // left: 275px;
+  // top: 15px;
+
+  left: ${props => props.position.left};
+  top: ${props => props.position.top};
 
   opacity: 1;
   cursor: ${props => (props.open ? "default" : "pointer")};
   background-image: radial-gradient(
     circle,
-    ${props => (props.widgetTheme === "dark" ? "white" : "black")} 2px,
+    ${props => (props.widgetTheme === "dark" ? "black" : "white")} 2px,
     transparent 0px
   );
   background-size: 100% 33.33%;
@@ -175,6 +185,33 @@ const TypeBadge = styled.span`
   font-size: 10px;
   border: 1px solid ${props => (props.type === 2 ? "#FC62C1" : "#CB8E12")};
   color: ${props => (props.type === 2 ? "#FC62C1" : "#CB8E12")};
+`;
+
+export const CustomSelect = styled.select`
+  border-radius: 8px;
+  border: 1px solid: #6B6669;
+  color: #F5F8F7DE;
+  padding: 5px;
+  font-size: 12px;
+  background: transparent;
+  height: 32px;
+  width: 110px;
+  outline: none;
+  cursor:pointer;
+
+`;
+
+const IconContainer = styled(Flex)`
+  border-radius: 2px;
+  padding: 4px;
+  background: ${props => (props.disabled === true ? "#4B484A" : "gray")};
+  height: 32px;
+  width: 32px;
+  cursor: pointer;
+
+  :active {
+    background: ${props => (props.disabled === true ? null : "lightgray")};
+  }
 `;
 
 //const Widget = forwardRef((props, ref) => {
@@ -395,14 +432,15 @@ const Content = forwardRef((props, ref) => {
         <div
           ref={ref}
           style={{
-            width: "300px",
-            height: "300px",
+            width: props.size.width,
+            height: props.size.height,
             margin: "10px",
             position: "relative",
           }}
         >
           <IconDiv
-            widgetTheme={"light"}
+            widgetTheme={props.theme}
+            position={{ left: props.position.left, top: props.position.top }}
             onClick={() => {
               // test sending settings...
 
@@ -516,6 +554,8 @@ const Sandbox = props => {
   const [validStatus, setValidStatus] = useState();
 
   const [remoteLink, setRemoteLink] = useState("");
+
+  const [render, setRender] = useState(false);
 
   function handleCheckUrl(event) {
     checkUrl(event.target.value)
@@ -635,9 +675,10 @@ const Sandbox = props => {
       settings: currentAppRef.current.settings,
     }).then(res => {
       console.log("UPDATE ", res);
-      toast.info("System settings updated", {});
+      toast.success("System settings updated", {});
     });
 
+    setRender(prevValue => !prevValue);
     e.preventDefault();
   };
 
@@ -651,7 +692,7 @@ const Sandbox = props => {
       settings: currentAppRef.current.settings,
     }).then(res => {
       console.log("UPDATE ", res);
-      toast.info("Settings updated", {});
+      toast.success("Settings updated", {});
     });
 
     e.preventDefault();
@@ -667,7 +708,7 @@ const Sandbox = props => {
       remoteUrl: currentAppRef.current.remoteUrl,
     }).then(res => {
       console.log("UPDATE ", res);
-      toast.info("Remote link updated", {});
+      toast.success("Remote link updated", {});
       window.location.reload();
     });
   };
@@ -681,6 +722,110 @@ const Sandbox = props => {
   };
 
   const settingsArray = currentAppRef.current.settings;
+
+  console.log("Settings array ", settingsArray);
+  console.log("Settings array ", currentAppRef);
+
+  const availableSettings = useRef([]);
+
+  let sizes = [];
+  let themes = [];
+
+  if (settingsArray !== undefined) {
+    let sizeValues = JSON.parse(settingsArray[0].value);
+    let themeValues = JSON.parse(settingsArray[1].value);
+
+    availableSettings.current.sizes = sizeValues.map(item => item.value);
+
+    availableSettings.current.themes = themeValues.map(item => item.value);
+
+    sizes = availableSettings.current.sizes;
+    themes = availableSettings.current.themes;
+  }
+
+  console.log("availableSettings ", availableSettings);
+  console.log("themes", themes);
+
+  const [size, setSize] = useState({
+    height: 300,
+    width: 300,
+  });
+  const [position, setPosition] = useState({
+    left: "275px",
+    top: "15px",
+  });
+
+  const [theme, setTheme] = useState();
+
+  const [renderSize, setRenderSize] = useState();
+
+  console.log("render size", renderSize);
+
+  useEffect(() => {
+    setRenderSize(sizes[0]);
+    setTheme(themes[0]);
+  }, [settingsArray]);
+
+  useEffect(() => {
+    if (renderSize === "600x300") {
+      setSize({
+        ...size,
+        height: 600,
+        width: 300,
+      });
+      setPosition({
+        ...position,
+        left: "275px",
+        top: "15px",
+      });
+    } else if (renderSize === "300x600") {
+      setSize({
+        ...size,
+        height: 300,
+        width: 600,
+      });
+      setPosition({
+        ...position,
+        left: "575px",
+        top: "15px",
+      });
+    } else if (renderSize === "600x600") {
+      setSize({
+        ...size,
+        height: 600,
+        width: 600,
+      });
+      setPosition({
+        ...position,
+        left: "575px",
+        top: "15px",
+      });
+    } else {
+      setSize({
+        ...size,
+        height: 300,
+        width: 300,
+      });
+      setPosition({
+        ...position,
+        left: "275px",
+        top: "15px",
+      });
+    }
+  }, [renderSize, theme]);
+
+  console.log("themes", themes);
+  console.log("theme", theme);
+
+  const IconButton = ({ icon, onClick, disabled }) => {
+    return (
+      <IconContainer onClick={onClick} disabled={disabled}>
+        <BlendIcon iconify={icon} color="white" width="24px" />
+      </IconContainer>
+    );
+  };
+
+  const [banner, setBanner] = useState(true);
 
   return (
     <>
@@ -700,58 +845,111 @@ const Sandbox = props => {
               flexDirection="column"
               width={"100vw"}
               height={"100vh"}
-              bg="basePrimary"
+              bg={theme === "light" ? "basePrimary" : "white"}
             >
-              <Flex
-                height="42px"
-                alignItems="center"
-                justifyContent="center"
-                style={{ background: colors.sandboxGradient }}
-              >
-                <BlendIcon
-                  size="18px"
-                  iconify={mdiPowerPlug}
-                  className="icon"
-                  color={colors.textPrimary}
-                />
-                <Text ml={20}>
-                  This is a live Sandbox session you are seeing how your project
-                  will render on Prifina
-                </Text>
-              </Flex>
+              {banner ? (
+                <Flex
+                  height="42px"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="10px"
+                  style={{ background: colors.sandboxGradient }}
+                  position="relative"
+                >
+                  <Box widthe="100px"></Box>
+                  <Flex alignSelf="center">
+                    <BlendIcon
+                      size="18px"
+                      iconify={mdiPowerPlug}
+                      className="icon"
+                      color={colors.textPrimary}
+                    />
+                    <Text ml={20}>
+                      This is a live Sandbox session you are seeing how your
+                      project will render on Prifina
+                    </Text>
+                  </Flex>
+                  <BlendIcon
+                    style={{
+                      top: 10,
+                      right: 10,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setBanner(false);
+                    }}
+                    size="18px"
+                    iconify={feClose}
+                    className="icon"
+                    color={colors.textPrimary}
+                  />
+                </Flex>
+              ) : null}
+
               <Flex
                 height="64px"
                 bg="baseMuted"
                 alignItems="center"
-                paddingLeft="16px"
+                // justifyContent="space-between"
+                padding="0px 24px 0px 24px"
               >
-                <BlendIcon
-                  size="18px"
-                  iconify={mdiArrowLeft}
-                  className="icon"
-                  color={colors.textPrimary}
-                  style={{ cursor: "pointer" }}
+                <Flex alignItems="center">
+                  <BlendIcon
+                    size="18px"
+                    iconify={mdiArrowLeft}
+                    className="icon"
+                    color={colors.textPrimary}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      //history.goBack();
+                      navigate(-1);
+                    }}
+                  />
+                  <Text ml={16} mr={100}>
+                    {allValues.name}
+                  </Text>
+                  <TypeBadge type={allValues.appType}>
+                    {allValues.appType === 1 ? "APPLICATION" : "WIDGET"}
+                  </TypeBadge>
+                  <Text ml={16} mr={8}>
+                    Session Status
+                  </Text>
+                  {ready && validUrl !== "" && validUrl !== null ? (
+                    <Breathe />
+                  ) : (
+                    <RedStatusCircle />
+                  )}
+                </Flex>
+                <Flex>
+                  <CustomSelect
+                    name="age"
+                    defaultValue={sizes[0]}
+                    onChange={e => {
+                      setRenderSize(e.target.value);
+                    }}
+                    width={"150px"}
+                    style={{ marginRight: 24, marginLeft: 180 }}
+                  >
+                    {sizes.map((item, index) => (
+                      <option key={index}>{item}</option>
+                    ))}
+                  </CustomSelect>
+                  <IconButton icon={bxSun} onClick={() => setTheme("light")} />
+                  <div style={{ marginLeft: 8 }}>
+                    <IconButton
+                      icon={bxMoon}
+                      onClick={() => setTheme("dark")}
+                    />
+                  </div>
+                </Flex>
+                {/* <Button
+                  ml="15px"
                   onClick={() => {
-                    //history.goBack();
-                    navigate(-1);
+                    saveChanges();
                   }}
-                />
-                <Text ml={16} mr={100}>
-                  {allValues.name}
-                </Text>
-                <TypeBadge type={allValues.appType}>
-                  {allValues.appType === 1 ? "APPLICATION" : "WIDGET"}
-                </TypeBadge>
-                <Text ml={16} mr={8}>
-                  Session Status
-                </Text>
-                {ready && validUrl !== "" && validUrl !== null ? (
-                  <Breathe />
-                ) : (
-                  <RedStatusCircle />
-                )}
-                {/* <StatusCircle status={validUrl != null ? validStatus : false} /> */}
-                {/* <Breathe /> */}
+                >
+                  Save Changes
+                </Button> */}
               </Flex>
               <Flex
                 justifyContent={"center"}
@@ -764,6 +962,9 @@ const Sandbox = props => {
                   <>
                     {ready && (
                       <Content
+                        size={{ height: size.height, width: size.width }}
+                        position={{ left: position.left, top: position.top }}
+                        theme={theme}
                         ref={ref => {
                           if (ref) {
                             remoteRef.current = ref;
@@ -831,7 +1032,6 @@ const Sandbox = props => {
                           position: "sticky",
                           top: 0,
                           zIndex: 1,
-
                           paddingBottom: 10,
                         }}
                       >

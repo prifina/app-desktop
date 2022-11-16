@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
+import _ from "lodash";
+
 import {
   Box,
   Flex,
@@ -24,13 +26,14 @@ import {
   i18n,
 } from "@prifina-apps/utils";
 
-
 import PropTypes from "prop-types";
 
 i18n.init();
 
 import * as C from "./app-market/components";
 import DataSourceModal from "./app-market/DataSourceModal";
+import WidgetBox from "./app-market/WidgetBox";
+import ButtonGroup from "./app-market/ButtonGroup";
 
 import config from "../config";
 
@@ -50,92 +53,17 @@ import appMenu from "@iconify/icons-fe/app-menu";
 import bxsWidget from "@iconify/icons-bx/bxs-widget";
 import bxMinusBack from "@iconify/icons-bx/bx-minus-back";
 
+import bxsGrid from "@iconify/icons-bx/bxs-grid";
+import mdiShopping from "@iconify/icons-mdi/shopping";
+import mdiSort from "@iconify/icons-mdi/sort";
+
+import { PrifinaIcon } from "./app-market/icons";
+
+import { ReactComponent as AppMarketLogo } from "../assets/app-market/app-market-logo.svg";
+
 const propTest = props => {
   console.log("PROP TEST ", props);
   return null;
-};
-
-const WidgetBox = ({
-  title,
-  installed,
-  installWidget,
-  id,
-  shortDescription,
-  installedWidget,
-  onClick,
-  icon,
-  category,
-  bannerImage,
-  ...props
-}) => {
-  console.log("PROPS ", id, installed, title, installedWidget, props);
-  return (
-    <C.WidgetBase
-      onClick={onClick}
-      backgroundImage={bannerImage}
-      id="appMarket-widgetBase"
-    // id={`appmarket${title}`}
-    >
-      <Flex flexDirection={"column"} justifyContent="space-between">
-        <C.MarketBadge
-          style={{
-            backgroundColor: "#CAEBCD",
-            position: "absolute",
-            right: 24,
-            minWidth: 91,
-            marginTop: 24,
-          }}
-        >
-          <Text fontSize="xs">{category}</Text>
-        </C.MarketBadge>
-        <Flex className="overContainer">
-          <Flex
-            className="overContainer"
-            flexDirection="column"
-            width="100%"
-            height="75px"
-            position="absolute"
-            bottom="0px"
-            bg="red"
-            paddingLeft="24px"
-            paddingTop="10px"
-            style={{
-              borderBottomLeftRadius: 8,
-              borderBottomRightRadius: 8,
-              background:
-                "linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, #FFFFFF 100%)",
-            }}
-          >
-            <Text className="title" textStyle={"h2"} fontWeight={"semiBold"}>
-              {title}
-            </Text>
-            <Text fontSize="xs" mt="8px">
-              {shortDescription}
-            </Text>
-            {/*
-            -- further data connector information
-            <Text fontSize="xs" mt="8px" mb="8px">
-              213123
-            </Text>
-             */}
-          </Flex>
-        </Flex>
-      </Flex>
-    </C.WidgetBase>
-  );
-};
-
-WidgetBox.propTypes = {
-  title: PropTypes.string,
-  installed: PropTypes.bool,
-  installWidget: PropTypes.func,
-  id: PropTypes.string,
-  shortDescription: PropTypes.string,
-  installedWidget: PropTypes.number,
-  onClick: PropTypes.func,
-  icon: PropTypes.string,
-  category: PropTypes.string,
-  bannerImage: PropTypes.string,
 };
 
 const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
@@ -143,6 +71,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const widgets = useRef({});
   const [installedWidgets, setInstalledWidgets] = useState([]);
+
+  const [count, setCount] = useState({
+    all: 0,
+    widgets: 0,
+    apps: 0,
+    systemApps: 0,
+  });
 
   const { colors } = useTheme();
 
@@ -159,12 +94,20 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     "google-timeline": dataSourceIcon,
   };
 
-  useEffect(() => {
+  const [isLoading, setIsLoading] = useState(true);
 
+  const [showAppType, setShowAppType] = useState(4);
+
+  const [filteredWidgets, setFilteredWidgets] = useState({});
+
+  useEffect(() => {
     async function init() {
       const apps = await listAppMarketQuery(GraphQLClient, {
-        filter: { appType: { lt: 3 } },
+        filter: { appType: { lt: 4 } },
       });
+
+      console.log("APPLICATIONS", apps);
+
       const prifinaUser = await getPrifinaUserQuery(GraphQLClient, prifinaID);
       if (
         prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources") &&
@@ -203,7 +146,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         }
       });
 
-      const widgetData = apps.data.listAppMarket.items;
+      let widgetData = apps.data.listAppMarket.items;
+      console.log("WIDGET DATA", widgetData);
+
       let availableWidgets = {};
       widgetData.forEach(item => {
         const manifest = JSON.parse(item.manifest);
@@ -255,32 +200,35 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         }
 
         availableWidgets[item.id] = {
+          appType: item.appType,
           title: item.title,
           installed: false,
           settings: defaultSettings,
-          publisher: manifest.publisher,
-          icon: `${s3path}/${manifest.id}/${manifest.icon}`,
-          bannerImage: `${s3path}/${manifest.id}/${manifest.bannerImage}`,
-          description: manifest.description,
-          shortDescription: manifest.shortDescription,
-          longDescription: manifest.longDescription,
-          dataTypes: manifest.dataTypes,
-          category: manifest.category,
-          deviceSupport: manifest.deviceSupport,
-          languages: manifest.languages,
-          age: manifest.age,
-          screenshots: manifest.screenshots,
-          keyFeatures: manifest.keyFeatures,
-          userHeld: manifest.userHeld,
-          userGenerated: manifest.userGenerated,
-          public: manifest.public,
-          id: manifest.id,
+          publisher: manifest?.publisher,
+          icon: `${s3path}/${manifest?.id}/${manifest?.icon}`,
+          bannerImage: `${s3path}/${manifest?.id}/${manifest?.bannerImage}`,
+          description: manifest?.description,
+          shortDescription: manifest?.shortDescription,
+          longDescription: manifest?.longDescription,
+          dataTypes: manifest?.dataTypes,
+          category: manifest?.category,
+          deviceSupport: manifest?.deviceSupport,
+          languages: manifest?.languages,
+          age: manifest?.age,
+          screenshots: manifest?.screenshots,
+          keyFeatures: manifest?.keyFeatures,
+          userHeld: manifest?.userHeld,
+          userGenerated: manifest?.userGenerated,
+          public: manifest?.public,
+          id: manifest?.id,
           dataSources: dataSources,
           //dataConnectors: manifest.dataConnectors || [],
         };
 
         console.log("MANIFEST", manifest);
-        const screenshots = [`${s3path}/${manifest.id}/${manifest.screenshots}`];
+        const screenshots = [
+          `${s3path}/${manifest?.id}/${manifest?.screenshots}`,
+        ];
         console.log("sreenshots", screenshots);
       });
 
@@ -307,14 +255,35 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         widgets.current = availableWidgets;
         setInstalledWidgets(currentInstalled);
       }
+
+      let widgetsCount = _.pickBy(widgets.current, { appType: 2 });
+      let appCount = _.pickBy(widgets.current, { appType: 1 });
+      let systemAppsCount = _.pickBy(widgets.current, { appType: 3 });
+
+      let all = { ...widgetsCount, ...appCount };
+
+      setFilteredWidgets(all);
+
+      setCount({
+        ...count,
+        all: _.size(all),
+        widgets: _.size(widgetsCount),
+        apps: _.size(appCount),
+        systemApps: _.size(systemAppsCount),
+      });
+
+      setIsLoading(false);
     }
     init();
 
     return () => {
       widgets.current = {};
     };
-
   }, []);
+
+  console.log("WIDGETS ", widgets);
+
+  console.log("FILTERED WIDGETS", filteredWidgets);
 
   const installWidget = (e, id, settings) => {
     console.log("CLICK ", id);
@@ -351,7 +320,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userHeldData() {
-    const newData = widgets.current[selectedWidgetIndex].userHeld.map(
+    const newData = widgets.current[selectedWidgetIndex].userHeld?.map(
       (item, index) => {
         return (
           <Flex alignItems="center" key={index}>
@@ -367,7 +336,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         );
       },
     );
-    if (newData.length > 0) {
+    if (newData?.length > 0) {
       return <Flex flexDirection="column">{newData}</Flex>;
     } else {
       return (
@@ -382,7 +351,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   }
 
   function userGeneratedData() {
-    const newData = widgets.current[selectedWidgetIndex].userGenerated.map(
+    const newData = widgets.current[selectedWidgetIndex].userGenerated?.map(
       (item, index) => {
         return (
           <Flex alignItems="center" key={index}>
@@ -398,7 +367,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         );
       },
     );
-    if (newData.length > 0) {
+    if (newData?.length > 0) {
       return <Flex flexDirection="column"> {newData}</Flex>;
     } else {
       return (
@@ -412,7 +381,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
     }
   }
   function publicData() {
-    const newData = widgets.current[selectedWidgetIndex].public.map(
+    const newData = widgets.current[selectedWidgetIndex].public?.map(
       (item, index) => {
         return (
           <Flex alignItems="center" key={index}>
@@ -428,7 +397,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         );
       },
     );
-    if (newData.length > 0) {
+    if (newData?.length > 0) {
       return <Flex flexDirection="column">{newData}</Flex>;
     } else {
       return (
@@ -444,25 +413,25 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const items = [
     {
-      label: "Market",
+      label: "Marketplace",
       icon: appMenu,
       onClick: () => {
         setStep(0);
       },
     },
-    {
-      label: "Widgets",
-      icon: bxsWidget,
-      onClick: () => {
-        setStep(0);
-      },
-    },
-    {
-      label: "Apps",
-      icon: bxMinusBack,
-      badgeText: "Soon",
-      disabled: true,
-    },
+    // {
+    //   label: "Widgets",
+    //   icon: bxsWidget,
+    //   onClick: () => {
+    //     setStep(0);
+    //   },
+    // },
+    // {
+    //   label: "Apps",
+    //   icon: bxMinusBack,
+    //   badgeText: "Soon",
+    //   disabled: true,
+    // },
   ];
 
   const [activeTab, setActiveTab] = useState(0);
@@ -497,12 +466,132 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   );
   console.log("LEFT MENU ", items);
 
+  const printButtonLabel = event => {
+    console.log(event.target.name);
+    //do some stuff here
+  };
+
+  const filterButtons = [
+    {
+      name: "View all",
+      icon: <BlendIcon iconify={mdiShopping} width="14px" />,
+      onClick: () => setShowAppType(2),
+      count: count.all,
+    },
+
+    {
+      name: "Widgets",
+      icon: <BlendIcon iconify={bxsWidget} width="14px" />,
+      onClick: () => setShowAppType(2),
+      count: count.widgets,
+    },
+    {
+      name: "Apps",
+      icon: <BlendIcon iconify={bxsGrid} width="14px" />,
+      onClick: () => setShowAppType(1),
+      count: count.apps,
+    },
+    {
+      name: "System Apps",
+      icon: <PrifinaIcon style={{ fill: "blue" }} />,
+      onClick: () => setShowAppType(3),
+      count: count.systemApps,
+    },
+  ];
+
+  console.log("show apps ", showAppType);
+
+  const handleFilter = type => {
+    if (type <= 3) {
+      setFilteredWidgets(_.pickBy(widgets.current, { appType: type }));
+    } else {
+      setFilteredWidgets(widgets.current);
+    }
+  };
+
+  // const handleSort = order => {
+  //   let arr = Object.values(filteredWidgets);
+
+  //   setFilteredWidgets(
+  //     _.orderBy(arr, [item => item.title.toLowerCase()], ["asc"]),
+  //   );
+  // };
+
+  useEffect(() => {
+    handleFilter(showAppType);
+  }, [showAppType]);
+
+  // useEffect(() => {
+  //   setFilteredWidgets(widgets.current);
+  // }, [filteredWidgets]);
+
+  // const sorted = Object.keys(filteredWidgets)
+  //   .sort()
+  //   .reduce((accumulator, key) => {
+  //     accumulator[key] = filteredWidgets[key];
+
+  //     return accumulator;
+  //   }, {});
+
+  // const sorted = Object.keys(filteredWidgets).sort();
+
+  const result = _.pickBy(filteredWidgets, (value, key) => {
+    return _.startsWith(key, "c");
+  });
+  console.log("result", result);
+
+  // let sortable = filteredWidgets.sort((a, b) =>
+  //   a.firstname.localeCompare(b.firstname),
+  // );
+
+  // let sortable = [];
+
+  // for (var prop in filteredWidgets) {
+  //   if (filteredWidgets.hasOwnProperty(prop)) {
+  //     var innerObj = {};
+  //     innerObj[prop] = filteredWidgets[prop];
+  //     sortable.push(innerObj);
+  //   }
+  // }
+
+  // console.log(arr);
+
+  // console.log("sorted", sortable);
+
+  const [sort, setSort] = useState({
+    subject: "",
+    order: "",
+  });
+
+  console.log("sort", sort);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggling = () => setMenuOpen(!menuOpen);
+
+  const SortingToggle = ({ onClick }) => {
+    return (
+      <C.SortingContainer onClick={onClick}>
+        Name A-Z
+        <BlendIcon iconify={mdiSort} width="14px" />
+      </C.SortingContainer>
+    );
+  };
+
+  // const handleSort = ({ data, subject, order }) => {
+  //   return _.orderBy(data, [item => item.subject?.toLowerCase()], [{ order }]);
+  // };
+
+  useEffect(() => {
+    // handleSort();
+  }, []);
+
   return (
     <>
       <C.GlobalStyle />
       <SidebarMenu items={items} />
       <Navbar backgroundColor="baseWhite">
-        <PrifinaLogo className={"app-market"} title="App Market" />
+        <AppMarketLogo />
       </Navbar>
       {step === 0 && (
         <>
@@ -516,48 +605,111 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
             <Flex
               minHeight="316px"
               bg="#EBF3FF"
-              width="100%"
               justifyContent="space-between"
-              paddingLeft="40px"
-              paddingRight="40px"
-              paddingTop="32px"
-              paddingBottom="32px"
+              padding="32px 40px 32px 40px"
             >
               <Flex
+                display="flex"
                 flexDirection="column"
-                marginRight="143px"
                 justifyContent="center"
+                marginRight="143px"
+                width="480px"
               >
-                <Text textStyle="h3" color="#639AED" mb="24px">
+                <Text textStyle="h3" mb="24px">
                   {i18n.__("dataOnYourSide")}
                 </Text>
-                <Text fontSize="md" color="#639AED">
+                <Text fontSize="md" color="#4D5150">
                   {i18n.__("appMarketText")}
                 </Text>
               </Flex>
               <Image id="appMarket-banner" src={appMarketBanner} />
             </Flex>
-            <Box mt={"40px"} ml={"64px"}>
-              <Text textStyle={"h3"}> {i18n.__("category")}</Text>
-              <Text textStyle={"h6"}>{i18n.__("categorySubText")}</Text>
-              <Flex mt="24px" flexDirection="row" flexWrap="wrap">
-                {Object.keys(widgets.current).map(w => {
-                  console.log("WIDGETS CURRENT", widgets.current);
-                  return (
-                    <WidgetBox
-                      key={w}
-                      id={w}
-                      {...widgets.current[w]}
-                      installWidget={installWidget}
-                      installedWidget={installedWidgets.indexOf(w)}
-                      onClick={() => {
-                        setStep(1);
-                        setSelectedWidgetIndex(w);
-                      }}
-                    />
-                  );
-                })}
-              </Flex>
+            <Box mt={"50px"} ml={"64px"} mr={"34px"}>
+              {!isLoading ? (
+                <>
+                  <Flex justifyContent="space-between">
+                    <div>
+                      <ButtonGroup
+                        buttons={filterButtons}
+                        handleClickAction={printButtonLabel}
+                      />
+                    </div>
+                    {/* <Box mr={64}>
+                      <SortingToggle onClick={toggling} />
+                      {menuOpen && (
+                        <C.DropDownListContainer>
+                          <C.DropDownList>
+                            <C.InteractiveMenuItem
+                              title="Name A-Z"
+                              onClick={e => {
+                                e.preventDefault();
+                                // setSort({
+                                //   ...sort,
+                                //   suvject:
+                                // })
+                                // setFilteredWidgets(
+                                //   _.orderBy(
+                                //     filteredWidgets,
+                                //     ["title"],
+                                //     ["asc"],
+                                //   ),
+                                // );
+                                handleSort();
+                              }}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Name Z-A"
+                              onClick={e => {
+                                e.preventDefault();
+                              }}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Type A-Z"
+                              onClick={e => {
+                                e.preventDefault();
+                              }}
+                            />
+                            <C.InteractiveMenuItem
+                              title="Type Z-A"
+                              onClick={e => {
+                                e.preventDefault();
+                              }}
+                            /> 
+                          </C.DropDownList>
+                        </C.DropDownListContainer>
+                      )}
+                    </Box> 
+                    */}
+                  </Flex>
+                  <Flex mt="24px" flexDirection="row" flexWrap="wrap">
+                    {/* {Object.keys(widgets.current).map(w => { */}
+                    {Object.keys(filteredWidgets).map(w => {
+                      // console.log("WIDGETS CURRENT", widgets.current);
+                      return (
+                        <WidgetBox
+                          key={w}
+                          id={w}
+                          {...widgets.current[w]}
+                          keyName={w}
+                          installWidget={installWidget}
+                          installedWidget={installedWidgets.indexOf(w)}
+                          onClick={() => {
+                            setStep(1);
+                            setSelectedWidgetIndex(w);
+                          }}
+                        />
+                      );
+                    })}
+                  </Flex>
+                  {/* {!filteredWidgets === {} null : (
+                    <Flex mt="24px" flexDirection="row" flexWrap="wrap">
+                      <Text>Coming soon...</Text>
+                    </Flex>
+                  )} */}
+                </>
+              ) : (
+                <Text>Loading...</Text>
+              )}
             </Box>
           </Flex>
         </>
@@ -597,383 +749,413 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                 {i18n.__("widgetsDirectory")}
               </C.TextButton>
             </Flex>
-            <Image
-              src={widgets.current[selectedWidgetIndex].bannerImage}
-              alt={"Image"}
-              shape={"square"}
-              style={{ filter: "blur(1.5px)" }}
-            />
-            <Flex
-              alt="innerContainer"
-              marginTop={-120}
-              borderRadius="8px"
-              width="1026px"
-              height="auto"
-              bg={colors.backgroundLight}
-              boxShadow="0px 0px 16px rgba(74, 77, 79, 0.25)"
-              flexDirection="column"
-              marginBottom="82px"
-              paddingLeft="40px"
-              paddingRight="40px"
-              paddingBottom="30px"
-              zIndex={0}
-            >
-              <Flex
-                alt="topContainer"
-                justifyContent="space-between"
-                alignItems="center"
-                width="100%"
-                paddingTop="32px"
-                paddingBottom="24px"
-              >
-                <Flex alt="leftSide" alignItems="center">
-                  <Image
-                    src={widgets.current[selectedWidgetIndex].icon}
-                    alt={"Image"}
-                    shape={"square"}
-                    width={57}
-                  />
-                  <Flex flexDirection="column" marginLeft="16px">
-                    <Flex alignItems="center">
-                      <Text fontSize="xl" bold marginRight="24px">
-                        {widgets.current[selectedWidgetIndex].title}
-                      </Text>
-                      <C.Badge>{i18n.__("widget")}</C.Badge>
+            {widgets.current[selectedWidgetIndex].appType !== 3 ? (
+              <>
+                <Image
+                  src={widgets.current[selectedWidgetIndex].bannerImage}
+                  alt={"Image"}
+                  shape={"square"}
+                  style={{ filter: "blur(1.5px)" }}
+                />
+                <Flex
+                  alt="innerContainer"
+                  marginTop={-120}
+                  borderRadius="8px"
+                  width="1026px"
+                  height="auto"
+                  bg={colors.backgroundLight}
+                  boxShadow="0px 0px 16px rgba(74, 77, 79, 0.25)"
+                  flexDirection="column"
+                  marginBottom="82px"
+                  paddingLeft="40px"
+                  paddingRight="40px"
+                  paddingBottom="30px"
+                  zIndex={0}
+                >
+                  <Flex
+                    alt="topContainer"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    width="100%"
+                    paddingTop="32px"
+                    paddingBottom="24px"
+                  >
+                    <Flex alt="leftSide" alignItems="center">
+                      <Image
+                        src={widgets.current[selectedWidgetIndex].icon}
+                        alt={"Image"}
+                        shape={"square"}
+                        width={57}
+                      />
+                      <Flex flexDirection="column" marginLeft="16px">
+                        <Flex alignItems="center">
+                          <Text fontSize="xl" bold marginRight="24px">
+                            {widgets.current[selectedWidgetIndex].title}
+                          </Text>
+                          <C.Badge>{i18n.__("widget")}</C.Badge>
+                        </Flex>
+                        <Flex paddingTop="8px">
+                          <Text
+                            marginRight="18px"
+                            color={colors.textMuted}
+                            fontSize="xs"
+                          >
+                            {widgets.current[selectedWidgetIndex].publisher}
+                          </Text>
+                          <Text color={colors.textMuted} fontSize="xs">
+                            {widgets.current[selectedWidgetIndex].category}
+                          </Text>
+                        </Flex>
+                      </Flex>
                     </Flex>
-                    <Flex paddingTop="8px">
-                      <Text
-                        marginRight="18px"
-                        color={colors.textMuted}
-                        fontSize="xs"
+                    <Flex alt="rightSide">
+                      <Button variation="outline" id="reportBugButton">
+                        {i18n.__("reportBug")}
+                      </Button>
+                      <Button
+                        variation="outline"
+                        id="supportButton"
+                        marginLeft="16px"
                       >
-                        {widgets.current[selectedWidgetIndex].publisher}
-                      </Text>
-                      <Text color={colors.textMuted} fontSize="xs">
-                        {widgets.current[selectedWidgetIndex].category}
-                      </Text>
+                        {i18n.__("support")}
+                      </Button>
+                      {widgets.current[selectedWidgetIndex].installed ===
+                      false ? (
+                        <Button
+                          id="installButton"
+                          marginLeft="16px"
+                          onClick={e => {
+                            installWidget(
+                              e,
+                              widgets.current[selectedWidgetIndex].id,
+                              widgets.current[selectedWidgetIndex].settings,
+                            );
+                          }}
+                        >
+                          {i18n.__("install")}
+                        </Button>
+                      ) : (
+                        <Button
+                          id="viewButton"
+                          marginLeft="16px"
+                          onClick={() => {
+                            window.location.replace(
+                              config.APP_URL + "/system/display-app",
+                            );
+                          }}
+                        >
+                          {i18n.__("view")}
+                        </Button>
+                      )}
                     </Flex>
                   </Flex>
-                </Flex>
-                <Flex alt="rightSide">
-                  <Button variation="outline" id="reportBugButton">
-                    {i18n.__("reportBug")}
-                  </Button>
-                  <Button
-                    variation="outline"
-                    id="supportButton"
-                    marginLeft="16px"
+                  <div
+                    style={{
+                      overflow: "hidden",
+                    }}
                   >
-                    {i18n.__("support")}
-                  </Button>
-                  {widgets.current[selectedWidgetIndex].installed === false ? (
-                    <Button
-                      id="installButton"
-                      marginLeft="16px"
-                      onClick={e => {
-                        installWidget(
-                          e,
-                          widgets.current[selectedWidgetIndex].id,
-                          widgets.current[selectedWidgetIndex].settings,
-                        );
-                      }}
+                    <Tabs
+                      activeTab={activeTab}
+                      onClick={tabClick}
+                      style={{ height: "100%" }}
+                      variant={"line"}
                     >
-                      {i18n.__("install")}
-                    </Button>
-                  ) : (
-                    <Button
-                      id="viewButton"
-                      marginLeft="16px"
-                      onClick={() => {
-                        window.location.replace(
-                          config.APP_URL + "/system/display-app",
-                        );
-                      }}
-                    >
-                      {i18n.__("view")}
-                    </Button>
-                  )}
-                </Flex>
-              </Flex>
-              <div
-                style={{
-                  overflow: "hidden",
-                }}
-              >
-                <Tabs
-                  activeTab={activeTab}
-                  onClick={tabClick}
-                  style={{ height: "100%" }}
-                  variant={"line"}
-                >
-                  <TabList>
-                    <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
-                      <Text>{i18n.__("widgetDetails")}</Text>
-                    </Tab>
-                    <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
-                      <Text>{i18n.__("dataRequirements")}</Text>
-                    </Tab>
-                  </TabList>
-                  <TabPanelList style={{ backgroundColor: null }}>
-                    <TabPanel>
-                      <div
-                        style={{
-                          overflow: "auto",
-                          marginTop: 40,
-                          paddingBottom: "50px",
-                        }}
-                      >
-                        <Flex
-                          alt="bottomContainer"
-                          justifyContent="space-between"
-                        >
-                          <Flex
-                            alt="leftSide"
-                            flexDirection="column"
-                            width="549px"
+                      <TabList>
+                        <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
+                          <Text>{i18n.__("widgetDetails")}</Text>
+                        </Tab>
+                        <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
+                          <Text>{i18n.__("dataRequirements")}</Text>
+                        </Tab>
+                      </TabList>
+                      <TabPanelList style={{ backgroundColor: null }}>
+                        <TabPanel>
+                          <div
+                            style={{
+                              overflow: "auto",
+                              marginTop: 40,
+                              paddingBottom: "50px",
+                            }}
                           >
-                            <Flex alt="widgetInfo" alignItems="center">
-                              <Text marginRight="24px" fontSize="18px">
-                                {widgets.current[selectedWidgetIndex].title}
-                              </Text>
-                              {/* temproray */}
-                              <Box
-                                width="117px"
-                                height="30px"
-                                bg="#B2F5EA"
-                                textAlign="center"
-                                lineHeight="30px"
-                                fontSize="xxs"
-                                color="#00A3C4"
-                              >
-                                {i18n.__("userHeld")}
-                              </Box>
-                            </Flex>
-                            <Text fontSize="xs" color={colors.textMuted}>
-                              {widgets.current[selectedWidgetIndex].publisher}
-                            </Text>
-                            <Text fontSize="sm">
-                              {
-                                widgets.current[selectedWidgetIndex]
-                                  .shortDescription
-                              }
-                            </Text>
                             <Flex
-                              alt="requirementCards"
-                              paddingTop="32px"
-                              marginBottom="40px"
+                              alt="bottomContainer"
                               justifyContent="space-between"
                             >
-                              <C.Card
-                                title={i18n.__("dataTypes")}
-                                value={
-                                  widgets.current[selectedWidgetIndex]?.dataTypes
-                                }
-                              />
-                              <C.Card
-                                title={i18n.__("category")}
-                                value={
-                                  widgets.current[selectedWidgetIndex].category
-                                }
-                              />
-                              <C.Card
-                                title={i18n.__("deviceSupport")}
-                                value={
-                                  widgets.current[selectedWidgetIndex].deviceSupport
-                                }
-                              />
-                              <C.Card
-                                title={i18n.__("languages")}
-                                value={
-                                  widgets.current[selectedWidgetIndex].languages
-                                }
-                              />
-                              <C.Card
-                                title={i18n.__("ageAppropriate")}
-                                value={widgets.current[selectedWidgetIndex].age}
-                              />
-                            </Flex>
-                            <Text
-                              color={colors.textMuted}
-                              fontSize="sm"
-                              marginBottom="16px"
-                            >
-                              {
-                                widgets.current[selectedWidgetIndex]
-                                  .longDescription
-                              }
-                            </Text>
-                            <Flex alt="features" flexDirection="column">
-                              <Text
-                                color={colors.textMuted}
-                                fontSize="sm"
-                                marginBottom="8px"
+                              <Flex
+                                alt="leftSide"
+                                flexDirection="column"
+                                width="549px"
                               >
-                                {i18n.__("features")}
-                              </Text>
-                              <C.OrderedList>
-                                {widgets.current[
-                                  selectedWidgetIndex
-                                ].keyFeatures.map((item, index) => {
-                                  return (
-                                    <C.ListItem
-                                      key={index}
-                                      fontSize="sm"
-                                      color={colors.textMuted}
-                                    >
-                                      {item}
-                                    </C.ListItem>
-                                  );
-                                })}
-                              </C.OrderedList>
-                            </Flex>
-                          </Flex>
-                          <Flex alt="rightSide" flexDirection="column">
-                            {widgets.current[
-                              selectedWidgetIndex
-                            ].screenshots.map((item, i) => {
-                              return (
-                                <Box
-                                  key={i}
-                                  width="284px"
-                                  height="213px"
+                                <Flex alt="widgetInfo" alignItems="center">
+                                  <Text marginRight="24px" fontSize="18px">
+                                    {widgets.current[selectedWidgetIndex].title}
+                                  </Text>
+                                  {/* temproray */}
+                                  <Box
+                                    width="117px"
+                                    height="30px"
+                                    bg="#B2F5EA"
+                                    textAlign="center"
+                                    lineHeight="30px"
+                                    fontSize="xxs"
+                                    color="#00A3C4"
+                                  >
+                                    {i18n.__("userHeld")}
+                                  </Box>
+                                </Flex>
+                                <Text fontSize="xs" color={colors.textMuted}>
+                                  {
+                                    widgets.current[selectedWidgetIndex]
+                                      .publisher
+                                  }
+                                </Text>
+                                <Text fontSize="sm">
+                                  {
+                                    widgets.current[selectedWidgetIndex]
+                                      .shortDescription
+                                  }
+                                </Text>
+                                <Flex
+                                  alt="requirementCards"
+                                  paddingTop="32px"
+                                  marginBottom="40px"
+                                  justifyContent="space-between"
+                                >
+                                  <C.Card
+                                    title={i18n.__("dataTypes")}
+                                    value={
+                                      widgets.current[selectedWidgetIndex]
+                                        ?.dataTypes
+                                    }
+                                  />
+                                  <C.Card
+                                    title={i18n.__("category")}
+                                    value={
+                                      widgets.current[selectedWidgetIndex]
+                                        .category
+                                    }
+                                  />
+                                  <C.Card
+                                    title={i18n.__("deviceSupport")}
+                                    value={
+                                      widgets.current[selectedWidgetIndex]
+                                        .deviceSupport
+                                    }
+                                  />
+                                  <C.Card
+                                    title={i18n.__("languages")}
+                                    value={
+                                      widgets.current[selectedWidgetIndex]
+                                        .languages
+                                    }
+                                  />
+                                  <C.Card
+                                    title={i18n.__("ageAppropriate")}
+                                    value={
+                                      widgets.current[selectedWidgetIndex].age
+                                    }
+                                  />
+                                </Flex>
+                                <Text
+                                  color={colors.textMuted}
+                                  fontSize="sm"
                                   marginBottom="16px"
                                 >
-                                  <Image
-                                    src={`${s3path}/${widgets.current[selectedWidgetIndex].id}/${item}`}
-                                  />
-                                </Box>
-                              );
-                            })}
-                          </Flex>
-                        </Flex>
-                      </div>
-                    </TabPanel>
-                    <TabPanel>
-                      <div
-                        style={{
-                          overflow: "auto",
-                        }}
-                      >
-                        <Flex
-                          alt="dataRequirements"
-                          paddingLeft="7px"
-                          paddingRight="20px"
-                          marginBottom="25px"
-                          justifyContent="space-between"
-                        >
-                          <Flex
-                            alt="leftSide"
-                            flexDirection="column"
-                            width="480px"
+                                  {
+                                    widgets.current[selectedWidgetIndex]
+                                      .longDescription
+                                  }
+                                </Text>
+                                <Flex alt="features" flexDirection="column">
+                                  <Text
+                                    color={colors.textMuted}
+                                    fontSize="sm"
+                                    marginBottom="8px"
+                                  >
+                                    {i18n.__("features")}
+                                  </Text>
+                                  <C.OrderedList>
+                                    {widgets.current[
+                                      selectedWidgetIndex
+                                    ].keyFeatures?.map((item, index) => {
+                                      return (
+                                        <C.ListItem
+                                          key={index}
+                                          fontSize="sm"
+                                          color={colors.textMuted}
+                                        >
+                                          {item}
+                                        </C.ListItem>
+                                      );
+                                    })}
+                                  </C.OrderedList>
+                                </Flex>
+                              </Flex>
+                              <Flex alt="rightSide" flexDirection="column">
+                                {widgets.current[
+                                  selectedWidgetIndex
+                                ].screenshots?.map((item, i) => {
+                                  return (
+                                    <Box
+                                      key={i}
+                                      width="284px"
+                                      height="213px"
+                                      marginBottom="16px"
+                                    >
+                                      <Image
+                                        src={`${s3path}/${widgets.current[selectedWidgetIndex].id}/${item}`}
+                                      />
+                                    </Box>
+                                  );
+                                })}
+                              </Flex>
+                            </Flex>
+                          </div>
+                        </TabPanel>
+                        <TabPanel>
+                          <div
+                            style={{
+                              overflow: "auto",
+                            }}
                           >
-                            <Flex alignItems="center" marginBottom="13px">
-                              <Text marginRight="24px" fontSize="18px">
-                                {i18n.__("dataRequirements")}
-                              </Text>
-                              {/* temproray */}
-                              <Box
-                                width="117px"
-                                height="30px"
-                                bg="#B2F5EA"
-                                textAlign="center"
-                                lineHeight="30px"
-                                fontSize="xxs"
-                                color="#00A3C4"
-                              >
-                                {i18n.__("userHeld")}
-                              </Box>
-                            </Flex>
-                            <Text fontSize="sm" color={colors.textMuted}>
-                              {i18n.__("userHeldText")}
-                            </Text>
                             <Flex
+                              alt="dataRequirements"
+                              paddingLeft="7px"
+                              paddingRight="20px"
+                              marginBottom="25px"
                               justifyContent="space-between"
-                              paddingTop="32px"
-                              paddingBottom="31px"
                             >
-                              <Flex flexDirection="column">
-                                <Text fontSize="sm" bold marginBottom="16px">
-                                  {i18n.__("userDashHeld")}
+                              <Flex
+                                alt="leftSide"
+                                flexDirection="column"
+                                width="480px"
+                              >
+                                <Flex alignItems="center" marginBottom="13px">
+                                  <Text marginRight="24px" fontSize="18px">
+                                    {i18n.__("dataRequirements")}
+                                  </Text>
+                                  {/* temproray */}
+                                  <Box
+                                    width="117px"
+                                    height="30px"
+                                    bg="#B2F5EA"
+                                    textAlign="center"
+                                    lineHeight="30px"
+                                    fontSize="xxs"
+                                    color="#00A3C4"
+                                  >
+                                    {i18n.__("userHeld")}
+                                  </Box>
+                                </Flex>
+                                <Text fontSize="sm" color={colors.textMuted}>
+                                  {i18n.__("userHeldText")}
                                 </Text>
-                                {userHeldData()}
+                                <Flex
+                                  justifyContent="space-between"
+                                  paddingTop="32px"
+                                  paddingBottom="31px"
+                                >
+                                  <Flex flexDirection="column">
+                                    <Text
+                                      fontSize="sm"
+                                      bold
+                                      marginBottom="16px"
+                                    >
+                                      {i18n.__("userDashHeld")}
+                                    </Text>
+                                    {userHeldData()}
+                                  </Flex>
+                                  <Flex flexDirection="column">
+                                    <Text
+                                      fontSize="sm"
+                                      bold
+                                      marginBottom="16px"
+                                    >
+                                      {i18n.__("userDashGenerated")}
+                                    </Text>
+                                    {userGeneratedData()}
+                                  </Flex>
+                                  <Flex flexDirection="column">
+                                    <Text
+                                      fontSize="sm"
+                                      bold
+                                      marginBottom="16px"
+                                    >
+                                      {i18n.__("public")}
+                                    </Text>
+                                    {publicData()}
+                                  </Flex>
+                                </Flex>
                               </Flex>
-                              <Flex flexDirection="column">
-                                <Text fontSize="sm" bold marginBottom="16px">
-                                  {i18n.__("userDashGenerated")}
-                                </Text>
-                                {userGeneratedData()}
-                              </Flex>
-                              <Flex flexDirection="column">
-                                <Text fontSize="sm" bold marginBottom="16px">
-                                  {i18n.__("public")}
-                                </Text>
-                                {publicData()}
+                              <Flex alt="rightSide">
+                                <Image
+                                  //this needs further imporvement
+                                  src={useHeldDataImage}
+                                  style={{
+                                    width: "284px",
+                                    height: "213px",
+                                  }}
+                                />
                               </Flex>
                             </Flex>
-                          </Flex>
-                          <Flex alt="rightSide">
-                            <Image
-                              //this needs further imporvement
-                              src={useHeldDataImage}
-                              style={{
-                                width: "284px",
-                                height: "213px",
-                              }}
+                            <Divider
+                              as={"div"}
+                              color="#F2F4F5"
+                              height={"1px"}
                             />
-                          </Flex>
-                        </Flex>
-                        <Divider as={"div"} color="#F2F4F5" height={"1px"} />
-                        <Flex
-                          alt="addData"
-                          paddingTop="32px"
-                          paddingBottom="40px"
-                        >
-                          <Flex flexDirection="column" marginRight="190px">
-                            {widgets.current[selectedWidgetIndex].dataSources
-                              .length > 0 && (
-                                <Text color={colors.textMuted}>
-                                  {i18n.__("selectAvailableData")}
-                                </Text>
-                              )}
-                            <Flex paddingTop="31px">
-                              {widgets.current[
-                                selectedWidgetIndex
-                              ].dataSources.map((item, index) => {
-                                return (
-                                  <C.DataSourceButton
-                                    key={"ds-" + index}
-                                    src={item.icon}
-                                    title={item.title}
-                                    installed={
-                                      Object.keys(
-                                        userDataSources.current,
-                                      ).indexOf(item.id) > -1
-                                    }
-                                    onClick={() => {
-                                      const dataSourceExists =
-                                        Object.keys(
-                                          userDataSources.current,
-                                        ).indexOf(item.id) > -1;
+                            <Flex
+                              alt="addData"
+                              paddingTop="32px"
+                              paddingBottom="40px"
+                            >
+                              <Flex flexDirection="column" marginRight="190px">
+                                {widgets.current[selectedWidgetIndex]
+                                  .dataSources.length > 0 && (
+                                  <Text color={colors.textMuted}>
+                                    {i18n.__("selectAvailableData")}
+                                  </Text>
+                                )}
+                                <Flex paddingTop="31px">
+                                  {widgets.current[
+                                    selectedWidgetIndex
+                                  ].dataSources?.map((item, index) => {
+                                    return (
+                                      <C.DataSourceButton
+                                        key={"ds-" + index}
+                                        src={item.icon}
+                                        title={item.title}
+                                        installed={
+                                          Object.keys(
+                                            userDataSources.current,
+                                          ).indexOf(item.id) > -1
+                                        }
+                                        onClick={() => {
+                                          const dataSourceExists =
+                                            Object.keys(
+                                              userDataSources.current,
+                                            ).indexOf(item.id) > -1;
 
-                                      if (
-                                        item.sourceType == 1 &&
-                                        !dataSourceExists
-                                      ) {
-                                        setAddingDataSource(index);
-                                      }
-                                    }}
-                                  />
-                                );
-                              })}
+                                          if (
+                                            item.sourceType == 1 &&
+                                            !dataSourceExists
+                                          ) {
+                                            setAddingDataSource(index);
+                                          }
+                                        }}
+                                      />
+                                    );
+                                  })}
+                                </Flex>
+                              </Flex>
                             </Flex>
-                          </Flex>
-                        </Flex>
-                      </div>
-                    </TabPanel>
-                  </TabPanelList>
-                </Tabs>
-              </div>
-            </Flex>
+                          </div>
+                        </TabPanel>
+                      </TabPanelList>
+                    </Tabs>
+                  </div>
+                </Flex>
+              </>
+            ) : null}
           </Flex>
         </>
       )}

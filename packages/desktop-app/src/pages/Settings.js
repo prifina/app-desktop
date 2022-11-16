@@ -19,6 +19,8 @@ import { API, Auth } from "aws-amplify";
 import config from "../config";
 
 import {
+  checkUsernameQuery,
+  validUsername,
   SidebarMenu,
   getCountryCodeQuery,
   checkCognitoAttributeQuery,
@@ -33,12 +35,13 @@ import {
   sendVerificationMutation,
   updateCognitoUserMutation,
   i18n,
+  checkPassword,
   PhoneNumberField,
 } from "@prifina-apps/utils";
 
 import useFlags from "../hooks/UseFlags";
 
-import { useToast } from "@blend-ui/toast";
+import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
 import * as C from "./settings-app/components";
 
@@ -55,6 +58,9 @@ import mdiLockOutline from "@iconify/icons-mdi/lock-outline";
 import mdiEmailOutline from "@iconify/icons-mdi/email-outline";
 import mdiCellphone from "@iconify/icons-mdi/cellphone";
 
+// import mdiShieldAccount from "@iconify/icons-mdi/shield-account";
+import mdiKeyOutline from "@iconify/icons-mdi/key-outline";
+
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 
@@ -62,7 +68,9 @@ import newTheme from "../theme/settingsTheme";
 
 import VerificationModal from "../components/VerificationModal";
 
-const ContentContainer = styled(Flex)`
+import PasswordField from "../components/PasswordField";
+
+const Container = styled(Flex)`
   flex-direction: column;
   padding-left: 350px;
   width: 100%;
@@ -71,15 +79,21 @@ const ContentContainer = styled(Flex)`
   padding-right: 64px;
 `;
 
+const ContentContainer = styled(Box)`
+  border: 1px solid #eaebeb;
+  position: relative;
+  border-radius: 16px;
+  margin-bottom: 24px;
+`;
+
 const SectionContainer = styled(Flex)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px 16px 44px;
-  // width: 1005px;
-  height: 120px;
-  border: 1px solid #eaebeb;
-  position: relative;
+  min-height: 120px;
+  border: 0;
+  border-top: 1px solid #eaebeb;
 `;
 
 const Badge = styled.span`
@@ -94,6 +108,39 @@ const Badge = styled.span`
   text-transform: uppercase;
   display: flex;
   align-items: center;
+`;
+
+const IconBox = styled(Box)`
+  position: absolute;
+  top: 22px;
+  left: 16px;
+`;
+
+const UnorderedList = styled.ul`
+  /* */
+  list-style-type: none;
+  margin: 0;
+  list-style-position: outside;
+  padding-inline-start: 20px;
+  margin-block-start: 0px;
+  padding: 0;
+  padding-left: 20px;
+`;
+
+const ListItem = styled.li`
+  /* */
+  ::before {
+    content: "•";
+    color: ${props => (props.verified ? "#80BF45" : "gray")}; // from theme
+    display: inline-block;
+    width: 0.9em;
+    margin-left: -0.9em;
+    font-size: 2em;
+  }
+  span {
+    position: relative;
+    top: -5px;
+  }
 `;
 
 const BorderIcon = ({ iconify, size, color, border, height, width }) => {
@@ -134,15 +181,19 @@ const Settings = props => {
   const [inputEmail, setInputEmailFocus] = useFocus();
   const [inputPhone, setInputPhoneFocus] = useFocus();
 
+  const [inputUsername, setInputUsernameFocus] = useFocus();
+
+  const [inputPassword, setInputPasswordFocus] = useFocus();
+
   const items = [
-    {
-      label: "Profiles",
-      icon: mdiAccount,
-      onClick: () => {
-        setStep(0);
-      },
-      disabled: true,
-    },
+    // {
+    //   label: "Profiles",
+    //   icon: mdiAccount,
+    //   onClick: () => {
+    //     setStep(0);
+    //   },
+    //   disabled: true,
+    // },
     {
       label: "Account Settings",
       icon: mdiShieldAccount,
@@ -150,11 +201,11 @@ const Settings = props => {
         setStep(0);
       },
     },
-    {
-      label: "Billing & plan",
-      icon: mdiClose,
-      disabled: true,
-    },
+    // {
+    //   label: "Billing & plan",
+    //   icon: mdiClose,
+    //   disabled: true,
+    // },
   ];
 
   const continents = {
@@ -182,7 +233,7 @@ const Settings = props => {
         status: false,
         msg: "",
         valid: false,
-        value: "",
+        value: currentUser.email,
       },
       phoneNumber: {
         status: false,
@@ -190,12 +241,51 @@ const Settings = props => {
         valid: false,
         value: "",
       },
+      accountPassword: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: "",
+      },
+      newPassword: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: "",
+      },
+      username: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: currentUser.loginUsername,
+      },
+      lastName: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: "",
+      },
+      firstName: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: currentUser.given_name,
+      },
+      passwordConfirm: {
+        status: false,
+        msg: "",
+        valid: false,
+        value: "",
+      },
+
       regionCode: "000",
       termsAccepted: false,
       emailVerified: "",
       phoneVerified: "",
     },
   );
+
+  // console.log("state", state);
 
   const [flags, setFlags] = useState(false);
 
@@ -314,13 +404,50 @@ const Settings = props => {
     e.preventDefault();
   };
 
-  // const onDialogClick = async e => {
-  //   setModalOpen(false);
-  //   e.preventDefault();
-  // };
-
   const [changeNumber, setChangeNumber] = useState(false);
   const [changeEmail, setChangeEmail] = useState(false);
+  const [changeUsername, setChangeUsername] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
+
+  const userNameAlert = (userError, userMsg) => {
+    if (userError && !alerts.check().some(alert => alert.message === userMsg))
+      alerts.error(userMsg, {});
+
+    setState({ username: { ...state.username, status: userError } });
+  };
+
+  const checkUsername = (username, check = false) => {
+    const userState = validUsername(username, config.usernameLength);
+    let userError = userState !== "";
+    let userMsg = "";
+
+    if (userState === "LENGTH") {
+      userMsg = i18n.__("usernameError", { length: config.usernameLength });
+    }
+    if (userState === "SPACES") {
+      userMsg = i18n.__("usernameError2");
+    }
+    console.log("USER ", username, userError);
+    if (!userError && check) {
+      console.log("CHECKING USER");
+      checkUsernameQuery(API, username, config.cognito.USER_POOL_ID).then(
+        res => {
+          if (
+            typeof res.data !== "undefined" &&
+            res.data.checkCognitoAttribute
+          ) {
+            userNameAlert(true, i18n.__("usernameExists"));
+          } else {
+            setState({ username: { ...state.username, status: false } });
+          }
+        },
+      );
+    } else {
+      userNameAlert(userError, userMsg);
+    }
+
+    return userError;
+  };
 
   const checkPhoneAttr = (region, phone, phoneOpts = {}) => {
     console.log("CHECK PHONE APP-DEBUG ", appDebug);
@@ -503,26 +630,6 @@ const Settings = props => {
     }
   };
 
-  // const handleChange = event => {
-  //   console.log("handleChange", event.target.value, document.activeElement.id);
-
-  //   setState({
-  //     email: event.target.value,
-  //     phoneNumber: event.target.value,
-  //   });
-  // };
-
-  // const handleChange = event => {
-  //   let value = event.target.value;
-  //   let name = event.target.name;
-
-  //   setState(prevalue => {
-  //     return {
-  //       ...prevalue, // Spread Operator
-  //       [name]: value,
-  //     };
-  //   });
-  // };
   const handleChange = event => {
     console.log(event.target.id, document.activeElement.id);
     if (event.target) {
@@ -563,15 +670,138 @@ const Settings = props => {
     }
   };
 
-  useEffect(() => {}, [state]);
+  const [passwordVerification, setPasswordVerification] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
-  const handleModal = async () => {
-    setModalOpen(oldValue => !oldValue);
+  const checkConfirmPassword = (password, onBlur = false) => {
+    console.log("Confirm ", password, state);
+    const confirmStatus = state.accountPassword.value === password;
+    console.log(confirmStatus, state.accountPassword, password);
+    let checkResult = false;
+
+    const errorMsg = i18n.__("invalidPassword");
+    if (!confirmStatus && !onBlur) {
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      checkResult = true;
+    } else if (confirmStatus) {
+      setState({
+        accountPassword: { ...state.accountPassword, status: false },
+        passwordConfirm: { ...state.passwordConfirm, status: false },
+      });
+    }
+
+    return checkResult;
+  };
+  const checkInputPassword = (password, updateVerification = true) => {
+    const checkResult = checkPassword(password, config.passwordLength, [
+      state.firstName.value,
+      state.username.value,
+    ]);
+    console.log("PASS CHECK ", checkResult);
+    setPasswordVerification(checkResult);
+    return checkResult;
   };
 
-  console.log("state email", state.email.value);
-  console.log("state phoneNumber", state.phoneNumber.value);
-  console.log("state region Code", state.regionCode);
+  const checkPasswordQuality = verifications => {
+    console.log(
+      "Checking password quality... ",
+      passwordVerification,
+      verifications,
+    );
+    const verifyList = verifications || passwordVerification;
+    const invalidPasswordStatus = verifyList.some((v, i) => {
+      console.log("STEP ", v, i);
+      return v === false;
+    });
+    return invalidPasswordStatus;
+  };
+
+  const passwordCheck = password => {
+    const passwordCheckResult = checkInputPassword(password);
+    const passwordError = checkPasswordQuality(passwordCheckResult);
+    if (passwordError) {
+      const errorMsg = i18n.__("passwordQuality");
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  useEffect(() => {}, [state]);
+
+  // console.log("state email", state.email.value);
+  // console.log("state phoneNumber", state.phoneNumber.value);
+  // console.log("state region Code", state.regionCode);
+
+  // console.log("state username", state.username.value);
+  // console.log("state password", state.accountPassword.value);
+
+  // console.log("state new password", state.newPassword.value);
+
+  const updateUsername = () => {
+    updateCognitoUserMutation(
+      API,
+      "preferred_username",
+      state.username.value,
+    ).then(res => {
+      alerts.success(i18n.__("Username changed"), {});
+      console.log("SUCCESS", res);
+    });
+  };
+
+  const handleChangePassword = () => {
+    Auth.currentAuthenticatedUser()
+      .then(user => {
+        return Auth.changePassword(
+          user,
+          state.accountPassword.value,
+          state.newPassword.value,
+        );
+      })
+      .then(data => {
+        console.log(data);
+        //need toast verification success
+      })
+      .catch(err => {
+        return console.log(err), alerts.error("Password change failed", {});
+      });
+  };
+
+  const checkPasswordChangePossibility = () => {
+    if (
+      passwordVerification.includes(false) !== true &&
+      state.accountPassword.value === state.newPassword.value
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const [disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    const checkUsernameChangePossibility = () => {
+      if (!checkUsername(state.username.value, false) === true) {
+        setDisabled(false);
+      } else {
+        setDisabled(true);
+      }
+    };
+    checkUsernameChangePossibility();
+  }, [state.username.value]);
+
+  useEffect(() => {
+    checkPasswordChangePossibility();
+  }, [state.accountPassword.value, state.newPassword.value]);
 
   return (
     <ThemeProvider theme={mergedTheme}>
@@ -586,250 +816,552 @@ const Settings = props => {
           verificationType={verificationType}
         />
       )}
-      <ContentContainer bg={colors.backgroundLight}>
+      <Container bg={colors.backgroundLight}>
         <Text textStyle="h3" mb={36}>
           Account security
         </Text>
-        <SectionContainer
-          className="info-container"
-          style={{
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            position: "relative",
-          }}
-        >
-          <Box style={{ position: "absolute", top: 22, left: 16 }}>
-            <BorderIcon
-              iconify={mdiShieldLock}
-              size="14px"
-              color="#0D2177"
-              border="12px solid #DBDFF0"
-              height="24px"
-              width="24px"
-            />
-          </Box>
+        <ContentContainer className="account-credentials">
+          <SectionContainer
+            className="info-container"
+            style={{
+              position: "relative",
+              border: 0,
+              minHeight: 66,
+            }}
+          >
+            <IconBox>
+              <BorderIcon
+                iconify={mdiShieldAccount}
+                size="14px"
+                color="#0D2177"
+                border="12px solid #DBDFF0"
+                height="24px"
+                width="24px"
+              />
+            </IconBox>
 
-          <Box ml={10}>
-            <Flex mb={8}>
+            <Box ml={10}>
               <Text textStyle="h4" mr={10}>
-                Securing Your Account
+                Account Credentials
               </Text>
-              <Badge>
-                <BlendIcon
-                  iconify={mdiLockOutline}
-                  color="#0D2177"
-                  size="10px"
-                />
-                <Text ml={6}>always on</Text>
-              </Badge>
-            </Flex>
-            <Text>
-              Primary communication channels used for multifactor
-              authentication, to verify changes in account credentials and other
-              account related communication.
-            </Text>
-          </Box>
-        </SectionContainer>
-        <SectionContainer className="change-number">
-          {changeNumber ? (
-            <>
-              <Box ml={24}>
-                <Text mr={16} mb={5}>
-                  Mobile Phone Number
-                </Text>
-                <Box className="phone-number" width="378px">
-                  <PhoneNumberField>
-                    <PhoneNumberField.RegionField
-                      key={state.regionCode}
-                      defaultValue={state.regionCode}
-                      options={flags ? selectOptions.current : []}
-                      searchLength={2}
-                      showList={true}
-                      maxHeight={"200px"}
-                      ref={inputSelect}
-                      /* id="select-search" */
-                      onChange={(e, code) => {
-                        console.log("REGION SELECT ", e, code);
-                        handleChange({
-                          target: {
-                            id: "regionCode",
-                            value: code,
-                          },
-                        });
+            </Box>
+          </SectionContainer>
+          <SectionContainer className="change-number">
+            {changeUsername ? (
+              <>
+                <Box ml={24}>
+                  <Text mr={16} mb={5}>
+                    Username
+                  </Text>
+                  <Box className="phone-number" width="378px">
+                    <IconField>
+                      <IconField.LeftIcon
+                        iconify={bxUser}
+                        color={"componentPrimary"}
+                        size={"17"}
+                      />
+                      <IconField.InputField
+                        placeholder="New username"
+                        id={"username"}
+                        name={"username"}
+                        onChange={handleChange}
+                        onBlur={e => checkUsername(e.target.value)}
+                        error={state.username.status}
+                        ref={inputUsername}
+                        defaultValue={state.username.value}
+                        onKeyDown={e => {
+                          if (e.key === "Enter" && e.target.value.length > 4) {
+                            checkUsername(e.target.value, true);
+                          }
+                        }}
+                        tabIndex="2"
+                      />
+                    </IconField>
+                  </Box>
+                  <Text fontSize="xs" color={colors.textMuted}>
+                    Must be longer than 6 characters, no spaces available
+                  </Text>
+                </Box>
+                <Flex>
+                  <Button
+                    variation="outline"
+                    mr={8}
+                    onClick={() => setChangeUsername(value => !value)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button disabled={disabled} onClick={updateUsername}>
+                    Change username
+                  </Button>
+                </Flex>
+              </>
+            ) : (
+              <>
+                <Flex>
+                  <BorderIcon
+                    iconify={mdiCellphone}
+                    size="20px"
+                    color="#0D2177"
+                    border="16px solid #DBDFF0"
+                    height="32px"
+                    width="32px"
+                  />
+                  <Box ml={24}>
+                    <Flex>
+                      <Text mr={16} fontWeight="600">
+                        Username
+                      </Text>
+                      {/* <Badge>verified</Badge> */}
+                    </Flex>
+                    <Flex>
+                      <Text fontSize="xs" color={colors.textMuted}>
+                        Used with your password to access your account. Current
+                        username
+                      </Text>
+                      <Text fontWeight="600" fontSize="xs" ml={3}>
+                        {currentUser.loginUsername}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </Flex>
+                <Button onClick={() => setChangeUsername(value => !value)}>
+                  Change username
+                </Button>
+              </>
+            )}
+          </SectionContainer>
+          <SectionContainer className="change-email">
+            {changePassword ? (
+              <>
+                <Box ml={24}>
+                  <Text mr={16} mb={8} fontWeight="600">
+                    Password
+                  </Text>
+                  <Box className="password" width="378px">
+                    <PasswordField
+                      placeholder={i18n.__("passwordPlaceholder")}
+                      onFocus={e => {
+                        if (e.target.value.length > 0) {
+                          if (passwordCheck(e.target.value)) {
+                          } else {
+                            e.preventDefault();
+                          }
+                        } else {
+                        }
                       }}
-                    />
-                    <PhoneNumberField.InputField
-                      placeholder={i18n.__("phoneNumberPlaceholder")}
-                      id={"phoneNumber"}
-                      name="phoneNumber"
+                      id={"accountPassword"}
+                      name={"accountPassword"}
                       onChange={e => {
                         handleChange(e);
+                        checkInputPassword(e);
                       }}
-                      promptMsg={
-                        state.phoneNumber.valid ? i18n.__("phonePrompt") : ""
-                      }
-                      error={state.phoneNumber.status}
-                      ref={inputPhone}
-                      defaultValue={state.phoneNumber.value}
+                      ref={inputPassword}
+                      defaultValue={state.accountPassword.value}
+                      error={state.accountPassword.status}
                       onBlur={e => {
-                        // weird problem... password autofill changes phonenumber...
-                        if (
-                          !(
-                            e.target.id === "phoneNumber" &&
-                            (document.activeElement.id === "accountPassword" ||
-                              document.activeElement.id === "passwordConfirm")
-                          )
-                        ) {
-                          if (e.target.value.length > 4) {
-                            checkPhone(state.regionCode, e.target.value);
+                        if (e.target.value.length > 0) {
+                          if (passwordCheck(e.target.value)) {
+                          } else {
+                            console.log("PREVENT BLUR:....");
+                            setInputPasswordFocus();
+                            e.preventDefault();
                           }
+                        } else {
                         }
                       }}
                       onKeyDown={e => {
                         if (e.key === "Enter" && e.target.value.length > 4) {
-                          const checkResult = checkPhone(
-                            state.regionCode,
-                            e.target.value,
-                            true,
-                          );
+                          console.log("CHECKING PASSWORD ", e.target.value);
+                          const checkStatus = passwordCheck(e.target.value);
+                          console.log("CHECK STATUS ", checkStatus);
+                          if (checkStatus) {
+                          }
                         }
                       }}
+                      autoComplete="new-password"
+                      tabIndex="3"
                     />
-                  </PhoneNumberField>
-                </Box>
-              </Box>
-              <Flex>
-                <Button
-                  variation="outline"
-                  mr={8}
-                  onClick={() => setChangeNumber(value => !value)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={sendCodePhone}>Change number</Button>
-              </Flex>
-            </>
-          ) : (
-            <>
-              <Flex>
-                <BorderIcon
-                  iconify={mdiCellphone}
-                  size="20px"
-                  color="#0D2177"
-                  border="16px solid #DBDFF0"
-                  height="32px"
-                  width="32px"
-                />
-                <Box ml={24}>
-                  <Flex>
-                    <Text mr={16} fontWeight="600">
-                      Mobile Phone Number
-                    </Text>
-                    <Badge>verified</Badge>
-                  </Flex>
-                  <Flex>
-                    <Text fontSize="xs" color={colors.textMuted}>
-                      We will send an one time SMS code to your verified phone
-                      number
-                    </Text>
-                    <Text fontWeight="600" fontSize="xs" ml={3}>
-                      {currentUser.phoneNumber}
-                    </Text>
-                  </Flex>
-                </Box>
-              </Flex>
-              <Button onClick={() => setChangeNumber(value => !value)}>
-                Change number
-              </Button>
-            </>
-          )}
-        </SectionContainer>
-        <SectionContainer
-          className="change-email"
-          style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-        >
-          {changeEmail ? (
-            <>
-              <Box ml={24}>
-                <Text mr={16} mb={5} fontWeight="600">
-                  Email
-                </Text>
-                <Box className="email" width="378px">
-                  <IconField>
-                    <IconField.LeftIcon
-                      iconify={bxEnvelope}
-                      color={"componentPrimary"}
-                      size={"17"}
-                    />
-                    <IconField.InputField
-                      placeholder={i18n.__("emailPlaceholder")}
-                      id={"email"}
-                      name={"email"}
-                      onChange={handleChange}
-                      promptMsg={
-                        state.email.valid ? i18n.__("emailPrompt") : ""
+                  </Box>
+                  <Text mr={16} mb={8} mt={16} fontWeight="600">
+                    Confirm password
+                  </Text>
+                  <Box className="newPassword" width="378px">
+                    <PasswordField
+                      placeholder={i18n.__("confirmPlaceholder")}
+                      onFocus={e => {
+                        if (state.accountPassword.value.length === 0) {
+                          setInputPasswordFocus();
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                      id={"newPassword"}
+                      name={"newPassword"}
+                      defaultValue={state.passwordConfirm.value}
+                      onChange={e => {
+                        handleChange(e);
+                      }}
+                      error={
+                        state.accountPassword.status ||
+                        state.passwordConfirm.status
                       }
-                      error={state.email.status}
-                      ref={inputEmail}
-                      onBlur={e => checkEmail(e.target.value)}
-                      defaultValue={state.email.value}
-                      onKeyDown={e => {
-                        if (e.key === "Enter") {
-                          checkEmail(e.target.value, true);
+                      onBlur={e => {
+                        if (
+                          e.target.value.length ===
+                          state.accountPassword.value.length
+                        ) {
+                          checkConfirmPassword(e.target.value, false);
                         }
                       }}
+                      onKeyDown={e => {
+                        if (e.key === "Enter" && e.target.value.length > 4) {
+                          checkConfirmPassword(e.target.value, false);
+                        }
+                      }}
+                      autoComplete="new-password"
+                      tabIndex="4"
                     />
-                  </IconField>
+                  </Box>
                 </Box>
-              </Box>
-              <Flex>
-                <Button
-                  variation="outline"
-                  mr={8}
-                  onClick={() => setChangeEmail(value => !value)}
-                >
-                  Cancel
-                </Button>
+                <Box>
+                  <Text fontSize={"xs"} bold>
+                    Create a password that:
+                    <UnorderedList>
+                      <ListItem
+                        verified={passwordVerification[0]}
+                        theme={mergedTheme}
+                      >
+                        <Text as={"span"} fontSize={"xxs"}>
+                          Contains at least {config.passwordLength} characters
+                        </Text>
+                      </ListItem>
+                      <ListItem
+                        verified={passwordVerification[1]}
+                        theme={mergedTheme}
+                      >
+                        <Text as={"span"} fontSize={"xxs"}>
+                          Contains both lower (a-z) and upper case letters (A-Z)
+                        </Text>
+                      </ListItem>
 
-                <Button onClick={sendCodeEmail}>Change email</Button>
-              </Flex>
-            </>
-          ) : (
-            <>
-              <Flex>
-                <BorderIcon
-                  iconify={mdiEmailOutline}
-                  size="20px"
-                  color="#0D2177"
-                  border="16px solid #DBDFF0"
-                  height="32px"
-                  width="32px"
-                />
-                <Box ml={24}>
-                  <Flex>
-                    <Text mr={16} fontWeight="600">
-                      Primary email
-                    </Text>
-                    <Badge>verified</Badge>
-                  </Flex>
-                  <Flex>
-                    <Text fontSize="xs" color={colors.textMuted}>
-                      We will send an one time code to your verified email
-                      address
-                    </Text>
-                    <Text fontWeight="600" fontSize="xs" ml={3}>
-                      {currentUser.email}
-                    </Text>
-                  </Flex>
+                      <ListItem
+                        verified={passwordVerification[2]}
+                        theme={mergedTheme}
+                      >
+                        <Text as={"span"} fontSize={"xxs"}>
+                          Contains at least one number (0-9) and a symbol
+                        </Text>
+                      </ListItem>
+                      <ListItem
+                        verified={passwordVerification[3]}
+                        theme={mergedTheme}
+                      >
+                        <Text as={"span"} fontSize={"xxs"}>
+                          Does not contain your name or email address
+                        </Text>
+                      </ListItem>
+                      <ListItem
+                        verified={passwordVerification[4]}
+                        theme={mergedTheme}
+                      >
+                        <Text as={"span"} fontSize={"xxs"}>
+                          Is not commonly used
+                        </Text>
+                      </ListItem>
+                    </UnorderedList>
+                  </Text>
                 </Box>
+                <Flex>
+                  <Button
+                    variation="outline"
+                    mr={8}
+                    onClick={() => setChangePassword(value => !value)}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    disabled={checkPasswordChangePossibility()}
+                    onClick={() => handleChangePassword()}
+                  >
+                    Change password
+                  </Button>
+                </Flex>
+              </>
+            ) : (
+              <>
+                <Flex>
+                  <BorderIcon
+                    iconify={mdiEmailOutline}
+                    size="20px"
+                    color="#0D2177"
+                    border="16px solid #DBDFF0"
+                    height="32px"
+                    width="32px"
+                  />
+                  <Box ml={24}>
+                    <Flex>
+                      <Text mr={16} fontWeight="600">
+                        Password
+                      </Text>
+                      {/* <Badge>verified</Badge> */}
+                    </Flex>
+                    <Text fontSize="xs" color={colors.textMuted}>
+                      It's a good idea to use a strong password that you're not
+                      using elsewhere
+                    </Text>
+                  </Box>
+                </Flex>
+                <Button onClick={() => setChangePassword(value => !value)}>
+                  Change password
+                </Button>
+              </>
+            )}
+          </SectionContainer>
+        </ContentContainer>
+
+        <ContentContainer className="securing-account">
+          <SectionContainer
+            className="info-container"
+            style={{
+              position: "relative",
+              border: 0,
+            }}
+          >
+            <IconBox>
+              <BorderIcon
+                iconify={mdiShieldLock}
+                size="14px"
+                color="#0D2177"
+                border="12px solid #DBDFF0"
+                height="24px"
+                width="24px"
+              />
+            </IconBox>
+
+            <Box ml={10}>
+              <Flex mb={8}>
+                <Text textStyle="h4" mr={10}>
+                  Securing Your Account
+                </Text>
+                <Badge>
+                  <BlendIcon
+                    iconify={mdiLockOutline}
+                    color="#0D2177"
+                    size="10px"
+                  />
+                  <Text ml={6}>always on</Text>
+                </Badge>
               </Flex>
-              <Button onClick={() => setChangeEmail(value => !value)}>
-                Change email
-              </Button>
-            </>
-          )}
-        </SectionContainer>
-      </ContentContainer>
+              <Text>
+                Primary communication channels used for multifactor
+                authentication, to verify changes in account credentials and
+                other account related communication.
+              </Text>
+            </Box>
+          </SectionContainer>
+          <SectionContainer className="change-number">
+            {changeNumber ? (
+              <>
+                <Box ml={24}>
+                  <Text mr={16} mb={5}>
+                    Mobile Phone Number
+                  </Text>
+                  <Box className="phone-number" width="378px">
+                    <PhoneNumberField>
+                      <PhoneNumberField.RegionField
+                        key={state.regionCode}
+                        defaultValue={state.regionCode}
+                        options={flags ? selectOptions.current : []}
+                        searchLength={2}
+                        showList={true}
+                        maxHeight={"200px"}
+                        ref={inputSelect}
+                        /* id="select-search" */
+                        onChange={(e, code) => {
+                          console.log("REGION SELECT ", e, code);
+                          handleChange({
+                            target: {
+                              id: "regionCode",
+                              value: code,
+                            },
+                          });
+                        }}
+                      />
+                      <PhoneNumberField.InputField
+                        placeholder="555_555_555"
+                        id={"phoneNumber"}
+                        name="phoneNumber"
+                        onChange={e => {
+                          handleChange(e);
+                        }}
+                        promptMsg={
+                          state.phoneNumber.valid ? i18n.__("phonePrompt") : ""
+                        }
+                        error={state.phoneNumber.status}
+                        ref={inputPhone}
+                        defaultValue={state.phoneNumber.value}
+                        onBlur={e => {
+                          // weird problem... password autofill changes phonenumber...
+                          if (
+                            !(
+                              e.target.id === "phoneNumber" &&
+                              (document.activeElement.id ===
+                                "accountPassword" ||
+                                document.activeElement.id === "passwordConfirm")
+                            )
+                          ) {
+                            if (e.target.value.length > 4) {
+                              checkPhone(state.regionCode, e.target.value);
+                            }
+                          }
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === "Enter" && e.target.value.length > 4) {
+                            const checkResult = checkPhone(
+                              state.regionCode,
+                              e.target.value,
+                              true,
+                            );
+                          }
+                        }}
+                      />
+                    </PhoneNumberField>
+                  </Box>
+                  <Text fontSize="xs" color={colors.textMuted}>
+                    Number must accept SMS
+                  </Text>
+                </Box>
+                <Flex>
+                  <Button
+                    variation="outline"
+                    mr={8}
+                    onClick={() => setChangeNumber(value => !value)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={sendCodePhone}>Change number</Button>
+                </Flex>
+              </>
+            ) : (
+              <>
+                <Flex>
+                  <BorderIcon
+                    iconify={mdiCellphone}
+                    size="20px"
+                    color="#0D2177"
+                    border="16px solid #DBDFF0"
+                    height="32px"
+                    width="32px"
+                  />
+                  <Box ml={24}>
+                    <Flex>
+                      <Text mr={16} fontWeight="600">
+                        Mobile Phone Number
+                      </Text>
+                      <Badge>verified</Badge>
+                    </Flex>
+                    <Flex>
+                      <Text fontSize="xs" color={colors.textMuted}>
+                        We will send an one time SMS code to your verified phone
+                        number
+                      </Text>
+                      <Text fontWeight="600" fontSize="xs" ml={3}>
+                        {currentUser.phoneNumber}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </Flex>
+                <Button onClick={() => setChangeNumber(value => !value)}>
+                  Change number
+                </Button>
+              </>
+            )}
+          </SectionContainer>
+          <SectionContainer className="change-email">
+            {changeEmail ? (
+              <>
+                <Box ml={24}>
+                  <Text mr={16} mb={5} fontWeight="600">
+                    Email
+                  </Text>
+                  <Box className="email" width="378px">
+                    <IconField>
+                      <IconField.LeftIcon
+                        iconify={bxEnvelope}
+                        color={"componentPrimary"}
+                        size={"17"}
+                      />
+                      <IconField.InputField
+                        placeholder={i18n.__("emailPlaceholder")}
+                        id={"email"}
+                        name={"email"}
+                        onChange={handleChange}
+                        promptMsg={
+                          state.email.valid ? i18n.__("emailPrompt") : ""
+                        }
+                        error={state.email.status}
+                        ref={inputEmail}
+                        onBlur={e => checkEmail(e.target.value)}
+                        defaultValue={state.email.value}
+                        onKeyDown={e => {
+                          if (e.key === "Enter") {
+                            checkEmail(e.target.value, true);
+                          }
+                        }}
+                      />
+                    </IconField>
+                  </Box>
+                </Box>
+                <Flex>
+                  <Button
+                    variation="outline"
+                    mr={8}
+                    onClick={() => setChangeEmail(value => !value)}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button onClick={sendCodeEmail}>Change email</Button>
+                </Flex>
+              </>
+            ) : (
+              <>
+                <Flex>
+                  <BorderIcon
+                    iconify={mdiEmailOutline}
+                    size="20px"
+                    color="#0D2177"
+                    border="16px solid #DBDFF0"
+                    height="32px"
+                    width="32px"
+                  />
+                  <Box ml={24}>
+                    <Flex>
+                      <Text mr={16} fontWeight="600">
+                        Primary email
+                      </Text>
+                      <Badge>verified</Badge>
+                    </Flex>
+                    <Flex>
+                      <Text fontSize="xs" color={colors.textMuted}>
+                        We will send an one time code to your verified email
+                        address
+                      </Text>
+                      <Text fontWeight="600" fontSize="xs" ml={3}>
+                        {currentUser.email}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </Flex>
+                <Button onClick={() => setChangeEmail(value => !value)}>
+                  Change email
+                </Button>
+              </>
+            )}
+          </SectionContainer>
+        </ContentContainer>
+      </Container>
     </ThemeProvider>
   );
 };

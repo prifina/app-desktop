@@ -24,6 +24,8 @@ import { IconField } from "@blend-ui/icon-field";
 
 import PropTypes from "prop-types";
 
+import { useToast } from "@blend-ui/toast";
+
 import {
   i18n,
   getVerificationQuery,
@@ -51,6 +53,8 @@ const VerificationModal = ({
   console.log("USER INFO", currentUser);
   const theme = useTheme();
 
+  const alerts = useToast();
+
   const [dialogOpen, setDialogOpen] = useState(true);
 
   const onCloseCheck = (e, action) => {
@@ -65,7 +69,7 @@ const VerificationModal = ({
 
   const updateUserEmail = () => {
     updateCognitoUserMutation(API, "email", state.email.value).then(res => {
-      // alerts.success(i18n.__("success"), {});
+      alerts.success("Email changed", {});
       console.log("SUCCESS", res);
     });
   };
@@ -73,8 +77,8 @@ const VerificationModal = ({
   const phoneNumber = state.regionCode + state.phoneNumber.value;
 
   const updateUserPhone = () => {
-    updateCognitoUserMutation(API, "phone", phoneNumber).then(res => {
-      // alerts.success(i18n.__("success"), {});
+    updateCognitoUserMutation(API, "phone_number", phoneNumber).then(res => {
+      alerts.success("Phone number changed", {});
       console.log("SUCCESS", res);
     });
   };
@@ -91,7 +95,7 @@ const VerificationModal = ({
       const result = await getVerificationQuery(API, userCode);
 
       if (result.data.getVerification === null) {
-        // alerts.error(i18n.__("invalidCode"), {});
+        alerts.error(i18n.__("invalidCode"), {});
         console.log("VERIFICATION FAILED", result);
       } else {
         updateUserEmail();
@@ -100,7 +104,7 @@ const VerificationModal = ({
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
-      // alerts.error(i18n.__("invalidCode"), {});
+      alerts.error(i18n.__("invalidCode"), {});
     }
   };
 
@@ -116,7 +120,7 @@ const VerificationModal = ({
       const result = await getVerificationQuery(API, userCode);
 
       if (result.data.getVerification === null) {
-        // alerts.error(i18n.__("invalidCode"), {});
+        alerts.error(i18n.__("invalidCode"), {});
         console.log("VERIFICATION FAILED", result);
       } else {
         updateUserPhone();
@@ -125,7 +129,7 @@ const VerificationModal = ({
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
-      // alerts.error(i18n.__("invalidCode"), {});
+      alerts.error(i18n.__("invalidCode"), {});
     }
   };
   console.log("verification state ", state);
@@ -146,7 +150,7 @@ const VerificationModal = ({
           given_name: currentUser.given_name,
         }),
       );
-      // alerts.info(i18n.__("phoneVerificatioSent"), {});
+      alerts.info(i18n.__("emailVerificatioSent"), {});
     } catch (e) {
       console.log("ERR", e);
     }
@@ -166,7 +170,7 @@ const VerificationModal = ({
           given_name: currentUser.given_name,
         }),
       );
-      // alerts.info(i18n.__("emailVerificatioSent"), {});
+      alerts.info(i18n.__("emailVerificatioSent"), {});
     } catch (e) {
       console.log("ERR", e);
     }

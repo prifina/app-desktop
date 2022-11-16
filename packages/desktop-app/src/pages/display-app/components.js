@@ -44,11 +44,9 @@ import { BlendIcon } from "@blend-ui/icons";
 
 i18n.init();
 
-
 export const StyledBlendIcon = styled(BlendIcon)`
   cursor: pointer;
 `;
-
 
 export const TabText = styled(Text)`
   padding-left: 20px;
@@ -130,7 +128,7 @@ display: flex;
   top: 0px;
   left: 0px;
   /*overflow-y: auto; */
-  padding-bottom:200px; // to prevent container shaking, if overlay elements are outside widget container
+  padding-bottom: 200px; // to prevent container shaking, if overlay elements are outside widget container
 `;
 
 export const InfoBox = styled(Flex)`
@@ -147,9 +145,9 @@ export const InfoBox = styled(Flex)`
 export const ScrollableBox = styled(Box)`
   scrollbar-width: 4px;
   scrollbar-color: ${props =>
-    props.colors ? props.colors.baseSecondary : "#00847A"}
+      props.colors ? props.colors.baseSecondary : "#00847A"}
     ${props =>
-    props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
+      props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
 
   overflow-y: scroll;
   ::-webkit-scrollbar {
@@ -164,14 +162,14 @@ export const ScrollableBox = styled(Box)`
   ::-webkit-scrollbar-track {
     border-radius: 10px;
     background-color: ${props =>
-    props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
+      props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
   }
 
   ::-webkit-scrollbar-thumb {
     border-radius: 10px;
     height: 77px;
     background-color: ${props =>
-    props.colors ? props.colors.baseSecondary : "#00847A"};
+      props.colors ? props.colors.baseSecondary : "#00847A"};
   }
   ::-webkit-scrollbar-thumb:vertical {
     height: 77px;
@@ -264,9 +262,9 @@ const DotsContainer = styled.div`
   z-index: 20;
   div {
     animation: ${props =>
-    dots(
-      props.widgetTheme === "dark" ? ["white", "gray"] : ["black", "gray"],
-    )}
+        dots(
+          props.widgetTheme === "dark" ? ["white", "gray"] : ["black", "gray"],
+        )}
       4s linear infinite;
   }
   div:nth-child(1) {
@@ -309,10 +307,9 @@ export const DotLoader = props => {
   );
 };
 
-
 const OverlayStyles = styled.div`
- position: relative;
- /*
+  position: relative;
+  /*
  width:100%;
  height:100%;
  */
@@ -323,20 +320,20 @@ export const WidgetList = ({
   widgetData,
   currentUser,
   dataSources,
-  openWidgetMenu
+  openWidgetMenu,
 }) => {
   console.log("WIDGET LIST ", widgetList);
   console.log("WIDGET DATA", widgetData);
   console.log("WIDGET USER", currentUser);
   console.log("DATASOURCES", dataSources);
 
-  const toggleWidgetMenu = (elem) => {
+  const toggleWidgetMenu = elem => {
     //console.log(e.currentTarget.getBoundingClientRect());
     const menuProps = elem.getBoundingClientRect();
     const idx = parseInt(elem.dataset["widgetIdx"]);
     //console.log("CLICK ", idx, menuProps);
     openWidgetMenu(menuProps, idx);
-  }
+  };
 
   return (
     <>
@@ -344,29 +341,26 @@ export const WidgetList = ({
         widgetList.map((Widget, i) => {
           // const size = widgetData[i].widget.size.split("x");
           const w = widgetData[i];
-          console.log("WIDGET RENDER ", w)
+          console.log("WIDGET RENDER ", w);
           return (
             <OverlayStyles key={"prifina-widget-" + i}>
               <div style={{ position: "absolute", top: 0, left: 0 }}>
-
                 {w.settingsExists && (
                   <>
                     <IconDiv
                       widgetTheme={w.widget.theme}
                       data-widget-idx={i}
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         //console.log(e.currentTarget.getBoundingClientRect());
                         //const itemIndex = parseInt(e.currentTarget.dataset["widgetIdx"]);
                         toggleWidgetMenu(e.currentTarget);
                       }}
                     />
-
                   </>
                 )}
               </div>
               <Widget
-
                 data={{
                   settings:
                     widgetData.length === 1
@@ -375,7 +369,6 @@ export const WidgetList = ({
                   // settings: widgetData[i].currentSettings,
                   currentUser: currentUser,
                 }}
-
               />
             </OverlayStyles>
           );
@@ -442,8 +435,9 @@ export const SettingsDialog = ({
     });
   }
 
-
-  const [activeTab, setActiveTab] = useState(Object.keys(inputFields.current).length > 0 ? 0 : 1);
+  const [activeTab, setActiveTab] = useState(
+    Object.keys(inputFields.current).length > 0 ? 0 : 1,
+  );
 
   // 1== widget settings, 2== system settings like theme,size...
   //const settingsType = 1;
@@ -487,13 +481,11 @@ export const SettingsDialog = ({
     //history.push("https://docs.prifina.com");
   }
 
-
   return (
     <SettingsDialogBox>
       <>
         <Flex alignItems="baseline">
           <StyledBlendIcon
-
             iconify={mdiArrowLeft}
             width="18px"
             onClick={onBack}
@@ -515,14 +507,12 @@ export const SettingsDialog = ({
             variant="rectangle"
           >
             <TabList>
-
               <Tab>
                 {Object.keys(inputFields.current).length > 0 ? (
                   <Tab>
                     <Text>User Settings</Text>
                   </Tab>
                 ) : null}
-
               </Tab>
               {Object.keys(systemFields.current).length > 0 ? (
                 <Tab>
@@ -534,7 +524,6 @@ export const SettingsDialog = ({
               </Tab>
             </TabList>
             <TabPanelList>
-
               <TabPanel
                 style={
                   {
@@ -543,11 +532,9 @@ export const SettingsDialog = ({
                 }
               >
                 <div style={{ overflow: "auto" }}>
-
                   <Box mt={10} ml={5} mr={5}>
                     {widgetSettings.settings.map((setting, i) => {
                       if (
-
                         Object.keys(inputFields.current).indexOf(
                           setting.field,
                         ) > -1
@@ -597,7 +584,6 @@ export const SettingsDialog = ({
                           </React.Fragment>
                         );
                       }
-
                     })}
                     <Box mt={10}>
                       <Button
@@ -622,11 +608,9 @@ export const SettingsDialog = ({
                       </Button>
                     </Box>
                   </Box>
-
                 </div>
               </TabPanel>
               <TabPanel>
-
                 <Box mt={10} ml={5} mr={5}>
                   <Label key={"setting-label-sizes"} mt={10}>
                     Size
@@ -640,19 +624,10 @@ export const SettingsDialog = ({
                     defaultValue={systemFields.current.sizes}
                     onChange={handleChange}
                   >
-
-                    <option value="300x300">
-                      300x300
-                    </option>
-                    <option value="600x300">
-                      600x300
-                    </option>
-                    <option value="300x600">
-                      300x600
-                    </option>
-                    <option value="600x600">
-                      600x600
-                    </option>
+                    <option value="300x300">300x300</option>
+                    <option value="600x300">600x300</option>
+                    <option value="300x600">300x600</option>
+                    <option value="600x600">600x600</option>
                   </Select>
                 </Box>
                 <Box mt={10} ml={5} mr={5}>
@@ -668,14 +643,8 @@ export const SettingsDialog = ({
                     defaultValue={systemFields.current.theme}
                     onChange={handleChange}
                   >
-
-                    <option value="dark">
-                      Dark
-                    </option>
-                    <option value="light">
-                      Light
-                    </option>
-
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
                   </Select>
                 </Box>
                 <Box mt={10}>
@@ -683,12 +652,25 @@ export const SettingsDialog = ({
                     // width={"100%"}
                     onClick={e => {
                       console.log("UPDATE BUTTON ", fields);
-                      if ((systemFields.current["sizes"] !== fields["system-setting-sizes"] && fields?.["system-setting-sizes"]) || (systemFields.current["theme"] !== fields["system-setting-theme"] && fields?.["system-setting-theme"])) {
-                        const updates = { "sizes": fields?.["system-setting-sizes"] ? fields["system-setting-sizes"] : systemFields.current["sizes"], "theme": fields?.["system-setting-theme"] ? fields["system-setting-theme"] : systemFields.current["theme"] };
+                      if (
+                        (systemFields.current["sizes"] !==
+                          fields["system-setting-sizes"] &&
+                          fields?.["system-setting-sizes"]) ||
+                        (systemFields.current["theme"] !==
+                          fields["system-setting-theme"] &&
+                          fields?.["system-setting-theme"])
+                      ) {
+                        const updates = {
+                          sizes: fields?.["system-setting-sizes"]
+                            ? fields["system-setting-sizes"]
+                            : systemFields.current["sizes"],
+                          theme: fields?.["system-setting-theme"]
+                            ? fields["system-setting-theme"]
+                            : systemFields.current["theme"],
+                        };
                         //console.log("UPDATE THIS ", updates)
                         onUpdate(updates);
                       }
-
                     }}
                   >
                     Update
@@ -867,7 +849,7 @@ SettingsDialog.propTypes = {
   widgetIndex: PropTypes.number.isRequired,
   widgetSettings: PropTypes.instanceOf(Object).isRequired,
   onUpdate: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired
+  onBack: PropTypes.func.isRequired,
 };
 
 export const SearchBox = forwardRef(
@@ -947,7 +929,8 @@ export const SearchResults = props => {
   useEffect(() => {
     if (!isLoading)
       setUrl(
-        `${GOOGLE_URL}?cx=${SEARCH_ENGINE}&exactTerms=${roleKey.length > 0 ? encodeURIComponent(roleKey) : ""
+        `${GOOGLE_URL}?cx=${SEARCH_ENGINE}&exactTerms=${
+          roleKey.length > 0 ? encodeURIComponent(roleKey) : ""
         }&q=${encodeURIComponent(searchKey)}&lr=lang_en&key=${API_KEY}`,
       );
     if (error) setContent(<h2>Error when fetching: {error}</h2>);
@@ -1111,16 +1094,14 @@ export const InteractiveListItem = styled(Flex)`
   }
 `;
 
-
-const menuProps = (props) => {
+const menuProps = props => {
   //console.log("MENU POS ", props);
   const menuPos = {
     left: props.pos_x - 86,
-    top: props.pos_y - 16
-
-  }
+    top: props.pos_y - 16,
+  };
   return [menuPos];
-}
+};
 
 export const WidgetDropDownContainer = styled(Flex)`
   width: 36px;
@@ -1148,12 +1129,7 @@ export const InteractiveMenuItem = ({ title, iconify, onClick, ...props }) => {
       {...props}
     >
       <Text fontSize="sm">{title}</Text>
-      <BlendIcon
-        iconify={iconify}
-        width="16px"
-        variation="outline"
-
-      />
+      <BlendIcon iconify={iconify} width="16px" variation="outline" />
     </InteractiveListItem>
   );
 };
