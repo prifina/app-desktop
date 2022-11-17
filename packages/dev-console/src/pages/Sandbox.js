@@ -856,7 +856,7 @@ const Sandbox = props => {
                   style={{ background: colors.sandboxGradient }}
                   position="relative"
                 >
-                  <Box widthe="100px"></Box>
+                  <Box widthe="100px" />
                   <Flex alignSelf="center">
                     <BlendIcon
                       size="18px"
@@ -958,7 +958,7 @@ const Sandbox = props => {
                 height={"100%"}
               >
                 {currentAppRef.current.remoteUrl !== null ||
-                currentAppRef.current.remoteUrl !== "" ? (
+                  currentAppRef.current.remoteUrl !== "" ? (
                   <>
                     {ready && (
                       <Content
@@ -1107,7 +1107,7 @@ const Sandbox = props => {
                                       </Text>
                                     )}
                                     {remoteLink !=
-                                    allValues.remoteUrl ? null : (
+                                      allValues.remoteUrl ? null : (
                                       <Text fontSize="xxs" color="red">
                                         This remote link already exists
                                       </Text>
@@ -1125,8 +1125,8 @@ const Sandbox = props => {
                                 <Button
                                   disabled={
                                     validUrl &&
-                                    remoteLink.length > 0 &&
-                                    remoteLink != allValues.remoteUrl
+                                      remoteLink.length > 0 &&
+                                      remoteLink != allValues.remoteUrl
                                       ? false
                                       : true
                                   }
@@ -1186,7 +1186,7 @@ const Sandbox = props => {
                               <UploadAsset
                                 variant="native"
                                 id={allValues.id}
-                                onFinish={() => {}}
+                                onFinish={() => { }}
                               />
 
                               <Box width="340px">

@@ -28,7 +28,7 @@ export const Remote = forwardRef((props, ref) => {
   const Fallback = Loading || "Loading...";
   return (
     <React.Suspense fallback={Fallback} >
-      <div ref={ref}>
+      <div ref={ref} style={{ width: "100%", height: "100%" }}>
         <Component {...componentProps} />
       </div>
 
