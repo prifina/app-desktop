@@ -21,7 +21,7 @@ export default {
   title: "Components Dashboard/SB",
   //component: Wrapper,
   args: {
-    data: CognitoMetricData(cognitoMetricJSON)
+    data: CognitoMetricData({ result: cognitoMetricJSON })
   }
 };
 

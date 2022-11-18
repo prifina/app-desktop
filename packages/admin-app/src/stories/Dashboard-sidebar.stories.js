@@ -39,6 +39,9 @@ const PlayTest = async ({ args, canvasElement }) => {
   });
   const namePrev = canvas.getByTestId('name-prev');
 */
+  await userEvent.click(canvas.getByRole("dashboard-nav"));
+  await expect(args.navigate).toHaveBeenCalledWith("/dashboard", { "replace": true });
+
   await userEvent.click(canvas.getByRole("users-nav"));
   await expect(args.navigate).toHaveBeenCalledWith("/users", { "replace": true });
 

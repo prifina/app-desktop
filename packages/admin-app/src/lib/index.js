@@ -1,17 +1,18 @@
 export const CognitoMetricData = cognitoMetric => {
   const tsData = {};
+  // console.log("METRIC RES ", cognitoMetric);
 
-  for (let i = 0; i < cognitoMetric.length; i++) {
-    const label = cognitoMetric[i].Label;
+  for (let i = 0; i < cognitoMetric.result.length; i++) {
+    const label = cognitoMetric.result[i].Label;
     // console.log("LABEL ", label)
     // console.log("TS ", label)
-    for (let ts = 0; ts < cognitoMetric[i].Timestamps.length; ts++) {
-      const tsVal = cognitoMetric[i].Timestamps[ts];
+    for (let ts = 0; ts < cognitoMetric.result[i].Timestamps.length; ts++) {
+      const tsVal = cognitoMetric.result[i].Timestamps[ts];
       if (!tsData?.[tsVal]) {
         // tsData[tsVal] = { [label]: 0 };
         tsData[tsVal] = { SignInSuccesses: 0, SignUpSuccesses: 0, TokenRefreshSuccesses: 0 };
       }
-      tsData[tsVal][label] = cognitoMetric[i].Values[ts];
+      tsData[tsVal][label] = cognitoMetric.result[i].Values[ts];
     }
   }
   // console.log("TS DATA ", tsData);

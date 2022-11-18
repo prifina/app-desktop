@@ -56,6 +56,7 @@ const Template = args => <Routes><Route path="/" element={<Dashboard {...args} /
 </Routes>;
 */
 const Template = args => <Routes><Route path="/" element={<Dashboard {...args} />} />
+  <Route path="/dashboard" element={<NavMock />} />
   <Route path="/users" element={<NavMock />} />
   <Route path="/tables" element={<NavMock />} />
   <Route path="/logout" element={<NavMock />} />
@@ -98,11 +99,15 @@ const PlayTest = async ({ args, canvasElement }) => {
   const canvas = within(canvasElement);
   //console.log("CANVAS ", canvas.getByRole("users-nav"))
   //args.navigate("/users", { replace: true });
+  await userEvent.click(canvas.getByRole("dashboard-nav"));
+  let navPath = localStorage.getItem("Nav-Path");
+  expect(navPath).toStrictEqual("/dashboard");
+
   await userEvent.click(canvas.getByRole("users-nav"));
   //await expect(args.navigate).toHaveBeenCalled();
 
   //console.log("LOCAL STORAGE ", localStorage.getItem("Nav-Path"));
-  let navPath = localStorage.getItem("Nav-Path");
+  navPath = localStorage.getItem("Nav-Path");
   expect(navPath).toStrictEqual("/users");
 
   await userEvent.click(canvas.getByRole("tables-nav"));
