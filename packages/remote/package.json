@@ -14,6 +14,7 @@
   "main": "dist/cjs/index.js",
   "scripts": {
     "build": "rimraf dist && GENERATE_SOURCEMAP=true && yarn build:cjs",
+    "winbuild": "rimraf \"./dist\" && set \"GENERATE_SOURCEMAP=true\" && yarn build:cjs",
     "build:cjs": "cross-env NODE_ENV=development BABEL_ENV=cjs babel ./src --out-dir ./dist/cjs",
     "xbuild": "node_modules/.bin/webpack --config webpack.config.js --mode=production",
     "xdev": "node_modules/.bin/webpack --config webpack.config.js --mode=development",
