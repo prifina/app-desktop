@@ -11,7 +11,7 @@ import React, {
 import { useId } from "@reach/auto-id";
 import { Portal } from "@blend-ui/modal";
 import styled, { css, ThemeProvider } from "styled-components";
-import { flex, space, width } from "styled-system";
+import { space } from "styled-system";
 import { rgba } from 'polished'
 
 import { Text, useTheme } from "@blend-ui/core";
@@ -185,7 +185,7 @@ const Base = styled.div`
   z-index: 30;
   ${props => props.theme.baseStyles};
   ${space}
-  `;
+`;
 const MenuBase = styled.div`
   min-width: 360px;
   background: ${props => rgba(props.theme.colors.textPrimary, 0.02)};
@@ -585,7 +585,7 @@ const UserMenuContextProvider = ({
                       <Avatar
                         src={userMenu.options.avatar}
                         initials={userMenu.options.initials}
-                        width={userMenu.options.width || 32} //24
+                        width={userMenu.options.width || 32}
                         alt={"avatar"}
                         style={{
                           curson: "pointer",
