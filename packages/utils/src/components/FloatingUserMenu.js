@@ -11,9 +11,10 @@ import React, {
 import { useId } from "@reach/auto-id";
 import { Portal } from "@blend-ui/modal";
 import styled, { css, ThemeProvider } from "styled-components";
-import { space } from "styled-system";
+import { flex, space, width } from "styled-system";
+import { rgba } from 'polished'
 
-import { useTheme } from "@blend-ui/core";
+import { Text, useTheme } from "@blend-ui/core";
 
 import { Avatar } from "@blend-ui/avatar";
 
@@ -22,7 +23,9 @@ import { BlendIcon } from "@blend-ui/icons";
 import bxHome from "@iconify/icons-bx/bx-home";
 import bxBell from "@iconify/icons-bx/bx-bell";
 import bxHistory from "@iconify/icons-bx/bx-history";
-import logoutIcon from "@iconify/icons-fe/logout";
+import feLogout from "@iconify/icons-fe/logout";
+import bxClose from "@iconify/icons-bx/x";
+import bxQuestionMark from "@iconify/icons-bx/bx-question-mark";
 
 import { DisplayAppIcon } from "./assets/display-app.js";
 import { NotificationHeader, NotificationCard } from "./Notifications";
@@ -103,6 +106,63 @@ const alertVariation = props => {
   return [styles];
 };
 
+export const UserMenuContext = createContext({});
+
+function useIsMountedRef() {
+  const isMountedRef = useRef(null);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => (isMountedRef.current = false);
+  });
+  return isMountedRef;
+}
+
+const ModalDiv = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 31;
+  /* background-color: rgba(30, 29, 29, 0.1); */
+`;
+const Badge = styled.span`
+  position: absolute;
+  top: ${props => (props.isOpen ? "20px" : "9px")};
+  right: ${props => (props.isOpen ? "143px" : "9px")};
+  padding: 3.5px 5.5px;
+  border-radius: 50%;
+  background: red;
+  font-size: 10px;
+  line-height: 10px;
+  color: white;
+  font-weight: 700;
+`;
+const FooterIconButton = styled.div`
+  width: 16px;
+  height: 16px;
+  border: 1px solid ${props => props.theme.colors.textPrimary};
+  border-radius: 50%;
+  align-self: center;
+  margin-left: 20px;
+`;
+const IconButton = styled.div`
+  width: 24px;
+  height: 24px;
+
+  background-color: ${props => rgba(props.theme.colors.textPrimary, 0.03)};
+  border: 1px solid ${props => rgba(props.theme.colors.textPrimary, 0.1)};
+  border-radius: 50%;
+
+  cursor: pointer;
+  &:hover{
+    border-color: ${props => props.theme.colors.textPrimary};
+    box-shadow: 0px 0px 6px 3px rgba(91, 92, 91, 0.1);
+    &>span>svg>path{
+    color: ${props => rgba(props.theme.colors.textPrimary, 0.8)};
+    }
+  }
+`;
 const Base = styled.div`
   position: fixed;
   top: 0;
@@ -125,29 +185,61 @@ const Base = styled.div`
   z-index: 30;
   ${props => props.theme.baseStyles};
   ${space}
-`;
-
+  `;
 const MenuBase = styled.div`
-  min-width: 350px;
-  background: #f5f8f7;
-  box-shadow: -4px 0px 8px rgba(91, 92, 91, 0.1);
-  border: 0;
+  min-width: 360px;
+  background: ${props => rgba(props.theme.colors.textPrimary, 0.02)};
+  border: 1px solid ${props => rgba(props.theme.colors.textPrimary, 0.1)};
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
   height: 100vh;
   padding-top: 25px;
   /* padding-right: 25px; */
   z-index: 32;
+  backdrop-filter: blur(8px);
 `;
+const MenuFooter = styled.div`
+  height: 100px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+  position: absolute;
+  bottom: 0px;
+`;
+const MenuFooterLink = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  color: ${props => props.theme.colors.textPrimary};
 
+  cursor: pointer;
+
+  &:hover{
+    color: ${props => props.OnHoverColor}; 
+    &>${FooterIconButton} {
+      border: 1px solid ${props => props.OnHoverColor};
+      color: ${props => props.OnHoverColor};
+      &>span>svg>path{
+        color: ${props => props.OnHoverColor};
+      }
+    }
+  }
+`;
 const IconBar = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  gap: 15px;
   padding-right: 25px;
-`;
 
+  & div:first-child{
+    margin-right: auto;
+    margin-left: 20px;
+  }
+`;
 const IconDiv = styled.div`
   margin: 8px;
   justify-content: center;
@@ -161,40 +253,6 @@ const LabelDiv = styled.div`
 const TextDiv = styled.div`
   justify-content: center;
   font-weight: 400;
-`;
-
-export const UserMenuContext = createContext({});
-
-function useIsMountedRef() {
-  const isMountedRef = useRef(null);
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => (isMountedRef.current = false);
-  });
-  return isMountedRef;
-}
-
-const ModalDiv = styled.div`
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 31;
-  background-color: rgba(30, 29, 29, 0.1);
-`;
-
-const Badge = styled.span`
-  position: absolute;
-  top: ${props => (props.isOpen ? "20px" : "9px")};
-  right: ${props => (props.isOpen ? "143px" : "9px")};
-  padding: 3.5px 5.5px;
-  border-radius: 50%;
-  background: red;
-  font-size: 10px;
-  line-height: 10px;
-  color: white;
-  font-weight: 700;
 `;
 
 const UserMenuContextProvider = ({
@@ -231,7 +289,6 @@ const UserMenuContextProvider = ({
   const clientHandler = useRef(null);
   const prifinaQraphQLHandler = useRef(null);
   const subscriptionHandler = useRef(null);
-
   //({ AppIcon, title, date, msg, footer })
 
   const notificationList = async () => {
@@ -447,6 +504,7 @@ const UserMenuContextProvider = ({
                   )}
                 </React.Fragment>
               )}
+              {/* floating menu */}
               {isOpen && (
                 <React.Fragment>
                   <ModalDiv
@@ -454,85 +512,80 @@ const UserMenuContextProvider = ({
                       setIsOpen(prev => !prev);
                     }}
                   />
-                  <MenuBase>
+                  <MenuBase> 
                     <IconBar>
-                      <div
-                        style={{
-                          borderRadius: "50%",
-
-                          marginLeft: "15px",
-                          boxShadow: "-4px 0px 8px rgba(91, 92, 91, 0.1)",
-                          background:
-                            "linear-gradient(180deg, #FFFFFF 0%, #E6E8ED 100%)",
-                          position: "relative",
-                          left: "-112px",
-                        }}
-                      >
+                      {/* Close Button */}
+                      <IconButton>
                         <BlendIcon
                           className="userMenu-logout"
-                          iconify={logoutIcon}
-                          color={"#00847A"}
-                          onClick={e => iconClick(e, 0)}
+                          iconify={bxClose}
+                          color={rgba(theme.colors.textPrimary, 0.5)}
+                          style={{
+                            position: "relative",
+                            right: "0.8px",
+                            bottom: "0.9px"
+                          }}
+                          onClick={() => setIsOpen(prev => !prev)}
                         />
-                      </div>
-                      <div
-                        style={{
-                          borderRadius: "50%",
-                          marginLeft: "15px",
-                          boxShadow: "0px 4px 4px rgba(0, 132, 122, 0.6)",
-                          background:
-                            "linear-gradient(180deg, #FFFFFF 0%, #E6E8ED 100%)",
-                        }}
-                      >
+                      </IconButton>
+
+                      {/* Bell Button */}
+                      <IconButton>
                         <BlendIcon
                           className="userMenu-bell"
                           iconify={bxBell}
-                          color={"#00847A"}
+                          size={"20px"}
+                          color={rgba(theme.colors.textPrimary, 0.5)}
+                          style={{
+                            position: "relative",
+                            right: "-1.3px",
+                            bottom: "-0.9px"
+                          }}
                           onClick={e => iconClick(e, 1)}
                         />
-                      </div>
+                      </IconButton>
                       {notificationCount > 0 && (
                         <Badge isOpen={true}>
                           {notificationCount > 99 ? "99+" : notificationCount}
                         </Badge>
                       )}
-                      <div
-                        style={{
-                          borderRadius: "50%",
-                          marginLeft: "15px",
-                          boxShadow: "-4px 0px 8px rgba(91, 92, 91, 0.1)",
-                          background:
-                            "linear-gradient(180deg, #FFFFFF 0%, #E6E8ED 100%)",
-                        }}
-                      >
+
+                      {/* History Button */}
+                      <IconButton>
                         <BlendIcon
                           className="userMenu-history"
                           iconify={bxHistory}
-                          color={"#00847A"}
+                          size={"20px"}
+                          color={rgba(theme.colors.textPrimary, 0.5)}
+                          style={{
+                            position: "relative",
+                            right: "-0.5px",
+                            bottom: "-0.8px"
+                          }}
                           onClick={e => iconClick(e, 2)}
                         />
-                      </div>
-                      <div
-                        style={{
-                          borderRadius: "50%",
-                          marginLeft: "15px",
-                          marginRight: "20px",
-                          boxShadow: "-4px 0px 8px rgba(91, 92, 91, 0.1)",
-                          background:
-                            "linear-gradient(180deg, #FFFFFF 0%, #E6E8ED 100%)",
-                        }}
-                      >
+                      </IconButton>
+
+                      {/* Home Button */}
+                      <IconButton>
                         <BlendIcon
                           className="userMenu-home"
                           iconify={bxHome}
-                          color={"#00847A"}
+                          size={"20px"}
+                          color={rgba(theme.colors.textPrimary, 0.5)}
+                          style={{
+                            position: "relative",
+                            right: "-1.1px",
+                            bottom: "-0.5px"
+                          }}
                           onClick={e => iconClick(e, 3)}
                         />
-                      </div>
+                      </IconButton>
+                      
                       <Avatar
                         src={userMenu.options.avatar}
                         initials={userMenu.options.initials}
-                        width={userMenu.options.width || 32}
+                        width={userMenu.options.width || 32} //24
                         alt={"avatar"}
                         style={{
                           curson: "pointer",
@@ -554,7 +607,7 @@ const UserMenuContextProvider = ({
                         <div
                           style={{
                             marginTop: "5px",
-                            height: "calc(100vh - 200px)",
+                            height: "calc(100vh - 300px)",
                             overflowY: "scroll",
                           }}
                         >
@@ -564,6 +617,70 @@ const UserMenuContextProvider = ({
                     )}
 
                     {iconButtons[2] && <div>{userMenu.options.RecentApps}</div>}
+                    <MenuFooter>
+                      <hr style={{
+                        width:"300px",
+                        height:"2px", 
+                        backgroundColor: theme.colors.basePrimary,
+                        position: "absolute",
+                        top: 0,
+                        margin: "0px",
+                        alignSelf: "center",
+                        }}
+                      />
+                        
+                      {/* Help */}
+                      <MenuFooterLink 
+                        OnHoverColor="#00847A"
+                        // onClick={e => iconClick(e, 3)}
+                      >
+                        <FooterIconButton>
+                          <BlendIcon
+                            className="userMenu-home"
+                            iconify={bxQuestionMark}
+                            size={"14px"}
+                            color={theme.colors.textPrimary}
+                            style={{
+                              position: "relative",
+                              right: "0px",
+                              bottom: "5px"
+                            }}
+                          />
+                        </FooterIconButton>
+                        <Text
+                          style={{color: "inherit"}}
+                        >
+                          Help
+                        </Text>
+                      </MenuFooterLink>
+
+                      {/* Logout */}
+                      <MenuFooterLink
+                        OnHoverColor={"#E93232"}
+                        onClick={e => iconClick(e, 0)}
+                      >
+                        <FooterIconButton>
+                          <BlendIcon
+                            className="userMenu-home"
+                            iconify={feLogout}
+                            size={"12px"}
+                            color={theme.colors.textPrimary}
+                            style={{
+                              position: "relative",
+                              right: "-1.5px",
+                              bottom: "6px"
+                            }}
+                          />
+                        </FooterIconButton>
+                        <Text
+                          style={{color: "inherit"}}
+                        >
+                          Logout
+                        </Text>
+                      </MenuFooterLink>
+
+                    </MenuFooter>
+
                   </MenuBase>
                 </React.Fragment>
               )}
@@ -574,6 +691,7 @@ const UserMenuContextProvider = ({
     </UserMenuContext.Provider>
   );
 };
+
 UserMenuContextProvider.propTypes = {
   offset: PropTypes.string,
   id: PropTypes.string,

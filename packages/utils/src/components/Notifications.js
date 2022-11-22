@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Select, Box, Flex, Text, Button } from "@blend-ui/core";
+import { Select, Box, Flex, Text, Button, useTheme } from "@blend-ui/core";
 
 import styled, { css } from "styled-components";
 
@@ -59,7 +59,7 @@ const StyledNotificationHeader = styled(Text)`
   font-weight: 600;
   font-size: 1rem;
   line-height: 1.25rem;
-  color: #1e1d1d;
+  color: ${props => props.theme.colors.textPrimary};
 `;
 const StyledSelect = styled(Select)`
   font-size: 0.75rem;
@@ -87,7 +87,6 @@ export const NotificationHeader = ({
           style={{ cursor: "pointer" }}>
 
           <BlendIcon
-
             iconify={bxChevronRightCircle}
             color={"#00847A"}
             height={"14px"}
