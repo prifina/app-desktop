@@ -33,7 +33,7 @@ import {
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
 
-import landingImage from "../assets/landingImage.svg";
+import landingImage from "../assets/landingImage.png";
 
 import prifinaIcon from "../assets/prifina-icon.svg";
 
