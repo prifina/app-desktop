@@ -2,7 +2,7 @@ import React, { createRef, forwardRef, createContext, useContext } from "react";
 import { Input, Text, Box, useTheme } from "@blend-ui/core";
 import { SearchSelect } from "@blend-ui/search-select";
 
-import bxPhone from "@iconify/icons-bx/bx-phone";
+import bxPhone from "@iconify/icons-bx/bxs-phone";
 
 import { BlendIcon } from "@blend-ui/icons";
 
