@@ -12,7 +12,7 @@ import { IconField } from "@blend-ui/icon-field";
 
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";
-import ProgressContainer from "../components/ProgressContainer";
+
 import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
 
@@ -54,20 +54,9 @@ import PropTypes from "prop-types";
 
 import styled from "styled-components";
 
-i18n.init();
+import useComponentFlagList from "../hooks/UseComponentFlagList";
 
-const continents = {
-  XX: { name: "", order: 0 }, //popular...
-  AF: { name: "Africa", order: 5 },
-  AN: { name: "Antarctica", order: 7 },
-  AS: { name: "Asia", order: 3 },
-  EU: { name: "Europe", order: 2 },
-  NA: { name: "North America", order: 1 },
-  OC: { name: "Oceania", order: 6 },
-  SA: { name: "South America", order: 4 },
-  ZZ: { name: "", order: 8 }, //unknowns...
-};
-const popularList = ["US", "GB", "FI"];
+i18n.init();
 
 const StyledSimpleProgress = styled(SimpleProgress)`
   .tracker li {
@@ -116,11 +105,50 @@ const CreateAccount = props => {
   console.log("APP DEBUG ", appDebug);
 
   const { colors } = useTheme();
-  const { cList, nList } = countryList(continents, popularList);
-  const { icons, isLoading } = useFlags(nList);
-  const [flags, setFlags] = useState(false);
 
-  const selectOptions = useRef([]);
+  const { selectOptions, flagsLoading } = useComponentFlagList();
+
+  const [defaultRegion, setDefaultRegion] = useState("");
+
+  const [dataReady, setDataReady] = useState(false);
+
+  useEffect(() => {
+    if (!flagsLoading) {
+      //console.log("FLAGS ", state.countryCode, selectOptions);
+      const cIndex = selectOptions.findIndex(
+        c => c.regionCode === state.countryCode,
+      );
+      if (cIndex > -1) {
+        console.log("FOUND COUNTRY ", cIndex);
+        const defaultOption = selectOptions[cIndex].key;
+        setDefaultRegion(defaultOption);
+
+        console.log("region", defaultRegion);
+        setState({ regionCode: defaultOption });
+      }
+      setDataReady(true);
+    }
+  }, [flagsLoading]);
+
+  useEffect(() => {
+    async function getCountryCode() {
+      const countryCode = await getCountryCodeQuery(API);
+
+      console.log("COUNTRY CODE", countryCode);
+      // setState({ regionCode: countryCode.data.getCountryCode });
+
+      if (countryCode.data) {
+        const cIndex = selectOptions.findIndex(
+          c => c.regionCode === countryCode.data.getCountryCode,
+        );
+        if (cIndex > -1) {
+          setState({ regionCode: selectOptions[cIndex].key });
+        }
+      }
+    }
+
+    getCountryCode();
+  }, [dataReady]);
 
   const initUser = {
     username: uuid,
@@ -202,11 +230,6 @@ const CreateAccount = props => {
   const [inputLastname, setInputLastnameFocus] = useFocus();
 
   const [addPopper, setAddPopper] = useState(false);
-  const onPopper = (e, status) => {
-    console.log("POPPER");
-    e.preventDefault();
-    setAddPopper(status);
-  };
 
   const checkPhoneAttr = (region, phone, phoneOpts = {}) => {
     console.log("CHECK PHONE APP-DEBUG ", appDebug);
@@ -233,12 +256,13 @@ const CreateAccount = props => {
       alerts.error(errorMsg, {});
     if (phoneOpts.hasOwnProperty("region")) {
       console.log("CHANGE NUMBER ", phoneOpts);
+
       setState({
         phoneNumber: {
           ...state.phoneNumber,
           status: !phoneState,
           value: phoneOpts.phoneNumber,
-          msg: errorMsg,
+          msg: "",
         },
         regionCode: phoneOpts.region,
       });
@@ -246,17 +270,23 @@ const CreateAccount = props => {
       setState({
         phoneNumber: {
           ...state.phoneNumber,
-          status: !phoneState,
+          status: true,
           msg: errorMsg,
         },
       });
     }
   };
-
   const checkPhone = (region, phone, check = false, changeNumber = true) => {
     console.log(phone, region);
 
     const errorMsg = i18n.__("invalidPhoneNumber");
+    const errorMsg2 = "Enter a phone number";
+
+    if (phone === "") {
+      phoneAlert(errorMsg2, false);
+
+      return false;
+    }
 
     if (lowerCaseChars(phone.toLowerCase())) {
       phoneAlert(errorMsg, false);
@@ -280,6 +310,8 @@ const CreateAccount = props => {
       inputSelect.current.value = checkResult.regionCode;
     }
 
+    // let test = "test";
+
     if (phoneState && check) {
       checkPhoneAttr(region, phone, phoneOpts).then(res => {
         if (typeof res.data !== "undefined" && res.data.checkCognitoAttribute) {
@@ -293,11 +325,18 @@ const CreateAccount = props => {
                 ...state.phoneNumber,
                 status: !phoneState,
                 value: phoneOpts.phoneNumber,
+                msg: "",
               },
               regionCode: phoneOpts.region,
             });
           } else {
-            setState({ phoneNumber: { ...state.phoneNumber, status: false } });
+            setState({
+              phoneNumber: {
+                ...state.phoneNumber,
+                status: true,
+                msg: errorMsg,
+              },
+            });
           }
         }
       });
@@ -334,6 +373,14 @@ const CreateAccount = props => {
     console.log("EMAIL ", emailState);
 
     const errorMsg = i18n.__("invalidEmail");
+
+    const errorMsg2 = "Enter an email";
+
+    if (email === "") {
+      emailAlert(errorMsg2, false);
+
+      return false;
+    }
 
     if (emailState && check) {
       console.log("CHECKING EMAIL");
@@ -374,7 +421,7 @@ const CreateAccount = props => {
 
     // check if email
 
-    // const checkResult = checkEmail(username);
+    // const checkResult = checkEmail(username, false);
 
     // if (!checkResult) {
     //   userNameAlert(true, "Cant be email");
@@ -397,7 +444,7 @@ const CreateAccount = props => {
       );
     } else {
       userNameAlert(userError, userMsg);
-      console.log("check username alert", userNameAlert(userError, userMsg));
+      // console.log("check username alert", userNameAlert(userError, userMsg));
     }
 
     return userError;
@@ -493,91 +540,6 @@ const CreateAccount = props => {
     return invalidPasswordStatus;
   };
 
-  useEffect(() => {
-    if (!icons && isLoading) selectOptions.current = [];
-    if (!icons && !isLoading) selectOptions.current = [];
-    if (isLoading && icons) {
-      let items = [];
-      cList.forEach(item => {
-        const l = Object.keys(item)[0];
-        if (item[l].length > 0) {
-          if (l !== "XX") {
-            items.push({
-              key: "XX",
-              value: "XX",
-              regionCode: "000",
-              component: (
-                <React.Fragment>
-                  <Text mt={18}>{continents[l].name}</Text>
-                  <Divider mb={10} />
-                </React.Fragment>
-              ),
-            });
-          }
-          item[l].forEach(cc => {
-            const flag = icons[cc.regionCode] || null;
-            items.push({
-              key: "+" + cc.countryCode,
-              value: cc.regionName,
-              regionCode: cc.regionCode,
-              searchValue: cc.regionName + " +" + cc.countryCode,
-              component: (
-                <React.Fragment>
-                  <Flex mb={6} alignContent={"center"}>
-                    {flag}
-                    <Text
-                      ml={flag === null ? 22 : 6}
-                      as="span"
-                      fontSize={"xs"}
-                      lineHeight={"16px"}
-                    >
-                      {cc.regionName}
-                    </Text>
-                    <Text
-                      as="span"
-                      color={colors.textMuted}
-                      fontSize={"xs"}
-                      pl={4}
-                      lineHeight={"16px"}
-                    >
-                      +{cc.countryCode}
-                    </Text>
-                  </Flex>
-                </React.Fragment>
-              ),
-            });
-          });
-        }
-      });
-      console.log(items);
-      selectOptions.current = items;
-
-      setFlags(true);
-    }
-  }, [isLoading, icons]);
-
-  useEffect(() => {
-    async function onLoad() {
-      try {
-        if (flags) {
-          const userCountry = await getCountryCodeQuery(API);
-          console.log("COUNTRY ", userCountry.data.getCountryCode);
-          if (userCountry.data) {
-            const cIndex = selectOptions.current.findIndex(
-              c => c.regionCode === userCountry.data.getCountryCode,
-            );
-            if (cIndex > -1) {
-              setState({ regionCode: selectOptions.current[cIndex].key });
-            }
-          }
-        }
-      } catch (e) {
-        console.log("ERR ", e);
-      }
-    }
-    onLoad();
-  }, [flags]);
-
   const handleChange = event => {
     console.log(event.target.id, document.activeElement.id);
     if (event.target) {
@@ -661,95 +623,6 @@ const CreateAccount = props => {
     }
   };
 
-  const nextButtonClick3 = e => {
-    let valuesChecked = true;
-    let emailChecked = false;
-    let phoneChecked = false;
-    let usernameChecked = false;
-
-    if (!isPasswordPossible()) {
-      console.log("CONTROL 1");
-      valuesChecked = false;
-    } else if (checkConfirmPassword(state.passwordConfirm.value, false)) {
-      console.log("CONTROL 2");
-
-      valuesChecked = false;
-    } else {
-      console.log("PASSWORD CHECKS ");
-      const passwordCheckResult = checkInputPassword(
-        state.accountPassword.value,
-        false,
-      );
-      const passwordError = checkPasswordQuality(passwordCheckResult);
-      if (passwordError) {
-        valuesChecked = false;
-        const errorMsg = i18n.__("passwordQuality");
-        if (!alerts.check().some(alert => alert.message === errorMsg))
-          alerts.error(errorMsg, {});
-      }
-    }
-
-    if (valuesChecked) {
-      if (!checkUsername(state.username.value, false)) {
-        usernameChecked = true;
-      } else {
-        console.log("CONTROL 3");
-
-        valuesChecked = false;
-      }
-
-      if (!checkEmail(state.email.value, false)) {
-        emailChecked = true;
-      } else {
-        console.log("CONTROL 4");
-
-        valuesChecked = false;
-      }
-
-      const checkingPhone = checkPhone(
-        state.regionCode,
-        state.phoneNumber.value,
-        false,
-        false,
-      );
-
-      if (checkingPhone) {
-        phoneChecked = true;
-      } else {
-        console.log("CONTROL 5");
-
-        valuesChecked = false;
-      }
-    }
-
-    let promises = [];
-    promises[0] = Promise.resolve(valuesChecked);
-
-    if (usernameChecked) {
-      promises.push(
-        checkUsernameQuery(
-          API,
-          state.username.value,
-          config.cognito.USER_POOL_ID,
-        ),
-      );
-    } else {
-      promises.push(Promise.resolve({}));
-    }
-
-    if (emailChecked) {
-      promises.push(checkEmailAttr(state.email.value));
-    } else {
-      promises.push(Promise.resolve({}));
-    }
-    if (phoneChecked) {
-      promises.push(checkPhoneAttr(state.regionCode, state.phoneNumber.value));
-    } else {
-      promises.push(Promise.resolve({}));
-    }
-    return promises;
-  };
-
   const nextButtonClick = e => {
     let valuesChecked = true;
 
@@ -806,49 +679,45 @@ const CreateAccount = props => {
   };
 
   const nextButtonClick2 = e => {
-    let valuesChecked = true;
-
     let emailChecked = false;
     let phoneChecked = false;
 
-    if (valuesChecked) {
-      if (!checkEmail(state.email.value, false)) {
-        emailChecked = true;
-      } else {
-        console.log("CONTROL 4");
+    const checkingPhone = checkPhone(
+      state.regionCode,
+      state.phoneNumber.value,
+      false,
+      false,
+    );
 
-        valuesChecked = false;
-      }
+    if (checkingPhone) {
+      phoneChecked = true;
+    } else {
+      console.log("CONTROL 5");
+      phoneChecked = false;
+    }
 
-      const checkingPhone = checkPhone(
-        state.regionCode,
-        state.phoneNumber.value,
-        false,
-        false,
-      );
+    if (!checkEmail(state.email.value, false)) {
+      emailChecked = true;
+    } else {
+      console.log("CONTROL 4");
 
-      if (checkingPhone) {
-        phoneChecked = true;
-      } else {
-        console.log("CONTROL 5");
-
-        valuesChecked = false;
-      }
+      emailChecked = false;
     }
 
     let promises = [];
-    promises[0] = Promise.resolve(valuesChecked);
+
+    if (phoneChecked) {
+      promises.push(checkPhoneAttr(state.regionCode, state.phoneNumber.value));
+    } else {
+      promises.push(Promise.resolve({}));
+    }
 
     if (emailChecked) {
       promises.push(checkEmailAttr(state.email.value));
     } else {
       promises.push(Promise.resolve({}));
     }
-    if (phoneChecked) {
-      promises.push(checkPhoneAttr(state.regionCode, state.phoneNumber.value));
-    } else {
-      promises.push(Promise.resolve({}));
-    }
+
     return promises;
   };
 
@@ -965,7 +834,8 @@ const CreateAccount = props => {
                 size={"17"}
               />
               <IconField.InputField
-                placeholder={i18n.__("usernamePlaceholder")}
+                // placeholder={i18n.__("usernamePlaceholder")}
+                placeholder="allocatesjealous"
                 id={"username"}
                 name={"username"}
                 onChange={handleChange}
@@ -994,7 +864,8 @@ const CreateAccount = props => {
               Password
             </Text>
             <PasswordField
-              placeholder={i18n.__("passwordPlaceholder")}
+              // placeholder={i18n.__("passwordPlaceholder")}
+              placeholder="Enter password"
               onFocus={e => {
                 const passwordCheckStatus = isPasswordPossible();
                 if (!passwordCheckStatus) {
@@ -1016,14 +887,6 @@ const CreateAccount = props => {
                 handleChange(e);
                 /* check password popup */
                 checkInputPassword(e.target.value);
-                if (
-                  state.phoneNumber.value !==
-                  document.getElementById("phoneNumber").value
-                ) {
-                  // autofill changes phone number even the state value is correct....
-                  document.getElementById("phoneNumber").value =
-                    state.phoneNumber.value;
-                }
               }}
               ref={inputPassword}
               defaultValue={state.accountPassword.value}
@@ -1170,7 +1033,7 @@ const CreateAccount = props => {
               <PhoneNumberField.RegionField
                 key={state.regionCode}
                 defaultValue={state.regionCode}
-                options={flags ? selectOptions.current : []}
+                options={selectOptions}
                 searchLength={2}
                 showList={true}
                 maxHeight={"200px"}
@@ -1194,11 +1057,9 @@ const CreateAccount = props => {
                   handleChange(e);
                 }}
                 promptMsg={
-                  !state.phoneNumber.valid ? i18n.__("phonePrompt") : ""
+                  !state.phoneNumber.status ? i18n.__("phonePrompt") : ""
                 }
-                errorMsg={
-                  state.phoneNumber.msg !== "" ? state.phoneNumber.msg : ""
-                }
+                errorMsg={state.phoneNumber.status ? state.phoneNumber.msg : ""}
                 error={state.phoneNumber.status}
                 ref={inputPhone}
                 defaultValue={state.phoneNumber.value}
@@ -1228,7 +1089,7 @@ const CreateAccount = props => {
             <Text fontWeight="600" fontSize="sm">
               Email
             </Text>
-            <IconField>
+            <IconField style={{ position: "absolute", zIndex: 9 }}>
               <IconField.LeftIcon
                 iconify={bxEnvelope}
                 color={"componentPrimary"}
@@ -1243,7 +1104,7 @@ const CreateAccount = props => {
                 onChange={e => {
                   handleChange(e);
                 }}
-                promptMsg={!state.email.valid ? i18n.__("emailPrompt") : ""}
+                promptMsg={!state.email.status ? i18n.__("emailPrompt") : ""}
                 errorMsg={state.email.msg !== "" ? state.email.msg : ""}
                 error={state.email.status}
                 ref={inputEmail}
@@ -1264,28 +1125,56 @@ const CreateAccount = props => {
                   let checkResult = true;
 
                   console.log("RES", res);
-                  //email
-                  if (
-                    typeof res[0].data !== "undefined" &&
-                    res[0].data.checkCognitoAttribute
-                  ) {
-                    emailAlert(i18n.__("invalidEmail"), false);
-                    checkResult = false;
-                  } else {
-                    setState({ email: { ...state.email, status: false } });
-                  }
+
+                  // if (!res[0].data.checkCognitoAttribute) {
+                  //   setState({
+                  //     phoneNumber: {
+                  //       ...state.phoneNumber,
+                  //       status: false,
+                  //       msg: "",
+                  //     },
+                  //   });
+                  // }
+
+                  // let phoneCondition =
+                  //   typeof res[0].data !== "undefined" &&
+                  //   res[0].data.checkCognitoAttribute;
+
+                  // let emailCondition =
+                  //   typeof res[1].data !== "undefined" &&
+                  //   res[1].data.checkCognitoAttribute;
 
                   //phonenumber
 
-                  if (
-                    typeof res[1].data !== "undefined" &&
-                    res[1].data.checkCognitoAttribute
+                  if (Object.keys(res[0]).length === 0) {
+                    phoneAlert(i18n.__("invalidPhoneNumber"), false);
+                    checkResult = false;
+                  } else if (
+                    typeof res[0].data !== "undefined" &&
+                    res[0].data.checkCognitoAttribute
                   ) {
                     phoneAlert(i18n.__("invalidPhoneNumber"), false);
                     checkResult = false;
                   } else {
                     setState({
-                      phoneNumber: { ...state.phoneNumber, status: false },
+                      phoneNumber: {
+                        ...state.phoneNumber,
+                        status: false,
+                        msg: "",
+                      },
+                    });
+                  }
+
+                  //email
+                  if (
+                    typeof res[1].data !== "undefined" &&
+                    res[1].data.checkCognitoAttribute
+                  ) {
+                    emailAlert(i18n.__("invalidEmail"), false);
+                    checkResult = false;
+                  } else {
+                    setState({
+                      email: { ...state.email, status: false, msg: "" },
                     });
                   }
 
@@ -1315,24 +1204,36 @@ const CreateAccount = props => {
 
                     setCurrentUser(_currentUser);
 
-                    if (
-                      state.emailVerified !== _currentUser.email ||
-                      !emailVerified
-                    ) {
-                      setRegisterStep(4);
-                    }
-                    if (
-                      state.phoneVerified !== _currentUser.phone_number ||
-                      !phoneVerified
-                    ) {
-                      setRegisterStep(3);
-                    }
-                    if (
-                      state.emailVerified !== "" &&
-                      state.phoneVerified !== ""
-                    ) {
-                      setRegisterStep(5);
-                    }
+                    // if (
+                    //   state.emailVerified !== _currentUser.email ||
+                    //   !emailVerified
+                    // ) {
+                    //   setRegisterStep(2);
+                    // }
+                    // if (
+                    //   state.phoneVerified !== _currentUser.phone_number ||
+                    //   !phoneVerified
+                    // ) {
+                    //   setRegisterStep(2);
+                    // }
+                    // if (
+                    //   state.emailVerified !== "" &&
+                    //   state.phoneVerified !== ""
+                    // ) {
+                    //   setRegisterStep(3);
+                    // }
+
+                    // setRegisterStep(3);
+                  }
+
+                  if (
+                    state.email.status === false &&
+                    state.phoneNumber.status === false
+                  ) {
+                    console.log("next step");
+                    setRegisterStep(3);
+                  } else {
+                    console.log("NO next step");
                   }
                 });
               }}
