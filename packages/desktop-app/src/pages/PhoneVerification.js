@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
@@ -53,6 +53,8 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   });
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
+
+  const verifyClickTrigger = useRef(false);
 
   const checkInput = code => {
     const checkResult = onlyDigitChars(code);
@@ -141,23 +143,31 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   };
 
   useEffect(() => {
-    sendVerificationMutation(
-      API,
-      "phone",
-      JSON.stringify({
-        userId: currentUser.username,
-        clientId: currentUser.client,
-        phone_number: currentUser.phone_number,
-        given_name: currentUser.given_name,
-      }),
-    )
-      .then(result => {
-        console.log("PHONE SMS RESULT ", result);
-        alerts.info(i18n.__("phoneVerificatioSent"), { duration: 10000 });
-      })
-      .catch(e => {
-        console.log("ERR", e);
-      });
+    const sendCode = () => {
+      sendVerificationMutation(
+        API,
+        "phone",
+        JSON.stringify({
+          userId: currentUser.username,
+          clientId: currentUser.client,
+          phone_number: currentUser.phone_number,
+          given_name: currentUser.given_name,
+        }),
+      )
+        .then(result => {
+          console.log("PHONE SMS RESULT ", result);
+          alerts.info(i18n.__("phoneVerificatioSent"), { duration: 10000 });
+        })
+        .catch(e => {
+          console.log("ERR", e);
+        });
+
+      verifyClickTrigger.current = true;
+    };
+
+    if (!verifyClickTrigger.current) {
+      sendCode();
+    }
   }, [currentUser]);
 
   const backClickAction = e => {

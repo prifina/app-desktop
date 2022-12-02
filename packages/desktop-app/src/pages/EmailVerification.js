@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
@@ -57,6 +57,8 @@ const EmailVerification = ({ invalidLink, ...props }) => {
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
+  const verifyClickTrigger = useRef(false);
+
   console.log("input error", inputError);
 
   const checkInput = code => {
@@ -90,26 +92,6 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       setInputError({ status: false, msg });
     }
   };
-
-  useEffect(() => {
-    sendVerificationMutation(
-      API,
-      "email",
-      JSON.stringify({
-        userId: currentUser.username,
-        clientId: currentUser.client,
-        email: currentUser.email,
-        given_name: currentUser.given_name,
-      }),
-    )
-      .then(result => {
-        console.log("EMAIL RESULT ", result);
-        alerts.info(i18n.__("emailVerificatioSent"), { duration: 10000 });
-      })
-      .catch(e => {
-        console.log("ERR", e);
-      });
-  }, [currentUser]);
 
   const resendClick = async e => {
     try {
@@ -162,6 +144,35 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       }
     }
   };
+
+  useEffect(() => {
+    const sendCode = () => {
+      sendVerificationMutation(
+        API,
+        "email",
+        JSON.stringify({
+          userId: currentUser.username,
+          clientId: currentUser.client,
+          email: currentUser.email,
+          given_name: currentUser.given_name,
+        }),
+      )
+        .then(result => {
+          console.log("EMAIL RESULT ", result);
+          alerts.info(i18n.__("emailVerificatioSent"), { duration: 10000 });
+        })
+        .catch(e => {
+          console.log("ERR", e);
+        });
+
+      verifyClickTrigger.current = true;
+    };
+
+    if (!verifyClickTrigger.current) {
+      sendCode();
+    }
+  }, [currentUser]);
+
   const backClickAction = e => {
     nextStepAction(2);
   };
