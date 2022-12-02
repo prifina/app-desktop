@@ -5,6 +5,7 @@ export const GOOGLE_URL = "https://customsearch.googleapis.com/customsearch/v1";
 export const REFRESH_TOKEN_EXPIRY = process.env.REACT_APP_REFRESH_TOKEN_EXPIRY;
 
 const prod = {
+  MOCKUP_CLIENT: false,
   STAGE: process.env.REACT_APP_STAGE,
   APP_URL: process.env.REACT_APP_ALPHA_APP,
   DEV_URL: process.env.REACT_APP_ALPHA_APP_STUDIO,
@@ -23,6 +24,7 @@ const prod = {
     USER_IDENTITY_POOL_ID: process.env.REACT_APP_USER_IDENTITY_POOL_ID,
   },
   appSync: {
+    aws_appsync_adminEndpoint: process.env.REACT_APP_APPSYNC_ADMIN_ENDPOINT,
     aws_appsync_graphqlEndpoint: process.env.REACT_APP_APPSYNC_GRAPHQL_ENDPOINT,
     aws_appsync_authenticationType: process.env.REACT_APP_APPSYNC_AUTH_TYPE,
   },
@@ -33,6 +35,7 @@ const prod = {
   prifinaAccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
 };
 const dev = {
+  MOCKUP_CLIENT: process.env.REACT_APP_MOCKUP_CLIENT === "true",
   STAGE: "alpha",
   APP_URL: "http://localhost:3000",
   DEV_URL: "http://localhost:3001",
@@ -51,6 +54,7 @@ const dev = {
     USER_IDENTITY_POOL_ID: process.env.REACT_APP_USER_IDENTITY_POOL_ID,
   },
   appSync: {
+    aws_appsync_adminEndpoint: process.env.REACT_APP_APPSYNC_ADMIN_ENDPOINT,
     aws_appsync_graphqlEndpoint: process.env.REACT_APP_APPSYNC_GRAPHQL_ENDPOINT,
     aws_appsync_authenticationType: process.env.REACT_APP_APPSYNC_AUTH_TYPE,
   },

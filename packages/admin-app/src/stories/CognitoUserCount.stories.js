@@ -33,7 +33,7 @@ const Wrapper = () => {
 
       effectCalled.current = true;
       const cnt = await getCognitoUserCount();
-      setCardProps({ userCount: cnt });
+      setCardProps({ userCount: cnt.data.getCognitoUserCount });
     }
     if (!effectCalled.current) {
       getCount();

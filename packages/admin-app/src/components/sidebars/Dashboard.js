@@ -13,6 +13,7 @@ const DashboardSidebar = ({
   ...props
 }) => {
   const { __ } = useTranslate();
+  console.log("SIDEBAR ", activeMenuItem);
   /* const navigate = props.navigate || useNavigate(); */
   /* const navigate = useNavigate(); */
   return (

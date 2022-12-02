@@ -18,6 +18,12 @@ https://community.f5.com/t5/community-articles/demystifying-time-based-otp/ta-p/
 
 https://github.com/google/google-authenticator/wiki/Key-Uri-Format
 
+https://github.com/lgicc/totp
+
+--- use this with lambda
+https://www.npmjs.com/package/totp-generator
+
+
 --- interesting package...
 "@digitalbazaar/totp"
 

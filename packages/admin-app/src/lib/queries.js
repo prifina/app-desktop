@@ -13,3 +13,15 @@ export const getCognitoMetrics = `query cognitoMetrics {
     result
   }
 }`;
+export const getCognitoUserDetails = `query cognitoUserDetails($attrName: String!, $attrValue: String!) {
+  getCognitoUserDetails(attrName: $attrName, attrValue: $attrValue) {
+    result
+  }
+}`;
+
+/*
+export const checkCognitoAttribute = `query
+checkCognitoAttribute($attrName: String!,$attrValue: String!,$poolID: String!) {
+  checkCognitoAttribute(attrName: $attrName,attrValue: $attrValue,poolID: $poolID)
+}
+`; */

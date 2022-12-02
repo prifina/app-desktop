@@ -33,7 +33,7 @@ const Wrapper = () => {
 
       effectCalled.current = true;
       const image = await getCognitoMetricImage();
-      setCardProps({ cognitoMetricImage: image });
+      setCardProps({ cognitoMetricImage: image.data.getCognitoMetricImage.result });
     }
     if (!effectCalled.current) {
       getImage();

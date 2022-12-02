@@ -3,7 +3,7 @@ import React, {
   useEffect, useState, useRef,
 } from "react";
 
-import { ThemeProvider, baseStyles } from "@blend-ui/core";
+import { ThemeProvider, baseStyles, theme } from "@blend-ui/core";
 import { createGlobalStyle } from "styled-components";
 // import { AppContext } from "@prifina-apps/utils";
 // import { PrifinaStoreProvider } from "./stores/PrifinaStore";
@@ -13,9 +13,15 @@ import shallow from "zustand/shallow";
 
 // import { mountStoreDevtool } from "simple-zustand-devtools";
 // import { useGraphQLContext } from "./lib/GraphQLContext";
+import {
+  mergeDeep,
+} from "@prifina-apps/utils";
+import newTheme from "./theme";
 import Routes from "./routes/AppRouterDynamic";
 
 import { useStore } from "./stores/PrifinaStore";
+
+const mergedTheme = mergeDeep(theme, newTheme);
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -27,13 +33,12 @@ function App() {
 
   // const { client } = useGraphQLContext();
 
-  const { /* setAuthStatus, setUser, */ isLoggedIn, authenticated, getCognitoUserCount } = useStore(
+  const { /* setAuthStatus, setUser, */ isLoggedIn, authenticated } = useStore(
     state => ({
       // setUser: state.setUser,
       // setAuthStatus: state.setAuthStatus,
       isLoggedIn: state.isLoggedIn,
       authenticated: state.authenticated,
-      getCognitoUserCount: state.getCognitoUserCount,
     }),
     shallow,
   );
@@ -69,7 +74,7 @@ function App() {
       // SSO requires session token info...
       console.log("SESSION ", effectCalled.current);
 
-      console.log(await getCognitoUserCount());
+      // console.log(await getCognitoUserCount());
       await isLoggedIn();
       setIsAuthenticating(false);
       /*
@@ -110,7 +115,7 @@ function App() {
 
   return (
 
-    <ThemeProvider>
+    <ThemeProvider theme={mergedTheme}>
       <>
         <GlobalStyle />
         {!isAuthenticating && <Routes />}

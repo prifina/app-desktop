@@ -1,11 +1,37 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
-import { graphqlOperation } from "aws-amplify";
+import { graphqlOperation, Auth as COGNITO, API as GRAPHQL } from "aws-amplify";
+
+// import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 
 import { cognitoMetric } from "./mocks/images";
-import { cognitoMetricJSON } from "./mocks/data";
+import { cognitoMetricJSON, cognitoDetails } from "./mocks/data";
+
+import config from "../config";
 
 const AppSyncConfig = {};
+
+const APIConfig = {
+  aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_adminEndpoint,
+  aws_appsync_region: config.main_region,
+  aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
+};
+
+// const AuthConfig = {};
+
+const AUTHConfig = {
+  // To get the aws credentials, you need to configure
+  // the Auth module with your Cognito Federated Identity Pool
+  mandatorySignIn: false,
+  userPoolId: config.cognito.USER_POOL_ID,
+  identityPoolId: config.cognito.IDENTITY_POOL_ID,
+  userPoolWebClientId: config.cognito.APP_CLIENT_ID,
+  region: config.auth_region,
+  identityPoolRegion: config.main_region,
+  // region: config.main_region,
+  // authenticationFlowType: "CUSTOM_AUTH",
+};
 
 const currentSession = {
   idToken: {
@@ -74,20 +100,125 @@ const currentCreds = {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+/*
+data: getCognitoUserDetails: result:....
 
+*/
 const qlMockups = {
   query: {
-    cognitoUserCount: variables => getRandomInt(55, 9999),
-    cognitoMetrics: () => ({ result: cognitoMetricJSON }),
-    cognitoMetricImage: () => ({ result: cognitoMetric }),
+    cognitoUserCount: variables => ({ data: { getCognitoUserCount: getRandomInt(55, 9999) } }),
+    cognitoMetrics: () => ({ data: { getCognitoMetrics: { result: JSON.stringify(cognitoMetricJSON) } } }),
+    cognitoMetricImage: () => ({ data: { getCognitoMetricImage: { result: cognitoMetric } } }),
+    cognitoUserDetails: variables => {
+      // could use variables to get "filtered" user
+      const detailsJSON = JSON.parse(cognitoDetails);
+      // UserCreateDate and UserLastModifiedDate are very long integers and converted to exp format...
+      // detailsJSON.UserCreateDate = new Date(Math.trunc(detailsJSON.UserCreateDate) * 1000).toISOString();
+      // detailsJSON.UserLastModifiedDate = new Date(Math.trunc(detailsJSON.UserLastModifiedDate) * 1000).toISOString();
+
+      const cognitoAttributes = localStorage.getItem("_mockCognitoAttributes");
+      if (cognitoAttributes != null) {
+        // merge existing attributes...
+        const storageAttributes = JSON.parse(cognitoAttributes);
+        // updates = { ...storageAttributes, ...updates };
+        detailsJSON.Attributes.forEach((attr, i) => {
+          if (storageAttributes?.[attr.Name]) {
+            detailsJSON.Attributes[i].Value = storageAttributes[attr.Name];
+          }
+          /* if (attr.Name === "preferred_username" && storageAttributes?.username) {
+            detailsJSON.Attributes[i].Value = storageAttributes.username;
+          } */
+        });
+      }
+
+      return { data: { getCognitoUserDetails: { result: JSON.stringify(detailsJSON) } } };
+    },
+  },
+  mutation: {
+    updateCognitoUser: attrs => {
+      // Note does not update username level attributes, only the current mockup object userName
+      // const details = JSON.parse(cognitoDetails);
+      // console.log(details, attrs);
+      const cognitoAttributes = localStorage.getItem("_mockCognitoAttributes");
+      // console.log("LOCAL ", cognitoAttributes);
+      let updates = { [attrs.attrName]: attrs.attrValue };
+      if (cognitoAttributes != null) {
+        // merge existing attributes...
+        const storageAttributes = JSON.parse(cognitoAttributes);
+        updates = { ...storageAttributes, ...updates };
+      }
+      localStorage.setItem("_mockCognitoAttributes", JSON.stringify(updates));
+      return true;
+    },
   },
 };
 
+const Auth = {
+  configure: authConfig => true,
+};
+
+/*
+export const getVerificationQuery = (API, userCode) => {
+  return API.graphql({
+    query: getVerification,
+    variables: { user_code: userCode },
+    authMode: "AWS_IAM",
+  });
+};
+*/
+console.log("API CONFIG ", APIConfig);
+GRAPHQL.configure(APIConfig);
+// amplify graphql API mockup, uses authMode: "AMAZON_COGNITO_USER_POOLS"
+const API = {
+  configure: apiConfig => {
+    if (config.MOCKUP_CLIENT) {
+      return true;
+    }
+    GRAPHQL.configure(apiConfig);
+    return true;
+  },
+  graphql: (
+    query = undefined,
+    variables = {},
+    authMode = "AMAZON_COGNITO_USER_POOLS",
+  ) => {
+    console.log("API CLIENT ", config, config.MOCKUP_CLIENT);
+    if (config.MOCKUP_CLIENT) {
+      const ql = graphqlOperation(query, variables);
+      // console.log("QL ", ql);
+      // query:"mutation updateCognitoUser($attrName: String!, $attrValue: String!) {\n  \n  updateCognitoUser( attrName: $attrName, attrValue: $attrValue)\n}"
+      const op = ql.query.split(" ")[0];
+      const fn = ql.query.split(" ")[1].split("(")[0];
+      return Promise.resolve(qlMockups[op][fn](ql.variables));
+    }
+    return GRAPHQL.graphql({ query, variables, authMode });
+  },
+
+};
+
+// AppSync & Auth Client...
 class GraphQLClient {
-  constructor(config) {
-    this.config = config || AppSyncConfig;
+  constructor(cnf) {
+    this.config = cnf || AppSyncConfig;
+    this.Authconfig = AUTHConfig;
     this.client = "TEST";
     console.log("NEW Client ");
+    COGNITO.configure(AUTHConfig);
+  }
+
+  AUTHconfigure(cnf) {
+    this.AuthConfig = cnf;
+    if (config.MOCKUP_CLIENT) {
+      const result = Auth.configure(cnf);
+      return result;
+    }
+    return COGNITO.configure(cnf);
+  }
+
+  APIconfigure(cnf) {
+    this.config = cnf;
+    const result = API.configure(cnf);
+    return result;
   }
 
   signOut() {
@@ -98,8 +229,21 @@ class GraphQLClient {
     return Promise.resolve(true);
   }
 
-  signIn() {
-    return Promise.resolve(true);
+  signIn(uname, passwd) {
+    if (config.MOCKUP_CLIENT) {
+      return Promise.resolve(true);
+    }
+    console.log("SIGN IN ", uname);
+
+    return COGNITO.signIn(uname, passwd);
+  }
+
+  sendCustomChallengeAnswer(user, answer) {
+    if (config.MOCKUP_CLIENT) {
+      return Promise.resolve(true);
+    }
+    // console.log("AUTH CONFIG", this.AuthConfig);
+    return COGNITO.sendCustomChallengeAnswer(user, answer);
   }
 
   confirmSignIn() {
@@ -115,17 +259,29 @@ class GraphQLClient {
   }
 
   currentSession() {
-    return Promise.resolve({
-      ...currentSession,
-      getIdToken: () => currentSession.idToken,
-      getAccessToken: () => currentSession.accessToken,
-      getRefreshToken: () => currentSession.refreshToken,
-      isValid: true,
-      getClockDrif: () => currentSession.clockDrift,
-    });
+    // const _currentSession = await Auth.currentSession();
+    if (config.MOCKUP_CLIENT) {
+      // how to trigger unauthenticated mockup state...
+      // return Promise.resolve(null);
+      return Promise.resolve({
+        ...currentSession,
+        getIdToken: () => currentSession.idToken,
+        getAccessToken: () => currentSession.accessToken,
+        getRefreshToken: () => currentSession.refreshToken,
+        isValid: true,
+        getClockDrif: () => currentSession.clockDrift,
+      });
+    }
+    return COGNITO.currentSession();
   }
 
   query(rq, vars) {
+    // import gql from "graphql-tag";
+
+    // const test = await appSyncClient.query({
+    //   query: gql(getCognitoUserDetails),
+    //   variables: {},
+    // });
     return Promise.resolve(true);
   }
 
@@ -133,22 +289,5 @@ class GraphQLClient {
     return Promise.resolve(true);
   }
 }
-
-// amplify graphql API mockup, uses authMode: "AMAZON_COGNITO_USER_POOLS"
-const API = {
-  graphql: (
-    query = undefined,
-    variables = {},
-    authMode = "",
-  ) => {
-    // use this  graphqlOperation()
-    const ql = graphqlOperation(query, variables);
-    // console.log("QL ", ql);
-    const op = ql.query.split(" ")[0];
-    const fn = ql.query.split(" ")[1].split("(")[0];
-    return Promise.resolve(qlMockups[op][fn](ql.variables));
-  },
-
-};
 
 export { GraphQLClient, API };

@@ -15,13 +15,13 @@ const Wrapper = (props) => {
   </React.StrictMode>
 
 }
-
+//CognitoMetricData(JSON.parse(metrics.data.getCognitoMetrics.result)
 //console.log(theme)
 export default {
   title: "Components Dashboard/SB",
   //component: Wrapper,
   args: {
-    data: CognitoMetricData({ result: cognitoMetricJSON })
+    data: CognitoMetricData(cognitoMetricJSON)
   }
 };
 

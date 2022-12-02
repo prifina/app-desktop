@@ -23,8 +23,9 @@ const Content = ({ userCount, cognitoMetricImage, metrics }) => {
 
 Content.propTypes = {
   userCount: PropTypes.number,
-  cognitoMetricImage: PropTypes.object,
+  cognitoMetricImage: PropTypes.string,
   metrics: PropTypes.array,
 };
 
+Content.displayName = "Dashboard";
 export default Content;

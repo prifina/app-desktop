@@ -43,6 +43,7 @@ const ListItemIconLink = ({
   ...props
 }) => {
   const theme = useTheme();
+  // console.log("THEME ", theme);
   const dynProps = {
     alignItems: "center", theme, activeitem, active,
   };

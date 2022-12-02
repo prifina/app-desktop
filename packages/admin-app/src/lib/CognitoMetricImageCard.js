@@ -7,7 +7,7 @@ import CardContainer from "./CardContainer";
 
 const Card = ({ cognitoMetricImage, detailsClick }) => {
   // console.log("IMAGE ", props);
-  const image = `data:image/png;base64,${cognitoMetricImage.result}`;
+  const image = `data:image/png;base64,${cognitoMetricImage}`;
 
   return (
     <CardContainer onClick={detailsClick} style={{ cursor: "pointer" }}>
@@ -18,7 +18,7 @@ const Card = ({ cognitoMetricImage, detailsClick }) => {
 };
 
 Card.propTypes = {
-  cognitoMetricImage: PropTypes.object,
+  cognitoMetricImage: PropTypes.string,
   detailsClick: PropTypes.func,
 };
 export default Card;

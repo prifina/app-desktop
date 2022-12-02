@@ -91,7 +91,7 @@ export const totp = () => {
 
   const companyName = "Prifina";
   const userAccount = "xxxx-zzzz-wwww";
-  const otpauth = 'otpauth://totp/' + encodeURI(companyName) + ':' + encodeURI(userAccount) + '?secret=' + key.replace(/\s+/g, '').toUpperCase();
+  const otpauth = 'otpauth://totp/' + encodeURI(companyName) + ':' + encodeURI(userAccount) + "?issuer=" + encodeURI(companyName) + '&secret=' + key.replace(/\s+/g, '').toUpperCase() + "&algorithm=SHA1&digits=6&period=30";
 
   let totp = new OTPAuth.TOTP({
     issuer: companyName,
@@ -128,17 +128,18 @@ export const totp = () => {
   // Convert to Google Authenticator key URI:
   //   otpauth://totp/ACME:AzureDiamond?issuer=ACME&secret=NB2W45DFOIZA&algorithm=SHA1&digits=6&period=30
   let uri = totp.toString();
-  console.log("URI ", uri);
+  console.log("URI ", uri, otpauth);
   let parsedTotp = OTPAuth.URI.parse(uri);
   console.log("PARSED ", parsedTotp);
-  const src = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(uri);
+  // const src = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(uri);
+  const src = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpauth);
 
   Auth.configure(AUTHConfig);
   let user = undefined;
   return <>
     <div>Testing</div>
     <img src={src} />
-    <div><input id="token" /></div>
+    <div><input id="token" defaultValue={"123456"} /></div>
     <button onClick={async () => {
       const token = document.getElementById("token").value;
       let delta = totp.validate({
@@ -152,7 +153,7 @@ export const totp = () => {
 
     }}>CHECK</button>
     <button onClick={async () => {
-      user = await Auth.signIn("test-user");
+      user = await Auth.signIn("tahola");
       console.log("LOGIN", user);
       //const result = await generateToken({ secret: key });
       //console.log(result)
@@ -161,8 +162,8 @@ export const totp = () => {
     }}>SIGN IN </button>
     <button onClick={async () => {
       //let user = await Auth.signIn("test-user");
-
-      const result = await Auth.sendCustomChallengeAnswer(user, "123456");
+      const token = document.getElementById("token").value;
+      const result = await Auth.sendCustomChallengeAnswer(user, token);
       //const result = await generateToken({ secret: key });
       console.log(result)
 

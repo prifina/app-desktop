@@ -1,10 +1,11 @@
+/* eslint-disable max-len */
 /* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect, useRef } from "react";
 
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 import { NotFoundPage } from "@prifina-apps/utils";
 
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 import shallow from "zustand/shallow";
 // import PropTypes from "prop-types";
@@ -23,6 +24,26 @@ const lazyImport = (path, file) => {
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  const { pathname } = useLocation();
+  let activeMenuItem = 1;
+  let activeContent = "Dashboard.js";
+  switch (pathname) {
+    case "/":
+      activeMenuItem = 1;
+      activeContent = "Dashboard.js";
+      break;
+    case "/users":
+      activeMenuItem = 2;
+      activeContent = "CognitoUsers.js";
+      break;
+    default:
+      break;
+  }
+
+  const [menuItem, setMenuItem] = useState(activeMenuItem);
+
+  console.log("DASHBOARD PATH ", pathname);
+
   const { getCognitoUserCount, getCognitoMetricImage, getCognitoMetrics } = useStore(
     state => ({
       getCognitoUserCount: state.getCognitoUserCount,
@@ -33,33 +54,44 @@ const Dashboard = () => {
   );
 
   const [cardProps, setCardProps] = useState({});
+  const [contentImported, setContentImported] = useState(false);
   const effectCalled = useRef(false);
 
   const SideBar = useRef();
   const Content = useRef();
+  const importedContent = useRef("");
 
   useEffect(() => {
+    console.log("GET DATA ", activeContent, effectCalled);
     async function getData() {
-      console.log("GET DATA ");
+      console.log("GET DATA ", activeMenuItem);
       SideBar.current = lazyImport("sidebars", "Dashboard.js");
 
-      Content.current = lazyImport("contents", "Dashboard.js");
+      Content.current = lazyImport("contents", activeContent);
+      // console.log("MAIN ", Content);
+      importedContent.current = activeContent;
 
       effectCalled.current = true;
-      const cnt = await getCognitoUserCount();
-      const image = await getCognitoMetricImage();
-      const metrics = await getCognitoMetrics();
-      // console.log("METRICS ", metrics);
-      setCardProps({
-        userCount: cnt,
-        cognitoMetricImage: image,
-        metrics: CognitoMetricData(metrics),
-      });
+      if (activeMenuItem === 1) {
+        const cnt = await getCognitoUserCount();
+        const image = await getCognitoMetricImage();
+        const metrics = await getCognitoMetrics();
+        // console.log("IMAGE ", image);
+        console.log("COUNT ", cnt);
+
+        setCardProps({
+          userCount: cnt.data.getCognitoUserCount,
+          cognitoMetricImage: image.data.getCognitoMetricImage.result,
+          metrics: CognitoMetricData(JSON.parse(metrics.data.getCognitoMetrics.result)),
+        });
+      }
+      setMenuItem(activeMenuItem);
+      setContentImported(true);
     }
-    if (!effectCalled.current) {
+    if (!effectCalled.current || importedContent.current !== activeContent) {
       getData();
     }
-  }, []);
+  }, [activeContent, activeMenuItem, getCognitoMetricImage, getCognitoMetrics, getCognitoUserCount, setContentImported]);
 
   const gridRows = ["65px", "1fr"];
 
@@ -113,17 +145,21 @@ const Dashboard = () => {
           height="100vh"
           boxShadow="rgb(0 0 0 / 6%) 6px 0px 18px"
         >
-          {Object.keys(cardProps).length > 0
-            && <SideBar.current activeMenuItem={1} navigate={navClick} />}
+          {contentImported
+            && <SideBar.current activeMenuItem={menuItem} navigate={navClick} />}
         </CssCell>
 
         <CssCell pl="2" area="main">
-          {Object.keys(cardProps).length > 0 && <Content.current {...cardProps} />}
+          {contentImported && menuItem === 1 && Object.keys(cardProps).length > 0 && <Content.current {...cardProps} />}
+          {contentImported && menuItem === 2 && <Content.current />}
         </CssCell>
       </CssGrid>
     </React.Suspense>
   );
 };
+
+// {contentImported && <Content.current />}
+// {contentImported && menuItem === 1 && Object.keys(cardProps).length > 0 && <Content.current {...cardProps} />}
 Dashboard.displayName = "Dashboard";
 
 export default Dashboard;

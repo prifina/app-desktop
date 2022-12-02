@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
@@ -7,7 +8,15 @@ import createContext from "zustand/context";
 
 import { mountStoreDevtool } from "simple-zustand-devtools";
 import { useGraphQLContext } from "../lib/GraphQLContext";
-import { getCognitoUserCount, getCognitoMetrics, getCognitoMetricImage } from "../lib/queries";
+import {
+  getCognitoUserCount, getCognitoMetrics, getCognitoMetricImage, getCognitoUserDetails,
+} from "../lib/queries";
+
+import {
+  updateCognitoUser,
+} from "../lib/mutations";
+
+import config from "../config";
 
 // import { useAppContext } from "@prifina-apps/utils";
 
@@ -241,9 +250,11 @@ const PrifinaStoreProvider = ({ children }) => {
 
     <Provider createStore={() =>
       create((set, get) => ({
-        getCognitoUserCount: async () => GRAPHQL.graphql(getCognitoUserCount, { poolID: "USER-POOL" }),
+        getCognitoUserCount: async () => GRAPHQL.graphql(getCognitoUserCount, { poolID: config.cognito.USER_POOL_ID }),
         getCognitoMetrics: async () => GRAPHQL.graphql(getCognitoMetrics, {}),
         getCognitoMetricImage: async () => GRAPHQL.graphql(getCognitoMetricImage, {}),
+        getCognitoUserDetails: async attrs => GRAPHQL.graphql(getCognitoUserDetails, attrs),
+        updateCognitoUserDetails: async attrs => GRAPHQL.graphql(updateCognitoUser, attrs),
 
         user: {},
         authenticated: false,

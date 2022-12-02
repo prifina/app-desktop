@@ -28,7 +28,7 @@ export default function UnauthenticatedRoute() {
 
   const redirect = querystring("redirect");
 
-  let landingPage = "/dashboard";
+  let landingPage = "/";
 
   const getStatus = () => {
     if (error) return <h2>Error while checking: {error}</h2>;
