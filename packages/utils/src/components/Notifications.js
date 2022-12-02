@@ -59,7 +59,7 @@ const StyledNotificationHeader = styled(Text)`
   font-weight: 600;
   font-size: 1rem;
   line-height: 1.25rem;
-  color: #1e1d1d;
+  color: ${props => props.theme.colors.textPrimary};
 `;
 const StyledSelect = styled(Select)`
   font-size: 0.75rem;
@@ -83,18 +83,19 @@ export const NotificationHeader = ({
         <Flex width={1 / 2} alignItems={"center"}>
           <StyledNotificationHeader>{title}</StyledNotificationHeader>
         </Flex>
-        <Flex width={1 / 2} justifyContent={"flex-end"} alignItems={"center"}
-          style={{ cursor: "pointer" }}>
-
+        <Flex
+          width={1 / 2}
+          justifyContent={"flex-end"}
+          alignItems={"center"}
+          style={{ cursor: "pointer" }}
+        >
           <BlendIcon
-
             iconify={bxChevronRightCircle}
             color={"#00847A"}
             height={"14px"}
             width={"14px"}
             onClick={closeClick}
           />
-
         </Flex>
       </Flex>
       <Flex flexDirection={"row"} mt={"25px"}>
