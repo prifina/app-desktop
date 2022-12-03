@@ -256,7 +256,6 @@ const CreateAccount = props => {
       alerts.error(errorMsg, {});
     if (phoneOpts.hasOwnProperty("region")) {
       console.log("CHANGE NUMBER ", phoneOpts);
-
       setState({
         phoneNumber: {
           ...state.phoneNumber,
@@ -270,7 +269,7 @@ const CreateAccount = props => {
       setState({
         phoneNumber: {
           ...state.phoneNumber,
-          status: true,
+          status: !phoneState,
           msg: errorMsg,
         },
       });
@@ -280,13 +279,6 @@ const CreateAccount = props => {
     console.log(phone, region);
 
     const errorMsg = i18n.__("invalidPhoneNumber");
-    const errorMsg2 = "Enter a phone number";
-
-    if (phone === "") {
-      phoneAlert(errorMsg2, false);
-
-      return false;
-    }
 
     if (lowerCaseChars(phone.toLowerCase())) {
       phoneAlert(errorMsg, false);
@@ -309,8 +301,6 @@ const CreateAccount = props => {
       inputPhone.current.value = checkResult.nationalNumber;
       inputSelect.current.value = checkResult.regionCode;
     }
-
-    // let test = "test";
 
     if (phoneState && check) {
       checkPhoneAttr(region, phone, phoneOpts).then(res => {
@@ -451,7 +441,7 @@ const CreateAccount = props => {
   };
 
   const isPasswordPossible = () => {
-    const errorMsg = i18n.__("invalidEntry");
+    const errorMsg = i18n.__("formError");
     if (state.firstName.value.length === 0) {
       console.log("check 1");
       setState({ firstName: { ...state.firstName, status: true } });
@@ -467,21 +457,12 @@ const CreateAccount = props => {
     } else if (state.username.status) {
       console.log("check 5");
       setInputUsernameFocus();
-    } else if (state.email.status && state.email.value.length === 0) {
-      console.log("check 6");
-      setInputEmailFocus();
     } else if (state.firstName.status) {
       console.log("check 7");
       setInputFirstnameFocus();
     } else if (state.lastName.status) {
       console.log("check 8");
       setInputLastnameFocus();
-    } else if (
-      state.phoneNumber.status &&
-      state.phoneNumber.value.length === 0
-    ) {
-      console.log("check 8");
-      setInputPhoneFocus();
     } else {
       console.log("ALL GOOD...");
       return true;
@@ -508,7 +489,6 @@ const CreateAccount = props => {
         passwordConfirm: {
           ...state.passwordConfirm,
           status: false,
-          // msg: errorMsg,
         },
       });
     }
@@ -1096,11 +1076,9 @@ const CreateAccount = props => {
                 size={"17"}
               />
               <IconField.InputField
-                // placeholder={i18n.__("emailPlaceholder")}
                 placeholder="arlene.M@example.com"
                 id={"email"}
                 name={"email"}
-                // onChange={handleChange}
                 onChange={e => {
                   handleChange(e);
                 }}
@@ -1126,59 +1104,39 @@ const CreateAccount = props => {
 
                   console.log("RES", res);
 
-                  // if (!res[0].data.checkCognitoAttribute) {
-                  //   setState({
-                  //     phoneNumber: {
-                  //       ...state.phoneNumber,
-                  //       status: false,
-                  //       msg: "",
-                  //     },
-                  //   });
-                  // }
-
-                  // let phoneCondition =
-                  //   typeof res[0].data !== "undefined" &&
-                  //   res[0].data.checkCognitoAttribute;
-
-                  // let emailCondition =
-                  //   typeof res[1].data !== "undefined" &&
-                  //   res[1].data.checkCognitoAttribute;
-
-                  //phonenumber
-
-                  if (Object.keys(res[0]).length === 0) {
-                    phoneAlert(i18n.__("invalidPhoneNumber"), false);
+                  if (state.phoneNumber.value === "") {
+                    checkResult = false;
+                  } else if (state.email.value === "") {
                     checkResult = false;
                   } else if (
                     typeof res[0].data !== "undefined" &&
                     res[0].data.checkCognitoAttribute
                   ) {
-                    phoneAlert(i18n.__("invalidPhoneNumber"), false);
+                    phoneAlert(i18n.__("formError"), false);
                     checkResult = false;
-                  } else {
+                  } else if (
+                    typeof res[0].data !== "undefined" &&
+                    res[0].data.checkCognitoAttribute
+                  ) {
+                    checkResult = false;
+                  } else if (
+                    typeof res[1].data !== "undefined" &&
+                    res[1].data.checkCognitoAttribute
+                  ) {
+                    emailAlert(i18n.__("formError"), false);
+                    checkResult = false;
+                  }
+
+                  if (checkResult) {
                     setState({
                       phoneNumber: {
                         ...state.phoneNumber,
                         status: false,
                         msg: "",
                       },
-                    });
-                  }
-
-                  //email
-                  if (
-                    typeof res[1].data !== "undefined" &&
-                    res[1].data.checkCognitoAttribute
-                  ) {
-                    emailAlert(i18n.__("invalidEmail"), false);
-                    checkResult = false;
-                  } else {
-                    setState({
                       email: { ...state.email, status: false, msg: "" },
                     });
-                  }
 
-                  if (checkResult) {
                     console.log("NEXT....", currentUser);
                     let phoneNumber = addRegionCode(
                       state.regionCode,
@@ -1203,37 +1161,7 @@ const CreateAccount = props => {
                     console.log("NEXT CURRENT USER ", _currentUser);
 
                     setCurrentUser(_currentUser);
-
-                    // if (
-                    //   state.emailVerified !== _currentUser.email ||
-                    //   !emailVerified
-                    // ) {
-                    //   setRegisterStep(2);
-                    // }
-                    // if (
-                    //   state.phoneVerified !== _currentUser.phone_number ||
-                    //   !phoneVerified
-                    // ) {
-                    //   setRegisterStep(2);
-                    // }
-                    // if (
-                    //   state.emailVerified !== "" &&
-                    //   state.phoneVerified !== ""
-                    // ) {
-                    //   setRegisterStep(3);
-                    // }
-
-                    // setRegisterStep(3);
-                  }
-
-                  if (
-                    state.email.status === false &&
-                    state.phoneNumber.status === false
-                  ) {
-                    console.log("next step");
                     setRegisterStep(3);
-                  } else {
-                    console.log("NO next step");
                   }
                 });
               }}

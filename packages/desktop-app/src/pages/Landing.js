@@ -74,43 +74,46 @@ const Landing = props => {
         {mobileApp && <div>Mobile browser APP</div>}
         {!mobileApp && stepCounter === 6 && isAuthenticated && <Home />}
         {!mobileApp && stepCounter !== 6 && (
-          <Flex width="100vw" height="100vh">
-            <Flex
-              flexGrow={1}
-              style={{
-                background: colors.baseTertiary,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Image src={landingImage} />
-            </Flex>
+          <>
+            {stepCounter === 7 && (
+              <FinalizingAccount currentUser={accountFields} />
+            )}
 
-            <SectionContainer>
-              <Box textAlign="start" width="354px">
-                <Flex mb={48} alignSelf="flex-start">
-                  <Image src={prifinaIcon} width="25px" />
-                  <Text ml={3} fontWeight="600">
-                    Prifina
-                  </Text>
-                </Flex>
+            {stepCounter !== 7 && (
+              <>
+                {stepCounter === 0 && <NotFoundPage />}
+                {stepCounter === 1 && !isAuthenticated && (
+                  <Flex width="100vw" height="100vh">
+                    <Flex
+                      flexGrow={1}
+                      style={{
+                        background: colors.baseTertiary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Image src={landingImage} />
+                    </Flex>
 
-                {stepCounter === 7 && (
-                  <FinalizingAccount currentUser={accountFields} />
+                    <SectionContainer>
+                      <Box textAlign="start" width="354px">
+                        {stepCounter !== 7 && (
+                          <Flex mb={48} alignSelf="flex-start">
+                            <Image src={prifinaIcon} width="25px" />
+                            <Text ml={3} fontWeight="600">
+                              Prifina
+                            </Text>
+                          </Flex>
+                        )}
+                        <CreateAccount finalStep={finalStep} />
+                      </Box>
+                    </SectionContainer>
+                  </Flex>
                 )}
-
-                {stepCounter !== 7 && (
-                  <>
-                    {stepCounter === 0 && <NotFoundPage />}
-                    {stepCounter === 1 && !isAuthenticated && (
-                      <CreateAccount finalStep={finalStep} />
-                    )}
-                    {/* {stepCounter === 5 && <Login />} */}
-                  </>
-                )}
-              </Box>
-            </SectionContainer>
-          </Flex>
+                {/* {stepCounter === 5 && <Login />} */}
+              </>
+            )}
+          </>
         )}
       </ToastContextProvider>
     </React.Fragment>

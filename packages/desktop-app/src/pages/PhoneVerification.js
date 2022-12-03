@@ -108,6 +108,15 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
           msg: "Invalid code",
         });
       }
+
+      if (
+        !inputError.status &&
+        verificationFields.verificationCode !== "" &&
+        result.data.getVerification
+      ) {
+        nextStepAction(4);
+      }
+
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
@@ -117,11 +126,6 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         status: true,
         msg: "Invalid code",
       });
-
-      if (!inputError.status) {
-        nextStepAction(4);
-      }
-      // nextStepAction(3);
     }
   };
   const resendClick = async e => {
@@ -175,6 +179,15 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   };
 
   console.log("currentuser", currentUser);
+  console.log("verification fields", verificationFields);
+
+  console.log("inputerror", inputError);
+
+  const currentPhone = () => (
+    <Text fontWeight="900" as="b">
+      {currentUser.phone_number}
+    </Text>
+  );
 
   return (
     <Box mt={121}>
@@ -184,9 +197,9 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         </Box>
         <Box>
           <Box mb={16}>
-            <Text textStyle={"caption2"} as={"p"} m={0}>
-              We sent a verification code to {currentUser.phone_number}. Enter
-              it below to verify your phone number
+            <Text textStyle={"caption"} as={"p"} m={0}>
+              We sent a verification code to {currentPhone()}. Enter it below to
+              verify your phone number
             </Text>
           </Box>
           <Box width="169px">
@@ -200,7 +213,10 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
                 placeholder={i18n.__("codePropmt")}
                 id={"verificationCode"}
                 name={"verificationCode"}
-                onChange={handleChange}
+                onChange={e => {
+                  handleChange(e);
+                  checkInput(verificationFields.verificationCode);
+                }}
                 onKeyDown={e => {
                   if (e.key === "Enter") {
                     checkInput(verificationFields.verificationCode);

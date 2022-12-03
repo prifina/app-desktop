@@ -39,59 +39,23 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
     false,
   ]);
 
-  const [state, setState] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    {
-      accountPassword: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      username: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      passwordConfirm: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      lastName: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      firstName: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-    },
-  );
-
-  const [inputSelect, setSelectFocus] = useFocus();
   const [inputUsername, setInputUsernameFocus] = useFocus();
-  const [inputEmail, setInputEmailFocus] = useFocus();
-  const [inputPhone, setInputPhoneFocus] = useFocus();
   const [inputPassword, setInputPasswordFocus] = useFocus();
-  const [inputFirstname, setInputFirstnameFocus] = useFocus();
-  const [inputLastname, setInputLastnameFocus] = useFocus();
 
   const alerts = useToast();
 
   const [usernameError, setUsernameError] = useState({
     status: false,
-    msg: "Error message",
+    msg: "",
   });
   const [passwordError, setPasswordError] = useState({
     status: false,
-    msg: "Error message",
+    msg: "",
+  });
+
+  const [passwordConfirmError, setPasswordConfirmError] = useState({
+    status: false,
+    msg: "",
   });
 
   const [addPopper, setAddPopper] = useState(false);
@@ -102,11 +66,12 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
     setAddPopper(status);
   };
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
 
   const [loginFields, handleChange] = useFormFields({
     username: "",
     password: "",
+    passwordConfirm: "",
     confirmationCode: "",
   });
 
@@ -119,9 +84,13 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
 
   const userNameAlert = (userError, userMsg) => {
     if (userError && !alerts.check().some(alert => alert.message === userMsg))
-      alerts.error(userMsg, {});
+      alerts.error("Form has errors", {});
 
-    setState({ username: { ...state.username, status: userError } });
+    // setState({
+    //   username: { ...loginFields.username, status: userError, msg: userMsg },
+    // });
+
+    setUsernameError({ status: userError, msg: userMsg });
   };
   const checkUsername = (username, check = false) => {
     const userState = validUsername(username, config.usernameLength);
@@ -134,6 +103,7 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
     if (userState === "SPACES") {
       userMsg = i18n.__("usernameError2");
     }
+
     console.log("USER ", username, userError);
     if (!userError && check) {
       console.log("CHECKING USER");
@@ -145,111 +115,17 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
           ) {
             userNameAlert(true, i18n.__("usernameExists"));
           } else {
-            setState({ username: { ...state.username, status: false } });
+            // setState({ username: { ...loginFields.username, status: false } });\
+            setUsernameError({ status: userError, msg: userMsg });
           }
         },
       );
     } else {
       userNameAlert(userError, userMsg);
+      console.log("check username alert", userNameAlert(userError, userMsg));
     }
 
     return userError;
-  };
-
-  //------------------------------------PASSWORD---------------------------------------
-
-  const isPasswordPossible = () => {
-    const errorMsg = i18n.__("invalidEntry");
-    if (state.firstName.value.length === 0) {
-      console.log("check 1");
-      setState({ firstName: { ...state.firstName, status: true } });
-      setInputFirstnameFocus();
-    } else if (state.lastName.value.length === 0) {
-      console.log("check 2");
-      setState({ lastName: { ...state.lastName, status: true } });
-      setInputLastnameFocus();
-    } else if (state.username.value.length === 0) {
-      console.log("check 3");
-      setState({ username: { ...state.username, status: true } });
-      setInputUsernameFocus();
-    } else if (state.username.status) {
-      console.log("check 5");
-      setInputUsernameFocus();
-    } else if (state.email.status && state.email.value.length === 0) {
-      console.log("check 6");
-      setInputEmailFocus();
-    } else if (state.firstName.status) {
-      console.log("check 7");
-      setInputFirstnameFocus();
-    } else if (state.lastName.status) {
-      console.log("check 8");
-      setInputLastnameFocus();
-    } else if (
-      state.phoneNumber.status &&
-      state.phoneNumber.value.length === 0
-    ) {
-      console.log("check 8");
-
-      setInputPhoneFocus();
-    } else {
-      console.log("ALL GOOD...");
-      return true;
-    }
-    if (!alerts.check().some(alert => alert.message === errorMsg))
-      alerts.error(errorMsg, {});
-    // had to set to true, couldn't check firstName, email....
-    return true;
-  };
-
-  const checkPasswordQuality = verifications => {
-    const verifyList = verifications || passwordVerification;
-    const invalidPasswordStatus = verifyList.some((v, i) => {
-      return v === false;
-    });
-    return invalidPasswordStatus;
-  };
-
-  const checkConfirmPassword = (password, onBlur = false) => {
-    console.log("Confirm ", password, state);
-    const confirmStatus = state.accountPassword.value === password;
-    console.log(confirmStatus, state.accountPassword, password);
-    let checkResult = false;
-
-    const errorMsg = i18n.__("invalidPassword");
-    if (!confirmStatus && !onBlur) {
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      checkResult = true;
-    } else if (confirmStatus) {
-      setState({
-        accountPassword: { ...state.accountPassword, status: false },
-        passwordConfirm: { ...state.passwordConfirm, status: false },
-      });
-    }
-
-    return checkResult;
-  };
-
-  const checkInputPassword = (password, updateVerification = true) => {
-    const checkResult = checkPassword(password, config.passwordLength, [
-      state.username.value,
-    ]);
-    console.log("PASS CHECK ", checkResult);
-    setPasswordVerification(checkResult);
-    return checkResult;
-  };
-
-  const passwordCheck = password => {
-    const passwordCheckResult = checkInputPassword(password);
-    const passwordError = checkPasswordQuality(passwordCheckResult);
-    if (passwordError) {
-      const errorMsg = i18n.__("passwordQuality");
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      return false;
-    } else {
-      return true;
-    }
   };
 
   //--------------------------INVITE CODE--------------------------
@@ -280,6 +156,73 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
   };
 
   //------------------
+
+  const checkConfirmPassword = (password, onBlur = false) => {
+    console.log("Confirm ", password);
+    const confirmStatus = loginFields.password === password;
+    console.log(confirmStatus, loginFields.password, password);
+    let checkResult = false;
+
+    const errorMsg = i18n.__("invalidPassword");
+    if (!confirmStatus && !onBlur) {
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      checkResult = true;
+    } else if (confirmStatus) {
+      // setState({
+      //   accountPassword: { ...state.accountPassword, status: false },
+      //   passwordConfirm: {
+      //     ...state.passwordConfirm,
+      //     status: false,
+      //     // msg: errorMsg,
+      //   },
+      // });
+
+      setPasswordError({ status: false });
+      setPasswordConfirmError({ status: false });
+    }
+
+    return checkResult;
+  };
+  const checkInputPassword = (password, updateVerification = true) => {
+    const checkResult = checkPassword(password, config.passwordLength, [
+      "firstname",
+      "lastname",
+      loginFields.username,
+    ]);
+    console.log("PASS CHECK ", checkResult);
+    setPasswordVerification(checkResult);
+    // if(///// check result[3] is false set it to true)
+    // ch[3] = true;
+    return checkResult;
+  };
+
+  const checkPasswordQuality = verifications => {
+    console.log(
+      "Checking password quality... ",
+      passwordVerification,
+      verifications,
+    );
+    const verifyList = verifications || passwordVerification;
+    const invalidPasswordStatus = verifyList.some((v, i) => {
+      console.log("STEP ", v, i);
+      return v === false;
+    });
+    return invalidPasswordStatus;
+  };
+
+  const passwordCheck = password => {
+    const passwordCheckResult = checkInputPassword(password);
+    const passwordError = checkPasswordQuality(passwordCheckResult);
+    if (passwordError) {
+      const errorMsg = i18n.__("passwordQuality");
+      if (!alerts.check().some(alert => alert.message === errorMsg))
+        alerts.error(errorMsg, {});
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   let stepProgress = 0;
   switch (step) {
@@ -338,6 +281,8 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
     });
   };
 
+  console.log("Username and password errors", usernameError, passwordError);
+
   return (
     <React.Fragment>
       <Box width="354px" textAlign="center">
@@ -364,24 +309,25 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
                   id={"username"}
                   name={"username"}
                   onChange={handleChange}
-                  // onBlur={e => {
-                  //   if (e.target.value.length > 0) {
-                  //     const userError = checkUsername(e.target.value);
-                  //     if (userError !== "") {
-                  //       setInputUsernameFocus();
-                  //       e.preventDefault();
-                  //     }
-                  //   }
-                  // }}
-                  // error={state.username.status}
+                  onBlur={e => {
+                    if (e.target.value.length > 0) {
+                      const userError = checkUsername(e.target.value);
+                      if (userError !== "") {
+                        setInputUsernameFocus();
+                        e.preventDefault();
+                      }
+                    }
+                  }}
+                  error={usernameError.status}
                   ref={inputUsername}
-                  defaultValue={state.username.value}
-                  // onKeyDown={e => {
-                  //   if (e.key === "Enter" && e.target.value.length > 4) {
-                  //     checkUsername(e.target.value, true);
-                  //   }
-                  // }}
+                  defaultValue={loginFields.username}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && e.target.value.length >= 6) {
+                      checkUsername(e.target.value, true);
+                    }
+                  }}
                   tabIndex="2"
+                  errorMsg={usernameError.msg !== "" ? usernameError.msg : ""}
                 />
               </IconField>
             </Box>
@@ -410,17 +356,11 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
               </Flex>
               <Flex ml={99}>
                 <Button
-                  disabled={
-                    usernameError.status ||
-                    loginFields.username.length < config.usernameLength
-                  }
-                  // onClick={() => {
-                  //   setStep(1);
-                  // }}
                   onClick={async e => {
-                    e.preventDefault();
-                    await sendCode();
-                    // setStep(1);
+                    if (usernameError.status) {
+                      e.preventDefault();
+                      await sendCode();
+                    }
                   }}
                 >
                   {i18n.__("nextButton")}
@@ -445,6 +385,7 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
                 size="xs"
                 paddingLeft={5}
                 // onClick={onForward}
+                //need resend code
               >
                 {i18n.__("sendAgainLinkText2")}
               </Button>
@@ -479,23 +420,8 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
                 {i18n.__("resetPasswordText2")}
               </Text>
             </Box>
+
             <Box mt={52}>
-              <IconField>
-                <IconField.LeftIcon
-                  iconify={bxUser}
-                  color={"componentPrimary"}
-                  size={"17"}
-                />
-                <IconField.InputField
-                  placeholder={i18n.__("usernamePlaceholder")}
-                  id={"username"}
-                  name={"username"}
-                  value={loginFields.username}
-                  readOnly
-                />
-              </IconField>
-            </Box>
-            <Box mt={28}>
               <IconField>
                 <IconField.LeftIcon
                   iconify={bxKey}
@@ -513,8 +439,8 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
                       checkInput(loginFields.confirmationCode);
                     }
                   }}
-                  // errorMsg={inputError.msg}
-                  // error={inputError.status}
+                  errorMsg={inputError.msg}
+                  error={inputError.status}
                   ref={inputCode}
                 />
               </IconField>
@@ -522,49 +448,49 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
             <Box mt={28}>
               <PasswordField
                 placeholder={i18n.__("newPassword")}
-                // onFocus={e => {
-                //   const passwordCheckStatus = isPasswordPossible();
-                //   if (!passwordCheckStatus) {
-                //     e.preventDefault();
-                //     e.stopPropagation();
-                //   } else if (
-                //     !state.accountPassword.valid ||
-                //     state.accountPassword.value.length === 0
-                //   ) {
-                //     setAddPopper(true);
-                //   }
-                // }}
-                // addPopper={addPopper}
-                // verifications={passwordVerification}
+                onFocus={e => {
+                  const passwordCheckStatus = true;
+                  if (!passwordCheckStatus) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  } else if (
+                    !passwordError.status ||
+                    loginFields.password.length === 0
+                  ) {
+                    setAddPopper(true);
+                  }
+                }}
+                addPopper={addPopper}
+                verifications={passwordVerification}
                 id={"accountPassword"}
                 name={"accountPassword"}
                 onChange={e => {
                   handleChange(e);
-                  // checkInputPassword(e.target.value);
+                  checkInputPassword(e.target.value);
                 }}
-                // ref={inputPassword}
-                defaultValue={state.accountPassword.value}
-                // error={state.accountPassword.status}
-                // onBlur={e => {
-                //   if (e.target.value.length > 0) {
-                //     if (passwordCheck(e.target.value)) {
-                //       setAddPopper(false);
-                //     } else {
-                //       setInputPasswordFocus();
-                //       e.preventDefault();
-                //     }
-                //   } else {
-                //     setAddPopper(false);
-                //   }
-                // }}
-                // onKeyDown={e => {
-                //   if (e.key === "Enter" && e.target.value.length > 4) {
-                //     const checkStatus = passwordCheck(e.target.value);
-                //     if (checkStatus) {
-                //       setAddPopper(false);
-                //     }
-                //   }
-                // }}
+                ref={inputPassword}
+                defaultValue={loginFields.password}
+                error={usernameError.status}
+                onBlur={e => {
+                  if (e.target.value.length > 0) {
+                    if (passwordCheck(e.target.value)) {
+                      setAddPopper(false);
+                    } else {
+                      setInputPasswordFocus();
+                      e.preventDefault();
+                    }
+                  } else {
+                    setAddPopper(false);
+                  }
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && e.target.value.length > 4) {
+                    const checkStatus = passwordCheck(e.target.value);
+                    if (checkStatus) {
+                      setAddPopper(false);
+                    }
+                  }
+                }}
                 autoComplete="new-password"
                 tabIndex="3"
               />
@@ -572,46 +498,42 @@ const ForgotPassword = ({ onBack, onForward, ...props }) => {
             <Box mt={28}>
               <PasswordField
                 placeholder={i18n.__("confirmNewPassword")}
-                // onFocus={e => {
-                //   if (state.accountPassword.value.length === 0) {
-                //     setInputPasswordFocus();
-                //     e.preventDefault();
-                //     e.stopPropagation();
-                //   }
-                // }}
+                onFocus={e => {
+                  if (loginFields.passwordConfirm.length === 0) {
+                    setInputPasswordFocus();
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
                 id={"passwordConfirm"}
                 name={"passwordConfirm"}
-                defaultValue={state.passwordConfirm.value}
+                defaultValue={loginFields.passwordConfirm}
                 onChange={handleChange}
-                // error={
-                //   state.accountPassword.status || state.passwordConfirm.status
-                // }
-                // onBlur={e => {
-                //   if (
-                //     e.target.value.length === state.accountPassword.value.length
-                //   ) {
-                //     checkConfirmPassword(e.target.value, false);
-                //   }
-                // }}
-                // onKeyDown={e => {
-                //   if (e.key === "Enter" && e.target.value.length > 4) {
-                //     checkConfirmPassword(e.target.value, false);
-                //   }
-                // }}
+                error={passwordConfirmError.status || passwordError.status}
+                onBlur={e => {
+                  if (e.target.value.length === loginFields.password.length) {
+                    checkConfirmPassword(e.target.value, false);
+                  }
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && e.target.value.length > 4) {
+                    checkConfirmPassword(e.target.value, false);
+                  }
+                }}
                 autoComplete="new-password"
                 tabIndex="4"
               />
             </Box>
-            <Box mt={37} display="flex" justifyContent="center">
+            <Box mt={50} display="flex" justifyContent="center">
               <Button
-                // disabled={
-                //   inputError.status ||
-                //   passwordError.status ||
-                //   usernameError.status ||
-                //   loginFields.confirmationCode.length !== 6 ||
-                //   loginFields.username.length < config.usernameLength ||
-                //   loginFields.password.length < config.passwordLength
-                // }
+                disabled={
+                  inputError.status ||
+                  passwordError.status ||
+                  usernameError.status ||
+                  loginFields.confirmationCode.length !== 6 ||
+                  loginFields.username.length < config.usernameLength ||
+                  loginFields.password.length < config.passwordLength
+                }
                 onClick={e => {
                   // setStep(3);
                   changePassword();
