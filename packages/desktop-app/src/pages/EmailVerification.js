@@ -89,7 +89,7 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       validCode = false;
     }
     if (validCode) {
-      setInputError({ status: false, msg });
+      setInputError({ status: false, msg: "" });
     }
   };
 
@@ -129,6 +129,14 @@ const EmailVerification = ({ invalidLink, ...props }) => {
           msg: "Invalid code",
         });
       }
+
+      if (
+        !inputError.status &&
+        verificationFields.verificationCode !== "" &&
+        result.data.getVerification
+      ) {
+        nextStepAction(5);
+      }
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
@@ -138,10 +146,6 @@ const EmailVerification = ({ invalidLink, ...props }) => {
         status: true,
         msg: "Invalid code",
       });
-
-      if (!inputError.status) {
-        nextStepAction(5);
-      }
     }
   };
 
@@ -176,6 +180,13 @@ const EmailVerification = ({ invalidLink, ...props }) => {
   const backClickAction = e => {
     nextStepAction(2);
   };
+
+  const currentEmail = () => (
+    <Text fontWeight="900" as="b">
+      {currentUser.email}
+    </Text>
+  );
+
   return (
     <Box mt={121}>
       <ContentContainer mb={145}>
@@ -184,9 +195,9 @@ const EmailVerification = ({ invalidLink, ...props }) => {
         </Box>
         <Box>
           <Box mb={16}>
-            <Text textStyle={"caption2"} as={"p"} m={0}>
-              We sent a verification code to {currentUser.email} Enter it below
-              to verify your email account.
+            <Text textStyle={"caption"} as={"p"} m={0}>
+              We sent a verification code to {currentEmail()} Enter it below to
+              verify your email account.
             </Text>
           </Box>
           <Box width="169px">
@@ -200,7 +211,10 @@ const EmailVerification = ({ invalidLink, ...props }) => {
                 placeholder={i18n.__("codePropmt")}
                 id={"verificationCode"}
                 name={"verificationCode"}
-                onChange={handleChange}
+                onChange={e => {
+                  handleChange(e);
+                  checkInput(verificationFields.verificationCode);
+                }}
                 onKeyDown={e => {
                   if (e.key === "Enter") {
                     checkInput(verificationFields.verificationCode);

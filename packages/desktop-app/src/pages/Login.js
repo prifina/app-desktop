@@ -26,9 +26,12 @@ import {
   ConfirmAuth,
   PasswordField,
   sendVerificationMutation,
-  ForgotPassword,
-  RecoverUsername,
+  // ForgotPassword,
+  // RecoverUsername,
 } from "@prifina-apps/utils";
+
+import ForgotPassword from "../components/ForgotPassword";
+import RecoverUsername from "../components/RecoverUsername";
 
 import config from "../config";
 import { useToast } from "@blend-ui/toast";
@@ -50,7 +53,6 @@ const LoginContainer = styled(Box)`
 `;
 
 const Login = () => {
-
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
 
@@ -72,7 +74,8 @@ const Login = () => {
   const searchKeys = new URLSearchParams(search);
 
   const appDebug =
-    process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true"
+    process.env.REACT_APP_DEBUG === "true" &&
+    searchKeys.get("debug") === "true";
   //history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
@@ -177,10 +180,14 @@ const Login = () => {
     //console.log(cognitoIdentityCredentials);
 */
 
-      if ((appDebug && user.preferredMFA === "NOMFA") || (process.env.REACT_APP_STAGE === "dev" && loginFields.username === "test-user")) {
+      if (
+        (appDebug && user.preferredMFA === "NOMFA") ||
+        (process.env.REACT_APP_STAGE === "dev" &&
+          loginFields.username === "test-user")
+      ) {
         userAuth(true);
         //history.replace("/home");
-        navigate("/home", { replace: true })
+        navigate("/home", { replace: true });
       } else {
         if (user.preferredMFA === "NOMFA") {
           const mfa = await Auth.setPreferredMFA(user, "SMS");
@@ -248,7 +255,7 @@ const Login = () => {
 
   const createAccountClick = e => {
     //history.replace("/register");
-    navigate("/register", { replace: true })
+    navigate("/register", { replace: true });
     e.preventDefault();
   };
   const backButtonClick = e => {
@@ -355,7 +362,7 @@ const Login = () => {
                         }}
                       />
                     </IconField>
-                    <Box
+                    {/* <Box
                       display={"inline-flex"}
                       justifyContent={"flex-end"}
                       width={[1]}
@@ -376,7 +383,7 @@ const Login = () => {
                           {i18n.__("forgotUsername")}
                         </Button>
                       </Flex>
-                    </Box>
+                    </Box> */}
                   </Box>
                   <Box mt={32}>
                     <Text fontWeight="600" fontSize="sm">
@@ -469,7 +476,7 @@ const Login = () => {
                       ref={inputPassword}
                       error={passwordError.status}
                     />
-                    <Box
+                    {/* <Box
                       display={"inline-flex"}
                       justifyContent={"flex-end"}
                       width={[1]}
@@ -490,7 +497,7 @@ const Login = () => {
                           {i18n.__("forgotPassword")}
                         </Button>
                       </Flex>
-                    </Box>
+                    </Box> */}
                   </Box>
                   <Flex mt={77} flexDirection="column" alignItems="center">
                     <Button
