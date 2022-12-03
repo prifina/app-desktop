@@ -130,7 +130,7 @@ const DevConsole = props => {
               <Button
                 onClick={() => {
                   setCookie("developerAccount", "true");
-                  window.location.href = config.DEV_URL + "/register";
+                  window.location.href = config.DEV_URL + "/register-role";
                 }}
               >
                 {i18n.__("createAccount")}
