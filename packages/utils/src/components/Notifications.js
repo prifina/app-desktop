@@ -65,8 +65,12 @@ const StyledSelect = styled(Select)`
   font-size: 0.75rem;
   line-height: 1.875rem;
   height: 30px;
-  color: #00847a;
-  border-color: #00847a;
+  color: ${props => props.theme.colors.brandAccent};
+  border-color: ${props => props.theme.colors.brandAccent};
+`;
+
+const StyledBlendIcon = styled(BlendIcon)`
+  color: ${props => props.theme.colors.brandAccent};
 `;
 
 export const NotificationHeader = ({
@@ -89,9 +93,8 @@ export const NotificationHeader = ({
           alignItems={"center"}
           style={{ cursor: "pointer" }}
         >
-          <BlendIcon
+          <StyledBlendIcon
             iconify={bxChevronRightCircle}
-            color={"#00847A"}
             height={"14px"}
             width={"14px"}
             onClick={closeClick}

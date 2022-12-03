@@ -62,15 +62,6 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
         console.log(user);
         //history.replace("/login");
 
-        ///adding DEV user group role to new user
-        addUserToCognitoGroupMutation(API, currentUser.uuid, "DEV")
-          .then(res => {
-            console.log("ADD USER GROUP", res);
-          })
-          .catch(err => {
-            console.log("ADD GROUP ERROR ", err);
-          });
-
         navigate("/login", { replace: true });
       } catch (e) {
         console.log("ERR ", e);
