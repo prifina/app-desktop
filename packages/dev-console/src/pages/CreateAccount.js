@@ -13,7 +13,7 @@ import { IconField } from "@blend-ui/icon-field";
 import bxUser from "@iconify/icons-bx/bx-user";
 import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 
-// import PasswordField from "../components/PasswordField";
+import PasswordField from "../components/PasswordField";
 import PhoneNumberField from "../components/PhoneNumberField";
 
 import { useLocation } from "react-router-dom";
@@ -36,7 +36,7 @@ import {
   lowerCaseChars,
   addRegionCode,
   SimpleProgress,
-  PasswordField,
+  // PasswordField,
   // PhoneNumberField,
 } from "@prifina-apps/utils";
 
@@ -1112,7 +1112,7 @@ const CreateAccount = props => {
                     typeof res[0].data !== "undefined" &&
                     res[0].data.checkCognitoAttribute
                   ) {
-                    phoneAlert(i18n.__("formError"), false);
+                    phoneAlert(i18n.__("invalidPhoneNumber"), false);
                     checkResult = false;
                   } else if (
                     typeof res[0].data !== "undefined" &&
@@ -1123,7 +1123,9 @@ const CreateAccount = props => {
                     typeof res[1].data !== "undefined" &&
                     res[1].data.checkCognitoAttribute
                   ) {
-                    emailAlert(i18n.__("formError"), false);
+                    emailAlert(i18n.__("invalidEmail"), false);
+                    checkResult = false;
+                  } else if (Object.keys(res[1]).length === 0) {
                     checkResult = false;
                   }
 
