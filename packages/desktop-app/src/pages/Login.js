@@ -26,12 +26,9 @@ import {
   ConfirmAuth,
   PasswordField,
   sendVerificationMutation,
-  // ForgotPassword,
-  // RecoverUsername,
+  ForgotPassword,
+  RecoverUsername,
 } from "@prifina-apps/utils";
-
-import ForgotPassword from "../components/ForgotPassword";
-import RecoverUsername from "../components/RecoverUsername";
 
 import config from "../config";
 import { useToast } from "@blend-ui/toast";

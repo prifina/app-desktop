@@ -12,7 +12,7 @@ const baseWhite = "#F5F8F7DE";
 const baseHover = "#c91684";
 const baseMuted = "#292828";
 
-const borderPrimary = "#393838";
+const borderPrimary = "#C3C2C2";
 
 const baseBright = "#4B4B4B";
 
@@ -20,12 +20,15 @@ const subtleHiover = "#373436";
 
 const textMuted = "#969595";
 
-const landingGradient = "linear-gradient(255.4deg, #280198 0%, #E33FA4 73.71%)";
+const landingGradient =
+  "linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), linear-gradient(180deg, #A80A6B 0%, #2E002D 100%)";
 
 const gradientPurple = "linear-gradient(180deg, #AA076B 0%, #61045F 100%)";
 
 const sandboxGradient =
   "linear-gradient(90deg, #83205D 9.68%, #B21F7A 26.87%, rgba(53, 5, 131, 0.73) 100%)";
+
+
 
 const colors = {
   textPrimary: baseWhite,
@@ -49,6 +52,7 @@ const colors = {
   text: {
     muted: baseBright,
   },
+  borderPrimary,
 };
 
 console.log("default theme", defaultTheme);
@@ -61,7 +65,7 @@ const borderWidths = { ...sizeOptions.borderWidths };
 
 const borders = {
   input: {
-    base: `${borderWidths["2xs"]} solid ${colors.baseBright}`,
+    base: `${borderWidths["2xs"]} solid ${colors.borderPrimary}`,
     borderRadius: radii["input"],
     disabled: `${borderWidths["2xs"]} solid ${colors.baseWhite}`,
     error: `${borderWidths["2xs"]} solid ${colors.baseError}`,
@@ -115,7 +119,11 @@ const componentStyles = {
     },
   },
   input: {
-    base: { ...baseProps, height: sizeOptions.componentSizes["base"].height },
+    base: {
+      ...baseProps,
+      height: sizeOptions.componentSizes["base"].height,
+      backgroundColor: "transparent",
+    },
   },
   textarea: {
     base: {

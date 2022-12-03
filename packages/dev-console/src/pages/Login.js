@@ -6,7 +6,6 @@ import bxUser from "@iconify/icons-bx/bx-user";
 
 import { API, Auth } from "aws-amplify";
 
-
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
 
@@ -61,8 +60,10 @@ const LoginContainer = styled(Box)`
 `;
 
 const ImageFlex = styled(Flex)`
+  width: 85px;
   height: 25px;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const Login = () => {
@@ -84,8 +85,7 @@ const Login = () => {
   API.configure(APIConfig);
 
   const appDebug =
-    process.env.REACT_APP_DEBUG === "true" &&
-    location.search === "?debug=true";
+    process.env.REACT_APP_DEBUG === "true" && location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug, location);
   //history.location.search === "?debug=true";
   const alerts = useToast();
@@ -192,7 +192,7 @@ const Login = () => {
       if (appDebug && user.preferredMFA === "NOMFA") {
         userAuth(true);
         //history.replace("/home");
-        navigate("/home", { replace: true })
+        navigate("/home", { replace: true });
       } else {
         if (user.preferredMFA === "NOMFA") {
           const mfa = await Auth.setPreferredMFA(user, "SMS");
@@ -260,7 +260,7 @@ const Login = () => {
 
   const createAccountClick = e => {
     //history.replace("/register");
-    navigate("/register", { replace: true })
+    navigate("/register", { replace: true });
     e.preventDefault();
   };
   const backButtonClick = e => {
@@ -305,10 +305,8 @@ const Login = () => {
             background: colors.landingGradient,
             paddingTop: 63,
           }}
-        >
-          <Image src={landingImage} />
-        </Box>
-        <LoginContainer background="#272626">
+        />
+        <LoginContainer background={colors.baseTertiary}>
           {step === 0 && (
             <Box textAlign="start" width="354px">
               <Flex mb={57} alignSelf="flex-start">
@@ -382,7 +380,7 @@ const Login = () => {
                         }}
                       />
                     </IconField>
-                    <Box
+                    {/* <Box
                       display={"inline-flex"}
                       justifyContent={"flex-end"}
                       width={[1]}
@@ -403,9 +401,9 @@ const Login = () => {
                           {i18n.__("forgotUsername")}
                         </Button>
                       </Flex>
-                    </Box>
+                    </Box> */}
                   </Box>
-                  <Box mt={8}>
+                  <Box mt={32}>
                     <Text fontWeight="600" fontSize="sm">
                       Password
                     </Text>
@@ -496,7 +494,7 @@ const Login = () => {
                       ref={inputPassword}
                       error={passwordError.status}
                     />
-                    <Box
+                    {/* <Box
                       display={"inline-flex"}
                       justifyContent={"flex-end"}
                       width={[1]}
@@ -517,9 +515,9 @@ const Login = () => {
                           {i18n.__("forgotPassword")}
                         </Button>
                       </Flex>
-                    </Box>
+                    </Box> */}
                   </Box>
-                  <Flex mt={32} flexDirection="column" alignItems="center">
+                  <Flex mt={85} flexDirection="column" alignItems="center">
                     <Button
                       width="100%"
                       className="LoginButton"
@@ -550,7 +548,7 @@ const Login = () => {
                         variation="link"
                         onClick={createAccountClick}
                       >
-                        Sign up
+                        Create account
                       </Button>
                     </Flex>
                   </Flex>

@@ -15,7 +15,7 @@ i18n.init();
 const Container = styled(Flex)`
   flex-direction: column;
   height: 534px;
-  width: 421px;
+  width: 365px;
 `;
 
 const StyledBox = styled(Box)`
@@ -140,14 +140,15 @@ const TermsOfUse = props => {
   const [scrolled, setScrolled] = useState(false);
   const [decline, setDecline] = useState(false);
 
-  const _handleScroll = e => {
-    const bottom =
-      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+  // const _handleScroll = e => {
+  //   const bottom =
+  //     e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
 
-    if (bottom) {
-      setScrolled(true);
-    }
-  };
+  //   if (bottom) {
+  //     setScrolled(true);
+  //   }
+  // };
+
   const declineTerms = e => {
     setDecline(true);
     e.preventDefault();
@@ -173,16 +174,20 @@ const TermsOfUse = props => {
         <DeclineDialog onClose={onDialogClose} onButtonClick={onDialogClick} />
       )}
       <Container>
-        <Box textAlign="left">
-          <Text mb={16} textStyle="h2">
+        <Box textAlign="left" mb={25} mt={4}>
+          {/* <Text mb={16} textStyle="h2">
             {i18n.__("devTermsTitle")}
-          </Text>
-          <Text textStyle={"caption"} bold>
+          </Text> */}
+          <Text textStyle="h6" bold color="#ADA9AB">
             {i18n.__("devTermsLastUpdated")}
           </Text>
         </Box>
-        <Box mt={60} height={400}>
-          <StyledBox height={"100%"} colors={colors} onScroll={_handleScroll}>
+        <Box mb={20} height={350}>
+          <StyledBox
+            height={"100%"}
+            colors={colors}
+            // onScroll={_handleScroll}
+          >
             <>
               <Text fontSize="xxs">{i18n.__("devTermsText1")}</Text>
               <Text fontSize="xxs">{i18n.__("devTermsText2")}</Text>
@@ -199,7 +204,18 @@ const TermsOfUse = props => {
             </>
           </StyledBox>
         </Box>
-        <Box mt={24} display={"inline-flex"} justifyContent="center">
+        <Flex mb={12}>
+          <input
+            type="checkbox"
+            onChange={() => {
+              setScrolled(preValue => !preValue);
+            }}
+          />
+          <Text as={"p"} textStyle={"caption"} ml={8}>
+            I have read and understood Prifinas terms
+          </Text>
+        </Flex>
+        <Box display={"inline-flex"} justifyContent="center">
           <Flex>
             <C.OutlineButton
               variation={"outline"}
