@@ -402,11 +402,11 @@ const CreateAccount = props => {
 
     // check if email
 
-    const checkResult = checkEmail(username, false);
+    // const checkResult = checkEmail(username, false);
 
-    if (!checkResult) {
-      userNameAlert(true, "Cant be email");
-    }
+    // if (!checkResult) {
+    //   userNameAlert(true, "Cant be email");
+    // }
 
     console.log("USER ", username, userError);
     if (!userError && check) {
