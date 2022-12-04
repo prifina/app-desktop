@@ -16,6 +16,8 @@ const StyledDiv = styled.div`
   display: inline-block;
   padding-top: 3px;
 
+  cursor: pointer;
+
   div .arrow {
     &:after {
       content: " ";
@@ -27,11 +29,16 @@ const StyledDiv = styled.div`
       height: 20px;
       background-color: transparent;
     }
+    &:active {
+      background-color: red;
+      span {
+        color: ${props => props.theme.colors.baseWhite};
+      }
+    }
   }
 
   div div {
-    background: ${props => props.theme.colors.baseTertiary};
-
+    background: ${props => props.theme.colors.subtleHiover};
     padding-top: 3px;
 
     div {
@@ -43,8 +50,8 @@ const StyledDiv = styled.div`
     }
   }
   div {
-    padding: 0;
     color: white;
+    padding: 0;
   }
 `;
 
@@ -59,6 +66,9 @@ const StyledBox = styled("div")`
   /* remove flex and safari works....  */ 
   display: flex;
   opacity: 0.999;
+
+  position: relative;
+  z-index: 100;
 
   height: ${props =>
     props.height
