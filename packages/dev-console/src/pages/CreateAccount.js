@@ -1,13 +1,5 @@
 import React, { useState, useReducer, useEffect, useRef } from "react";
-import {
-  Button,
-  Input,
-  Box,
-  Flex,
-  Text,
-  useTheme,
-  Divider,
-} from "@blend-ui/core";
+import { Button, Input, Box, Flex, Text, useTheme } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
 import bxUser from "@iconify/icons-bx/bx-user";
@@ -114,7 +106,6 @@ const CreateAccount = props => {
 
   useEffect(() => {
     if (!flagsLoading) {
-      //console.log("FLAGS ", state.countryCode, selectOptions);
       const cIndex = selectOptions.findIndex(
         c => c.regionCode === state.countryCode,
       );
@@ -411,11 +402,11 @@ const CreateAccount = props => {
 
     // check if email
 
-    // const checkResult = checkEmail(username, false);
+    const checkResult = checkEmail(username, false);
 
-    // if (!checkResult) {
-    //   userNameAlert(true, "Cant be email");
-    // }
+    if (!checkResult) {
+      userNameAlert(true, "Cant be email");
+    }
 
     console.log("USER ", username, userError);
     if (!userError && check) {
@@ -444,11 +435,23 @@ const CreateAccount = props => {
     const errorMsg = i18n.__("formError");
     if (state.firstName.value.length === 0) {
       console.log("check 1");
-      setState({ firstName: { ...state.firstName, status: true } });
+      setState({
+        firstName: {
+          ...state.firstName,
+          status: true,
+          msg: "Enter a first name",
+        },
+      });
       setInputFirstnameFocus();
     } else if (state.lastName.value.length === 0) {
       console.log("check 2");
-      setState({ lastName: { ...state.lastName, status: true } });
+      setState({
+        lastName: {
+          ...state.lastName,
+          status: true,
+          msg: "Enter a last name",
+        },
+      });
       setInputLastnameFocus();
     } else if (state.username.value.length === 0) {
       console.log("check 3");
@@ -765,7 +768,6 @@ const CreateAccount = props => {
               <Box>
                 <Input
                   autoFocus={true}
-                  // placeholder={i18n.__("firstNamePlaceholder")}
                   placeholder="Arlene"
                   id={"firstName"}
                   name={"firstName"}
@@ -774,9 +776,7 @@ const CreateAccount = props => {
                   error={state.firstName.status}
                   defaultValue={state.firstName.value}
                   tabIndex="0"
-                  // errorMsg={
-                  //   state.firstName.value !== "" ? "" : "Enter a first name"
-                  // }
+                  errorMsg={state.firstName.status ? state.firstName.msg : ""}
                 />
               </Box>
             </Box>
@@ -787,7 +787,6 @@ const CreateAccount = props => {
 
               <Box>
                 <Input
-                  // placeholder={i18n.__("lastNamePlaceholder")}
                   placeholder="McCoy"
                   id={"lastName"}
                   name={"lastName"}
@@ -796,9 +795,7 @@ const CreateAccount = props => {
                   error={state.lastName.status}
                   defaultValue={state.lastName.value}
                   tabIndex="1"
-                  // errorMsg={
-                  //   state.lastName.value !== "" ? "" : "Enter a last name"
-                  // }
+                  errorMsg={state.lastName.status ? state.lastName.msg : ""}
                 />
               </Box>
             </Box>
