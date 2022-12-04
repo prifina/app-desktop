@@ -233,7 +233,7 @@ const TermsOfUse = props => {
             //  onScroll={_handleScroll}
           >
             {texts.map((t, i) => (
-              <>
+              <div key={i}>
                 <React.Fragment key={"text-" + i}>
                   <Text textStyle={"h6"} mt={5}>
                     {t.title}
@@ -254,7 +254,7 @@ const TermsOfUse = props => {
                       </Text>
                     </div>
                   ))}
-              </>
+              </div>
             ))}
           </StyledBox>
         </Box>
