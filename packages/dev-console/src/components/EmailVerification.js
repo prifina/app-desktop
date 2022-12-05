@@ -3,17 +3,17 @@ import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
 import bxKey from "@iconify/icons-bx/bx-key";
-import { ReactComponent as Phone } from "../assets/phone.svg";
+import { ReactComponent as Email } from "../assets/email-envelope.svg";
 
 import { API } from "aws-amplify";
 
 import {
   getVerificationQuery,
   sendVerificationMutation,
+  i18n,
   useFormFields,
   useFocus,
   useAccountContext,
-  i18n,
   onlyDigitChars,
 } from "@prifina-apps/utils";
 
@@ -29,14 +29,14 @@ const ContentContainer = styled(Flex)`
   padding: 16px;
   width: 352px;
   height: 168px;
-  background: #f6f9f9;
-  border: 1px solid #dbf0ee;
+
+  border: 1px solid #6b6669;
   border-radius: 10px;
 `;
 
 i18n.init();
 
-const PhoneVerification = ({ invalidLink, ...props }) => {
+const EmailVerification = ({ invalidLink, ...props }) => {
   const { nextStepAction, currentUser } = useAccountContext();
   const alerts = useToast();
 
@@ -48,6 +48,9 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   };
 
   API.configure(APIConfig);
+  //Auth.configure(AUTHConfig);
+  console.log("USER ", currentUser);
+
   const [verificationFields, handleChange] = useFormFields({
     verificationCode: "",
   });
@@ -56,15 +59,16 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
 
   const verifyClickTrigger = useRef(false);
 
+  console.log("input error", inputError);
+
   const checkInput = code => {
     const checkResult = onlyDigitChars(code);
 
     let validCode = true;
-    if (!checkResult) {
+    if (!checkResult && code.length > 0) {
       const errorMsg = i18n.__("codeDigitsError");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
-
       setInputError({
         ...inputError,
         status: true,
@@ -82,11 +86,28 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         status: true,
         msg: errorMsg,
       });
-
       validCode = false;
     }
     if (validCode) {
       setInputError({ status: false, msg: "" });
+    }
+  };
+
+  const resendClick = async e => {
+    try {
+      await sendVerificationMutation(
+        API,
+        "email",
+        JSON.stringify({
+          userId: currentUser.username,
+          clientId: currentUser.client,
+          email: currentUser.email,
+          given_name: currentUser.given_name,
+        }),
+      );
+      alerts.info(i18n.__("emailVerificatioSent"), {});
+    } catch (e) {
+      console.log("ERR", e);
     }
   };
   const verifyClick = async e => {
@@ -94,7 +115,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
       const userCode = [
         currentUser.username,
         currentUser.client,
-        "phone",
+        "email",
         verificationFields.verificationCode,
       ].join("#");
 
@@ -114,9 +135,8 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
         verificationFields.verificationCode !== "" &&
         result.data.getVerification
       ) {
-        nextStepAction(4);
+        nextStepAction(5);
       }
-
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
@@ -128,39 +148,22 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
       });
     }
   };
-  const resendClick = async e => {
-    try {
-      await sendVerificationMutation(
-        API,
-        "phone",
-        JSON.stringify({
-          userId: currentUser.username,
-          clientId: currentUser.client,
-          phone_number: currentUser.phone_number,
-          given_name: currentUser.given_name,
-        }),
-      );
-      alerts.info(i18n.__("phoneVerificatioSent"), {});
-    } catch (e) {
-      console.log("ERR", e);
-    }
-  };
 
   useEffect(() => {
     const sendCode = () => {
       sendVerificationMutation(
         API,
-        "phone",
+        "email",
         JSON.stringify({
           userId: currentUser.username,
           clientId: currentUser.client,
-          phone_number: currentUser.phone_number,
+          email: currentUser.email,
           given_name: currentUser.given_name,
         }),
       )
         .then(result => {
-          console.log("PHONE SMS RESULT ", result);
-          alerts.info(i18n.__("phoneVerificatioSent"), { duration: 10000 });
+          console.log("EMAIL RESULT ", result);
+          alerts.info(i18n.__("emailVerificatioSent"), { duration: 10000 });
         })
         .catch(e => {
           console.log("ERR", e);
@@ -178,28 +181,23 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
     nextStepAction(2);
   };
 
-  console.log("currentuser", currentUser);
-  console.log("verification fields", verificationFields);
-
-  console.log("inputerror", inputError);
-
-  const currentPhone = () => (
+  const currentEmail = () => (
     <Text fontWeight="900" as="b">
-      {currentUser.phone_number}
+      {currentUser.email}
     </Text>
   );
 
   return (
     <Box mt={121}>
       <ContentContainer mb={145}>
-        <Box mr={24}>
-          <Phone height="135" width="56px" />
+        <Box mr={16}>
+          <Email height="95px" width="86px" />
         </Box>
         <Box>
           <Box mb={16}>
             <Text textStyle={"caption"} as={"p"} m={0}>
-              We sent a verification code to {currentPhone()}. Enter it below to
-              verify your phone number
+              We sent a verification code to {currentEmail()} Enter it below to
+              verify your email account.
             </Text>
           </Box>
           <Box width="169px">
@@ -224,17 +222,19 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
                 }}
                 ref={inputCode}
                 error={inputError.status}
-                errorMsg={inputError.status ? inputError.msg : ""}
+                errorMsg={inputError.msg !== "" ? inputError.msg : ""}
               />
             </IconField>
           </Box>
         </Box>
       </ContentContainer>
+
       <Box>
         <Flex justifyContent="space-between" mb={16}>
           <Button width="45%" variation={"outline"} onClick={resendClick}>
             Resend Code
           </Button>
+
           <Button width="45%" onClick={verifyClick}>
             {i18n.__("verifyButton")}
           </Button>
@@ -250,14 +250,14 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
           </Flex>
           <Flex alignItems="center">
             <Text textStyle={"caption2"} mr={5}>
-              Not your number?
+              Not your email?
             </Text>
             <Button
               variation="link"
               fontSize={"10px"}
               onClick={backClickAction}
             >
-              Change phone number
+              Change email
             </Button>
           </Flex>
         </Box>
@@ -266,7 +266,7 @@ const PhoneVerification = ({ invalidLink, ...props }) => {
   );
 };
 
-PhoneVerification.propTypes = {
+EmailVerification.propTypes = {
   invalidLink: PropTypes.string.isRequired,
 };
-export default PhoneVerification;
+export default EmailVerification;

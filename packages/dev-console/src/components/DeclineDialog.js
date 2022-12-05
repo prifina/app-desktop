@@ -7,7 +7,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@blend-ui/modal";
-import { Box, Button, Text, useTheme } from "@blend-ui/core";
+import { Box, Button, colors, Text, useTheme } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 import { i18n } from "@prifina-apps/utils";
@@ -37,7 +37,7 @@ const DeclineDialog = ({ onClose, onButtonClick, ...props }) => {
         size={"566px"}
         {...props}
       >
-        <ModalContent>
+        <ModalContent style={{ background: theme.colors.baseTertiary }}>
           <ModalHeader>
             <Text textStyle={"h5"} color={theme.colors.baseError}>
               {i18n.__("declineTitle")}

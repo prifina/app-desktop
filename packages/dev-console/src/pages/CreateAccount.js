@@ -24,19 +24,22 @@ import {
   validEmail,
   validUsername,
   isValidNumber,
+  countryList,
   lowerCaseChars,
   addRegionCode,
   SimpleProgress,
+  // PasswordField,
+  // PhoneNumberField,
 } from "@prifina-apps/utils";
 
 import { API, Auth } from "aws-amplify";
 
 import { v4 as uuidv4 } from "uuid";
 
-import TermsOfUse from "./TermsOfUse";
+import TermsOfUse from "../components/TermsOfUse";
 
-import EmailVerification from "./EmailVerification";
-import PhoneVerification from "./PhoneVerification";
+import EmailVerification from "../components/EmailVerification";
+import PhoneVerification from "../components/PhoneVerification";
 import { useToast } from "@blend-ui/toast";
 
 import PropTypes from "prop-types";
@@ -49,18 +52,18 @@ i18n.init();
 
 const StyledSimpleProgress = styled(SimpleProgress)`
   .tracker li {
-    background: #eaebeb;
+    background: #4b484a;
     border-radius: 20px;
     border: 0;
     padding: 2px;
   }
 
   .tracker li.is-active {
-    background: #1fb2a6;
+    background: #e585c0;
   }
 
   .tracker li.is-ready {
-    background: #0d776e;
+    background: #e33fa4;
     height: 1px;
   }
 `;
@@ -765,7 +768,6 @@ const CreateAccount = props => {
               <Box>
                 <Input
                   autoFocus={true}
-                  // placeholder={i18n.__("firstNamePlaceholder")}
                   placeholder="Arlene"
                   id={"firstName"}
                   name={"firstName"}
@@ -785,7 +787,6 @@ const CreateAccount = props => {
 
               <Box>
                 <Input
-                  // placeholder={i18n.__("lastNamePlaceholder")}
                   placeholder="McCoy"
                   id={"lastName"}
                   name={"lastName"}

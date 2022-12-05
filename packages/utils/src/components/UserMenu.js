@@ -50,6 +50,10 @@ const withUsermenu = () => WrappedComponent => {
           console.log("HOME CLICK...");
           window.location.replace(config.APP_URL); // browser-back is / (home)
         }}
+        onHelp={() => {
+          console.log("HELP CLICK...");
+          window.open("https://prifina.zendesk.com/hc/en-us");
+        }}
       >
         {logout && (
           <LogoutDialog onClose={onDialogClose} onButtonClick={onDialogClick} />
@@ -59,8 +63,9 @@ const withUsermenu = () => WrappedComponent => {
     );
   };
 
-  WithUsermenu.displayName = `WithUsermenu(${WrappedComponent.displayName || WrappedComponent.name || "Component"
-    })`;
+  WithUsermenu.displayName = `WithUsermenu(${
+    WrappedComponent.displayName || WrappedComponent.name || "Component"
+  })`;
 
   return WithUsermenu;
 };

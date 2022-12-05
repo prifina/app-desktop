@@ -3,22 +3,12 @@ import React, { useState, useEffect } from "react";
 
 import { useLocation } from "react-router-dom";
 
-import { Box, Flex, Text, useTheme } from "@blend-ui/core";
-
-import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
-
-import Background from "../assets/background.png";
-
-import Plate from "../assets/back-plate.png";
-
-import { BlendIcon } from "@blend-ui/icons";
-import bxChevronRight from "@iconify/icons-bx/bx-chevron-right";
+import { Box, Flex, Text, Image, useTheme } from "@blend-ui/core";
 
 import styled from "styled-components";
 
 import CreateAccount from "./CreateAccount";
-import Login from "./Login";
-
+// import Login from "./Login";
 
 import Home from "./Home";
 
@@ -27,33 +17,19 @@ import FinalizingAccount from "./FinalizingAccount";
 import { ToastContextProvider } from "@blend-ui/toast";
 import { i18n, useAppContext, NotFoundPage } from "@prifina-apps/utils";
 
+import landingImage from "../assets/landingImage.png";
+import prifinaIcon from "../assets/prifina-icon.svg";
+
 i18n.init();
 
-const StyledBox = styled(Box)`
-  /* border-radius: 20px; */
-  border: 1px solid #f5f8f7;
-  background-color: ${props =>
-    props.colors ? props.colors.baseWhite : "#F5F8F7"};
-`;
-const StyledBackground = styled(Box)`
-  background-image: url(${Background});
-  background-repeat: no-repeat;
-  background-size: cover;
-  /* border-radius: 20px; 
-  border-top-left-radius: 0;
-  border-top-right-radius: 0; */
-  /* opacity: 0.3; */
-  position: relative;
-  top: -632px;
-  z-index: 1;
-`;
-const StyledPlate = styled(Box)`
-  background-image: url(${Plate});
-  background-repeat: no-repeat;
-  background-size: cover;
-  /* border-top-right-radius: 20px; */
-  z-index: 3;
-  border-left: 1px solid rgba(255, 255, 255, 0); // chrome bug of showing border on transparent image
+const SectionContainer = styled(Box)`
+  width: 534px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 69px 0px 64px 0px;
+  // padding-top: 105px;
 `;
 
 const Landing = props => {
@@ -91,92 +67,53 @@ const Landing = props => {
     setStepCounter(7);
   };
   console.log("STEP COUNTER ", stepCounter);
-  const topMargin = "62px";
+
   return (
     <React.Fragment>
       <ToastContextProvider>
         {mobileApp && <div>Mobile browser APP</div>}
         {!mobileApp && stepCounter === 6 && isAuthenticated && <Home />}
         {!mobileApp && stepCounter !== 6 && (
-          <StyledBox minWidth={"1440px"} minHeight={"792px"}>
-            <Box display={"inline-flex"} width={"100%"}>
-              <Flex width={stepCounter === 7 ? "100%" : "44%"} height={"792px"}>
-                <Box display={"inline-block"} zIndex={2} ml={"63px"}>
-                  <Box mt={"24px"}>
-                    <PrifinaText width={"69px"} height={"27px"} />
-                  </Box>
-                  {stepCounter !== 7 && (
-                    <React.Fragment>
-                      <Box mt={"283px"}>
-                        <Text fontSize={"74px"} lineHeight={"101px"}>
-                          {stepCounter > 4 && i18n.__("loginWelcomeMessage")}
-                          {stepCounter < 5 && i18n.__("welcomeMessage")}
-                        </Text>
-                      </Box>
-                      <Box width={"533px"}>
-                        <Text as={"p"} fontSize={18} lineHeight={"144.5%"}>
-                          {stepCounter > 4 && i18n.__("loginLandingPage")}
-                          {stepCounter < 5 && i18n.__("landingPage")}
-                        </Text>
-                      </Box>
-                      <Box
-                        mt={"40px"}
-                        display={"inline-flex"}
-                        height={"26px"}
-                        alignItems={"center"}
-                      >
-                        {stepCounter < 5 && (
-                          <React.Fragment>
-                            <Text
-                              fontSize={18}
-                              color={colors.baseSecondary}
-                              pr={13}
-                            >
-                              {i18n.__("landingPageInfo")}
-                            </Text>
-                            <BlendIcon
-                              iconify={bxChevronRight}
-                              color={colors.componentPrimary}
-                              size={"17"}
-                            />
-                          </React.Fragment>
-                        )}
-                      </Box>
-                    </React.Fragment>
-                  )}
-                </Box>
-                {stepCounter === 7 && (
-                  <FinalizingAccount currentUser={accountFields} />
-                )}
-              </Flex>
+          <>
+            {stepCounter === 7 && (
+              <FinalizingAccount currentUser={accountFields} />
+            )}
 
-              {stepCounter !== 7 && (
-                <Flex
-                  width={"56%"}
-                  height={"730px"}
-                  justifyContent={"flex-end"}
-                >
-                  <StyledPlate height={"730px"} width={"753px"}>
-                    <Flex justifyContent={"flex-end"}>
-                      <Box
-                        position={"relative"}
-                        right={"64px"}
-                        top={topMargin}
-                        key={"step-" + stepCounter}
-                      >
-                        {stepCounter === 0 && <NotFoundPage />}
-                        {stepCounter === 1 && !isAuthenticated && (
-                          <CreateAccount finalStep={finalStep} />
-                        )}
-                        {/* {stepCounter === 5 && <Login />} */}
-                      </Box>
+            {stepCounter !== 7 && (
+              <>
+                {stepCounter === 0 && <NotFoundPage />}
+                {stepCounter === 1 && !isAuthenticated && (
+                  <Flex width="100vw" height="100vh">
+                    <Flex
+                      flexGrow={1}
+                      style={{
+                        background: colors.baseTertiary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Image src={landingImage} />
                     </Flex>
-                  </StyledPlate>
-                </Flex>
-              )}
-            </Box>
-            <StyledBackground width={"100%"} height={"631px"} />
-          </StyledBox>
+
+                    <SectionContainer>
+                      <Box textAlign="start" width="354px">
+                        {stepCounter !== 7 && (
+                          <Flex mb={48} alignSelf="flex-start">
+                            <Image src={prifinaIcon} width="25px" />
+                            <Text ml={3} fontWeight="600">
+                              Prifina
+                            </Text>
+                          </Flex>
+                        )}
+                        <CreateAccount finalStep={finalStep} />
+                      </Box>
+                    </SectionContainer>
+                  </Flex>
+                )}
+                {/* {stepCounter === 5 && <Login />} */}
+              </>
+            )}
+          </>
         )}
       </ToastContextProvider>
     </React.Fragment>

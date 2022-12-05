@@ -29,8 +29,7 @@ const ContentContainer = styled(Flex)`
   padding: 16px;
   width: 352px;
   height: 168px;
-  background: #f6f9f9;
-  border: 1px solid #dbf0ee;
+  border: 1px solid #6b6669;
   border-radius: 10px;
 `;
 

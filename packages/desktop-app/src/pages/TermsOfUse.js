@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { Box, Flex, Button, Text, useTheme } from "@blend-ui/core";
 
-import ProgressContainer from "../components/ProgressContainer";
 import DeclineDialog from "../components/DeclineDialog";
 import styled from "styled-components";
 
 import { i18n, useAccountContext } from "@prifina-apps/utils";
 
 i18n.init();
+
+const Container = styled(Flex)`
+  flex-direction: column;
+  height: 534px;
+  width: 354px;
+`;
 
 const StyledBox = styled(Box)`
   scrollbar-width: 4px;
@@ -179,14 +184,15 @@ const TermsOfUse = props => {
   const [scrolled, setScrolled] = useState(false);
   const [decline, setDecline] = useState(false);
 
-  const _handleScroll = e => {
-    const bottom =
-      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+  // const _handleScroll = e => {
+  //   const bottom =
+  //     e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
 
-    if (bottom) {
-      setScrolled(true);
-    }
-  };
+  //   if (bottom) {
+  //     setScrolled(true);
+  //   }
+  // };
+
   const declineTerms = e => {
     setDecline(true);
     e.preventDefault();
@@ -211,30 +217,23 @@ const TermsOfUse = props => {
       {decline && (
         <DeclineDialog onClose={onDialogClose} onButtonClick={onDialogClick} />
       )}
-
-      <ProgressContainer title={i18n.__("termsTitle")} progress={66}>
-        <Box textAlign="center">
-          <Text textStyle={"caption"} bold>
-            {i18n.__("termsLastUpdated")}
-          </Text>
+      <Container>
+        <Box textAlign="left" mb={10}>
+          <Text textStyle={"caption"}>{i18n.__("termsLastUpdated")}</Text>
         </Box>
-        <Box mt={10}>
+        <Box mb={22}>
           <Text textStyle={"caption"} bold>
             {i18n.__("termsText")}
           </Text>
         </Box>
-        <Box mt={22} height={313}>
-          <StyledBox height={"100%"} colors={colors} onScroll={_handleScroll}>
-            {/* {texts.map((t, i) => (
-              <React.Fragment key={"text-" + i}>
-                <Text textStyle={"h6"}>{t.title}</Text>
-                <Text as={"p"} textStyle={"caption"}>
-                  {t.text}
-                </Text>
-              </React.Fragment>
-            ))} */}
+        <Box mb={8} height={313}>
+          <StyledBox
+            height={"100%"}
+            colors={colors}
+            //  onScroll={_handleScroll}
+          >
             {texts.map((t, i) => (
-              <>
+              <div key={i}>
                 <React.Fragment key={"text-" + i}>
                   <Text textStyle={"h6"} mt={5}>
                     {t.title}
@@ -255,12 +254,23 @@ const TermsOfUse = props => {
                       </Text>
                     </div>
                   ))}
-              </>
+              </div>
             ))}
           </StyledBox>
         </Box>
+        <Flex mb={12}>
+          <input
+            type="checkbox"
+            onChange={() => {
+              setScrolled(preValue => !preValue);
+            }}
+          />
+          <Text as={"p"} textStyle={"caption"} ml={8}>
+            I have read and understood Prifinas terms
+          </Text>
+        </Flex>
 
-        <Box mt={63} display={"inline-flex"}>
+        <Box display={"inline-flex"}>
           <React.Fragment>
             <Flex>
               <Button
@@ -279,7 +289,7 @@ const TermsOfUse = props => {
             </Flex>
           </React.Fragment>
         </Box>
-      </ProgressContainer>
+      </Container>
     </React.Fragment>
   );
 };

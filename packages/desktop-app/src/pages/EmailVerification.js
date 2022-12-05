@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
 import bxKey from "@iconify/icons-bx/bx-key";
 import { ReactComponent as Email } from "../assets/email-envelope.svg";
-
-import ProgressContainer from "../components/ProgressContainer";
 
 import { API } from "aws-amplify";
 
@@ -23,6 +21,18 @@ import { useToast } from "@blend-ui/toast";
 
 import config from "../config";
 import PropTypes from "prop-types";
+import styled from "styled-components";
+
+const ContentContainer = styled(Flex)`
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  width: 352px;
+  height: 168px;
+  background: #f6f9f9;
+  border: 1px solid #dbf0ee;
+  border-radius: 10px;
+`;
 
 i18n.init();
 
@@ -47,6 +57,10 @@ const EmailVerification = ({ invalidLink, ...props }) => {
   const [inputCode, setInputCodeFocus] = useFocus();
   const [inputError, setInputError] = useState({ status: false, msg: "" });
 
+  const verifyClickTrigger = useRef(false);
+
+  console.log("input error", inputError);
+
   const checkInput = code => {
     const checkResult = onlyDigitChars(code);
 
@@ -55,7 +69,11 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       const errorMsg = i18n.__("codeDigitsError");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
-      setInputError({ status: true });
+      setInputError({
+        ...inputError,
+        status: true,
+        msg: errorMsg,
+      });
       validCode = false;
     }
 
@@ -63,33 +81,17 @@ const EmailVerification = ({ invalidLink, ...props }) => {
       const errorMsg = i18n.__("codeLengthError");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
-      setInputError({ status: true });
+      setInputError({
+        ...inputError,
+        status: true,
+        msg: errorMsg,
+      });
       validCode = false;
     }
     if (validCode) {
-      setInputError({ status: false });
+      setInputError({ status: false, msg: "" });
     }
   };
-
-  useEffect(() => {
-    sendVerificationMutation(
-      API,
-      "email",
-      JSON.stringify({
-        userId: currentUser.username,
-        clientId: currentUser.client,
-        email: currentUser.email,
-        given_name: currentUser.given_name,
-      }),
-    )
-      .then(result => {
-        console.log("EMAIL RESULT ", result);
-        alerts.info(i18n.__("emailVerificatioSent"), { duration: 10000 });
-      })
-      .catch(e => {
-        console.log("ERR", e);
-      });
-  }, [currentUser]);
 
   const resendClick = async e => {
     try {
@@ -121,109 +123,146 @@ const EmailVerification = ({ invalidLink, ...props }) => {
 
       if (result.data.getVerification === null) {
         alerts.error(i18n.__("invalidCode"), {});
-        setInputError({ status: true });
+        setInputError({
+          ...inputError,
+          status: true,
+          msg: "Invalid code",
+        });
+      }
+
+      if (
+        !inputError.status &&
+        verificationFields.verificationCode !== "" &&
+        result.data.getVerification
+      ) {
+        nextStepAction(5);
       }
       console.log("VERIFY ", result);
-      nextStepAction(3);
     } catch (e) {
       console.log("ERR", e);
       alerts.error(i18n.__("invalidCode"), {});
-      setInputError({ status: true });
-      nextStepAction(2);
+      setInputError({
+        ...inputError,
+        status: true,
+        msg: "Invalid code",
+      });
     }
   };
+
+  useEffect(() => {
+    const sendCode = () => {
+      sendVerificationMutation(
+        API,
+        "email",
+        JSON.stringify({
+          userId: currentUser.username,
+          clientId: currentUser.client,
+          email: currentUser.email,
+          given_name: currentUser.given_name,
+        }),
+      )
+        .then(result => {
+          console.log("EMAIL RESULT ", result);
+          alerts.info(i18n.__("emailVerificatioSent"), { duration: 10000 });
+        })
+        .catch(e => {
+          console.log("ERR", e);
+        });
+
+      verifyClickTrigger.current = true;
+    };
+
+    if (!verifyClickTrigger.current) {
+      sendCode();
+    }
+  }, [currentUser]);
+
   const backClickAction = e => {
-    nextStepAction(0);
+    nextStepAction(2);
   };
+
+  const currentEmail = () => (
+    <Text fontWeight="900" as="b">
+      {currentUser.email}
+    </Text>
+  );
+
   return (
-    <React.Fragment>
-      <ProgressContainer
-        title={i18n.__("verificationTitle")}
-        progress={100}
-        pr={19}
-      >
-        <Box mt={50}>
-          <Box display={"inline-flex"}>
-            <Box>
-              <Email height={"105px"} width={"95px"} />
-            </Box>
-            <Box ml={34}>
-              <Box>
-                <Text textStyle={"h6"}>
-                  {i18n.__("emailVerificationTitle")}
-                </Text>
-              </Box>
-              <Box mt={5}>
-                <Text textStyle={"caption2"} as={"p"} m={0}>
-                  {i18n.__("emailVerificationText")}
-                </Text>
-              </Box>
-              <Box mt={15}>
-                <IconField width={"200px"}>
-                  <IconField.LeftIcon
-                    iconify={bxKey}
-                    color={"componentPrimary"}
-                    size={"17"}
-                  />
-                  <IconField.InputField
-                    placeholder={i18n.__("codePropmt")}
-                    id={"verificationCode"}
-                    name={"verificationCode"}
-                    onChange={handleChange}
-                    onKeyDown={e => {
-                      if (e.key === "Enter") {
-                        checkInput(verificationFields.verificationCode);
-                      }
-                    }}
-                    ref={inputCode}
-                    error={inputError.status}
-                  />
-                </IconField>
-              </Box>
-              <Box mt={inputError.status ? 0 : 3} display={"inline-flex"}>
-                <Flex alignItems={"center"}>
-                  <Text textStyle={"caption2"} mr={5}>
-                    {i18n.__("emailMissing")}
-                  </Text>
-                  <Button
-                    variation="link"
-                    fontSize={"10px"}
-                    onClick={resendClick}
-                  >
-                    {" "}
-                    {i18n.__("sendAgainLinkText")}
-                  </Button>
-                </Flex>
-              </Box>
-              <Box>
-                <Link href={invalidLink} target="_blank" fontSize={"10px"}>
-                  {i18n.__("verifySupportLink")}
-                </Link>
-              </Box>
-            </Box>
+    <Box mt={121}>
+      <ContentContainer mb={145}>
+        <Box mr={16}>
+          <Email height="95px" width="86px" />
+        </Box>
+        <Box>
+          <Box mb={16}>
+            <Text textStyle={"caption"} as={"p"} m={0}>
+              We sent a verification code to {currentEmail()} Enter it below to
+              verify your email account.
+            </Text>
+          </Box>
+          <Box width="169px">
+            <IconField>
+              <IconField.LeftIcon
+                iconify={bxKey}
+                color={"componentPrimary"}
+                size={"17"}
+              />
+              <IconField.InputField
+                placeholder={i18n.__("codePropmt")}
+                id={"verificationCode"}
+                name={"verificationCode"}
+                onChange={e => {
+                  handleChange(e);
+                  checkInput(verificationFields.verificationCode);
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    checkInput(verificationFields.verificationCode);
+                  }
+                }}
+                ref={inputCode}
+                error={inputError.status}
+                errorMsg={inputError.msg !== "" ? inputError.msg : ""}
+              />
+            </IconField>
           </Box>
         </Box>
+      </ContentContainer>
 
-        <Box mt={80} display={"inline-flex"}>
-          <Flex>
-            <Button variation={"outline"} onClick={backClickAction}>
-              {i18n.__("backButton")}
-            </Button>
+      <Box>
+        <Flex justifyContent="space-between" mb={16}>
+          <Button width="45%" variation={"outline"} onClick={resendClick}>
+            Resend Code
+          </Button>
+
+          <Button width="45%" onClick={verifyClick}>
+            {i18n.__("verifyButton")}
+          </Button>
+        </Flex>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Flex alignItems="center">
+            <Text textStyle={"caption2"} mr={5}>
+              Still did not receive your code?
+            </Text>
+            <Link href={invalidLink} target="_blank" fontSize="10px">
+              Get help
+            </Link>
           </Flex>
-          <Flex ml={99}>
+          <Flex alignItems="center">
+            <Text textStyle={"caption2"} mr={5}>
+              Not your email?
+            </Text>
             <Button
-              disabled={
-                inputError.status ||
-                verificationFields.verificationCode.length !== 6
-              }
-              onClick={verifyClick}
+              variation="link"
+              fontSize={"10px"}
+              onClick={backClickAction}
             >
-              {i18n.__("verifyButton")}
+              Change email
             </Button>
           </Flex>
         </Box>
-      </ProgressContainer>
-    </React.Fragment>
+      </Box>
+    </Box>
   );
 };
 
