@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import styled from "styled-components";
 
@@ -36,10 +36,13 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
 
   const alerts = useToast();
 
+  const effectCalled = useRef(false);
+
   console.log("FIN ", currentUser);
 
   useEffect(() => {
     async function onLoad() {
+      effectCalled.current = true;
       const abortController = new AbortController();
 
       try {
@@ -70,7 +73,9 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
         abortController.abort();
       };
     }
-    onLoad();
+    if (!effectCalled.current) {
+      onLoad();
+    }
   }, []);
 
   return (
