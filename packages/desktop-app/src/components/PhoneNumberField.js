@@ -2,7 +2,7 @@ import React, { createRef, forwardRef, createContext, useContext } from "react";
 import { Input, Text, Box, useTheme } from "@blend-ui/core";
 import { SearchSelect } from "@blend-ui/search-select";
 
-import bxPhone from "@iconify/icons-bx/bx-phone";
+import bxPhone from "@iconify/icons-bx/bxs-phone";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -12,11 +12,34 @@ import { useId } from "@reach/auto-id";
 
 import PropTypes from "prop-types";
 
+///fixes wierd element on after effect
+const StyledDiv = styled.div`
+  display: inline-block;
+  padding-top: 3px;
+  cursor: pointer;
+
+  div .arrow {
+    &:after {
+      content: " ";
+      position: absolute;
+      top: -20px; // we account for the PopperContainer padding
+      left: 0;
+      transform: rotate(45deg);
+      width: 20px;
+      height: 20px;
+      background-color: transparent;
+    }
+  }
+`;
+
 const StyledBox = styled("div")`
   ${space}
   /* remove flex and safari works....  */ 
   display: flex;
   opacity: 0.999;
+
+  position: relative;
+  z-index: 100;
 
   height: ${props =>
     props.height
@@ -158,12 +181,7 @@ const SelectField = forwardRef(
     const { selectId, boxRef } = useInputContext();
 
     return (
-      <div
-        style={{
-          display: "inline-block",
-          paddingTop: "3px",
-        }}
-      >
+      <StyledDiv>
         <SearchSelect
           id={selectId}
           name={selectId}
@@ -179,7 +197,7 @@ const SelectField = forwardRef(
           ref={ref}
           {...props}
         />
-      </div>
+      </StyledDiv>
     );
   },
 );

@@ -30,10 +30,10 @@ const strings = {
     lastNamePlaceholder: "Last Name",
     usernamePlaceholder: "Username",
     emailPlaceholder: "Email",
-    emailPrompt: "This email will be used for two-step verification.",
+    emailPrompt: "This email will be used for two-factor verification.",
     phoneNumberPlaceholder: "Phone Number",
     phoneNumberPlaceholder2: "555_555_555",
-    phonePrompt: "This number will be used for two-step verification.",
+    phonePrompt: "This number will be used for two-factor verification.",
     passwordPlaceholder: "Password",
 
     confirmPlaceholder: "Confirm Password",
@@ -168,6 +168,8 @@ const strings = {
      Prifina may notify you with respect to the Services by sending an email message to your email address or a letter via postal mail to your mailing address, or by a posting on the Services. Notices shall become effective immediately. Prifina may also contact you by email or push notification to send you additional information about the Services.
      You hereby grant Prifina the right to take steps Prifina believes are reasonably necessary or appropriate to enforce and/or verify compliance with any part of this Agreement. You agree that Prifina has the right, without liability to you, to disclose any data and/or information to law enforcement authorities, government officials, and/or a third party, as Prifina believes is reasonably necessary or appropriate to enforce and/or verify compliance with any part of this Agreement (including but not limited to Prifina’s right to cooperate with any legal process relating to your use of the Services, and/or a third-party claim that your use of the Services is unlawful and/or infringes such third party's rights).
      `,
+
+    formError: "Form has errors",
 
     /* Phone verification */
     codeDigitsError: "Only numbers are allowed",

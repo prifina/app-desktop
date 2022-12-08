@@ -12,18 +12,69 @@ import { useId } from "@reach/auto-id";
 
 import PropTypes from "prop-types";
 
+const StyledDiv = styled.div`
+  display: inline-block;
+  padding-top: 3px;
+
+  cursor: pointer;
+
+  div .arrow {
+    &:after {
+      content: " ";
+      position: absolute;
+      top: -20px; // we account for the PopperContainer padding
+      left: 0;
+      transform: rotate(45deg);
+      width: 20px;
+      height: 20px;
+      background-color: transparent;
+    }
+    &:active {
+      background-color: red;
+      span {
+        color: ${props => props.theme.colors.baseWhite};
+      }
+    }
+  }
+
+  div div {
+    background: ${props => props.theme.colors.subtleHiover};
+    padding-top: 3px;
+
+    div {
+      li {
+        &:hover {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+  div {
+    color: white;
+    padding: 0;
+  }
+`;
+
+const StyledSearchSelect = styled(SearchSelect)`
+  .div * {
+    background-color: red;
+  }
+`;
+
 const StyledBox = styled("div")`
   ${space}
   /* remove flex and safari works....  */ 
   display: flex;
   opacity: 0.999;
 
+  position: relative;
+  z-index: 100;
+
   height: ${props =>
     props.height
       ? props.height
       : props.theme.componentStyles.input.base.height};
-
-  background-color: #f5f8f7;
+  background-color: transparent;
 
   /*
       background-color: ${props =>
@@ -112,6 +163,7 @@ const PhoneNumberField = ({ children, disabled, id, ...props }) => {
       }}
     >
       <StyledBox
+        className="styledBox"
         disabled={disabled || null}
         errorinput={inputError ? 1 : undefined}
         ref={boxRef}
@@ -157,14 +209,16 @@ const SelectField = forwardRef(
   ) => {
     const { selectId, boxRef } = useInputContext();
 
+    const theme = {
+      colors: {
+        baseWhite: "blue",
+      },
+    };
+
     return (
-      <div
-        style={{
-          display: "inline-block",
-          paddingTop: "3px",
-        }}
-      >
-        <SearchSelect
+      <StyledDiv>
+        <StyledSearchSelect
+          theme={theme}
           id={selectId}
           name={selectId}
           defaultValue={defaultValue}
@@ -179,7 +233,7 @@ const SelectField = forwardRef(
           ref={ref}
           {...props}
         />
-      </div>
+      </StyledDiv>
     );
   },
 );

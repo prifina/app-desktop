@@ -29,4 +29,6 @@ export { default as ConfirmAuth } from "./components/ConfirmAuth";
 export { default as ForgotPassword } from "./components/ForgotPassword";
 export { default as RecoverUsername } from "./components/RecoverUsername";
 
+export { default as FinalizingAccount } from "./components/FinalizingAccount";
+
 export { default as SimpleProgress } from "./components/SimpleProgress";
