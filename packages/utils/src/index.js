@@ -32,3 +32,6 @@ export { default as RecoverUsername } from "./components/RecoverUsername";
 export { default as FinalizingAccount } from "./components/FinalizingAccount";
 
 export { default as SimpleProgress } from "./components/SimpleProgress";
+
+
+export { default as useComponentFlagList } from "./lib/hooks/UseComponentFlagList";

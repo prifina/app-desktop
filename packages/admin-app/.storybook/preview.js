@@ -1,7 +1,7 @@
 import React from "react";
 import { ThemeProvider, theme } from "@blend-ui/core";
 
-import { addDecorator, addParameters } from "@storybook/react";
+//import { addDecorator, addParameters } from "@storybook/react";
 
 import { BrowserRouter as Router, MemoryRouter, } from 'react-router-dom';
 
@@ -19,11 +19,33 @@ const mergedTheme = mergeDeep(theme, newTheme);
 //import { BrowserRouter as Router,  MemoryRouter ,} from 'react-router-dom';
 // console.log("PREV ", theme);
 
+const withTheme = (StoryFn) => {
+  return (
+    <ThemeProvider theme={mergedTheme}>
+      <StoryFn />
+    </ThemeProvider>
+  );
+};
+
+/*
+export const withTheme = (StoryFn) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <StoryFn />
+    </ThemeProvider>
+  );
+};
+
+export const decorators = [withTheme];
+*/
+
+/*
 const themeProviderDecorator = (story) => (
   <ThemeProvider mobileApp={false} theme={mergedTheme}>{story()}</ThemeProvider>
 );
+*/
 //<React.Fragment>{story()}</React.Fragment>
-addDecorator(themeProviderDecorator);
+//addDecorator(themeProviderDecorator);
 
 export const parameters = {
   /* 
@@ -40,7 +62,7 @@ export const parameters = {
     },
   },
 };
-export const decorators = [
+export const decorators = [withTheme,
   (Story) => (
     <MemoryRouter initialEntries={["/"]}>
       <Story />

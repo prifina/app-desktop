@@ -121,7 +121,7 @@ dist
 # production
 /build
 
-#/backup
+/backup
 /x.storybook
 /storybook-static
 
