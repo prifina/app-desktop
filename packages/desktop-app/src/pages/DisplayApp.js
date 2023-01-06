@@ -14,7 +14,7 @@ import * as C from "./display-app/components";
 
 import { i18n, getAthenaResults, Navbar, updatePrifinaUserMutation, useIsMountedRef } from "@prifina-apps/utils";
 
-import { ReactComponent as DisplayAppLogo } from "../assets/display-app-logo.svg";
+import DisplayAppLogo from "../assets/display-app-logo";
 
 import PropTypes from "prop-types";
 

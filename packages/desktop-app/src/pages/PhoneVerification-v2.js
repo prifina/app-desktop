@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 
-import { ReactComponent as Phone } from "../assets/phone.svg";
+//import { ReactComponent as Phone } from "../assets/phone.svg";
+import Phone from "../assets/phone";
 
 import { useTranslate, } from "@prifina-apps/utils";
 
-import { useStore } from "../stores/PrifinaStore";
+//import { useStore } from "../stores/PrifinaStore";
+
 import VerificationField from "../components/VerificationField";
 import PropTypes from "prop-types";
 
@@ -18,7 +20,6 @@ const initTexts = (t) => {
 const PhoneVerification = ({ invalidLink, backClick, verifyClick, resendClick, ...props }) => {
   //const { nextStepAction, currentUser } = useAccountContext();
 
-  const setActiveIndex = useStore(state => state.setActiveIndex);
   const { __ } = useTranslate();
   const inputRef = useRef();
   const verificationOptions = { toast: true, txt: {} };
@@ -27,9 +28,6 @@ const PhoneVerification = ({ invalidLink, backClick, verifyClick, resendClick, .
   const [inputIsValid, setInputIsValid] = useState(false);
   //const inputState = [inputIsValid, setInputIsValid];
 
-  useEffect(() => {
-    setActiveIndex(3);
-  }, []);
 
   const inputState = (input) => {
     console.log("VERIFICATION STATUS ", input);

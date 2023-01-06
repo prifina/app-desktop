@@ -1,13 +1,18 @@
 import React from "react";
-import { ReactComponent as Settings } from "../assets/settings.svg";
+//import { ReactComponent as Settings } from "../assets/settings.svg";
+import Settings from "../assets/settings";
 import AppIcon from "./AppIcon";
 
-import { i18n } from "@prifina-apps/utils";
-i18n.init();
+import { useTranslate } from "@prifina-apps/utils";
+//import { i18n } from "@prifina-apps/utils";
+//i18n.init();
 
-const SettingsIcon = () => (
-  <AppIcon title={i18n.__("Settings")} icon={Settings} />
-);
+const SettingsIcon = () => {
+  const { __ } = useTranslate();
+  return (
+    <AppIcon title={__("Settings")} icon={Settings} />
+  )
+}
 
 SettingsIcon.displayName = "Settings";
 export default SettingsIcon;

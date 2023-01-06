@@ -4,22 +4,25 @@ import {
   Box,
   Text,
   Button,
-  Image,
   Divider,
   useTheme,
 } from "@blend-ui/core";
 
-import { i18n, useAppContext } from "@prifina-apps/utils";
+//import { i18n, useAppContext } from "@prifina-apps/utils";
 
-i18n.init();
+import { useTranslate } from "@prifina-apps/utils";
 
 import config from "../config";
 
 import styled from "styled-components";
 
-import prifinaIcon from "../assets/prifina-icon.svg";
-import infinityIcon from "../assets/infinity-icon.svg";
-import dataCloudIcon from "../assets/data-console.svg";
+import shallow from "zustand/shallow";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+import PrifinaIcon from "../assets/prifina-icon";
+import InfinityIcon from "../assets/infinity-icon";
+import DataCloudIcon from "../assets/data-console";
 
 const PageContainer = styled(Flex)`
   width: 100vw;
@@ -61,12 +64,28 @@ const Disclaimer = styled(Flex)`
   align-items: center;
 `;
 
+const HeaderImage = () => <ImageFlex>
+  <PrifinaIcon />
+  <InfinityIcon />
+  <DataCloudIcon />
+</ImageFlex>
+
 const DevConsole = props => {
   console.log("DEV CONSOLE PROPS ", props);
 
   const { colors } = useTheme();
-  const { currentUser } = useAppContext();
-  console.log("USER GROUP", currentUser.group);
+  const { __ } = useTranslate();
+
+  const { user } = useStore(
+    state => ({
+      user: state.user
+
+    }),
+    shallow,
+  );
+
+  //const { currentUser } = useAppContext();
+  console.log("USER GROUP", user.group);
 
   function setCookie(cname, cvalue) {
     let d = new Date();
@@ -87,7 +106,7 @@ const DevConsole = props => {
     return "";
   }
   const cookieString = getCookie("developerAccount");
-  const groupCheck = currentUser.group.indexOf("DEV");
+  const groupCheck = user.group.indexOf("DEV");
 
   return (
     <>
@@ -95,13 +114,9 @@ const DevConsole = props => {
         {groupCheck === -1 && cookieString === "" ? (
           <Container>
             <Divider mt={-4}>
-              <Text textStyle={"h4"}>{i18n.__("createAppStudioAccount")}</Text>
+              <Text textStyle={"h4"}>{__("createAppStudioAccount")}</Text>
             </Divider>
-            <ImageFlex>
-              <Image src={prifinaIcon} />
-              <Image src={infinityIcon} />
-              <Image src={dataCloudIcon} />
-            </ImageFlex>
+            <HeaderImage />
             <Callout>
               <Text
                 mb={16}
@@ -109,14 +124,14 @@ const DevConsole = props => {
                 fontWeight="semiBold"
                 color={colors.brandAccent}
               >
-                {i18n.__("redirectNecessary")}
+                {__("redirectNecessary")}
               </Text>
               <Text color={colors.brandAccent}>
-                {i18n.__("accountCreationText")}
+                {__("accountCreationText")}
               </Text>
             </Callout>
             <Disclaimer>
-              <Text fontSize="xs">{i18n.__("appStudioDisclaimer")}</Text>
+              <Text fontSize="xs">{__("appStudioDisclaimer")}</Text>
             </Disclaimer>
             <Flex mt={24} alignItems="center" justifyContent="space-between">
               <Button
@@ -125,7 +140,7 @@ const DevConsole = props => {
                   window.location.href = config.APP_URL;
                 }}
               >
-                {i18n.__("noThanks")}
+                {__("noThanks")}
               </Button>
               <Button
                 onClick={() => {
@@ -133,20 +148,16 @@ const DevConsole = props => {
                   window.location.href = config.DEV_URL + "/register-role";
                 }}
               >
-                {i18n.__("createAccount")}
+                {__("createAccount")}
               </Button>
             </Flex>
           </Container>
         ) : (
           <Container>
             <Divider mt={-4}>
-              <Text textStyle={"h4"}>{i18n.__("appStudioAccount")}</Text>
+              <Text textStyle={"h4"}>{__("appStudioAccount")}</Text>
             </Divider>
-            <ImageFlex>
-              <Image src={prifinaIcon} />
-              <Image src={infinityIcon} />
-              <Image src={dataCloudIcon} />
-            </ImageFlex>
+            <HeaderImage />
             <Callout>
               <Text
                 mb={16}
@@ -154,14 +165,14 @@ const DevConsole = props => {
                 fontWeight="semiBold"
                 color={colors.brandAccent}
               >
-                {i18n.__("redirectNecessary")}
+                {__("redirectNecessary")}
               </Text>
               <Text color={colors.brandAccent}>
-                {i18n.__("accountCreationText")}
+                {__("accountCreationText")}
               </Text>
             </Callout>
             <Disclaimer>
-              <Text fontSize="xs">{i18n.__("appStudioDisclaimer")}</Text>
+              <Text fontSize="xs">{__("appStudioDisclaimer")}</Text>
             </Disclaimer>
             <Flex mt={24} alignItems="center" justifyContent="space-between">
               <Button
@@ -170,14 +181,14 @@ const DevConsole = props => {
                   window.location.href = config.APP_URL;
                 }}
               >
-                {i18n.__("closeButton")}
+                {__("closeButton")}
               </Button>
               <Button
                 onClick={() => {
                   window.location.href = config.DEV_URL;
                 }}
               >
-                {i18n.__("proceedButton")}
+                {__("proceedButton")}
               </Button>
             </Flex>
           </Container>

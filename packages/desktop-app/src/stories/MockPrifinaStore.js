@@ -1,3 +1,4 @@
+import React from "react";
 import { Provider, } from "../stores/PrifinaStore";
 
 import create from 'zustand'

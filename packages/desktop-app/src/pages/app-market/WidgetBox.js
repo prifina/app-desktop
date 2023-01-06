@@ -25,8 +25,6 @@ import bxsGrid from "@iconify/icons-bx/bxs-grid";
 
 import undefinedIcon from "../../assets/app-market/undefined-icon.png";
 
-import prifinaLogo from "../../assets/prifina.svg";
-
 import { PrifinaIcon } from "../app-market/icons";
 
 i18n.init();

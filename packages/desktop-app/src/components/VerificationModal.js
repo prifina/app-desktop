@@ -13,12 +13,9 @@ import {
   Button,
   Text,
   Divider,
-  Image,
   useTheme,
   colors,
 } from "@blend-ui/core";
-
-import { API } from "aws-amplify";
 
 import { IconField } from "@blend-ui/icon-field";
 
@@ -27,29 +24,34 @@ import PropTypes from "prop-types";
 import { useToast } from "@blend-ui/toast";
 
 import {
-  i18n,
-  getVerificationQuery,
-  sendVerificationMutation,
   useFormFields,
-  updateCognitoUserMutation,
-  useAppContext,
 } from "@prifina-apps/utils";
 
-import phoneImage from "../assets/settings-app/phone.svg";
-import emailImage from "../assets/settings-app/email.svg";
+//import phoneImage from "../assets/settings-app/phone.svg";
+//import emailImage from "../assets/settings-app/email.svg";
+import PhoneImage from "../assets/settings-app/Phone";
+//import EmailImage from "../assets/settings-app/Email";
+
 
 import bxKey from "@iconify/icons-bx/bx-key";
 
-i18n.init();
+import { useTranslate } from "@prifina-apps/utils";
+
+//init();
 
 const VerificationModal = ({
   onClose,
-  onButtonClick,
   state,
   verificationType,
+  getVerificationQuery,
+  sendVerificationMutation,
+  updateCognitoUserMutation,
+  currentUser,
   ...props
 }) => {
-  const { currentUser } = useAppContext();
+
+  const { __ } = useTranslate();
+  //const { currentUser } = useAppContext();
   console.log("USER INFO", currentUser);
   const theme = useTheme();
 
@@ -68,7 +70,7 @@ const VerificationModal = ({
   });
 
   const updateUserEmail = () => {
-    updateCognitoUserMutation(API, "email", state.email.value).then(res => {
+    updateCognitoUserMutation("email", state.email.value).then(res => {
       alerts.success("Email changed", {});
       console.log("SUCCESS", res);
     });
@@ -77,7 +79,7 @@ const VerificationModal = ({
   const phoneNumber = state.regionCode + state.phoneNumber.value;
 
   const updateUserPhone = () => {
-    updateCognitoUserMutation(API, "phone_number", phoneNumber).then(res => {
+    updateCognitoUserMutation("phone_number", phoneNumber).then(res => {
       alerts.success("Phone number changed", {});
       console.log("SUCCESS", res);
     });
@@ -92,10 +94,10 @@ const VerificationModal = ({
         verificationFields.verificationCode,
       ].join("#");
 
-      const result = await getVerificationQuery(API, userCode);
+      const result = await getVerificationQuery(userCode);
 
       if (result.data.getVerification === null) {
-        alerts.error(i18n.__("invalidCode"), {});
+        alerts.error(__("invalidCode"), {});
         console.log("VERIFICATION FAILED", result);
       } else {
         updateUserEmail();
@@ -104,7 +106,7 @@ const VerificationModal = ({
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
-      alerts.error(i18n.__("invalidCode"), {});
+      alerts.error(__("invalidCode"), {});
     }
   };
 
@@ -117,10 +119,10 @@ const VerificationModal = ({
         verificationFields.verificationCode,
       ].join("#");
 
-      const result = await getVerificationQuery(API, userCode);
+      const result = await getVerificationQuery(userCode);
 
       if (result.data.getVerification === null) {
-        alerts.error(i18n.__("invalidCode"), {});
+        alerts.error(__("invalidCode"), {});
         console.log("VERIFICATION FAILED", result);
       } else {
         updateUserPhone();
@@ -129,7 +131,7 @@ const VerificationModal = ({
       console.log("VERIFY ", result);
     } catch (e) {
       console.log("ERR", e);
-      alerts.error(i18n.__("invalidCode"), {});
+      alerts.error(__("invalidCode"), {});
     }
   };
   console.log("verification state ", state);
@@ -141,7 +143,7 @@ const VerificationModal = ({
   const resendCodeEmail = async e => {
     try {
       await sendVerificationMutation(
-        API,
+
         "email",
         JSON.stringify({
           username: currentUser.loginUsername,
@@ -150,7 +152,7 @@ const VerificationModal = ({
           given_name: currentUser.given_name,
         }),
       );
-      alerts.info(i18n.__("emailVerificatioSent"), {});
+      alerts.info(__("emailVerificatioSent"), {});
     } catch (e) {
       console.log("ERR", e);
     }
@@ -161,7 +163,7 @@ const VerificationModal = ({
   const resendCodePhone = async e => {
     try {
       await sendVerificationMutation(
-        API,
+
         "phone",
         JSON.stringify({
           username: currentUser.loginUsername,
@@ -170,7 +172,7 @@ const VerificationModal = ({
           given_name: currentUser.given_name,
         }),
       );
-      alerts.info(i18n.__("emailVerificatioSent"), {});
+      alerts.info(__("emailVerificatioSent"), {});
     } catch (e) {
       console.log("ERR", e);
     }
@@ -206,11 +208,11 @@ const VerificationModal = ({
               justifyContent="space-between"
               alignItems="center"
               style={{
-                padding: "0px 16.5px 0px 16.5px",
+                padding: "0px",
                 width: "auto",
               }}
             >
-              <Image src={phoneImage} />
+              <PhoneImage style={{ width: "99px" }} />
               <Box ml={42}>
                 <Text fontWeight="600">Enter authentication code</Text>
                 <Text fontSize="xxs" mb={18}>
@@ -224,17 +226,17 @@ const VerificationModal = ({
                     size={"17"}
                   />
                   <IconField.InputField
-                    placeholder={i18n.__("codePropmt")}
+                    placeholder={__("codePropmt")}
                     id={"verificationCode"}
                     name={"verificationCode"}
                     onChange={handleChange}
-                    // onKeyDown={e => {
-                    //   if (e.key === "Enter") {
-                    //     checkInput(verificationFields.verificationCode);
-                    //   }
-                    // }}
-                    // ref={inputCode}
-                    // error={inputError.status}
+                  // onKeyDown={e => {
+                  //   if (e.key === "Enter") {
+                  //     checkInput(verificationFields.verificationCode);
+                  //   }
+                  // }}
+                  // ref={inputCode}
+                  // error={inputError.status}
                   />
                 </IconField>
               </Box>
@@ -277,7 +279,7 @@ const VerificationModal = ({
                       : verifyClickEmail
                   }
                 >
-                  {/* {i18n.__("declineButton")} */}
+                  {/* {__("declineButton")} */}
                   Verify
                 </Button>
               </Flex>
@@ -287,7 +289,7 @@ const VerificationModal = ({
                 colorStyle={"error"}
                 onClick={onClose}
               >
-                {i18n.__("cancelButton")}
+                {__("cancelButton")}
               </Button>
             </Box>
           </ModalFooter>
@@ -299,6 +301,11 @@ const VerificationModal = ({
 
 VerificationModal.propTypes = {
   onClose: PropTypes.func.isRequired,
-  //   onButtonClick: PropTypes.func.isRequired,
+  state: PropTypes.object,
+  verificationType: PropTypes.string,
+  getVerificationQuery: PropTypes.func,
+  sendVerificationMutation: PropTypes.func,
+  updateCognitoUserMutation: PropTypes.func,
+  currentUser: PropTypes.object
 };
 export default VerificationModal;

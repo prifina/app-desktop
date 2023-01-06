@@ -17,18 +17,16 @@ import { BlendIcon } from "@blend-ui/icons";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import {
-  getPrifinaUserQuery,
-  installWidgetMutation,
-  listAppMarketQuery,
-  listDataSourcesQuery,
   SidebarMenu,
   Navbar,
-  i18n,
+  useTranslate
 } from "@prifina-apps/utils";
+
 
 import PropTypes from "prop-types";
 
-i18n.init();
+import shallow from "zustand/shallow";
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 import * as C from "./app-market/components";
 import DataSourceModal from "./app-market/DataSourceModal";
@@ -39,17 +37,23 @@ import config from "../config";
 
 //assets
 import { PrifinaLogo } from "../components/PrifinaLogo";
-import appMarketBanner from "../assets/app-market/app-market-banner.svg";
-import useHeldDataImage from "../assets/app-market/user-held-data.svg";
+//import appMarketBanner from "../assets/app-market/app-market-banner.svg";
+//import useHeldDataImage from "../assets/app-market/user-held-data.svg";
+import AppMarketBanner from "../assets/app-market/AppMarketBanner";
+import UseHeldDataImage from "../assets/app-market/UserHeldData";
+
 //dataSource icons
-import ouraIcon from "../assets/app-market/oura-icon.svg";
-import dataSourceIcon from "../assets/app-market/data-source-icon.svg";
+//import ouraIcon from "../assets/app-market/oura-icon.svg";
+//import dataSourceIcon from "../assets/app-market/data-source-icon.svg";
+
+import OuraIcon from "../assets/app-market/OuraIcon";
+import DataSourceIcon from "../assets/app-market/DataSourceIcon";
 //icons
 import bxsCheckCircle from "@iconify/icons-bx/bxs-check-circle";
 import bxsXCircle from "@iconify/icons-bx/bxs-x-circle";
 import lefArrow from "@iconify/icons-bx/bxs-chevron-left";
 //menuIcons
-import appMenu from "@iconify/icons-fe/app-menu";
+import AppMenu from "@iconify/icons-fe/app-menu";
 import bxsWidget from "@iconify/icons-bx/bxs-widget";
 import bxMinusBack from "@iconify/icons-bx/bx-minus-back";
 
@@ -59,15 +63,33 @@ import mdiSort from "@iconify/icons-mdi/sort";
 
 import { PrifinaIcon } from "./app-market/icons";
 
-import { ReactComponent as AppMarketLogo } from "../assets/app-market/app-market-logo.svg";
+//import { ReactComponent as AppMarketLogo } from "../assets/app-market/app-market-logo.svg";
+import AppMarketLogo from "../assets/app-market/AppMarketLogo";
 
 const propTest = props => {
   console.log("PROP TEST ", props);
   return null;
 };
 
-const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
+const AppMarket = ({ prifinaID, ...props }) => {
   console.log("APP MARKET PROPS ", props);
+
+
+  const { __ } = useTranslate();
+
+  const { user, listDataSourcesQuery, getPrifinaUser,
+    installWidgetMutation,
+    listAppMarketQuery, getRequestTokenQuery } = useStore(
+      state => ({
+        user: state.user,
+        listDataSourcesQuery: state.listDataSourcesQuery,
+        getPrifinaUser: state.getPrifinaUser,
+        installWidgetMutation: state.installWidgetMutation,
+        listAppMarketQuery: state.listAppMarketQuery,
+        getRequestTokenQuery: state.getRequestTokenQuery
+      }),
+      shallow,
+    );
 
   const widgets = useRef({});
   const [installedWidgets, setInstalledWidgets] = useState([]);
@@ -87,11 +109,11 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   const userDataSources = useRef({});
 
   const dataSourceIcons = {
-    oura: ouraIcon,
-    API: dataSourceIcon,
-    fitbit: dataSourceIcon,
-    garmin: dataSourceIcon,
-    "google-timeline": dataSourceIcon,
+    oura: OuraIcon,
+    API: DataSourceIcon,
+    fitbit: DataSourceIcon,
+    garmin: DataSourceIcon,
+    "google-timeline": DataSourceIcon,
   };
 
   const [isLoading, setIsLoading] = useState(true);
@@ -100,30 +122,34 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
   const [filteredWidgets, setFilteredWidgets] = useState({});
 
+  const effectCalled = useRef(false);
   useEffect(() => {
     async function init() {
-      const apps = await listAppMarketQuery(GraphQLClient, {
+
+      effectCalled.current = true;
+
+      const apps = await listAppMarketQuery({
         filter: { appType: { lt: 4 } },
       });
 
       console.log("APPLICATIONS", apps);
 
-      const prifinaUser = await getPrifinaUserQuery(GraphQLClient, prifinaID);
+      const prifinaUser = getPrifinaUser();
       if (
-        prifinaUser.data.getPrifinaUser.hasOwnProperty("dataSources") &&
-        prifinaUser.data.getPrifinaUser.dataSources !== null
+        prifinaUser.hasOwnProperty("dataSources") &&
+        prifinaUser.dataSources !== null
       ) {
         //
         //console.log(typeof prifinaUser.data.getPrifinaUser.dataSources);
         //console.log("INIT USER DATASOURCES...", prifinaUser.data.getPrifinaUser);
         userDataSources.current = JSON.parse(
-          prifinaUser.data.getPrifinaUser.dataSources,
+          prifinaUser.dataSources,
         );
       } else {
         userDataSources.current = {};
       }
       // filter sourceType===1 only oauth based datasources...
-      const dataSources = await listDataSourcesQuery(GraphQLClient, {
+      const dataSources = await listDataSourcesQuery({
         filter: { sourceType: { gt: 0 } },
       });
       //console.log("AVAILABLE DATASOURCES ", dataSources);
@@ -132,7 +158,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
       let dataSourceModules = {};
       Object.keys(availableDataSources.current).forEach(s => {
-        if (availableDataSources.current[s].modules !== null) {
+        if (availableDataSources.current[s].modules !== null && availableDataSources.current[s]?.modules) {
           for (
             let m = 0;
             m < availableDataSources.current[s].modules.length;
@@ -145,7 +171,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
           }
         }
       });
-
+      console.log("AVAILABLE DATASOURCES MODULES ", dataSourceModules);
       let widgetData = apps.data.listAppMarket.items;
       console.log("WIDGET DATA", widgetData);
 
@@ -235,11 +261,11 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
       console.log("AVAILABLE WIDGETS ", availableWidgets);
       let currentInstalled = [];
       if (
-        prifinaUser.data.getPrifinaUser.hasOwnProperty("installedWidgets") &&
-        prifinaUser.data.getPrifinaUser.installedWidgets !== null
+        prifinaUser.hasOwnProperty("installedWidgets") &&
+        prifinaUser.installedWidgets !== null
       ) {
         const installedWidgets = JSON.parse(
-          prifinaUser.data.getPrifinaUser.installedWidgets,
+          prifinaUser.installedWidgets,
         );
         installedWidgets.forEach(w => {
           if (availableWidgets.hasOwnProperty(w.id)) {
@@ -274,7 +300,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 
       setIsLoading(false);
     }
-    init();
+    if (!effectCalled.current) {
+      init();
+    }
 
     return () => {
       widgets.current = {};
@@ -288,7 +316,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   const installWidget = (e, id, settings) => {
     console.log("CLICK ", id);
 
-    installWidgetMutation(GraphQLClient, prifinaID, {
+    installWidgetMutation(prifinaID, {
       id: id,
       settings: settings,
       index: -1,
@@ -343,7 +371,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         <Flex alignItems="center">
           <BlendIcon iconify={bxsXCircle} color={"#ADADAD"} size="16px" />
           <Text marginLeft="8px" color={colors.textMuted} fontSize="sm">
-            {i18n.__("noneNeeded")}
+            {__("noneNeeded")}
           </Text>
         </Flex>
       );
@@ -374,7 +402,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         <Flex alignItems="center">
           <BlendIcon iconify={bxsXCircle} color={"#ADADAD"} size="16px" />
           <Text marginLeft="8px" color={colors.textMuted} fontSize="sm">
-            {i18n.__("noneNeeded")}
+            {__("noneNeeded")}
           </Text>
         </Flex>
       );
@@ -404,7 +432,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
         <Flex alignItems="center">
           <BlendIcon iconify={bxsXCircle} color={"#ADADAD"} size="16px" />
           <Text marginLeft="8px" color={colors.textMuted} fontSize="sm">
-            {i18n.__("noneNeeded")}
+            {__("noneNeeded")}
           </Text>
         </Flex>
       );
@@ -414,7 +442,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
   const items = [
     {
       label: "Marketplace",
-      icon: appMenu,
+      IconImage: AppMenu,
       onClick: () => {
         setStep(0);
       },
@@ -616,13 +644,13 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                 width="480px"
               >
                 <Text textStyle="h3" mb="24px">
-                  {i18n.__("dataOnYourSide")}
+                  {__("dataOnYourSide")}
                 </Text>
                 <Text fontSize="md" color="#4D5150">
-                  {i18n.__("appMarketText")}
+                  {__("appMarketText")}
                 </Text>
               </Flex>
-              <Image id="appMarket-banner" src={appMarketBanner} />
+              <AppMarketBanner id="appMarket-banner" />
             </Flex>
             <Box mt={"50px"} ml={"64px"} mr={"34px"}>
               {!isLoading ? (
@@ -721,7 +749,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
               onClose={setAddingDataSource}
               dataSourceItems={widgets.current[selectedWidgetIndex].dataSources}
               selectedDataSourceIndex={addingDataSource}
-              GraphQLClient={GraphQLClient}
+              getRequestTokenQuery={getRequestTokenQuery}
               prifinaID={prifinaID}
             />
           )}
@@ -746,7 +774,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                 }}
               >
                 <BlendIcon iconify={lefArrow} size="12px" />
-                {i18n.__("widgetsDirectory")}
+                {__("widgetsDirectory")}
               </C.TextButton>
             </Flex>
             {widgets.current[selectedWidgetIndex].appType !== 3 ? (
@@ -792,7 +820,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                           <Text fontSize="xl" bold marginRight="24px">
                             {widgets.current[selectedWidgetIndex].title}
                           </Text>
-                          <C.Badge>{i18n.__("widget")}</C.Badge>
+                          <C.Badge>{__("widget")}</C.Badge>
                         </Flex>
                         <Flex paddingTop="8px">
                           <Text
@@ -810,17 +838,17 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                     </Flex>
                     <Flex alt="rightSide">
                       <Button variation="outline" id="reportBugButton">
-                        {i18n.__("reportBug")}
+                        {__("reportBug")}
                       </Button>
                       <Button
                         variation="outline"
                         id="supportButton"
                         marginLeft="16px"
                       >
-                        {i18n.__("support")}
+                        {__("support")}
                       </Button>
                       {widgets.current[selectedWidgetIndex].installed ===
-                      false ? (
+                        false ? (
                         <Button
                           id="installButton"
                           marginLeft="16px"
@@ -832,7 +860,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                             );
                           }}
                         >
-                          {i18n.__("install")}
+                          {__("install")}
                         </Button>
                       ) : (
                         <Button
@@ -844,7 +872,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                             );
                           }}
                         >
-                          {i18n.__("view")}
+                          {__("view")}
                         </Button>
                       )}
                     </Flex>
@@ -862,10 +890,10 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                     >
                       <TabList>
                         <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
-                          <Text>{i18n.__("widgetDetails")}</Text>
+                          <Text>{__("widgetDetails")}</Text>
                         </Tab>
                         <Tab style={{ paddingLeft: 30, paddingRight: 30 }}>
-                          <Text>{i18n.__("dataRequirements")}</Text>
+                          <Text>{__("dataRequirements")}</Text>
                         </Tab>
                       </TabList>
                       <TabPanelList style={{ backgroundColor: null }}>
@@ -900,7 +928,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                     fontSize="xxs"
                                     color="#00A3C4"
                                   >
-                                    {i18n.__("userHeld")}
+                                    {__("userHeld")}
                                   </Box>
                                 </Flex>
                                 <Text fontSize="xs" color={colors.textMuted}>
@@ -922,35 +950,35 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                   justifyContent="space-between"
                                 >
                                   <C.Card
-                                    title={i18n.__("dataTypes")}
+                                    title={__("dataTypes")}
                                     value={
                                       widgets.current[selectedWidgetIndex]
                                         ?.dataTypes
                                     }
                                   />
                                   <C.Card
-                                    title={i18n.__("category")}
+                                    title={__("category")}
                                     value={
                                       widgets.current[selectedWidgetIndex]
                                         .category
                                     }
                                   />
                                   <C.Card
-                                    title={i18n.__("deviceSupport")}
+                                    title={__("deviceSupport")}
                                     value={
                                       widgets.current[selectedWidgetIndex]
                                         .deviceSupport
                                     }
                                   />
                                   <C.Card
-                                    title={i18n.__("languages")}
+                                    title={__("languages")}
                                     value={
                                       widgets.current[selectedWidgetIndex]
                                         .languages
                                     }
                                   />
                                   <C.Card
-                                    title={i18n.__("ageAppropriate")}
+                                    title={__("ageAppropriate")}
                                     value={
                                       widgets.current[selectedWidgetIndex].age
                                     }
@@ -972,7 +1000,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                     fontSize="sm"
                                     marginBottom="8px"
                                   >
-                                    {i18n.__("features")}
+                                    {__("features")}
                                   </Text>
                                   <C.OrderedList>
                                     {widgets.current[
@@ -1032,7 +1060,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                               >
                                 <Flex alignItems="center" marginBottom="13px">
                                   <Text marginRight="24px" fontSize="18px">
-                                    {i18n.__("dataRequirements")}
+                                    {__("dataRequirements")}
                                   </Text>
                                   {/* temproray */}
                                   <Box
@@ -1044,11 +1072,11 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                     fontSize="xxs"
                                     color="#00A3C4"
                                   >
-                                    {i18n.__("userHeld")}
+                                    {__("userHeld")}
                                   </Box>
                                 </Flex>
                                 <Text fontSize="sm" color={colors.textMuted}>
-                                  {i18n.__("userHeldText")}
+                                  {__("userHeldText")}
                                 </Text>
                                 <Flex
                                   justifyContent="space-between"
@@ -1061,7 +1089,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                       bold
                                       marginBottom="16px"
                                     >
-                                      {i18n.__("userDashHeld")}
+                                      {__("userDashHeld")}
                                     </Text>
                                     {userHeldData()}
                                   </Flex>
@@ -1071,7 +1099,7 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                       bold
                                       marginBottom="16px"
                                     >
-                                      {i18n.__("userDashGenerated")}
+                                      {__("userDashGenerated")}
                                     </Text>
                                     {userGeneratedData()}
                                   </Flex>
@@ -1081,16 +1109,14 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                       bold
                                       marginBottom="16px"
                                     >
-                                      {i18n.__("public")}
+                                      {__("public")}
                                     </Text>
                                     {publicData()}
                                   </Flex>
                                 </Flex>
                               </Flex>
                               <Flex alt="rightSide">
-                                <Image
-                                  //this needs further imporvement
-                                  src={useHeldDataImage}
+                                <UseHeldDataImage
                                   style={{
                                     width: "284px",
                                     height: "213px",
@@ -1111,18 +1137,22 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                               <Flex flexDirection="column" marginRight="190px">
                                 {widgets.current[selectedWidgetIndex]
                                   .dataSources.length > 0 && (
-                                  <Text color={colors.textMuted}>
-                                    {i18n.__("selectAvailableData")}
-                                  </Text>
-                                )}
+                                    <Text color={colors.textMuted}>
+                                      {__("selectAvailableData")}
+                                    </Text>
+                                  )}
                                 <Flex paddingTop="31px">
                                   {widgets.current[
                                     selectedWidgetIndex
                                   ].dataSources?.map((item, index) => {
+
+                                    const IconImage = item.icon;
+                                    //console.log("ITEM ICON ", item);
+
                                     return (
                                       <C.DataSourceButton
                                         key={"ds-" + index}
-                                        src={item.icon}
+
                                         title={item.title}
                                         installed={
                                           Object.keys(
@@ -1142,7 +1172,9 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
                                             setAddingDataSource(index);
                                           }
                                         }}
-                                      />
+                                      >
+                                        <IconImage style={{ width: "44px", height: "44px" }} />
+                                      </C.DataSourceButton>
                                     );
                                   })}
                                 </Flex>
@@ -1164,7 +1196,6 @@ const AppMarket = ({ GraphQLClient, prifinaID, ...props }) => {
 };
 
 AppMarket.propTypes = {
-  GraphQLClient: PropTypes.instanceOf(Object),
   prifinaID: PropTypes.string,
 };
 AppMarket.displayName = "AppMarket";

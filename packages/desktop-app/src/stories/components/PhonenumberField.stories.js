@@ -11,6 +11,7 @@ import { ToastContextProvider } from "@blend-ui/toast";
 
 import { MockStore } from "../MockPrifinaStore";
 
+import useComponentFlagList from "../../hooks/UseComponentFlagList";
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const defaultRegion = "+358";
@@ -72,6 +73,10 @@ const PhoneNumberFieldDecorator = (story, ctx) => {
 
   const { __ } = useTranslate();
 
+  const { selectOptions, flagsLoading } = useComponentFlagList();
+
+  const [dataReady, setDataReady] = useState(false);
+
   ctx.args.options.txt = Object.assign(ctx.args.options.txt, initTexts(__));
   ctx.args.ref = inputRef;
   ctx.args.options.toast = ctx.args.toast;
@@ -85,14 +90,35 @@ const PhoneNumberFieldDecorator = (story, ctx) => {
 
     setInputIsValid(input);
   };
+  useEffect(() => {
+    if (!flagsLoading) {
+      console.log("FLAGS ", selectOptions);
+      ctx.args.selectOptions = selectOptions;
+      /*
+      const cIndex = selectOptions.findIndex(
+        c => c.regionCode === state.countryCode,
+      );
+      if (cIndex > -1) {
+        // console.log("FOUND COUNTRY ", cIndex);
+        const defaultOption = selectOptions[cIndex].key;
+        // setDefaultRegion(defaultOption);
+        console.log("SELECT ", defaultOption)
+      }
+      */
+      setDataReady(true);
+    }
+  }, [flagsLoading])
+
   //ctx.args.boxRef = boxRef;
   /*
   ctx.args.onChange = (e, code) => {
     console.log("CODE ", code);
   }
   */
+  console.log("CTX ", ctx.args);
   return <><MockStore checkPhone={ctx.parameters.checkPhone}>
-    <div style={{ margin: "50px", width: "300px" }} >{story()}</div>
+    {!dataReady && <div>Loading...</div>}
+    {dataReady && <div style={{ margin: "50px", width: "300px" }} >{story()}</div>}
   </MockStore>
   </>
 }

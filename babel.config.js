@@ -7,7 +7,8 @@ module.exports = {
         displayName: true,
       },
     ],
-    "babel-plugin-react-docgen",
+    "@babel/plugin-syntax-jsx",
+    // "babel-plugin-react-docgen",
     // "@babel/plugin-transform-react-jsx-source"
 
   ],

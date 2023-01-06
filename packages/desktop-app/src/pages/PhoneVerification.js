@@ -3,7 +3,8 @@ import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
 import bxKey from "@iconify/icons-bx/bx-key";
-import { ReactComponent as Phone } from "../assets/phone.svg";
+//import { ReactComponent as Phone } from "../assets/phone.svg";
+import Phone from "../assets/phone";
 
 import { API } from "aws-amplify";
 

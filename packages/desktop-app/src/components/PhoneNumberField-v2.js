@@ -12,6 +12,7 @@ import bxPhone from "@iconify/icons-bx/bx-phone";
 
 import { isValidNumber, onlyDigitChars } from "@prifina-apps/utils";
 
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
 import { useStore } from "../stores/PrifinaStore";
 import PropTypes from "prop-types";
 
@@ -103,7 +104,7 @@ const PhoneNumberField = forwardRef(
     selectOptions,
     disabled, inputState, ...props }, ref) => {
 
-    console.log("OPTS ", options);
+    console.log("PHONE OPTIONS ", options, selectOptions);
     const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
 
     const boxRef = useRef();
@@ -264,11 +265,21 @@ const PhoneNumberField = forwardRef(
     }
 
     const checkPhoneNumberAttr = phoneNum => {
-      console.log("CHECKING ", phoneNum)
+      console.log("CHECKING ", phoneNum);
+      return new Promise(function (resolve, reject) {
+        checkCognitoAttributeQuery("phone_number", phoneNum).then(res => {
+          resolve(res.data.checkCognitoAttribute)
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+
+      /*
       return checkCognitoAttributeQuery(
         "phone_number",
         phoneNum
       );
+      */
     };
 
     const phoneAlert = (errorMsg) => {

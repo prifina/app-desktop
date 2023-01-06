@@ -15,12 +15,12 @@ import Home from "./Home";
 import FinalizingAccount from "./FinalizingAccount";
 
 import { ToastContextProvider } from "@blend-ui/toast";
-import { i18n, useAppContext, NotFoundPage } from "@prifina-apps/utils";
+import { NotFoundPage } from "@prifina-apps/utils";
 
 import landingImage from "../assets/landingImage.png";
-import prifinaIcon from "../assets/prifina-icon.svg";
+//import prifinaIcon from "../assets/prifina-icon.svg";
+import prifinaIcon from "../assets/prifina-icon";
 
-i18n.init();
 
 const SectionContainer = styled(Box)`
   width: 534px;

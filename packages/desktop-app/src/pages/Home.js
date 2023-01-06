@@ -5,7 +5,7 @@ import React, { useEffect, useReducer, useState, useRef } from "react";
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
 import { Box } from "@blend-ui/core";
-
+/*
 import gql from "graphql-tag";
 
 import {
@@ -13,15 +13,23 @@ import {
   getPrifinaUserQuery,
   updateUserProfileMutation,
   listAppMarketQuery,
+  getSystemNotificationCountQuery,
+
   useIsMountedRef,
   useAppContext,
   useUserMenu,
   withUsermenu,
-  getSystemNotificationCountQuery,
+  
   createClient,
 } from "@prifina-apps/utils";
 
 import { API as GRAPHQL, Auth } from "aws-amplify";
+*/
+
+import {
+  useIsMountedRef,
+  useUserMenu
+} from "@prifina-apps/utils";
 //import { useHistory } from "react-router-dom";
 
 import { useNavigate } from "react-router";
@@ -31,9 +39,12 @@ import { useNavigate } from "react-router";
 import { StyledBox, StyledBackground } from "../components/DefaultBackground";
 import { PrifinaLogo } from "../components/PrifinaLogo";
 
-import { useSpring, animated } from "react-spring";
+import shallow from "zustand/shallow";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 import PropTypes from "prop-types";
+import { prifinaApps } from "@prifina-apps/utils/src/lib/mocks/coreModels";
 
 const array_chunks = (array, chunk_size) =>
   Array(Math.ceil(array.length / chunk_size))
@@ -41,93 +52,88 @@ const array_chunks = (array, chunk_size) =>
     .map((_, index) => index * chunk_size)
     .map(begin => array.slice(begin, begin + chunk_size));
 
-const Content = ({ clientHandler, currentUser, activeUser }) => {
-  //const history = useHistory();
+const Content = ({ installedAppIcons, gridCols, prifinaApps }) => {
   const navigate = useNavigate();
-  const userMenu = useUserMenu();
 
-  console.log("CURRENT USER ", currentUser);
+  return (
+    <StyledBox>
+      <PrifinaLogo />
+      <StyledBackground id="home-styledBackground">
 
-  const isMountedRef = useIsMountedRef();
+        <Box m={8} mt={77} style={{ zIndex: 3 }}>
+          <CssGrid id="home-appsGrid" columns={gridCols} flow="column">
+            {installedAppIcons.length > 0 &&
+              installedAppIcons.map((icons, colIndex) => {
+                return icons.map((appIcon, pos) => {
+                  return (
+                    <CssCell
+                      id="home-appCell"
+                      key={"cell-" + colIndex + "-" + pos}
+                      left={installedAppIcons.length - colIndex + 1}
+                      top={icons.length - pos}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        console.log(
+                          "APP CLICK ",
+                          prifinaApps[appIcon.name].route,
+                        );
+                        navigate("/" + prifinaApps[appIcon.name].route, { replace: true });
+
+                      }}
+                    >
+                      {appIcon.component}
+                    </CssCell>
+                  );
+                });
+              })}
+          </CssGrid>
+        </Box>
+      </StyledBackground>
+    </StyledBox>
+  );
+};
+
+Content.propTypes = {
+  installedAppIcons: PropTypes.array,
+  gridCols: PropTypes.string,
+  prifinaApps: PropTypes.object
+};
+
+const Home = props => {
+
+  // const { userAuth, currentUser } = useAppContext();
+  // console.log("HOME ", currentUser);
+
+  const { user, getPrifinaUserQuery, updateUserProfileMutation,
+    setAppsyncConfig, listAppMarketQuery, getSystemNotificationCountQuery, updateUserActivityMutation,
+    setActiveUser, setPrifinaUser } = useStore(
+      state => ({
+        user: state.user,
+
+        getPrifinaUserQuery: state.getPrifinaUserQuery,
+        updateUserProfileMutation: state.updateUserProfileMutation,
+        setAppsyncConfig: state.setAppsyncConfig,
+        listAppMarketQuery: state.listAppMarketQuery,
+        getSystemNotificationCountQuery: state.getSystemNotificationCountQuery,
+        updateUserActivityMutation: state.updateUserActivityMutation,
+        setActiveUser: state.setActiveUser,
+        setPrifinaUser: state.setPrifinaUser
+      }),
+      shallow,
+    );
+
+  const effectCalled = useRef(false);
+
+  //const activeUser = useRef({});
+  const prifinaApps = useRef({});
+
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     { appIcons: [], loadingStatus: true },
   );
 
-  const prifinaApps = useRef({});
   const [installedAppIcons, setInstalledAppIcons] = useState([]);
-  const [installedApps, setInstalledApps] = useState([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      if (isMountedRef.current) {
-        const prifinaAppsData2 = await listAppMarketQuery(GRAPHQL, {
-          filter: { appType: { gt: 1 } }, // apps+core apps
-        });
-
-        console.log("APPS 2", prifinaAppsData2);
-        let prifinaAppsJSON = {};
-        prifinaAppsData2.data.listAppMarket.items.forEach(item => {
-          prifinaAppsJSON[item.id] = item;
-          if (item.appType === 3) {
-            prifinaAppsJSON[item.id].route = "system/" + item.route;
-          }
-        });
-
-        console.log(prifinaApps);
-
-        const installedAppsJSON = JSON.parse(currentUser.installedApps);
-        installedAppsJSON.forEach(app => {
-          prifinaApps.current[app] = prifinaAppsJSON[app];
-        });
-
-        const appProfile = JSON.parse(currentUser.appProfile);
-        const initials = appProfile.initials;
-
-        console.log("APP PROFILE ", appProfile);
-
-        const notificationCountResult = await getSystemNotificationCountQuery(
-          GRAPHQL,
-          {
-            filter: {
-              owner: { eq: currentUser.id },
-              status: { eq: 0 },
-            },
-          },
-        );
-
-        console.log("COUNT ", notificationCountResult);
-
-        userMenu.show({
-          initials: initials,
-          //effect: { hover: { width: 42 } },
-          notifications:
-            notificationCountResult.data.getSystemNotificationCount,
-          RecentApps: [],
-
-          PrifinaGraphQLHandler: GRAPHQL,
-          prifinaID: activeUser.uuid,
-        });
-
-        userMenu.setClientHandler(clientHandler);
-        userMenu.setActiveUser(activeUser);
-
-        console.log("USER APPSYNC ", clientHandler);
-        const updateRes = await clientHandler.mutate({
-          mutation: gql(updateActivity),
-          variables: {
-            id: currentUser.id,
-            activeApp: "Home",
-          },
-        });
-
-        console.log("READY ", updateRes);
-        setInstalledApps(installedAppsJSON);
-      }
-    }
-
-    fetchData();
-  }, [isMountedRef, currentUser.id]);
+  const userMenu = useUserMenu();
 
   useEffect(() => {
     // timeoutId for debounce mechanism
@@ -156,15 +162,110 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
   }, []);
 
   useEffect(() => {
-    if (installedApps.length > 0) {
-      const appImports = installedApps.map(app => {
+    async function init() {
+      effectCalled.current = true;
+      const currentPrifinaUser = await getPrifinaUserQuery(user.prifinaID);
+      console.log("USER ", currentPrifinaUser);
+      const currentUser = currentPrifinaUser.data.getPrifinaUser;
+      let appProfile = JSON.parse(
+        currentUser.appProfile,
+      );
+
+
+      let clientEndpoint = "";
+      let clientRegion = "";
+      /*   updateUserProfileMutation has problems... 
+      if (!appProfile.hasOwnProperty("endpoint")) {
+        const defaultProfileUpdate = await updateUserProfileMutation(user.prifinaID);
+        console.log("PROFILE UPDATE ", defaultProfileUpdate);
+        appProfile = JSON.parse(
+          defaultProfileUpdate.data.updateUserProfile.appProfile,
+        );
+      }
+      */
+
+      const activeUser = {
+        name: appProfile.name,
+        initials: appProfile.initials,
+        uuid: currentUser.id,
+        endpoint: appProfile.endpoint,
+        region: appProfile.region,
+        dataSources: currentUser.dataSources
+          ? JSON.parse(currentUser.dataSources)
+          : {},
+      };
+      setActiveUser(activeUser);
+      setPrifinaUser(currentUser);
+
+      setAppsyncConfig({
+        aws_appsync_graphqlEndpoint: appProfile.endpoint,
+        aws_appsync_region: appProfile.region
+      })
+
+      const prifinaAppsData2 = await listAppMarketQuery({
+        filter: { appType: { eq: 3 } }, // system apps
+      });
+
+      //console.log("APPS 2", prifinaAppsData2);
+      let prifinaAppsJSON = {};
+      prifinaAppsData2.data.listAppMarket.items.forEach(item => {
+        prifinaAppsJSON[item.id] = item;
+        if (item.appType === 3) {
+          prifinaAppsJSON[item.id].route = "system/" + item.route;
+        }
+      });
+
+      const installedAppsJSON = JSON.parse(currentUser.installedApps);
+      installedAppsJSON.forEach(app => {
+        prifinaApps.current[app] = prifinaAppsJSON[app];
+      });
+
+      const initials = appProfile.initials;
+
+      //console.log("APP PROFILE ", appProfile);
+
+      //console.log(prifinaApps);
+
+      const notificationCountResult = await getSystemNotificationCountQuery(
+        {
+          filter: {
+            owner: { eq: currentUser.id },
+            status: { eq: 0 },
+          },
+        },
+      );
+
+      //console.log("COUNT ", notificationCountResult);
+      const userMenuInit = {
+        initials: initials,
+        //effect: { hover: { width: 42 } },
+        notifications:
+          notificationCountResult.data.getSystemNotificationCount,
+        RecentApps: [],
+        prifinaID: currentUser.id
+      };
+      console.log("User menu init ", userMenuInit);
+      /*
+      userMenu.show(userMenuInit);
+
+      userMenu.setClientHandler(clientHandler);
+      userMenu.setActiveUser(activeUser);
+      */
+      const updateRes = await updateUserActivityMutation({
+        id: currentUser.id,
+        activeApp: "Home",
+      });
+      console.log("READY ", updateRes);
+      //setState({ installedApps: installedAppsJSON });
+
+      const appImports = installedAppsJSON.map(app => {
         return import(`../components/${app}Icon`);
       });
 
       Promise.all(appImports).then(components => {
-        console.log("COMPONENT ", components);
+        //console.log("COMPONENT ", components);
         const appComponents = components.map((Component, i) => {
-          console.log("COMPONENT NAME ", Component.default.displayName);
+          //console.log("COMPONENT NAME ", Component.default.displayName);
           return {
             component: (
               <div key={"app-" + i}>
@@ -175,11 +276,20 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
           };
         });
 
-        console.log("IMPORT APP ICONS...", appComponents);
+        //console.log("IMPORT APP ICONS...", appComponents);
         setState({ loadingStatus: false, appIcons: appComponents });
       });
+
+      //setInstalledApps(installedAppsJSON);
+
+
+      //setInitClient(true);
     }
-  }, [installedApps]);
+    if (!effectCalled.current) {
+      init();
+    }
+
+  }, [user]);
 
   const { loadingStatus, appIcons } = state;
   console.log("APP ICONS ", appIcons, appIcons.length * 100);
@@ -193,7 +303,7 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
     gridCols += " 80px".repeat(iconCols);
   }
 
-  console.log(iconCols, gridCols, appIcons.length);
+  // console.log(iconCols, gridCols, appIcons.length);
 
   let maxColHeight = Array(appIcons.length)
     .fill(0)
@@ -201,225 +311,38 @@ const Content = ({ clientHandler, currentUser, activeUser }) => {
       return i + 1;
     })
     .filter((v, i) => {
-      console.log(v, i, v * 115);
+      //console.log(v, i, v * 115);
       return v * 115 > window.innerHeight - 130;
     })[0];
-  console.log("maxColHeight... ", maxColHeight - 1);
-  console.log("CHECK ", appIcons.length > 0, installedAppIcons.length === 0);
+  //console.log("maxColHeight... ", maxColHeight - 1);
+  //console.log("CHECK ", appIcons.length > 0, installedAppIcons.length === 0);
   if (isNaN(maxColHeight)) maxColHeight = appIcons.length;
   if (appIcons.length > 0 && installedAppIcons.length === 0) {
     setInstalledAppIcons(array_chunks(appIcons, maxColHeight - 1));
   }
+  /*
   if (installedAppIcons.length > 0) {
     installedAppIcons.map((v, i) => {
       console.log(v, i);
     });
   }
+  */
   console.log("APPS ", prifinaApps.current);
-  const { opacity } = useSpring({
-    opacity: 1,
-    from: { opacity: 0 },
-    config: { duration: 3000 },
-  });
-
-  const copyInstance = obj => {
-    let copy = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
-    return copy;
-  };
-
-  return (
-    <React.Fragment>
-
-      <StyledBox>
-        <PrifinaLogo />
-        <StyledBackground id="home-styledBackground">
-          {loadingStatus && <div />}
-          {!loadingStatus && (
-            <animated.div
-              style={{ opacity: opacity.to(o => (o > 0.6 ? 1 : o)) }}
-            >
-              <Box m={8} mt={77} style={{ zIndex: 3 }}>
-                <CssGrid id="home-appsGrid" columns={gridCols} flow="column">
-                  {installedAppIcons.length > 0 &&
-                    installedAppIcons.map((icons, colIndex) => {
-                      return icons.map((appIcon, pos) => {
-                        return (
-                          <CssCell
-                            id="home-appCell"
-                            key={"cell-" + colIndex + "-" + pos}
-                            left={installedAppIcons.length - colIndex + 1}
-                            top={icons.length - pos}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                              console.log(
-                                "APP CLICK ",
-                                prifinaApps.current[appIcon.name].route,
-                              );
-                              navigate("/" + prifinaApps.current[appIcon.name].route, { replace: true });
-                              //return redirect("/" + prifinaApps.current[appIcon.name].route);
-                              //window.location.replace("/" + prifinaApps.current[appIcon.name].route);
-                              //window.location.href = "/" + prifinaApps.current[appIcon.name].route;
-                              //window.location.href = "/logout";
-                              /*
-                              history.push(
-                                "/" + prifinaApps.current[appIcon.name].route,
-                              );
-                              */
-                            }}
-                          >
-                            {appIcon.component}
-                          </CssCell>
-                        );
-                      });
-                    })}
-                </CssGrid>
-              </Box>
-            </animated.div>
-          )}
-        </StyledBackground>
-      </StyledBox>
-    </React.Fragment>
-  );
-};
-
-Content.propTypes = {
-  clientHandler: PropTypes.instanceOf(Object),
-  currentUser: PropTypes.instanceOf(Object),
-  activeUser: PropTypes.instanceOf(Object),
-};
-
-const Home = props => {
-
-  const { userAuth, currentUser } = useAppContext();
-  console.log("HOME ", currentUser);
-  const clientHandler = useRef(null);
-  const userData = useRef(null);
-
-  const [initClient, setInitClient] = useState(false);
-  const activeUser = useRef({});
-
-  const createClientx = async (endpoint, region) => {
-    console.log("CLIENT ", endpoint, region);
-
-    const _currentSession = await Auth.currentSession();
-    const token = _currentSession.getIdToken().payload;
-    const userIdPool = localStorage.getItem("LastSessionIdentityPool");
-
-    const provider = token["iss"].replace("https://", "");
-    let identityParams = {
-      IdentityPoolId: userIdPool,
-      Logins: {},
-    };
-    const idToken = _currentSession.getIdToken().getJwtToken();
-    identityParams.Logins[provider] = idToken;
-    const cognitoClient = new CognitoIdentityClient({
-      region: userIdPool.split(":")[0],
-    });
-
-    const cognitoIdentity = await cognitoClient.send(
-      new GetIdCommand(identityParams),
-    );
-
-    let credentialParams = {
-      IdentityId: cognitoIdentity.IdentityId,
-      Logins: {},
-    };
-
-    credentialParams.Logins[provider] = idToken;
-
-    const cognitoIdentityCredentials = await cognitoClient.send(
-      new GetCredentialsForIdentityCommand(credentialParams),
-    );
-    console.log("COGNITO IDENTITY CREDS ", cognitoIdentityCredentials);
-    const clientCredentials = {
-      identityId: cognitoIdentity.IdentityId,
-      accessKeyId: cognitoIdentityCredentials.Credentials.AccessKeyId,
-      secretAccessKey: cognitoIdentityCredentials.Credentials.SecretKey,
-      sessionToken: cognitoIdentityCredentials.Credentials.SessionToken,
-      expiration: cognitoIdentityCredentials.Credentials.Expiration,
-      authenticated: true,
-    };
-
-    const client = new AWSAppSyncClient({
-      url: endpoint,
-      region: region,
-      auth: {
-        type: AUTH_TYPE.AWS_IAM,
-        credentials: clientCredentials,
-      },
-      disableOffline: true,
-    });
-    return Promise.resolve(client);
-  };
-
-  useEffect(() => {
-
-    async function init() {
-      if (Object.keys(currentUser).length > 0) {
-        const currentPrifinaUser = await getPrifinaUserQuery(
-          GRAPHQL,
-          currentUser.prifinaID,
-        );
-
-        let appProfile = JSON.parse(
-          currentPrifinaUser.data.getPrifinaUser.appProfile,
-        );
-
-        let clientEndpoint = "";
-        let clientRegion = "";
-
-        if (!appProfile.hasOwnProperty("endpoint")) {
-          const defaultProfileUpdate = await updateUserProfileMutation(
-            GRAPHQL,
-            currentUser.prifinaID,
-          );
-          console.log("PROFILE UPDATE ", defaultProfileUpdate);
-          appProfile = JSON.parse(
-            defaultProfileUpdate.data.updateUserProfile.appProfile,
-          );
-        }
-        clientEndpoint = appProfile.endpoint;
-        clientRegion = appProfile.region;
-
-        const _currentSession = await Auth.currentSession();
-
-        const client = await createClient(
-          clientEndpoint,
-          clientRegion,
-          _currentSession,
-        );
-
-        userData.current = currentPrifinaUser.data.getPrifinaUser;
-
-        activeUser.current = {
-          name: appProfile.name,
-          uuid: currentUser.prifinaID,
-          endpoint: clientEndpoint,
-          region: clientRegion,
-        };
-
-        clientHandler.current = client;
-        setInitClient(true);
-      }
-    }
-    init();
-
-  }, [currentUser]);
-
   return (
     <>
-      {initClient && (
+      {!loadingStatus && (
         <Content
-          clientHandler={clientHandler.current}
-          currentUser={userData.current}
-          activeUser={activeUser.current}
+          installedAppIcons={installedAppIcons}
+          gridCols={gridCols}
+          prifinaApps={prifinaApps.current}
         />
       )}
-      {!initClient && <div />}
+      {loadingStatus && <div />}
     </>
   );
 };
 
 Home.displayName = "Home";
 
-export default withUsermenu()(Home);
+//export default withUsermenu()(Home);
+export default Home;

@@ -31,7 +31,7 @@ const mergeRefs = (...refs) => {
 };
 
 const PasswordField = forwardRef(
-  ({ options, inputState, ...props }, ref) => {
+  ({ options, inputState, initState = true, ...props }, ref) => {
 
 
     //({ placeholder, addPopper = false, verifications = [], ...props }, ref) => {
@@ -53,7 +53,7 @@ const PasswordField = forwardRef(
     const [hidePassword, setHidePassword] = useState(true);
 
     //const [isPassword, setIsPassword] = inputState;
-    const [isValid, setIsValid] = useState(true)
+    const [isValid, setIsValid] = useState(initState)
 
     // possibly dynamic change of messages
     const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
@@ -61,7 +61,7 @@ const PasswordField = forwardRef(
 
     const [password, setPassword] = useState("")
     const [showPopup, setShowPopup] = useState(false);
-
+    /*
     useEffect(() => {
       //inputState(isPhoneNumber.current);
       console.log("UPDATE ", isValid, ref.current);
@@ -69,6 +69,17 @@ const PasswordField = forwardRef(
         inputState(ref.current)
       }
     }, [isValid]);
+    */
+
+    useEffect(() => {
+
+      if (initState !== isValid) {
+
+        setIsValid(initState);
+      }
+
+    }, [initState]);
+
     const onHide = e => {
       e.preventDefault();
       setShowPopup(true);
@@ -98,7 +109,12 @@ const PasswordField = forwardRef(
       console.log("OPTIONS ", options);
 
       if (options?.accountPassword) {
-        if (password !== options.accountPassword()) {
+        const comparePasswd = options.accountPassword();
+        if ((password !== comparePasswd && comparePasswd.length === password.length) || password.length > comparePasswd.length) {
+          invalidPasswordStatus = true;
+        }
+        // this is Enter & Blur check.... 
+        if (!invalidPasswordStatus && showAlert && password.length < comparePasswd.length) {
           invalidPasswordStatus = true;
         }
         invalidPassword = options.txt.invalidEntry;
@@ -221,7 +237,8 @@ PasswordField.displayName = "PasswordField";
 
 PasswordField.propTypes = {
   options: PropTypes.object.isRequired,
-  inputState: PropTypes.func
+  inputState: PropTypes.func,
+  initState: PropTypes.bool
 
 };
 

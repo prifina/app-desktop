@@ -359,10 +359,22 @@ export const TextButton = styled(Button)`
     color: grey !important;
   }
 `;
-
+/*
 export const DataSourceButton = styled.img`
   width: 44px;
   height: 44px;
+  border-radius: 8.80208px;
+  border: 0;
+  margin-right: 5px;
+  &:active {
+    opacity: 0.5;
+  }
+  cursor: pointer;
+  opacity: ${props => (props.installed ? 0.2 : 1)};
+`;
+*/
+export const DataSourceButton = styled.span`
+ 
   border-radius: 8.80208px;
   border: 0;
   margin-right: 5px;

@@ -3,7 +3,7 @@ import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 
 import bxKey from "@iconify/icons-bx/bx-key";
-import { ReactComponent as Email } from "../assets/email-envelope.svg";
+import Email from "../assets/email-envelope";
 
 import { API } from "aws-amplify";
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Flex, Text, Button, Image } from "@blend-ui/core";
+import { Flex, Text, Button, } from "@blend-ui/core";
 
 import PropTypes from "prop-types";
 
@@ -33,7 +33,7 @@ const Badge = styled.span`
 export const SourceCard = ({ items, ...props }) => (
   <>
     {items.map(
-      ({ id, image, title, category, description, children, ...rest }) => (
+      ({ id, IconImage, title, category, description, children, ...rest }) => (
         <SourceCardContainer>
           <Flex>
             <Flex
@@ -51,7 +51,7 @@ export const SourceCard = ({ items, ...props }) => (
                 mb={4}
                 position="relative"
               >
-                <Image src={image} width="56px" />
+                <IconImage style={{ width: "56px" }} />
                 <Badge>+</Badge>
               </Flex>
 

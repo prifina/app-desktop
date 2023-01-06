@@ -21,10 +21,11 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.15.4",
-    "@babel/core": "^7.17.8",
+    "@babel/core": "^7.20.7",
     "@babel/eslint-parser": "^7.17.0",
+    "@babel/plugin-syntax-jsx": "^7.18.6",
     "@babel/plugin-transform-react-jsx-source": "^7.18.6",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.14.5",
     "@notionhq/client": "^1.0.4",
     "@storybook/addon-actions": "^6.5.12",
@@ -40,16 +41,19 @@
     "@storybook/test-runner": "^0.4.0",
     "@storybook/testing-library": "^0.0.13",
     "@styled-system/prop-types": "^5.1.5",
+    "@svgr/cli": "^6.5.1",
     "babel-jest": "^27.1.1",
-    "babel-loader": "^8.2.2",
+    "babel-loader": "^9.1.0",
     "babel-plugin-react-docgen": "^4.2.1",
     "babel-plugin-styled-components": "^2.0.7",
     "copy-webpack-plugin": "^11.0.0",
     "msw": "^0.47.4",
     "msw-storybook-addon": "^1.6.3",
+    "null-loader": "^4.0.1",
     "progress-bar-webpack-plugin": "^2.1.0",
     "prop-types": "^15.8.1",
     "storybook-module-federation": "^0.6.2",
+    "url-loader": "^4.1.1",
     "webpack-bundle-analyzer": "^4.6.1"
   },
   "dependencies": {
@@ -123,5 +127,20 @@
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-syntax-jsx",
+      [
+        "babel-plugin-styled-components",
+        {
+          "displayName": true
+        }
+      ]
+    ]
   }
 }

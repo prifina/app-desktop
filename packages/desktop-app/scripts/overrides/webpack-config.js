@@ -48,6 +48,45 @@ const override = config => {
   config.devtool = 'eval-cheap-module-source-map';
 
   config.output.clean = true;
+  // seems babel 9 & webpack5 requires this babel-loader... 
+  config.module.rules = [
+    {
+      // Test for a polyfill (or any file) and it won't be included in your
+      // bundle
+      //test: path.resolve(__dirname, 'node_modules/library/polyfill.js'),
+      test: /\.(tro|1js)$/,
+      use: 'null-loader',
+    },
+    {
+      test: /\.(jpg|png)$/,
+      use: {
+        loader: 'url-loader',
+      },
+    },
+    {
+      test: /\.m?js$/,
+      exclude: [/node_modules/],
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            ['@babel/preset-env', { targets: "defaults" }], "@babel/preset-react"
+          ]
+        }
+      }
+    }
+  ]
+  /*
+    config.module = {
+      rules: [{
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        }
+      }]
+    };
+    */
   return config;
 };
 

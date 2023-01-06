@@ -86,7 +86,7 @@ export const getAddressBook = `query addressBook($id: String!) {
   }
 }`;
 
-export const listNotificationsByDate = `query listNotifications($owner: String!,$filter:TableNotificationByDateFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+export const listNotificationsByDate = `query listNotificationsByDate($owner: String!,$filter:TableNotificationByDateFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
   listNotificationsByDate(owner: $owner, filter: $filter,sortDirection:$sortDirection,limit:$limit,nextToken:$nextToken) {
     items {
       body
@@ -223,7 +223,7 @@ export const getSystemNotificationCount = `query systemNotificationCount($filter
   getSystemNotificationCount(filter: $filter)
 }`;
 
-export const listSystemNotificationsByDate = `query listSystemNotifications($owner: String!,$filter:TableNotificationByDateFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
+export const listSystemNotificationsByDate = `query listSystemNotificationsByDate($owner: String!,$filter:TableNotificationByDateFilterInput,$sortDirection:String,$limit:Int,$nextToken:String) {
   listSystemNotificationsByDate(owner: $owner, filter: $filter,sortDirection:$sortDirection,limit:$limit,nextToken:$nextToken) {
     items {
       body

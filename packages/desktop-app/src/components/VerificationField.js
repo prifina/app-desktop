@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect, useRef } from "react";
+import React, { useState, forwardRef, useEffect, useCallback } from "react";
 //import { Text, Box, useTheme } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 import { useToast } from "@blend-ui/toast";
@@ -15,17 +15,17 @@ import PropTypes from "prop-types";
 
 
 const VerificationField = forwardRef(
-  ({ options, inputState, ...props }, ref) => {
+  ({ options, inputState, initState = true, ...props }, ref) => {
 
 
-    console.log("OPTIONS ", options, inputState)
+    // console.log("OPTIONS ", options, inputState, ref.current?.dataset, initState)
 
     //const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
     const alerts = useToast();
     //const [isValid, setIsValid] = useState(true);
 
     // const [isCode, setIsCode] = inputState;
-    const [isValid, setIsValid] = useState(true)
+    const [isValid, setIsValid] = useState(initState)
 
     // possibly dynamic change of messages
     const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
@@ -33,6 +33,7 @@ const VerificationField = forwardRef(
 
     const [verificationCode, setVerificationCode] = useState("")
 
+    /*
     useEffect(() => {
       //inputState(isPhoneNumber.current);
       console.log("UPDATE ", isValid, ref.current);
@@ -40,6 +41,18 @@ const VerificationField = forwardRef(
         inputState(ref.current)
       }
     }, [isValid]);
+    */
+
+
+    // weird,... initState update didn't trigger component render... 
+    useEffect(() => {
+
+      if (initState !== isValid) {
+        //   console.log("SET IS VALID ", initState);
+        setIsValid(initState);
+      }
+
+    }, [initState]);
 
     const handleChange = (e) => {
       const entry = e.target.value;
@@ -114,9 +127,9 @@ const VerificationField = forwardRef(
         if ((verificationCode.length === 6 && codeLength >= 6) || (verificationCode.length < codeLength && codeLength === 6)) {
           //console.log("IS CODE ", verificationCode.length, codeLength);
           //setIsCode(true);
-          if (isValid) {
-            inputState(ref.current);
-          }
+          //if (isValid) {
+          inputState(ref.current);
+          //}
           setIsValid(true);
         } else {
           //setIsCode(false);
@@ -147,6 +160,7 @@ const VerificationField = forwardRef(
       return checkResult && checkLength;
     };
 
+
     return <>
       <IconField width={"200px"}>
         <IconField.LeftIcon
@@ -168,8 +182,12 @@ const VerificationField = forwardRef(
             }
           }}
           ref={ref}
-          errorMsg={!options.toast ? invalidTxt : ""}
+
+          errorMsg={!options.toast ? invalidTxt : '\u00a0'}
           error={!isValid && verificationCode.length > 0}
+          promptMsg={promptTxt}
+
+          defaultValue={options.value}
           {...props}
         />
       </IconField>
@@ -181,7 +199,8 @@ VerificationField.displayName = "VerificationField";
 
 VerificationField.propTypes = {
   options: PropTypes.object.isRequired,
-  inputState: PropTypes.func
+  inputState: PropTypes.func,
+  initState: PropTypes.bool
 
 };
 

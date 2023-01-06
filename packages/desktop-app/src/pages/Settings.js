@@ -15,37 +15,42 @@ import { BlendIcon } from "@blend-ui/icons";
 
 import { IconField } from "@blend-ui/icon-field";
 
-import { API, Auth } from "aws-amplify";
+//import { API, Auth } from "aws-amplify";
 import config from "../config";
 
 import {
-  checkUsernameQuery,
   validUsername,
   SidebarMenu,
-  getCountryCodeQuery,
-  checkCognitoAttributeQuery,
   useFocus,
-  useAppContext,
   validEmail,
   isValidNumber,
   countryList,
   lowerCaseChars,
   addRegionCode,
   Navbar,
-  sendVerificationMutation,
-  updateCognitoUserMutation,
-  i18n,
   checkPassword,
   PhoneNumberField,
 } from "@prifina-apps/utils";
 
+/*
+checkUsernameQuery,
+getCountryCodeQuery,
+checkCognitoAttributeQuery,
+
+sendVerificationMutation,
+updateCognitoUserMutation,
+*/
+
 import useFlags from "../hooks/UseFlags";
 
-import { useToast, ToastContextProvider } from "@blend-ui/toast";
+import { useTranslate } from "@prifina-apps/utils";
+
+import { useToast } from "@blend-ui/toast";
 
 import * as C from "./settings-app/components";
 
-import { ReactComponent as SettingsLogo } from "../assets/settings-app/settings-logo.svg";
+//import { ReactComponent as SettingsLogo } from "../assets/settings-app/settings-logo.svg";
+import SettingsLogo from "../assets/settings-app/SettingsLogo";
 
 import styled from "styled-components";
 
@@ -69,6 +74,10 @@ import newTheme from "../theme/settingsTheme";
 import VerificationModal from "../components/VerificationModal";
 
 import PasswordField from "../components/PasswordField";
+
+import shallow from "zustand/shallow";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 const Container = styled(Flex)`
   flex-direction: column;
@@ -170,8 +179,32 @@ const BorderIcon = ({ iconify, size, color, border, height, width }) => {
 const Settings = props => {
   console.log("SETTINGS PROPS ", props);
 
-  const { currentUser } = useAppContext();
-  console.log("USER INFO", currentUser);
+  //const { currentUser } = useAppContext();
+  //console.log("USER INFO", currentUser);
+
+  const { __ } = useTranslate();
+  const { user: currentUser, checkUsernameQuery,
+    getCountryCodeQuery,
+    checkCognitoAttributeQuery,
+    sendVerificationMutation,
+    updateCognitoUserMutation,
+    currentAuthenticatedUser,
+    changePassword,
+    getVerificationQuery
+  } = useStore(
+    state => ({
+      user: state.user,
+      sendVerificationMutation: state.sendVerificationMutation,
+      checkUsernameQuery: state.checkUsernameQuery,
+      getCountryCodeQuery: state.getCountryCodeQuery,
+      checkCognitoAttributeQuery: state.checkCognitoAttributeQuery,
+      updateCognitoUserMutation: state.updateCognitoUserMutation,
+      currentAuthenticatedUser: state.currentAuthenticatedUser,
+      changePassword: state.changePassword,
+      getVerificationQuery: state.getVerificationQuery
+    }),
+    shallow,
+  );
 
   const { colors } = useTheme();
 
@@ -356,7 +389,7 @@ const Settings = props => {
     async function onLoad() {
       try {
         if (flags) {
-          const userCountry = await getCountryCodeQuery(API);
+          const userCountry = await getCountryCodeQuery();
           console.log("COUNTRY ", userCountry.data.getCountryCode);
           if (userCountry.data) {
             const cIndex = selectOptions.current.findIndex(
@@ -407,7 +440,7 @@ const Settings = props => {
   const [changeNumber, setChangeNumber] = useState(false);
   const [changeEmail, setChangeEmail] = useState(false);
   const [changeUsername, setChangeUsername] = useState(false);
-  const [changePassword, setChangePassword] = useState(false);
+  const [changeUserPassword, setChangePassword] = useState(false);
 
   const userNameAlert = (userError, userMsg) => {
     if (userError && !alerts.check().some(alert => alert.message === userMsg))
@@ -422,21 +455,21 @@ const Settings = props => {
     let userMsg = "";
 
     if (userState === "LENGTH") {
-      userMsg = i18n.__("usernameError", { length: config.usernameLength });
+      userMsg = __("usernameError", { length: config.usernameLength });
     }
     if (userState === "SPACES") {
-      userMsg = i18n.__("usernameError2");
+      userMsg = __("usernameError2");
     }
     console.log("USER ", username, userError);
     if (!userError && check) {
       console.log("CHECKING USER");
-      checkUsernameQuery(API, username, config.cognito.USER_POOL_ID).then(
+      checkUsernameQuery(username, config.cognito.USER_POOL_ID).then(
         res => {
           if (
             typeof res.data !== "undefined" &&
             res.data.checkCognitoAttribute
           ) {
-            userNameAlert(true, i18n.__("usernameExists"));
+            userNameAlert(true, __("usernameExists"));
           } else {
             setState({ username: { ...state.username, status: false } });
           }
@@ -459,7 +492,6 @@ const Settings = props => {
         phoneNumber = phoneOpts.region + phoneOpts.phoneNumber;
       }
       return checkCognitoAttributeQuery(
-        API,
         "phone_number",
         phoneNumber,
         config.cognito.USER_POOL_ID,
@@ -490,7 +522,7 @@ const Settings = props => {
   const checkPhone = (region, phone, check = false, changeNumber = true) => {
     console.log(phone, region);
 
-    const errorMsg = i18n.__("invalidPhoneNumber");
+    const errorMsg = __("invalidPhoneNumber");
 
     if (lowerCaseChars(phone.toLowerCase())) {
       phoneAlert(errorMsg, false);
@@ -546,7 +578,6 @@ const Settings = props => {
 
   const checkEmailAttr = email => {
     return checkCognitoAttributeQuery(
-      API,
       "email",
       email,
       config.cognito.USER_POOL_ID,
@@ -567,7 +598,7 @@ const Settings = props => {
     let emailState = validEmail(email);
     console.log("EMAIL ", emailState);
 
-    const errorMsg = i18n.__("invalidEmail");
+    const errorMsg = __("invalidEmail");
 
     if (emailState && check) {
       console.log("CHECKING EMAIL");
@@ -591,7 +622,6 @@ const Settings = props => {
   const sendCodeEmail = async e => {
     try {
       await sendVerificationMutation(
-        API,
         "email",
         JSON.stringify({
           userId: currentUser.loginUsername,
@@ -602,7 +632,7 @@ const Settings = props => {
       );
       setVerificationType("email");
       setModalOpen(true);
-      alerts.info(i18n.__("emailVerificatioSent"), {});
+      alerts.info(__("emailVerificatioSent"), {});
     } catch (e) {
       console.log("ERR", e);
     }
@@ -611,7 +641,6 @@ const Settings = props => {
   const sendCodePhone = async e => {
     try {
       await sendVerificationMutation(
-        API,
         "phone",
         JSON.stringify({
           userId: currentUser.loginUsername,
@@ -624,7 +653,7 @@ const Settings = props => {
       setModalOpen(true);
       console.log("success send code", e);
 
-      alerts.info(i18n.__("phoneVerificatioSent"), {});
+      alerts.info(__("phoneVerificatioSent"), {});
     } catch (e) {
       console.log("ERR", e);
     }
@@ -684,7 +713,7 @@ const Settings = props => {
     console.log(confirmStatus, state.accountPassword, password);
     let checkResult = false;
 
-    const errorMsg = i18n.__("invalidPassword");
+    const errorMsg = __("invalidPassword");
     if (!confirmStatus && !onBlur) {
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
@@ -726,7 +755,7 @@ const Settings = props => {
     const passwordCheckResult = checkInputPassword(password);
     const passwordError = checkPasswordQuality(passwordCheckResult);
     if (passwordError) {
-      const errorMsg = i18n.__("passwordQuality");
+      const errorMsg = __("passwordQuality");
       if (!alerts.check().some(alert => alert.message === errorMsg))
         alerts.error(errorMsg, {});
       return false;
@@ -735,7 +764,7 @@ const Settings = props => {
     }
   };
 
-  useEffect(() => {}, [state]);
+  useEffect(() => { }, [state]);
 
   // console.log("state email", state.email.value);
   // console.log("state phoneNumber", state.phoneNumber.value);
@@ -748,19 +777,18 @@ const Settings = props => {
 
   const updateUsername = () => {
     updateCognitoUserMutation(
-      API,
       "preferred_username",
       state.username.value,
     ).then(res => {
-      alerts.success(i18n.__("Username changed"), {});
+      alerts.success(__("Username changed"), {});
       console.log("SUCCESS", res);
     });
   };
 
   const handleChangePassword = () => {
-    Auth.currentAuthenticatedUser()
+    currentAuthenticatedUser()
       .then(user => {
-        return Auth.changePassword(
+        return changePassword(
           user,
           state.accountPassword.value,
           state.newPassword.value,
@@ -814,6 +842,11 @@ const Settings = props => {
           onClose={onDialogClose}
           state={state}
           verificationType={verificationType}
+          currentUser={currentUser}
+          sendVerificationMutation={sendVerificationMutation}
+          updateCognitoUserMutation={updateCognitoUserMutation}
+          getVerificationQuery={getVerificationQuery}
+
         />
       )}
       <Container bg={colors.backgroundLight}>
@@ -931,7 +964,7 @@ const Settings = props => {
             )}
           </SectionContainer>
           <SectionContainer className="change-email">
-            {changePassword ? (
+            {changeUserPassword ? (
               <>
                 <Box ml={24}>
                   <Text mr={16} mb={8} fontWeight="600">
@@ -939,7 +972,7 @@ const Settings = props => {
                   </Text>
                   <Box className="password" width="378px">
                     <PasswordField
-                      placeholder={i18n.__("passwordPlaceholder")}
+                      placeholder={__("passwordPlaceholder")}
                       onFocus={e => {
                         if (e.target.value.length > 0) {
                           if (passwordCheck(e.target.value)) {
@@ -987,7 +1020,7 @@ const Settings = props => {
                   </Text>
                   <Box className="newPassword" width="378px">
                     <PasswordField
-                      placeholder={i18n.__("confirmPlaceholder")}
+                      placeholder={__("confirmPlaceholder")}
                       onFocus={e => {
                         if (state.accountPassword.value.length === 0) {
                           setInputPasswordFocus();
@@ -1196,7 +1229,7 @@ const Settings = props => {
                           handleChange(e);
                         }}
                         promptMsg={
-                          state.phoneNumber.valid ? i18n.__("phonePrompt") : ""
+                          state.phoneNumber.valid ? __("phonePrompt") : ""
                         }
                         error={state.phoneNumber.status}
                         ref={inputPhone}
@@ -1293,12 +1326,12 @@ const Settings = props => {
                         size={"17"}
                       />
                       <IconField.InputField
-                        placeholder={i18n.__("emailPlaceholder")}
+                        placeholder={__("emailPlaceholder")}
                         id={"email"}
                         name={"email"}
                         onChange={handleChange}
                         promptMsg={
-                          state.email.valid ? i18n.__("emailPrompt") : ""
+                          state.email.valid ? __("emailPrompt") : ""
                         }
                         error={state.email.status}
                         ref={inputEmail}

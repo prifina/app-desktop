@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Divider, Text, useTheme } from "@blend-ui/core";
 import { CircularProgress, CircularProgressLabel } from "@blend-ui/progress";
-import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
+//import { ReactComponent as PrifinaLogo } from "../assets/prifina.svg";
+import PrifinaLogo from "../assets/prifina";
 import PropTypes from "prop-types";
 
 const ProgressContainer = ({

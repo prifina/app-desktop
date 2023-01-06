@@ -38,7 +38,8 @@ import { useTheme } from "@blend-ui/core";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
-import { ReactComponent as AddWidgetLogo } from "../../assets/display-app/add-widget.svg";
+//import { ReactComponent as AddWidgetLogo } from "../../assets/display-app/add-widget.svg";
+import AddWidgetLogo from "../../assets/display-app/AddWidget";
 
 import { BlendIcon } from "@blend-ui/icons";
 
@@ -145,9 +146,9 @@ export const InfoBox = styled(Flex)`
 export const ScrollableBox = styled(Box)`
   scrollbar-width: 4px;
   scrollbar-color: ${props =>
-      props.colors ? props.colors.baseSecondary : "#00847A"}
+    props.colors ? props.colors.baseSecondary : "#00847A"}
     ${props =>
-      props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
+    props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
 
   overflow-y: scroll;
   ::-webkit-scrollbar {
@@ -162,14 +163,14 @@ export const ScrollableBox = styled(Box)`
   ::-webkit-scrollbar-track {
     border-radius: 10px;
     background-color: ${props =>
-      props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
+    props.colors ? props.colors.baseTertiary : "rgba(0, 132, 122, 0.1)"};
   }
 
   ::-webkit-scrollbar-thumb {
     border-radius: 10px;
     height: 77px;
     background-color: ${props =>
-      props.colors ? props.colors.baseSecondary : "#00847A"};
+    props.colors ? props.colors.baseSecondary : "#00847A"};
   }
   ::-webkit-scrollbar-thumb:vertical {
     height: 77px;
@@ -262,9 +263,9 @@ const DotsContainer = styled.div`
   z-index: 20;
   div {
     animation: ${props =>
-        dots(
-          props.widgetTheme === "dark" ? ["white", "gray"] : ["black", "gray"],
-        )}
+    dots(
+      props.widgetTheme === "dark" ? ["white", "gray"] : ["black", "gray"],
+    )}
       4s linear infinite;
   }
   div:nth-child(1) {
@@ -929,8 +930,7 @@ export const SearchResults = props => {
   useEffect(() => {
     if (!isLoading)
       setUrl(
-        `${GOOGLE_URL}?cx=${SEARCH_ENGINE}&exactTerms=${
-          roleKey.length > 0 ? encodeURIComponent(roleKey) : ""
+        `${GOOGLE_URL}?cx=${SEARCH_ENGINE}&exactTerms=${roleKey.length > 0 ? encodeURIComponent(roleKey) : ""
         }&q=${encodeURIComponent(searchKey)}&lr=lang_en&key=${API_KEY}`,
       );
     if (error) setContent(<h2>Error when fetching: {error}</h2>);

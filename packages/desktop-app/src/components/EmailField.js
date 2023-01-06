@@ -7,7 +7,9 @@ import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 
 //import styled from "styled-components";
 //import shallow from 'zustand/shallow'
-import { useStore } from "../stores/PrifinaStore";
+//import { useStore } from "../stores/PrifinaStore";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 import { validEmail, } from "@prifina-apps/utils";
 import PropTypes from "prop-types";
 
@@ -47,10 +49,19 @@ const EmailField = forwardRef(
 
     const checkEmailAttr = email => {
       //console.log("CHECKING EMAIL ", email);
+      return new Promise(function (resolve, reject) {
+        checkCognitoAttributeQuery("email", email).then(res => {
+          resolve(res.data.checkCognitoAttribute)
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+      /*
       return checkCognitoAttributeQuery(
         "email",
         email
       );
+      */
     };
     const emailAlert = (errorMsg) => {
       if (!alerts.check().some(alert => alert.message === errorMsg)) {

@@ -1,167 +1,106 @@
-import React, { useState } from "react";
-import { Box, Flex, Button, Text } from "@blend-ui/core";
-import { IconField } from "@blend-ui/icon-field";
+import React, { useState, useRef } from "react";
 
-import bxKey from "@iconify/icons-bx/bx-key";
-import { ReactComponent as Phone } from "../assets/phone.svg";
-
-import ProgressContainer from "../components/ProgressContainer";
-
-
-import { useNavigate } from "react-router";
-import { useLocation } from "react-router-dom";
-import { useToast } from "@blend-ui/toast";
-
+import { Box, Flex, Button, Text, Link } from "@blend-ui/core";
 import {
-  i18n,
-  useFormFields,
-  useFocus,
-  onlyDigitChars,
+  useTranslate
 } from "@prifina-apps/utils";
+
+import Phone from "../assets/phone";
+
+import VerificationField from "../components/VerificationField";
 
 import PropTypes from "prop-types";
 
-i18n.init();
-
-const ConfirmAuth = ({ backButton, authOptions, ...props }) => {
-
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
-  const alerts = useToast();
 
 
-  const searchKeys = new URLSearchParams(search);
+const initTexts = (t) => {
+  return { "invalidTxt": t("invalidCode"), "codeLengthError": t("codeLengthError"), "codeDigitsError": t("codeDigitsError"), "placeholderTxt": t("codePrompt"), "promptTxt": '\u00a0' };
+}
+const ConfirmAuth = ({ backClick, verifyClick }) => {
 
-  const appDebug =
-    process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true"
-  //history.location.search === "?debug=true";
-  console.log("APP DEBUG ", appDebug);
+  const { __ } = useTranslate();
 
-  const [confirmationFields, handleChange] = useFormFields({
-    confirmationCode: "",
-  });
-  const [inputCode, setInputCodeFocus] = useFocus();
-  const [inputError, setInputError] = useState({ status: false, msg: "" });
+  const inputRef = useRef();
+  const verificationOptions = { toast: false, txt: {}, value: "", };
 
-  const checkInput = code => {
-    const checkResult = onlyDigitChars(code);
+  verificationOptions.txt = Object.assign({}, initTexts(__));
 
-    let validCode = true;
-    if (!checkResult) {
-      setInputError({ status: true, msg: i18n.__("codeDigitsError") });
+  const [inputIsValid, setInputIsValid] = useState(false);
+  //const inputState = [inputIsValid, setInputIsValid];
 
-      const errorMsg = i18n.__("codeDigitsError");
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      validCode = false;
+  const inputState = (input, validation = false) => {
+    console.log("VERIFICATION STATUS ", input);
+    console.log(input.value);
+    console.log(input.dataset);
+    console.log((inputRef.current));
+
+    let isValid = true;
+    if (inputRef.current.value.length !== 6) {
+      isValid = false;
+    } else if (inputRef.current.value.length === 6) {
+      //isValid = true;
+      isValid = validation ? input.dataset['isvalid'] === "true" : true;
+    } else {
+      isValid = input.dataset['isvalid'] === "true"
     }
-    if (code.length > 1 && code.length !== 6) {
-      setInputError({ status: true, msg: i18n.__("codeLengthError") });
-      //alerts.error(i18n.__("codeLengthError"), {});
-      const errorMsg = i18n.__("codeLengthError");
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      validCode = false;
-    }
-    if (validCode) {
-      setInputError({ status: false, msg: "" });
-    }
-  };
-  const confirmClick = async e => {
-    try {
-      const loggedUser = await authOptions.Auth.confirmSignIn(
-        authOptions.user,
-        confirmationFields.confirmationCode,
-        "SMS_MFA",
-      );
+    console.log("VERIFICATION STATUS ", isValid);
+    setInputIsValid(isValid);
 
-      console.log("CONFIRM ", loggedUser);
-      if (appDebug) {
-        const mfa = await authOptions.Auth.setPreferredMFA(loggedUser, "NOMFA");
-        console.log("MFA ", mfa);
-      }
+  }
 
-      //history.replace("/home");
-      navigate("/home", { replace: true })
-      authOptions.setAuth(true);
-    } catch (e) {
-      console.log("ERR", e);
-      if (e.code === "CodeMismatchException") {
-        setInputError({ status: true, msg: i18n.__("invalidCode") });
-        //alerts.error(i18n.__("invalidCode"), {});
-        const errorMsg = i18n.__("invalidCode");
-        if (!alerts.check().some(alert => alert.message === errorMsg))
-          alerts.error(errorMsg, {});
-      }
-    }
-  };
   return (
-    <ProgressContainer title={i18n.__("confirmTitle")} progress={100}>
-      <Box mt={47}>
+    <>
+      <Box mt={50}>
         <Box display={"inline-flex"}>
           <Box>
-            <Phone height={"135px"} width={"68px"} />
+            <Phone style={{ heigh: "135px", width: "68px" }} />
           </Box>
-          <Box ml={48}>
+          <Box ml={34}>
             <Box>
-              <Text textStyle={"h6"}>{i18n.__("authConfirmTitle")}</Text>
+              <Text textStyle={"h6"}>
+                {__("authConfirmTitle")}
+              </Text>
             </Box>
             <Box mt={5}>
               <Text textStyle={"caption2"} as={"p"} m={0}>
-                {i18n.__("authConfirmationText")}
+                {__("authConfirmationText")}
               </Text>
             </Box>
             <Box mt={15}>
-              <IconField width={"200px"}>
-                <IconField.LeftIcon
-                  iconify={bxKey}
-                  color={"componentPrimary"}
-                  size={"17"}
-                />
-                <IconField.InputField
-                  placeholder={i18n.__("codePropmt")}
-                  id={"confirmationCode"}
-                  name={"confirmationCode"}
-                  onChange={handleChange}
-                  onKeyDown={e => {
-                    if (e.key === "Enter") {
-                      checkInput(confirmationFields.confirmationCode);
-                    }
-                  }}
-                  //errorMsg={inputError.msg}
-                  //error={inputError.status}
-                  ref={inputCode}
-                />
-              </IconField>
+              <VerificationField ref={inputRef} initState={inputIsValid} options={verificationOptions} inputState={inputState} />
             </Box>
+
           </Box>
         </Box>
       </Box>
 
-      <Box mt={inputError.status ? 83 : 84} display={"inline-flex"}>
+      <Box mt={80} display={"inline-flex"}>
         <Flex>
-          <Button variation={"outline"} onClick={backButton}>
-            {i18n.__("backButton")}
+          <Button variation={"outline"} onClick={backClick} role={"back-click"}>
+            {__("backButton")}
           </Button>
         </Flex>
         <Flex ml={99}>
           <Button
-            disabled={
-              inputError.status ||
-              confirmationFields.confirmationCode.length !== 6
-            }
-            onClick={confirmClick}
+            disabled={!inputIsValid}
+            onClick={async (e) => {
+              const verified = await verifyClick(inputRef.current.value);
+              console.log("VERIFYING ", verified);
+              if (!verified) {
+                //setInputIsValid(false);
+                inputRef.current.dataset["isvalid"] = false;
+                inputState(inputRef.current, true);
+              }
+              e.preventDefault()
+            }}
+            role={"verify-click"}
           >
-            {i18n.__("confirmButton")}
+            {__("confirmButton")}
           </Button>
         </Flex>
       </Box>
-    </ProgressContainer>
+    </>
   );
-};
+}
 
-ConfirmAuth.propTypes = {
-  backButton: PropTypes.func.isRequired,
-  authOptions: PropTypes.instanceOf(Object).isRequired,
-};
 export default ConfirmAuth;

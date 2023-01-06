@@ -5,7 +5,8 @@ import { IconField } from "@blend-ui/icon-field";
 import { StyledBox } from "../components/DefaultBackground";
 import Background from "../assets/mobile-background.png";
 
-import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
+//import { ReactComponent as PrifinaText } from "../assets/prifina-text.svg";
+import PrifinaText from "../assets/prifina-text";
 
 import ProgressContainer from "../components/ProgressContainer";
 

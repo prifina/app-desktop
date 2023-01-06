@@ -1,6 +1,6 @@
 //global localStorage
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import {
   Modal,
@@ -9,18 +9,17 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@blend-ui/modal";
-import { Flex, Button, Text, Image, useTheme } from "@blend-ui/core";
+import { Flex, Button, Text, useTheme } from "@blend-ui/core";
 
 import { BlendIcon } from "@blend-ui/icons";
 
 import PropTypes from "prop-types";
-import { i18n, getRequestTokenQuery } from "@prifina-apps/utils";
+import { useTranslate } from "@prifina-apps/utils";
 
-import dataCloud from "../../assets/data-console.svg";
+//import dataCloud from "../../assets/data-console.svg";
+import DataCloud from "../../assets/data-console";
 
 import mdiArrowRight from "@iconify/icons-mdi/arrow-right";
-
-i18n.init();
 
 /*
 export const getRequestTokenQuery = (API, id, source) => {
@@ -36,10 +35,13 @@ const DataSourceModal = ({
 
   dataSourceItems,
   selectedDataSourceIndex,
-  GraphQLClient,
+  getRequestTokenQuery,
   prifinaID,
   ...props
 }) => {
+
+  const { __ } = useTranslate();
+
   const theme = useTheme();
 
   const { colors } = useTheme();
@@ -48,14 +50,17 @@ const DataSourceModal = ({
 
   const [requestUrl, setRequestUrl] = useState("#");
 
+  const effectCalled = useRef(false);
+
   const dataSourceItem = dataSourceItems[selectedDataSourceIndex];
+  const IconImage = dataSourceItem.icon;
 
   console.log("DS MODAL ", dataSourceItems);
   console.log("DS MODAL ", selectedDataSourceIndex);
   useEffect(() => {
     async function init() {
+      effectCalled.current = true;
       const result = await getRequestTokenQuery(
-        GraphQLClient,
         prifinaID,
         dataSourceItem.id,
         2,
@@ -63,7 +68,9 @@ const DataSourceModal = ({
 
       setRequestUrl(result.data.getRequestToken.requestURL);
     }
-    init();
+    if (!effectCalled.current) {
+      init();
+    }
 
   }, []);
   const onCloseCheck = (e, action) => {
@@ -104,7 +111,7 @@ const DataSourceModal = ({
               }}
             >
               <Text textStyle={"h5"} >
-                {i18n.__("connect")} {dataSourceItem.title}
+                {__("connect")} {dataSourceItem.title}
               </Text>
             </Flex>
           </ModalHeader>
@@ -122,12 +129,12 @@ const DataSourceModal = ({
                   }}
                 >
                   <Flex alignItems="center">
-                    <Image src={dataSourceItem.icon} />
+                    <IconImage style={{ width: "72px" }} />
                     <Flex flexDirection="column">
                       <BlendIcon iconify={mdiArrowRight} color="gray" />
                       <BlendIcon iconify={mdiArrowRight} color="gray" />
                     </Flex>
-                    <Image src={dataCloud} size={72} />
+                    <DataCloud style={{ width: "72px" }} />
                   </Flex>
                 </Flex>
                 <Flex
@@ -141,17 +148,17 @@ const DataSourceModal = ({
                   }}
                 >
                   <Text fontSize="sm" color={colors.textLink}>
-                    {i18n.__("dataSourceModalAlertText")}
+                    {__("dataSourceModalAlertText")}
                   </Text>
                 </Flex>
               </Flex>
               <Flex flex={2} flexDirection="column" justifyContent="center">
                 <Text mb={8}>Prifina + {dataSourceItem.title}</Text>
                 <Text mb={12} fontSize="sm" color={colors.textMuted}>
-                  {i18n.__("dataSourceModalText1")}
+                  {__("dataSourceModalText1")}
                 </Text>
                 <Text fontSize="sm" color={colors.textMuted}>
-                  {i18n.__("dataSourceModalText2")}
+                  {__("dataSourceModalText2")}
                 </Text>
               </Flex>
             </Flex>
@@ -180,7 +187,7 @@ const DataSourceModal = ({
 
                 }}
               >
-                {i18n.__("cancelButton")}
+                {__("cancelButton")}
               </Button>
 
               <Button
@@ -196,7 +203,7 @@ const DataSourceModal = ({
                   }, 500);
                 }}
               >
-                {i18n.__("connect")}
+                {__("connect")}
               </Button>
             </Flex>
           </ModalFooter>
@@ -211,7 +218,7 @@ DataSourceModal.propTypes = {
   //onButtonClick: PropTypes.func.isRequired,
   dataSourceItems: PropTypes.instanceOf(Array),
   selectedDataSourceIndex: PropTypes.number.isRequired,
-  GraphQLClient: PropTypes.instanceOf(Object),
   prifinaID: PropTypes.string,
+  getRequestTokenQuery: PropTypes.func
 };
 export default DataSourceModal;

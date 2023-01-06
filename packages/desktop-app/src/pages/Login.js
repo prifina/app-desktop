@@ -1,45 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useReducer, useRef } from "react";
 import { Box, Flex, Button, Image, Text, useTheme } from "@blend-ui/core";
-import { IconField } from "@blend-ui/icon-field";
-
-import bxUser from "@iconify/icons-bx/bx-user";
-
-import { API, Auth } from "aws-amplify";
-
-//import { useHistory } from "react-router-dom";
-
-import { useNavigate } from "react-router";
-import { useLocation } from "react-router-dom";
+import { Routes, Route, Outlet, useNavigate, useLocation, } from "react-router-dom";
 
 import {
-  getLoginUserIdentityPoolQuery,
-  i18n,
-  useFormFields,
-  useFocus,
-  useAppContext,
-  validUsername,
-  lowerCaseChars,
-  upperCaseChars,
-  hasSpaces,
-  hasNonChars,
-  digitChars,
-  ConfirmAuth,
-  PasswordField,
-  sendVerificationMutation,
-  ForgotPassword,
-  RecoverUsername,
+  //ConfirmAuth,
+  useTranslate
 } from "@prifina-apps/utils";
 
 import config from "../config";
-import { useToast } from "@blend-ui/toast";
+import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
 import landingImage from "../assets/landingImage.png";
 
-import prifinaIcon from "../assets/prifina-icon.svg";
+import PrifinaIcon from "../assets/prifina-icon";
 
 import styled from "styled-components";
 
-i18n.init();
+import shallow from "zustand/shallow";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+import UsernameField from "../components/UsernameField";
+import PasswordField from "../components/PasswordField-v2";
+import ConfirmAuth from "./ConfirmAuth";
 
 const LoginContainer = styled(Box)`
   width: 534px;
@@ -49,23 +32,180 @@ const LoginContainer = styled(Box)`
   padding-top: 105px;
 `;
 
-const Login = () => {
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
 
-  //const history = useHistory();
+const Layout = () => {
 
   const { colors } = useTheme();
+  return <>
 
-  const { userAuth } = useAppContext();
-  const APIConfig = {
-    aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
-    aws_appsync_region: config.main_region,
-    aws_appsync_authenticationType:
-      config.appSync.aws_appsync_authenticationType,
+    <Flex height={"100%"}>
+      <Box width={"60%"} style={{
+        background: colors.baseTertiary,
+      }}>
+
+        <Flex
+          flexGrow={1}
+          alignItems="center"
+          justifyContent="center"
+
+        >
+          <Image src={landingImage} />
+        </Flex>
+
+      </Box>
+      <Box width={"40%"}>
+        <Outlet />
+      </Box>
+    </Flex>
+  </>
+}
+
+const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
+
+
+  const { colors } = useTheme();
+  const { __ } = useTranslate();
+
+  //const { state, setState } = inputVals;
+  //const inputRefs = {};
+  const [loginDisabled, setLoginDisabled] = useState(true);
+  /*
+    passwordError.status ||
+    usernameError.status ||
+    loginFields.username.length < config.usernameLength ||
+    loginFields.password.length < config.passwordLength
+  */
+  const usernameArgs = {
+    id: "username",
+    name: "username",
+    ref: useRef(),
+    options: {
+      checkExists: false,  // not checking exists here,possible "fishing problem"... sigup will throw error, if exists... 
+      toast: false,
+      value: "",
+      txt: {
+        "invalidTxt": "", "usernameError": __("usernameError", { length: config.usernameLength }),
+        "usernameError2": __("usernameError2"), "usernameExists": __("usernameExists"),
+        "placeholderTxt": __("usernamePlaceholder"), "promptTxt": '\u00a0'  // otherwise text height is 0
+      },
+    },
+    inputState: (input) => {
+      console.log("STATE UPDATE USERNAME ", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+      if (loginDisabled && inputRefs.current?.['username']?.dataset['isvalid'] && inputRefs.current?.['password']?.dataset['isvalid']) {
+        setLoginDisabled(false);
+      }
+      //setState({ [input.id]: input.value })
+    }
+  }
+
+  const passwordArgs = {
+    id: "password",
+    name: "password",
+    ref: useRef(),
+    options: {
+      addPopup: false,
+      checkList: () => [],
+      toast: false,
+      txt: {
+        "invalidTxt": "", "invalidEntry": __("invalidEntry"),
+        "passwordQuality": __("passwordQuality"), "placeholderTxt": __("passwordPlaceholder"),
+        "promptTxt": '\u00a0'  // otherwise text height is 0
+      }
+    },
+    inputState: (input) => {
+      console.log("STATE UPDATE PASSWD", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+
+      if (loginDisabled && inputRefs.current?.['username']?.dataset['isvalid'] && inputRefs.current?.['password']?.dataset['isvalid']) {
+        setLoginDisabled(false);
+      }
+      //setState({ [input.id]: input.value })
+    }
+  }
+
+  return <LoginContainer>
+
+    <Box textAlign="start" width="354px">
+      <Flex height={40} mb={57} alignItems="center" style={{ position: "relative", left: "-27px" }}>
+        <PrifinaIcon style={{ transform: "scale(0.35)" }} />
+        <Text ml={"-20px"} fontWeight="600">
+          Prifina
+        </Text>
+      </Flex>
+
+      <Text mb={4} textStyle="h3">
+        Log in to your account
+      </Text>
+      <Text mb={32}>Welcome back! Please enter your details.</Text>
+      <Box>
+        <Text fontWeight="600" fontSize="sm">
+          Username
+        </Text>
+        <UsernameField autoFocus={true} {...usernameArgs} />
+        <Box mt={15}>
+          <Text fontWeight="600" fontSize="sm">
+            Password
+          </Text>
+          <PasswordField {...passwordArgs} />
+        </Box>
+      </Box>
+      <Flex mt={77} flexDirection="column" alignItems="center">
+        <Button
+          width="100%"
+          className="LoginButton"
+          disabled={loginDisabled}
+          onClick={loginClick}
+        >
+          {__("loginButton")}
+        </Button>
+
+        <Flex alignItems="baseline" mt={10}>
+          <Text mr={3} fontSize="xs" textAlign="center">
+            Don’t have an account?
+          </Text>
+          <Button
+            className="createAccountButton"
+            id="createAccountButton"
+            color={colors.textLink}
+            variation="link"
+            onClick={createAccountClick}
+          >
+            {__("createAccount")}
+          </Button>
+        </Flex>
+      </Flex>
+
+    </Box>
+
+  </LoginContainer>
+}
+
+const withToast = () => WrappedComponent => {
+  const WithToast = props => {
+    return (
+      <ToastContextProvider>
+        <WrappedComponent {...props} />
+      </ToastContextProvider>
+    );
   };
-  // set default prifina api configs...
-  API.configure(APIConfig);
+
+  WithToast.displayName = `WithToast(${WrappedComponent.displayName || WrappedComponent.name || "Component"
+    })`;
+
+  return WithToast;
+};
+
+
+const Login = () => {
+  const { pathname, search } = useLocation();
+
+  const { __ } = useTranslate();
+  const navigate = useNavigate();
+
+  const alerts = useToast();
+
+  //const history = useHistory();
 
   //search.startsWith("?debug")
   const searchKeys = new URLSearchParams(search);
@@ -76,472 +216,154 @@ const Login = () => {
   //history.location.search === "?debug=true";
   console.log("APP DEBUG ", appDebug);
 
-  const alerts = useToast();
 
-  const [loginFields, handleChange] = useFormFields({
-    username: "",
-    password: "",
-  });
+  const { getLoginUserIdentityPoolQuery, setAuthConfig, signIn,
+    setAuthStatus, setPreferredMFA, confirmSignIn } = useStore(
+      state => ({
+        getLoginUserIdentityPoolQuery: state.getLoginUserIdentityPoolQuery,
+        setAuthConfig: state.setAuthConfig,
+        signIn: state.signIn,
+        setAuthStatus: state.setAuthStatus,
+        setPreferredMFA: state.setPreferredMFA,
+        confirmSignIn: state.confirmSignIn
+      }),
+      shallow,
+    );
 
-  const [usernameError, setUsernameError] = useState({
-    status: false,
-    msg: "Error message",
-  });
-  const [passwordError, setPasswordError] = useState({
-    status: false,
-    msg: "Error message",
-  });
-  const [inputUsername, setInputUsernameFocus] = useFocus();
-  const [inputPassword, setInputPasswordFocus] = useFocus();
 
-  const [confirmCode, setConfirmCode] = useState(false);
-  const [authOptions, setAuthOptions] = useState({});
+  const [state, setState] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    {
+      username: "",
+      password: ""
+    }
+  );
 
-  const [step, setStep] = useState(0);
+  const inputRefs = {};
 
-  const loginClick = async () => {
+  const loginClick = async (e) => {
+    console.log("LOGIN ", e);
+    console.log("LOGIN ", inputRefs);
+
+
     try {
+      const username = inputRefs.current.username.value;
+      const password = inputRefs.current.password.value;
+      setState({ username, password });
+
       const prifinaUserIdPool = await getLoginUserIdentityPoolQuery(
-        API,
-        loginFields.username,
+        username,
         config.cognito.USER_POOL_ID,
       );
-      console.log("ID POOL ", prifinaUserIdPool);
+      // console.log("ID POOL ", prifinaUserIdPool);
 
       let userIdPool = config.cognito.USER_IDENTITY_POOL_ID;
 
       if (prifinaUserIdPool.data.getLoginUserIdentityPool !== "") {
         userIdPool = prifinaUserIdPool.data.getLoginUserIdentityPool;
       }
+      const idPoolRegion = userIdPool.split(":")[0];
+      setAuthConfig({ identityPoolId: userIdPool, identityPoolRegion: idPoolRegion });
 
-      let currentConfig = Auth._config;
-      console.log("LOGIN CONFIG");
-
-      currentConfig.identityPoolId = userIdPool;
-
-      currentConfig.identityPoolRegion = userIdPool.split(":")[0];
-      Auth.configure(currentConfig);
-
-      let user = await Auth.signIn(loginFields.username, loginFields.password);
+      let user = await signIn(username, password);
       console.log("LOGIN", user);
 
       localStorage.setItem(
         "LastSessionIdentityPool",
-        currentConfig.identityPoolId,
+        userIdPool
       );
-      /*   
-      // Keep this in case there is a need to debug identity pool iam credentals
-      const token = _currentSession.getIdToken().payload;
-      //const provider='cognito-idp.'+userPoolRegion+'.amazonaws.com/'+userPoolId;
-      const provider = token["iss"].replace("https://", "");
-      let identityParams = {
-        IdentityPoolId: userIdPool,
-        //AccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
-        //AccountId: "352681697435",
-        Logins: {},
-      };
-      identityParams.Logins[provider] = _currentSession
-        .getIdToken()
-        .getJwtToken();
-
-      const cognitoClient = new CognitoIdentityClient({
-        //region: currentConfig.region,
-        region: currentConfig.identityPoolRegion,
-        //customUserAgent: getAmplifyUserAgent(),
-      });
-      // for a returning user, this will retrieve the previous identity assocaited with the logins
-      //const { IdentityId } = await cognitoClient.send(
-      console.log(identityParams);
-      const cognitoIdentity = await cognitoClient.send(
-        new GetIdCommand(identityParams),
-      );
-
-      //const cognitoIdentity=await cognitoidentity.getId(identityParams).promise();
-      console.log(cognitoIdentity);
-
-      //const credentials=await Auth.currentUserCredentials();
-      //console.log('INIT AUTH CREDS ',credentials);
-    
-      const cognitoIdentity=await cognitoidentity.getId(identityParams).promise();
-      console.log(cognitoIdentity);
-
-      let credentialParams = {
-        IdentityId: cognitoIdentity.IdentityId,
-      Logins:{}};
-
-    
-    credentialParams.Logins[provider] = idToken;
-    const cognitoIdentityCredentials=await cognitoClient.send(
-        new GetCredentialsForIdentityCommand(credentialParams
-        )
-    //console.log(cognitoIdentityCredentials);
-*/
 
       if (
         (appDebug && user.preferredMFA === "NOMFA") ||
         (process.env.REACT_APP_STAGE === "dev" &&
-          loginFields.username === "test-user")
+          username === "test-user")
       ) {
-        userAuth(true);
+        setAuthStatus(true);
         //history.replace("/home");
         navigate("/home", { replace: true });
+        //console.log("NAV HOME");
       } else {
         if (user.preferredMFA === "NOMFA") {
-          const mfa = await Auth.setPreferredMFA(user, "SMS");
+          const mfa = await setPreferredMFA("SMS");
           console.log("MFA ", mfa);
-          user = await Auth.signIn(loginFields.username, loginFields.password);
+          user = await signIn(username, password);
           console.log("LOGIN2", user);
         } else if (user.challengeName === "SMS_MFA") {
         }
-        alerts.info(i18n.__("confirmationCodeSent"), {});
-        setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
-        setConfirmCode(true);
+        //alerts.info(i18n.__("confirmationCodeSent"), {});
+        //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
+        //setConfirmCode(true);
+        //console.log("NAV CONFIRM...");
+        // throw new Error("TESTING");
+        alerts.info(__("confirmationCodeSent"), {});
+        // check routes below... 
+        navigate("/login/confirm-auth")
       }
+
     } catch (e) {
       console.log("ERR", e);
+
       if (
         e.code === "NotAuthorizedException" ||
         e.code === "UserNotFoundException"
       ) {
         alerts.error(i18n.__("invalidLogin"), {});
-
-        setInputUsernameFocus();
+        inputRefs.current.username.focus();
       }
-    }
-  };
 
-  const checkUsername = (username, checkLength = false) => {
-    console.log("USERNAME ", username);
-    let userMsg = "";
-    if (username.length === 0) {
-      userMsg = i18n.__("invalidEntry");
-    } else {
-      const userState = validUsername(username, config.usernameLength);
-      if (userState === "LENGTH") {
-        userMsg = i18n.__("usernameError", { length: config.usernameLength });
-      }
-      if (userState === "SPACES") {
-        userMsg = i18n.__("usernameError2");
-      }
-    }
-    if (userMsg !== "") {
-      if (!alerts.check().some(alert => alert.message === userMsg))
-        alerts.error(userMsg, {});
-
-      setUsernameError({ status: true });
-    } else {
-      setUsernameError({ status: false });
-    }
-    return userMsg;
-  };
-  const checkPassword = (password, onBlur = false) => {
-    let checkResult = false;
-
-    if (password.length < config.passwordLength && !onBlur) {
-      checkResult = true;
-    } else if (!(lowerCaseChars(password) && upperCaseChars(password))) {
-      checkResult = true;
-    } else if (
-      !(digitChars(password) && hasNonChars(password) && !hasSpaces(password))
-    ) {
-      checkResult = true;
     }
 
-    return checkResult;
-  };
-
-  const createAccountClick = e => {
-    //history.replace("/register");
+    //navigate("/login", { replace: true })
+    e.preventDefault();
+  }
+  const createAccountClick = (e) => {
     navigate("/register", { replace: true });
     e.preventDefault();
-  };
-  const backButtonClick = e => {
-    setConfirmCode(false);
-    e.preventDefault();
-  };
-
-  switch (step) {
-    case 0:
-      break;
-    case 1:
-      break;
-    default:
   }
-
-  const getClientID = process.env.REACT_APP_APP_CLIENT_ID;
-
-  const resendCode = async e => {
+  const backClick = (e) => {
+    navigate("/login", { replace: true })
+    e.preventDefault();
+  }
+  const verifyClick = async (code) => {
+    console.log("VERIFY ", code);
     try {
-      await sendVerificationMutation(
-        API,
-        "phone",
-        JSON.stringify({
-          username: loginFields.username,
-          clientId: getClientID,
-        }),
-      );
-      alerts.info(i18n.__("phoneVerificatioSent"), {});
+      const loggedUser = await confirmSignIn(code);
+
+      console.log("CONFIRM ", loggedUser);
+      if (appDebug) {
+        const mfa = await setPreferredMFA("NOMFA");
+        console.log("MFA ", mfa);
+      }
+      setAuthStatus(true);
+      navigate("/home", { replace: true });
+      return true;
     } catch (e) {
       console.log("ERR", e);
+      if (e.code === "CodeMismatchException") {
+        // setInputError({ status: true, msg: __("invalidCode") });
+        //alerts.error(i18n.__("invalidCode"), {});
+        const errorMsg = __("invalidCode");
+        if (!alerts.check().some(alert => alert.message === errorMsg))
+          alerts.error(errorMsg, {});
+
+      }
+      return false
     }
   };
 
-  return (
-    <>
-      <Flex width="100vw" height="100vh">
-        <Flex
-          flexGrow={1}
-          style={{
-            background: colors.baseTertiary,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Image src={landingImage} />
-        </Flex>
-        <LoginContainer>
-          {step === 0 && (
-            <Box textAlign="start" width="354px">
-              <Flex mt={55} mb={57} alignSelf="flex-start">
-                <Image src={prifinaIcon} width="25px" />
-                <Text ml={3} fontWeight="600">
-                  Prifina
-                </Text>
-              </Flex>
-              {confirmCode ? (
-                <ConfirmAuth
-                  backButton={backButtonClick}
-                  authOptions={authOptions}
-                  resendCode={resendCode}
-                />
-              ) : (
-                <>
-                  <Text mb={4} textStyle="h3">
-                    Log in to your account
-                  </Text>
-                  <Text mb={32}>Welcome back! Please enter your details.</Text>
-                  <Box>
-                    <Text fontWeight="600" fontSize="sm">
-                      Username
-                    </Text>
-                    <IconField>
-                      <IconField.LeftIcon
-                        iconify={bxUser}
-                        color={"componentPrimary"}
-                        size={"17"}
-                      />
-                      <IconField.InputField
-                        autoFocus={true}
-                        placeholder={i18n.__("usernamePlaceholder")}
-                        id={"username"}
-                        name={"username"}
-                        onChange={e => {
-                          handleChange(e);
-                        }}
-                        ref={inputUsername}
-                        error={usernameError.status}
-                        onKeyDown={e => {
-                          if (e.key === "Enter") {
-                            const userError = checkUsername(
-                              e.target.value,
-                              true,
-                            );
-                          }
-                        }}
-                        onBlur={e => {
-                          if (e.target.value.length > 0) {
-                            const userError = checkUsername(e.target.value);
-                            if (userError !== "") {
-                              setInputUsernameFocus();
-                              e.preventDefault();
-                            }
-                          }
-                        }}
-                      />
-                    </IconField>
-                    {/* <Box
-                      display={"inline-flex"}
-                      justifyContent={"flex-end"}
-                      width={[1]}
-                      style={{
-                        position: "relative",
-                        top: "-4px",
-                      }}
-                    >
-                      <Flex>
-                        <Button
-                          id="forgotUsernameButton"
-                          variation={"link"}
-                          fontSize="xs"
-                          onClick={() => {
-                            setStep(2);
-                          }}
-                        >
-                          {i18n.__("forgotUsername")}
-                        </Button>
-                      </Flex>
-                    </Box> */}
-                  </Box>
-                  <Box mt={32}>
-                    <Text fontWeight="600" fontSize="sm">
-                      Password
-                    </Text>
-                    <PasswordField
-                      placeholder={i18n.__("passwordPlaceholder")}
-                      id={"password"}
-                      name={"password"}
-                      onFocus={e => {
-                        if (
-                          loginFields.username.length === 0 ||
-                          document.querySelector("input#username").value
-                            .length === 0
-                        ) {
-                          console.log(
-                            "PASSWORD ON FOCUS CHECK...",
-                            loginFields.username.length,
-                            document.querySelector("input#username").value
-                              .length,
-                          );
-                          setInputUsernameFocus();
-                          e.preventDefault();
-                        }
-                      }}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === "Enter") {
-                          let errorMsg = "";
-                          if (e.target.value.length === 0) {
-                            errorMsg = i18n.__("invalidEntry");
-                          } else {
-                            const passwordError = checkPassword(e.target.value);
-                            if (passwordError) {
-                              errorMsg = i18n.__("passwordQuality");
-                            }
-                          }
-                          if (errorMsg !== "") {
-                            if (
-                              !alerts
-                                .check()
-                                .some(alert => alert.message === errorMsg)
-                            )
-                              alerts.error(errorMsg, {});
-                            setPasswordError({
-                              status: true,
-                            });
-                          } else {
-                            setPasswordError({
-                              status: false,
-                            });
-                            checkUsername(loginFields.username);
-                          }
-                        }
-                      }}
-                      onBlur={e => {
-                        if (
-                          document.querySelector("input#username").value
-                            .length > 0
-                        ) {
-                          const passwordError = checkPassword(
-                            e.target.value,
-                            true,
-                          );
+  return <Box width="100vw" height="100vh">
+    <ToastContextProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<SignIn inputRefs={inputRefs} createAccountClick={createAccountClick} loginClick={loginClick} />} />
+          <Route path="confirm-auth" element={<ConfirmAuth backClick={backClick} verifyClick={verifyClick} />} />
 
-                          if (passwordError) {
-                            const errorMsg = i18n.__("passwordQuality");
-                            console.log("ALERTS ", alerts.check());
-                            if (
-                              !alerts
-                                .check()
-                                .some(alert => alert.message === errorMsg)
-                            )
-                              alerts.error(errorMsg, {});
-                            setPasswordError({
-                              status: true,
-                            });
+        </Route>
 
-                            setInputPasswordFocus();
-                            e.preventDefault();
-                          } else {
-                            setPasswordError({
-                              status: false,
-                            });
-                          }
-                        }
-                      }}
-                      ref={inputPassword}
-                      error={passwordError.status}
-                    />
-                    {/* <Box
-                      display={"inline-flex"}
-                      justifyContent={"flex-end"}
-                      width={[1]}
-                      style={{
-                        position: "relative",
-                        top: "-4px",
-                      }}
-                    >
-                      <Flex>
-                        <Button
-                          className={"ForgotPasswordButton"}
-                          variation={"link"}
-                          fontSize="xs"
-                          onClick={() => {
-                            setStep(1);
-                          }}
-                        >
-                          {i18n.__("forgotPassword")}
-                        </Button>
-                      </Flex>
-                    </Box> */}
-                  </Box>
-                  <Flex mt={77} flexDirection="column" alignItems="center">
-                    <Button
-                      width="100%"
-                      className="LoginButton"
-                      disabled={
-                        passwordError.status ||
-                        usernameError.status ||
-                        loginFields.username.length < config.usernameLength ||
-                        loginFields.password.length < config.passwordLength
-                      }
-                      onClick={loginClick}
-                    >
-                      {i18n.__("loginButton")}
-                    </Button>
-
-                    <Flex alignItems="baseline" mt={10}>
-                      <Text mr={3} fontSize="xs" textAlign="center">
-                        Don’t have an account?
-                      </Text>
-                      <Button
-                        className="createAccountButton"
-                        id="createAccountButton"
-                        color={colors.textLink}
-                        variation="link"
-                        onClick={createAccountClick}
-                      >
-                        {i18n.__("createAccount")}
-                      </Button>
-                    </Flex>
-                  </Flex>
-                </>
-              )}
-            </Box>
-          )}
-          {step === 1 && (
-            <ForgotPassword
-              onBack={() => setStep(0)}
-              onForward={() => setStep(2)}
-            />
-          )}
-
-          {step === 2 && <RecoverUsername onBack={() => setStep(0)} />}
-        </LoginContainer>
-      </Flex>
-    </>
-  );
+      </Routes>
+    </ToastContextProvider>
+  </Box>
 };
 
-export default Login;
+export default withToast()(Login);
+//export default Login;

@@ -1,3 +1,4 @@
+import React from "react";
 import { ThemeProvider, theme } from "@blend-ui/core";
 
 import { addDecorator, addParameters } from "@storybook/react";

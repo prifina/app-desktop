@@ -6,7 +6,9 @@ import styled from "styled-components";
 
 import { useTranslate, } from "@prifina-apps/utils";
 
-import { useStore } from "../stores/PrifinaStore";
+//import { useStore } from "../stores/PrifinaStore";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 import PropTypes from "prop-types";
 
 const StyledBox = styled(Box)`

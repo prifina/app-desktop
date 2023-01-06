@@ -9,8 +9,9 @@ import { useToast } from "@blend-ui/toast";
 import { DotLoader } from "@blend-ui/progress";
 
 import { useTranslate, } from "@prifina-apps/utils";
-import { useStore } from "../stores/PrifinaStore";
+//import { useStore } from "../stores/PrifinaStore";
 
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 import PropTypes from "prop-types";
 
 

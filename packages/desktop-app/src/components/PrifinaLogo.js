@@ -1,7 +1,8 @@
 import React from "react";
 import { Flex, Text } from "@blend-ui/core";
 
-import { ReactComponent as PrifinaLogoImage } from "../assets/prifina.svg";
+//import { ReactComponent as PrifinaLogoImage } from "../assets/prifina.svg";
+import PrifinaLogoImage from "../assets/prifina";
 
 import PropTypes from "prop-types";
 export const PrifinaLogo = ({ title = null, ...props }) => (

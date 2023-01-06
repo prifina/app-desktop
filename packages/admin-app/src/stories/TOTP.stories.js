@@ -18,7 +18,7 @@ let AUTHConfig = {
   region: config.auth_region,
   identityPoolRegion: config.main_region,
   //region: config.main_region,
-  authenticationFlowType: 'CUSTOM_AUTH'
+  //authenticationFlowType: 'CUSTOM_AUTH'
 };
 export default { title: "TOTP" };
 
@@ -153,13 +153,21 @@ export const totp = () => {
 
     }}>CHECK</button>
     <button onClick={async () => {
-      user = await Auth.signIn("tahola");
+      user = await Auth.signIn("test-user");
       console.log("LOGIN", user);
       //const result = await generateToken({ secret: key });
       //console.log(result)
 
 
-    }}>SIGN IN </button>
+    }}>SIGN IN CUSTOM</button>
+    <button onClick={async () => {
+      user = await Auth.signIn("test-user", "");
+      console.log("LOGIN", user);
+      //const result = await generateToken({ secret: key });
+      //console.log(result)
+
+
+    }}>SIGN IN DEFAULT</button>
     <button onClick={async () => {
       //let user = await Auth.signIn("test-user");
       const token = document.getElementById("token").value;

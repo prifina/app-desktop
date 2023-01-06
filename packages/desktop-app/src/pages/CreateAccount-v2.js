@@ -15,10 +15,13 @@ import { Routes, Route, Outlet, useNavigate, useLocation, useParams, } from "rea
 //import { Routes, Route, Outlet, useNavigate, useLocation, useParams, } from "react-router-dom";
 
 import { useTranslate, SimpleProgress } from "@prifina-apps/utils";
-import { useStore } from "../stores/PrifinaStore";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+//import { useStore } from "../stores/PrifinaStore";
 import shallow from 'zustand/shallow'
 
-import { useToast } from "@blend-ui/toast";
+import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
 import TermsOfUse from "./TermsOfUse-v2";
 import EmailVerification from "./EmailVerification-v2";
@@ -37,21 +40,44 @@ import config from "../config";
 
 import useComponentFlagList from "../hooks/UseComponentFlagList";
 
+import Landing from "../components/Landing";
+
 import PropTypes from "prop-types";
 
+
 const RegisterContainer = styled(Box)`
-border-radius:20px;
-width:421px;
+//border-radius:20px;
+//width:421px;
+width:100%;
 min-height:437px;
 background-color:${props => props.theme.colors.baseWhite};
 padding-left:29px;
 padding-right:28px;
 padding-bottom:15px;
-margin-top:20px;
+//margin-top:20px;
+padding-top:20px;
 `;
 
+
+
+const withToast = () => WrappedComponent => {
+  const WithToast = props => {
+    return (
+      <ToastContextProvider>
+        <WrappedComponent {...props} />
+      </ToastContextProvider>
+    );
+  };
+
+  WithToast.displayName = `WithToast(${WrappedComponent.displayName || WrappedComponent.name || "Component"
+    })`;
+
+  return WithToast;
+};
+
+
 const Layout = () => {
-  const activeIndex = useStore(state => state.activeIndex);
+  //const activeIndex = useStore(state => state.activeIndex);
   /*
   args: {
     steps: 3,
@@ -60,33 +86,56 @@ const Layout = () => {
     w: "700px"
   }
 */
+  const { pathname, search } = useLocation();
+
+  console.log("REGISTER PATH", pathname);
+  let activeIndex = 0
+  switch (pathname) {
+    case "/register/terms-of-use":
+      activeIndex = 1;
+      break;
+    case "/register/email-verification":
+      activeIndex = 2;
+      break;
+    case "/register/phone-verification":
+      activeIndex = 3;
+      break;
+    case "/registerfinal":
+      activeIndex = 4;
+      break;
+    default:
+      activeIndex = 0;
+  }
+
   const trackerWidth = 421 - 29 - 28;
-  return <Flex>
-    <Box w={"40%"}>{" "}</Box>
-    <Box w={"60%"}>
-      <Outlet />
-      <Box mt={5}>
-        <SimpleProgress variation="tracker" steps={5} w={trackerWidth + "px"} active={activeIndex} />
-      </Box>
+  return <Landing style={{ height: "100vh" }}>
+    <Outlet />
+    <Box mt={5}>
+      <SimpleProgress variation="tracker" steps={5} w={trackerWidth + "px"} active={activeIndex} />
     </Box>
-  </Flex>
+  </Landing>
 }
-
-const PageAI = () => "Page AI";
-const PageB = () => "Page B";
-const PageC = () => "Page C";
-
 
 const Register = ({ loginLink, inputVals }) => {
 
   // console.log(inputVals);
   const { __ } = useTranslate();
-  const setActiveIndex = useStore(state => state.setActiveIndex);
 
   const [nextDisabled, setNextDisabled] = useState(false);
   const { state, setState } = inputVals;
   const inputRefs = {};
 
+
+  const [stateCheck, setStateCheck] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    {
+      username: true,
+      password: true,
+      passwordConfirm: true,
+      email: true,
+      phoneNumber: true
+    }
+  );
   const { selectOptions, flagsLoading } = useComponentFlagList();
 
   const [defaultRegion, setDefaultRegion] = useState("");
@@ -97,6 +146,7 @@ const Register = ({ loginLink, inputVals }) => {
   useEffect(() => {
     if (!flagsLoading) {
       //console.log("FLAGS ", state.countryCode, selectOptions);
+      /*
       const cIndex = selectOptions.findIndex(
         c => c.regionCode === state.countryCode,
       );
@@ -105,7 +155,7 @@ const Register = ({ loginLink, inputVals }) => {
         const defaultOption = selectOptions[cIndex].key;
         setDefaultRegion(defaultOption);
       }
-      setActiveIndex(0);
+      */
       setDataReady(true);
     }
   }, [flagsLoading])
@@ -116,30 +166,56 @@ const Register = ({ loginLink, inputVals }) => {
     ref: useRef(),
     options: {
       checkExists: true,
-      toast: true,
+      toast: false,
       value: "",
       txt: {
-        "invalidTxt": "", "usernameError": __("usernameError", { length: config.usernameLength }),
+        "invalidTxt": '\u00a0', "usernameError": __("usernameError", { length: config.usernameLength }),
         "usernameError2": __("usernameError2"), "usernameExists": __("usernameExists"),
-        "placeholderTxt": __("usernamePlaceholder"), "promptTxt": ""
+        "placeholderTxt": __("usernamePlaceholder"), "promptTxt": '\u00a0'  // otherwise text height is 0
       },
     },
-    inputState: (input) => {
-      console.log("STATE UPDATE", input, input.dataset);
+    inputState: (input, validation = false) => {
+      console.log("USERNAME STATE UPDATE", input);
+      console.log("USERNAME STATE UPDATE", input?.dataset);
+      console.log("USER", inputRefs?.username);
+      if (typeof input !== 'undefined') {
+        if (inputRefs?.username === undefined) {
+          inputRefs[input.id] = input
+        }
+
+        if (validation) {
+          console.log("USER2 ", inputRefs?.username.value);
+          if (inputRefs['username'].value.length < config.usernameLength) {
+            console.log("USER3 ", inputRefs?.username.value.length);
+            setStateCheck({ username: false })
+          } else {
+            setStateCheck({ username: true })
+          }
+        } else {
+          setStateCheck({ username: input.dataset['isvalid'] })
+        }
+      } else {
+        setStateCheck({ username: false })
+      }
     }
   }
 
   const getPasswordCheckList = () => {
     //[inputRefs?.['firstName']?.value, inputRefs?.['lastName']?.value, usernameArgs.ref?.current?.value],
-    //console.log("CHECK LIST ", inputRefs, usernameArgs.ref);
+    console.log("CHECK LIST ", inputRefs, usernameArgs.ref);
     const passwordChecklist = [];
     if (usernameArgs.ref?.current) {
-      passwordChecklist.push(inputRefs['firstName'].value);
-      passwordChecklist.push(inputRefs['lastName'].value);
+      if (inputRefs['firstName'].value.length > 0) {
+        passwordChecklist.push(inputRefs['firstName'].value);
+      }
+      if (inputRefs['lastName'].value.length > 0) {
+        passwordChecklist.push(inputRefs['lastName'].value);
+      }
       passwordChecklist.push(usernameArgs.ref.current.value)
     }
     return passwordChecklist;
   }
+
   const passwordArgs = {
     id: "password",
     name: "password",
@@ -147,15 +223,38 @@ const Register = ({ loginLink, inputVals }) => {
     options: {
       addPopup: true,
       checkList: getPasswordCheckList,
-      toast: true,
+      toast: false,
       txt: {
-        "invalidTxt": "", "invalidEntry": __("invalidEntry"),
+        "invalidTxt": __("invalidPassword"), "invalidEntry": __("invalidEntry"),
         "passwordQuality": __("passwordQuality"), "placeholderTxt": __("passwordPlaceholder"),
-        "promptTxt": ""
+        "promptTxt": '\u00a0'  // otherwise text height is 0
       }
     },
-    inputState: (input) => {
-      console.log("STATE UPDATE", input, input.dataset);
+    inputState: (input, validation = false) => {
+      console.log("PASSWD STATE UPDATE ", input);
+      console.log(input?.value);
+      console.log(input?.dataset);
+      console.log(inputRefs, inputRefs?.password);
+      if (typeof input !== 'undefined') {
+
+        if (inputRefs?.password === undefined) {
+          inputRefs[input.id] = input
+        }
+        if (validation) {
+          let checks = { password: true, passwordConfirm: true };
+          if (typeof input === 'undefined') {
+            checks["password"] = false;
+          } else if (inputRefs?.passwordConfirm === undefined) {
+            checks["password"] = false
+            checks["passwordConfirm"] = false;
+          }
+
+          setStateCheck(checks)
+        }
+      } else {
+        setStateCheck({ password: false })
+      }
+
     }
   }
 
@@ -176,15 +275,19 @@ const Register = ({ loginLink, inputVals }) => {
       addPopup: false,
       checkList: () => [],
       accountPassword: getAccountPassword,
-      toast: true,
+      toast: false,
       txt: {
-        "invalidTxt": "", "invalidEntry": __("invalidPassword"),
+        "invalidTxt": '\u00a0', "invalidEntry": __("invalidPassword"),
         "placeholderTxt": __("confirmPlaceholder"),
-        "promptTxt": ""
+        "promptTxt": '\u00a0'  // otherwise text height is 0
       }
     },
     inputState: (input) => {
       console.log("STATE UPDATE", input, input.dataset);
+      if (inputRefs?.passwordConfirm === undefined) {
+        //console.log("UNDEF ");
+        inputRefs[input.id] = input
+      }
     }
   }
 
@@ -194,7 +297,7 @@ const Register = ({ loginLink, inputVals }) => {
     ref: useRef(),
     options: {
       checkExists: true,
-      toast: true,
+      toast: false,
       value: "",
       txt: { "invalidTxt": __("invalidEmail"), "placeholderTxt": __("emailPlaceholder"), "promptTxt": __("emailPrompt") }
     },
@@ -216,7 +319,7 @@ const Register = ({ loginLink, inputVals }) => {
       value: defaultRegion,
 
       checkExists: true,
-      toast: true,
+      toast: false,
       txt: { "invalidTxt": __("invalidPhoneNumber"), "placeholderTxt": __("phoneNumberPlaceholder"), "promptTxt": __("phonePrompt") }
 
     },
@@ -267,18 +370,20 @@ const Register = ({ loginLink, inputVals }) => {
           />
         </Flex>
       </Box>
+      {/* 
       <Box mt={28}>
-        <UsernameField {...usernameArgs} />
+        <UsernameField initState={stateCheck.username} {...usernameArgs} />
       </Box>
       <Box mt={28}>
-        <PasswordField {...passwordArgs} />
+        <PasswordField initState={stateCheck.password} {...passwordArgs} />
       </Box>
       <Box mt={28}>
-        <PasswordField {...configpasswordArgs} />
+        <PasswordField initState={stateCheck.comparePassword} {...configpasswordArgs} />
       </Box>
       <Box mt={28}>
         <EmailField {...emailArgs} />
       </Box>
+      */}
       <Box mt={28}>
         <PhoneNumberField {...phoneArgs} />
       </Box>
@@ -289,6 +394,18 @@ const Register = ({ loginLink, inputVals }) => {
           onClick={e => {
             console.log("NEXT ", e);
             console.log("INPUTS ", inputRefs);
+
+            if (inputRefs?.['username']?.value === undefined || inputRefs['username'].value.length < config.usernameLength) {
+              console.log("USERNAME FAILED ");
+              usernameArgs.inputState(inputRefs['username'], true)
+            }
+
+            if ((inputRefs?.['password']?.value === undefined || inputRefs?.['passwordConfirm']?.value === undefined) || (inputRefs['password'].value !== inputRefs['passwordConfirm'].value)) {
+              console.log("PASSWORD CONFIRM FAILED ");
+              passwordArgs.inputState(inputRefs['password'], true)
+            }
+
+
           }}
         >
           {__("nextButton")}
@@ -426,20 +543,22 @@ const CreateAccount = () => {
   }
 
   return <>
+    <ToastContextProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Register loginLink={loginLink} inputVals={{ state, setState }} />} />
+          <Route path="terms-of-use" element={<TermsOfUse declineTerms={declineTerms} approveTerms={approveTerms} />} />
+          <Route path="email-verification" element={<EmailVerification resendClick={resendEmailClick} verifyClick={verifyEmailClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
+          <Route path="phone-verification" element={<PhoneVerification resendClick={resendPhoneClick} verifyClick={verifyPhoneClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
+        </Route>
 
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Register loginLink={loginLink} inputVals={{ state, setState }} />} />
-        <Route path="terms-of-use" element={<TermsOfUse declineTerms={declineTerms} approveTerms={approveTerms} />} />
-        <Route path="email-verification" element={<EmailVerification resendClick={resendEmailClick} verifyClick={verifyEmailClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
-        <Route path="phone-verification" element={<PhoneVerification resendClick={resendPhoneClick} verifyClick={verifyPhoneClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
-      </Route>
-
-    </Routes>
-
+      </Routes>
+    </ToastContextProvider>
   </>
 }
 
 CreateAccount.displayName = "CreateAccount";
 
-export default CreateAccount;
+// so that this Component can use "toasts..."
+export default withToast()(CreateAccount);
+//export default CreateAccount;
