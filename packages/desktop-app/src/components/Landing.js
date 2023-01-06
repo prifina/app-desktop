@@ -4,7 +4,6 @@ import { Box, Flex, Image, useTheme } from "@blend-ui/core";
 import landingImage from "../assets/landingImage.png";
 
 const Landing = ({ children, ...props }) => {
-
   const { colors } = useTheme();
   return <Flex height={"100%"} {...props}>
     <Box width={"60%"} style={{
@@ -20,7 +19,7 @@ const Landing = ({ children, ...props }) => {
       </Flex>
 
     </Box>
-    <Box width={"40%"}>
+    <Box width={"40%"} style={{ minWidth: "480px", background: colors.baseWhite }}>
       {children}
     </Box>
   </Flex>

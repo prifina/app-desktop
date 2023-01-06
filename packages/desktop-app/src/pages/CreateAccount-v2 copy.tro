@@ -58,24 +58,6 @@ padding-bottom:15px;
 padding-top:20px;
 `;
 
-const StyledSimpleProgress = styled(SimpleProgress)`
-  .tracker li {
-    background: #eaebeb;
-    border-radius: 20px;
-    border: 0;
-    padding: 2px;
-  }
-
-  .tracker li.is-active {
-    background: #1fb2a6;
-  }
-
-  .tracker li.is-ready {
-    background: #0d776e;
-    height: 1px;
-  }
-`;
-
 
 
 const withToast = () => WrappedComponent => {
@@ -105,7 +87,6 @@ const Layout = () => {
   }
 */
   const { pathname, search } = useLocation();
-  const { __ } = useTranslate();
 
   console.log("REGISTER PATH", pathname);
   let activeIndex = 0
@@ -126,18 +107,12 @@ const Layout = () => {
       activeIndex = 0;
   }
 
+  const trackerWidth = 421 - 29 - 28;
   return <Landing style={{ height: "100vh" }}>
-    <Box textAlign="center">
-      <Text textStyle={"h3"} bold>
-        {__("createAccountTitle")}
-      </Text>
-    </Box>
-    <Box mt={5}>
-      <StyledSimpleProgress variation="tracker" steps={5} w={"62px"} active={activeIndex} />
-    </Box>
-
     <Outlet />
-
+    <Box mt={5}>
+      <SimpleProgress variation="tracker" steps={5} w={trackerWidth + "px"} active={activeIndex} />
+    </Box>
   </Landing>
 }
 
@@ -356,13 +331,12 @@ const Register = ({ loginLink, inputVals }) => {
   return <>
     {!dataReady && <div />}
     {dataReady && <RegisterContainer>
-      {/* 
       <Box textAlign="center">
         <Text textStyle={"h3"} bold>
           {__("createAccountTitle")}
         </Text>
       </Box>
-*/}
+
       <Box mt={40} display="inline-flex">
         <Flex width={"168px"}>
           <Input
@@ -411,9 +385,7 @@ const Register = ({ loginLink, inputVals }) => {
       </Box>
       */}
       <Box mt={28}>
-        <Box style={{ width: "96%" }}>
-          <PhoneNumberField {...phoneArgs} />
-        </Box>
+        <PhoneNumberField {...phoneArgs} />
       </Box>
       <Box mt={66} textAlign={"center"}>
         <Button
