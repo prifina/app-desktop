@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import styled from "styled-components";
 
@@ -11,6 +11,7 @@ import { DotLoader } from "@blend-ui/progress";
 import { useTranslate, } from "@prifina-apps/utils";
 //import { useStore } from "../stores/PrifinaStore";
 
+import shallow from 'zustand/shallow';
 import { useStore } from "../utils-v2/stores/PrifinaStore";
 import PropTypes from "prop-types";
 
@@ -34,31 +35,23 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
   const alerts = useToast();
   const { __ } = useTranslate();
 
-  const signUp = useStore(state => state.signUp);
+  const { signUp } = useStore((state) => ({ signUp: state.signUp }),
+    shallow
+  );
 
+  const effectCalled = useRef(false);
   console.log("FIN ", currentUser);
 
   useEffect(() => {
     async function onLoad() {
       const abortController = new AbortController();
-
+      effectCalled.current = true;
       try {
-        const newUser = {
-          username: currentUser.username,
-          password: currentUser.password,
-          attributes: {
-            email: currentUser.emailVerified,
-            phone_number: '+' + currentUser.phoneVerified.replace(/\D/g, ''),  // cognito doesn't accept formatted phone numbers
-            family_name: currentUser.lastName,
-            given_name: currentUser.firstName,
-            name: currentUser.preferred_username
-          },
-        };
-        console.log("Creating... ", newUser);
-        const { user } = await signUp(newUser);
-        console.log("CREATED ", user);
-        //history.replace("/login");
 
+        console.log("Creating... ", currentUser);
+        const user = await signUp(currentUser);
+        console.log("CREATED ", user);
+        // true,... if all goes ok... 
         navigate("/login", { replace: true })
       } catch (e) {
         console.log("ERR ", e);
@@ -70,7 +63,9 @@ const FinalizingAccount = ({ currentUser, ...props }) => {
         abortController.abort();
       };
     }
-    onLoad();
+    if (!effectCalled.current) {
+      onLoad();
+    }
   }, []);
 
   return (

@@ -287,14 +287,28 @@ const PrifinaStoreProvider = ({ children }) => {
           return await CoreApiClient.graphql(getCountryCode, vars);
         },
         checkCognitoAttributeQuery: async (vars) => {
-          //console.log("CHECK THIS ", await CoreApiClient.graphql(checkCognitoAttribute, vars))
+          console.log("CHECK THIS ", await CoreApiClient.graphql(checkCognitoAttribute, vars))
           return await CoreApiClient.graphql(checkCognitoAttribute, vars);
         },
         updateCognitoUserMutation: async (vars) => {
           return await CoreApiClient.graphql(updateCognitoUser, vars);
         },
-        getVerificationQuery: async (vars) => {
-          return await CoreApiClient.graphql(getVerification, vars);
+        getVerificationQuery: async (uname, source, code) => {
+          /*
+          currentUser.username,
+          currentUser.client,
+          "email",
+          verificationFields.verificationCode,
+        ].join("#");
+*/
+          //let verification = { result: "", user_code: variables.user_code };
+          // console.log("TOKEN ", get().authUser)
+
+          const userCode = [uname, AuthClient.AuthConfig.userPoolWebClientId, source, code].join("#");
+          const variables = { user_code: userCode }
+          const result = await CoreApiClient.graphql(getVerification, variables);
+          return Promise.resolve(result.data.getVerification.result);
+          //return { data: { getVerification: verification } }
         },
         installWidgetMutation: async (vars) => {
           return await CoreApiClient.graphql(installWidget, vars);
@@ -316,6 +330,10 @@ const PrifinaStoreProvider = ({ children }) => {
         },
         confirmSignIn: async (code) => {
           return await AuthClient.confirmSignIn(get().authUser, code, get().mfaMethod);
+        },
+        signUp: async (vars) => {
+          console.log("SIGNUP ", vars);
+          return await AuthClient.signUp(vars);
         }
       }))}
     >

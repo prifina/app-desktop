@@ -9,6 +9,7 @@ import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 //import shallow from 'zustand/shallow'
 //import { useStore } from "../stores/PrifinaStore";
 
+import shallow from 'zustand/shallow';
 import { useStore } from "../utils-v2/stores/PrifinaStore";
 import { validEmail, } from "@prifina-apps/utils";
 import PropTypes from "prop-types";
@@ -16,7 +17,7 @@ import PropTypes from "prop-types";
 
 
 const EmailField = forwardRef(
-  ({ options, inputState, ...props }, ref) => {
+  ({ options, inputState, initState = true, ...props }, ref) => {
 
 
     console.log("OPTIONS ", options)
@@ -27,17 +28,23 @@ const EmailField = forwardRef(
       shallow
     );
     */
-    const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
+
+    const { checkCognitoAttributeQuery } = useStore((state) => ({ checkCognitoAttributeQuery: state.checkCognitoAttributeQuery }),
+      shallow
+    );
+
+    //  const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
 
 
     //console.log("STORE ", checkCognitoAttributeQuery);
     const alerts = useToast();
-    const [isValid, setIsValid] = useState(true);
+    const [isValid, setIsValid] = useState(initState);
     // possibly dynamic change of messages
     const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
     const [invalidTxt, setInvalidTxt] = useState(options.txt.invalidTxt);
 
 
+    /*
     useEffect(() => {
       //inputState(isPhoneNumber.current);
       console.log("UPDATE ", isValid, ref.current);
@@ -45,6 +52,15 @@ const EmailField = forwardRef(
         inputState(ref.current)
       }
     }, [isValid]);
+    */
+    useEffect(() => {
+
+      if (initState !== isValid) {
+        //   console.log("SET IS VALID ", initState);
+        setIsValid(initState);
+      }
+
+    }, [initState]);
 
 
     const checkEmailAttr = email => {
@@ -70,6 +86,8 @@ const EmailField = forwardRef(
     };
 
     const updateCheckStatus = (emailState) => {
+      console.log(emailState, options);
+
       if (!options.toast && !emailState) {
         if (!isValid) {
           inputState(ref.current);
@@ -87,9 +105,17 @@ const EmailField = forwardRef(
       }
       if (options.toast && emailState) {
 
-        if (!isValid) {
-          inputState(ref.current);
-        }
+        emailAlert(invalidTxt);
+        //if (!isValid) {
+        inputState(ref.current);
+        //}
+        setIsValid(true);
+      }
+      if (!options.toast && emailState) {
+        //console.log("REF ", ref);
+        //if (!isValid) {
+        inputState(ref.current);
+        //}
         setIsValid(true);
       }
     }
@@ -109,14 +135,17 @@ const EmailField = forwardRef(
         }
         setIsValid(true);
       } else if (emailState && !isValid && options.checkExists) {
+        console.log("CHECK 1")
         checkEmailAttr(email).then(res => {
           updateCheckStatus(!res);
         })
       } else if (emailState && isValid && options.checkExists) {
+        console.log("CHECK 2")
         checkEmailAttr(email).then(res => {
           updateCheckStatus(!res);
         })
       } else {
+        console.log("CHECK 3")
         updateCheckStatus(emailState);
       }
 
@@ -138,7 +167,7 @@ const EmailField = forwardRef(
           data-testid="email"
           placeholder={options.txt.placeholderTxt}
           promptMsg={promptTxt}
-          errorMsg={!options.toast ? invalidTxt : ""}
+          errorMsg={!options.toast ? invalidTxt : '\u00a0'}
           error={!isValid}
           ref={ref}
           onBlur={checkEmail}
@@ -158,7 +187,8 @@ EmailField.displayName = "EmailField";
 
 EmailField.propTypes = {
   options: PropTypes.object.isRequired,
-  inputState: PropTypes.func
+  inputState: PropTypes.func,
+  initState: PropTypes.bool
 
 };
 

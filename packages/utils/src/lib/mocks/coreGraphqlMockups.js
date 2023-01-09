@@ -59,13 +59,13 @@ export const coreMockups = {
     },
 
     getVerification: (variables, Options) => {
-      let verification = { result: "", user_code: variables.user_code };
+      let verification = { result: true, user_code: variables.user_code };
       if (Options.hasOwnProperty("verificationExists") && !Options.verificationExists) {
         verification = null;
       }
-
+      console.log("GET VERIFICATION ", variables)
       return { data: { getVerification: verification } }
-      //{ data: { checkCognitoAttribute: attributeExists } };
+
     },
     getLoginUserIdentityPool: (variables, Options) => ({ data: { getLoginUserIdentityPool: prifinaSession.identityPool } }),
   },

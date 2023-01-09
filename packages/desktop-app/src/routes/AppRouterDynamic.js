@@ -29,7 +29,7 @@ export default (props) => (
     <Route element={<UnAuthLayout />}>
       <Route path="/" element={<Login />} />
       <Route path="/login/*" element={<Login />} />
-      <Route path="/register" element={<CreateAccount />} />
+      <Route path="/register/*" element={<CreateAccount />} />
     </Route>
     <Route path="*" element={<NotFoundPage />} />
   </Routes>

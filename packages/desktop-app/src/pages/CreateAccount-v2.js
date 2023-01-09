@@ -1,31 +1,27 @@
-import React, { useState, useReducer, useEffect, useRef } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 
 import {
-  Button,
-  Input,
-  Box,
-  Flex,
-  Text,
-  useTheme,
-  Divider,
+  Box, Button, Flex, Input, Text
 } from "@blend-ui/core";
 
-import { Routes, Route, Outlet, useNavigate, useLocation, useParams, } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 //import { Routes, Route, Outlet, useNavigate, useLocation, useParams, } from "react-router-dom";
 
-import { useTranslate, SimpleProgress } from "@prifina-apps/utils";
+import { SimpleProgress, useTranslate } from "@prifina-apps/utils";
 
 import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 //import { useStore } from "../stores/PrifinaStore";
-import shallow from 'zustand/shallow'
+import shallow from 'zustand/shallow';
 
-import { useToast, ToastContextProvider } from "@blend-ui/toast";
+import { ToastContextProvider, useToast } from "@blend-ui/toast";
 
-import TermsOfUse from "./TermsOfUse-v2";
 import EmailVerification from "./EmailVerification-v2";
 import PhoneVerification from "./PhoneVerification-v2";
+import TermsOfUse from "./TermsOfUse-v2";
+
+import FinalizingAccount from "./FinalizingAccount-v2";
 
 import UsernameField from "../components/UsernameField";
 
@@ -42,8 +38,14 @@ import useComponentFlagList from "../hooks/UseComponentFlagList";
 
 import Landing from "../components/Landing";
 
+
+import { v4 as uuidv4 } from "uuid";
+
 import PropTypes from "prop-types";
 
+
+
+const UUID = uuidv4();
 
 const RegisterContainer = styled(Box)`
 //border-radius:20px;
@@ -141,14 +143,14 @@ const Layout = () => {
   </Landing>
 }
 
-const Register = ({ loginLink, inputVals }) => {
+const Register = ({ nextLink, loginLink, inputRefs, inputVals }) => {
 
-  // console.log(inputVals);
+  console.log(inputVals);
   const { __ } = useTranslate();
 
   const [nextDisabled, setNextDisabled] = useState(false);
   const { state, setState } = inputVals;
-  const inputRefs = {};
+  //const inputRefs = {};
 
 
   const [stateCheck, setStateCheck] = useReducer(
@@ -170,17 +172,18 @@ const Register = ({ loginLink, inputVals }) => {
   // if more async data needs to be fetched, then this is the place for it.... 
   useEffect(() => {
     if (!flagsLoading) {
-      //console.log("FLAGS ", state.countryCode, selectOptions);
-      /*
+      console.log("FLAGS ", state.countryCode, selectOptions);
+
       const cIndex = selectOptions.findIndex(
         c => c.regionCode === state.countryCode,
       );
       if (cIndex > -1) {
         // console.log("FOUND COUNTRY ", cIndex);
         const defaultOption = selectOptions[cIndex].key;
+        // console.log("FOUND COUNTRY ", cIndex, defaultOption);
         setDefaultRegion(defaultOption);
       }
-      */
+
       setDataReady(true);
     }
   }, [flagsLoading])
@@ -205,20 +208,25 @@ const Register = ({ loginLink, inputVals }) => {
       console.log("USER", inputRefs?.username);
       if (typeof input !== 'undefined') {
         if (inputRefs?.username === undefined) {
+          //console.log("SET INPUT REF ", input.id)
           inputRefs[input.id] = input
         }
 
         if (validation) {
-          console.log("USER2 ", inputRefs?.username.value);
+          // console.log("USER2 ", inputRefs?.username.value);
           if (inputRefs['username'].value.length < config.usernameLength) {
-            console.log("USER3 ", inputRefs?.username.value.length);
+            // console.log("USER3 ", inputRefs?.username.value.length);
             setStateCheck({ username: false })
+            return false;
           } else {
             setStateCheck({ username: true })
+            return true;
           }
         } else {
           setStateCheck({ username: input.dataset['isvalid'] })
+
         }
+        console.log("INPUT REF ", inputRefs)
       } else {
         setStateCheck({ username: false })
       }
@@ -269,12 +277,15 @@ const Register = ({ loginLink, inputVals }) => {
           let checks = { password: true, passwordConfirm: true };
           if (typeof input === 'undefined') {
             checks["password"] = false;
+            return false;
           } else if (inputRefs?.passwordConfirm === undefined) {
             checks["password"] = false
             checks["passwordConfirm"] = false;
+            return false;
           }
 
           setStateCheck(checks)
+          return checks.password && checks.passwordConfirm;
         }
       } else {
         setStateCheck({ password: false })
@@ -326,8 +337,24 @@ const Register = ({ loginLink, inputVals }) => {
       value: "",
       txt: { "invalidTxt": __("invalidEmail"), "placeholderTxt": __("emailPlaceholder"), "promptTxt": __("emailPrompt") }
     },
-    inputState: (input) => {
-      console.log("STATE UPDATE", input, input.dataset);
+    inputState: (input, validation = false) => {
+      // console.log("STATE UPDATE", input, input.dataset);
+      console.log("EMAIL STATE UPDATE ", input);
+      console.log(input?.value);
+      console.log(input?.dataset);
+      console.log(inputRefs, inputRefs?.email);
+      if (typeof input !== 'undefined') {
+
+        if (inputRefs?.email === undefined) {
+          inputRefs[input.id] = input
+        }
+        if (validation) {
+          setStateCheck({ email: input.dataset['isvalid'] })
+          return input.dataset['isvalid']
+        }
+      } else {
+        setStateCheck({ email: false })
+      }
     }
   }
 
@@ -342,17 +369,64 @@ const Register = ({ loginLink, inputVals }) => {
       showList: true,
       selectOption: "key",
       value: defaultRegion,
-
       checkExists: true,
       toast: false,
       txt: { "invalidTxt": __("invalidPhoneNumber"), "placeholderTxt": __("phoneNumberPlaceholder"), "promptTxt": __("phonePrompt") }
 
     },
-    inputState: (input) => {
-      console.log("STATE UPDATE", input, input.dataset);
+    inputState: (input, validation = false) => {
+      console.log("PHONE STATE UPDATE ", input);
+      console.log(input?.nationalNumber);
+      // console.log(input?.dataset);
+      console.log(inputRefs, inputRefs?.phoneNumber);
+      if (typeof input !== 'undefined' && input?.nationalNumber) {
+
+        if (inputRefs?.phoneNumber === undefined) {
+          //console.log("HAVE NUMBER ", input?.nationalNumber)
+          inputRefs['phoneNumber'] = input
+        }
+        if (validation) {
+          //console.log("VALIDATION ", input['nationalNumber'] !== null && input?.['nationalNumber'] && input['nationalNumber'] !== "")
+          setStateCheck({ phoneNumber: input['nationalNumber'] !== null && input?.['nationalNumber'] && input['nationalNumber'] !== "" })
+          return input['nationalNumber'] !== null && input?.['nationalNumber'] && input['nationalNumber'] !== ""
+        }
+      } else {
+        setStateCheck({ phoneNumber: false })
+      }
     }
   }
 
+  const nextClick = (e) => {
+
+    console.log("NEXT ", e);
+    console.log("INPUTS ", inputRefs);
+    let validationResult = true;
+
+
+    if (inputRefs?.['username']?.value === undefined || inputRefs['username'].value.length < config.usernameLength) {
+      //console.log("USERNAME FAILED ");
+      validationResult = usernameArgs.inputState(inputRefs['username'], true);
+    }
+
+    if ((inputRefs?.['password']?.value === undefined || inputRefs?.['passwordConfirm']?.value === undefined) || (inputRefs['password'].value !== inputRefs['passwordConfirm'].value)) {
+      //console.log("PASSWORD CONFIRM FAILED ");
+      validationResult = passwordArgs.inputState(inputRefs['password'], true) ? true : validationResult;
+    }
+
+
+    validationResult = emailArgs.inputState(inputRefs['email'], true) ? true : validationResult;
+    validationResult = phoneArgs.inputState(inputRefs['phoneNumber'], true) ? true : validationResult;
+
+
+    //console.log("VALIDATION RESULT ", validationResult);
+    if (validationResult) {
+      nextLink(e, inputRefs);
+    } else {
+      //setNextDisabled(true);
+    }
+    e.preventDefault();
+
+  }
   return <>
     {!dataReady && <div />}
     {dataReady && <RegisterContainer>
@@ -396,45 +470,35 @@ const Register = ({ loginLink, inputVals }) => {
           />
         </Flex>
       </Box>
-      {/* 
+
       <Box mt={28}>
         <UsernameField initState={stateCheck.username} {...usernameArgs} />
       </Box>
+
       <Box mt={28}>
         <PasswordField initState={stateCheck.password} {...passwordArgs} />
       </Box>
       <Box mt={28}>
         <PasswordField initState={stateCheck.comparePassword} {...configpasswordArgs} />
       </Box>
+
       <Box mt={28}>
-        <EmailField {...emailArgs} />
+        <EmailField initState={stateCheck.email} {...emailArgs} />
       </Box>
-      */}
+
+
       <Box mt={28}>
         <Box style={{ width: "96%" }}>
-          <PhoneNumberField {...phoneArgs} />
+          <PhoneNumberField initState={stateCheck.phoneNumber} {...phoneArgs} />
         </Box>
       </Box>
+
+
       <Box mt={66} textAlign={"center"}>
         <Button
           id="nextButton"
           disabled={nextDisabled}
-          onClick={e => {
-            console.log("NEXT ", e);
-            console.log("INPUTS ", inputRefs);
-
-            if (inputRefs?.['username']?.value === undefined || inputRefs['username'].value.length < config.usernameLength) {
-              console.log("USERNAME FAILED ");
-              usernameArgs.inputState(inputRefs['username'], true)
-            }
-
-            if ((inputRefs?.['password']?.value === undefined || inputRefs?.['passwordConfirm']?.value === undefined) || (inputRefs['password'].value !== inputRefs['passwordConfirm'].value)) {
-              console.log("PASSWORD CONFIRM FAILED ");
-              passwordArgs.inputState(inputRefs['password'], true)
-            }
-
-
-          }}
+          onClick={nextClick}
         >
           {__("nextButton")}
         </Button>
@@ -467,7 +531,10 @@ Register.displayName = "Register";
 
 Register.propTypes = {
   loginLink: PropTypes.func.isRequired,
-  inputVals: PropTypes.object.isRequired
+  nextLink: PropTypes.func.isRequired,
+  inputVals: PropTypes.object.isRequired,
+  inputRefs: PropTypes.object.isRequired
+
 };
 
 const CreateAccount = () => {
@@ -476,7 +543,7 @@ const CreateAccount = () => {
   const navigate = useNavigate();
 
   const { __ } = useTranslate();
-  const { getCountryCodeQuery, resendCode, verifyCode } = useStore((state) => ({ getCountryCodeQuery: state.getCountryCodeQuery, verifyCode: state.verifyCode, resendCode: state.resendCode }),
+  const { getCountryCodeQuery, resendCode, getVerificationQuery } = useStore((state) => ({ getCountryCodeQuery: state.getCountryCodeQuery, getVerificationQuery: state.getVerificationQuery, resendCode: state.resendCode }),
     shallow
   );
 
@@ -507,6 +574,10 @@ const CreateAccount = () => {
     }
   */
 
+  const inputRefs = {};
+  const currentUser = useRef();
+
+  //const effectCalled = useRef(false);
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -516,14 +587,17 @@ const CreateAccount = () => {
       phoneVerified: "",
       lastName: "",
       firstName: "",
-      preferred_username: ""
+      preferred_username: "",
+      countryCode: ""
     }
   );
 
   useEffect(() => {
     async function getCountryCode() {
       const countryCode = await getCountryCodeQuery();
-      setState({ countryCode: countryCode });
+      if (countryCode.data.getCountryCode !== null && countryCode.data?.getCountryCode) {
+        setState({ countryCode: countryCode.data.getCountryCode });
+      }
     }
     getCountryCode();
   }, []);
@@ -543,13 +617,17 @@ const CreateAccount = () => {
     e.preventDefault();
   }
   const verifyEmailClick = (code) => {
-    verifyCode(code).then(res => {
-      navigate("/register/phone-verification", { replace: true });
+    getVerificationQuery(UUID, "email", code).then(verified => {
+      if (verified) {
+        navigate("/register/phone-verification", { replace: true });
+      }
     });
   }
   const verifyPhoneClick = (code) => {
-    verifyCode(code).then(res => {
-      navigate("/register/success", { replace: true });
+    getVerificationQuery(UUID, "phone", code).then(verified => {
+      if (verified) {
+        navigate("/register/final", { replace: true });
+      }
     });
   }
   const resendEmailClick = (e) => {
@@ -569,15 +647,32 @@ const CreateAccount = () => {
     navigate("/register", { replace: true });
     e.preventDefault();
   }
+  const nextClick = (e, inputs) => {
+    console.log("NEXT OK ", inputs);
+    currentUser.current = {
+      username: inputs.username.value,
+      password: inputs.password.value,
+      attributes: {
+        email: inputs.email.value,
+        phone_number: '+' + inputs.phoneNumber.number.replace(/\D/g, ''),  // cognito doesn't accept formatted phone numbers
+        family_name: inputs.lastName.value,
+        given_name: inputs.firstName.value,
+        name: UUID
+      },
+    };
+    navigate("/register/terms-of-use", { replace: true });
+    e.preventDefault();
+  }
 
   return <>
     <ToastContextProvider>
       <Routes>
         <Route element={<Layout />}>
-          <Route index element={<Register loginLink={loginLink} inputVals={{ state, setState }} />} />
+          <Route index element={<Register inputRefs={inputRefs} nextLink={nextClick} loginLink={loginLink} inputVals={{ state, setState }} />} />
           <Route path="terms-of-use" element={<TermsOfUse declineTerms={declineTerms} approveTerms={approveTerms} />} />
           <Route path="email-verification" element={<EmailVerification resendClick={resendEmailClick} verifyClick={verifyEmailClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
           <Route path="phone-verification" element={<PhoneVerification resendClick={resendPhoneClick} verifyClick={verifyPhoneClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
+          <Route path="final" element={<FinalizingAccount currentUser={currentUser.current} />} />
 
         </Route>
 

@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect } from "react";
+import React, { useState, forwardRef, useEffect, useRef } from "react";
 //import { Text, Box, useTheme } from "@blend-ui/core";
 import { IconField } from "@blend-ui/icon-field";
 import { useToast } from "@blend-ui/toast";
@@ -6,6 +6,7 @@ import { useToast } from "@blend-ui/toast";
 import bxUser from "@iconify/icons-bx/bx-user";
 //import { useStore } from "../stores/PrifinaStore";
 
+import shallow from 'zustand/shallow';
 import { useStore } from "../utils-v2/stores/PrifinaStore";
 import { validUsername, } from "@prifina-apps/utils";
 
@@ -20,7 +21,11 @@ const UsernameField = forwardRef(
 
     console.log("OPTIONS ", options)
 
-    const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
+    const { checkCognitoAttributeQuery } = useStore((state) => ({ checkCognitoAttributeQuery: state.checkCognitoAttributeQuery }),
+      shallow
+    );
+
+    //const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
 
     //console.log("STORE ", checkCognitoAttributeQuery);
     const alerts = useToast();
@@ -28,6 +33,8 @@ const UsernameField = forwardRef(
     // possibly dynamic change of messages
     const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
     const [invalidTxt, setInvalidTxt] = useState(options.txt.invalidTxt);
+
+    const effectCalled = useRef(false);
     /*
     useEffect(() => {
       //inputState(isPhoneNumber.current);
@@ -37,6 +44,23 @@ const UsernameField = forwardRef(
       }
     }, [isValid]);
     */
+
+
+
+    useEffect(() => {
+      //inputState(isPhoneNumber.current);
+      //console.log("UPDATE ", isValid, ref.current);
+      if (!effectCalled.current) {
+
+        if (ref?.current) {
+          effectCalled.current = true;
+          inputState(ref.current)
+        }
+      }
+    }, []);
+
+
+
     useEffect(() => {
 
       if (initState !== isValid) {
@@ -83,26 +107,32 @@ const UsernameField = forwardRef(
 
       if (!options.toast && !userState) {
         setInvalidTxt(userMsg);
-        if (!isValid) {
-          inputState(ref.current);
-        }
+        //if (!isValid) {
+        inputState(ref.current);
+        //}
         setIsValid(false);
         ref.current.focus();
       }
       if (options.toast && !userState) {
         setInvalidTxt(userMsg);
         usernameAlert(userMsg);
-        if (!isValid) {
-          inputState(ref.current);
-        }
+        //if (!isValid) {
+        inputState(ref.current);
+        //}
         setIsValid(false);
         ref.current.focus();
       }
+      if (!options.toast && userState) {
+        console.log("STATUS ", ref);
+        inputState(ref.current);
+        setIsValid(true);
+      }
+
     }
 
     const checkUsername = (e) => {
       const username = ref.current.value;
-
+      //console.log("CHECKING USERNAME ", username);
       let userError = validUsername(username, config.usernameLength);
       //console.log("CHECK ", username, userError, userError.length, isValid, options.checkExists, ref);
 
@@ -127,6 +157,7 @@ const UsernameField = forwardRef(
           updateCheckStatus(!res, "EXISTS");
         })
       } else if (userState && isValid && options.checkExists) {
+        console.log("CHECK 2 ", username, ref.current)
         checkUsernameAttr(username).then(res => {
           // console.log("CHECK RES ", res);
           updateCheckStatus(!res, res ? "EXISTS" : userError);

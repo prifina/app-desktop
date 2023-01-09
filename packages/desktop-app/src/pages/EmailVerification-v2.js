@@ -8,7 +8,6 @@ import { useToast } from "@blend-ui/toast";
 import { useTranslate, } from "@prifina-apps/utils";
 import VerificationField from "../components/VerificationField";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
 //import { useStore } from "../stores/PrifinaStore";
 import PropTypes from "prop-types";
 

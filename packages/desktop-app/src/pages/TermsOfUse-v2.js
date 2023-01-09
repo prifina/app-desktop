@@ -58,8 +58,6 @@ margin-top:20px;
 const TermsOfUse = ({ declineTerms, approveTerms }) => {
 
 
-  const setActiveIndex = useStore(state => state.setActiveIndex);
-
   const { __ } = useTranslate();
 
   const texts = [
@@ -195,9 +193,6 @@ const TermsOfUse = ({ declineTerms, approveTerms }) => {
   const [scrolled, setScrolled] = useState(false);
   const [decline, setDecline] = useState(false);
 
-  useEffect(() => {
-    setActiveIndex(1);
-  }, []);
 
   const _handleScroll = e => {
     const bottom =

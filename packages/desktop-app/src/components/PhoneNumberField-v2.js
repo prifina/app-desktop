@@ -12,6 +12,7 @@ import bxPhone from "@iconify/icons-bx/bx-phone";
 
 import { isValidNumber, onlyDigitChars } from "@prifina-apps/utils";
 
+import shallow from 'zustand/shallow';
 import { useStore } from "../utils-v2/stores/PrifinaStore";
 //import { useStore } from "../stores/PrifinaStore";
 import PropTypes from "prop-types";
@@ -102,16 +103,21 @@ const PhoneNumberField = forwardRef(
   ({
     options,
     selectOptions,
-    disabled, inputState, ...props }, ref) => {
+    disabled, inputState, initState = true, ...props }, ref) => {
 
     console.log("PHONE OPTIONS ", options, selectOptions);
-    const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
+
+    const { checkCognitoAttributeQuery } = useStore((state) => ({ checkCognitoAttributeQuery: state.checkCognitoAttributeQuery }),
+      shallow
+    );
+
+    //const checkCognitoAttributeQuery = useStore(state => state.checkCognitoAttributeQuery);
 
     const boxRef = useRef();
     const theme = useTheme();
     const alerts = useToast();
     const selectRef = useRef();
-    const [inputError, setInputError] = useState(false);
+    const [inputError, setInputError] = useState(!initState);
     const isPhoneNumber = useRef({});
 
     // const [isPhoneNumber, setIsPhoneNumber] = inputState;
@@ -132,12 +138,22 @@ const PhoneNumberField = forwardRef(
     const [promptTxt, setPromptTxt] = useState(options.txt.promptTxt);
     const [invalidTxt, setInvalidTxt] = useState(options.txt.invalidTxt);
     //const [showOptions, setShowOptions] = useState(false);
-
+    /*
+        useEffect(() => {
+          console.log("UPDATE ", inputError);
+          ref.current.dataset['isvalid'] = !inputError;
+          inputState(isPhoneNumber.current);
+        }, [inputError])
+    */
     useEffect(() => {
-      console.log("UPDATE ", inputError);
-      ref.current.dataset['isvalid'] = !inputError;
-      inputState(isPhoneNumber.current);
-    }, [inputError])
+
+      if (!initState !== inputError) {
+        console.log("NEW INIT STATE", initState, isPhoneNumber.current);
+        inputState(isPhoneNumber.current);
+        setInputError(!initState);
+      }
+
+    }, [initState]);
 
     const selectOnChange = (e, code) => {
       console.log("CODE ", code);
@@ -292,10 +308,14 @@ const PhoneNumberField = forwardRef(
       if (status) {
         setInputError(true);
         setInvalidTxt(options.txt.invalidTxt);
+        inputState(isPhoneNumber.current);
         ref.current.focus();
         if (options.toast) {
           phoneAlert(options.txt.invalidTxt);
         }
+      } else {
+        //setInputError(false);
+        //inputState(isPhoneNumber.current);
       }
     }
     const checkInput = (phoneInput, checkIsValidNumber = false) => {
@@ -321,7 +341,7 @@ const PhoneNumberField = forwardRef(
         setInputError(true);
         setInvalidTxt(options.txt.invalidTxt);
         return false;
-      } else if (phone.length > 0 && checkIsValidNumber) {
+      } else if ((phone.length > 0 && checkIsValidNumber) || isPhoneNumber.current?.nationalNumber == undefined) {
         const checkResult = isValidNumber(phone);
         console.log("CHECK RES ", checkResult)
         let phoneState = Object.keys(checkResult).length > 0;
@@ -333,12 +353,12 @@ const PhoneNumberField = forwardRef(
           if (options.checkExists) {
             // checking if phone number exists.... 
             checkPhoneNumberAttr(phone).then(res => {
-              console.log("ATTR RES ", res);
+              //console.log("ATTR RES ", res);
               isPhoneNumber.current = checkResult;
-              if (inputError === res) {
-                // if state has not changed... this is not triggered in useEffect
-                inputState(isPhoneNumber.current);
-              }
+              //if (inputError === res) {
+              // if state has not changed... this is not triggered in useEffect
+              inputState(isPhoneNumber.current);
+              //}
               updateCheckStatus(res);
               if (!res) {
                 //setIsPhoneNumber(checkResult);
@@ -348,10 +368,10 @@ const PhoneNumberField = forwardRef(
           } else {
             console.log("NO ERRORS ", phone, checkIsValidNumber, checkResult);
             isPhoneNumber.current = checkResult;
-            if (!inputError) {
-              // if state has not changed... this is not triggered in useEffect
-              inputState(isPhoneNumber.current);
-            }
+            //if (!inputError) {
+            // if state has not changed... this is not triggered in useEffect
+            inputState(isPhoneNumber.current);
+            //}
             setInputError(false);
             //setIsPhoneNumber(checkResult);
 
@@ -362,7 +382,7 @@ const PhoneNumberField = forwardRef(
 
       } else {
         console.log("GOOD NUMBER....");
-
+        inputState(isPhoneNumber.current);
         setInputError(false);
         setInvalidTxt("");
       }
@@ -465,7 +485,8 @@ PhoneNumberField.propTypes = {
   disabled: PropTypes.bool,
   options: PropTypes.object,
   selectOptions: PropTypes.array,
-  inputState: PropTypes.func
+  inputState: PropTypes.func,
+  initState: PropTypes.bool
 };
 
 export default PhoneNumberField;
