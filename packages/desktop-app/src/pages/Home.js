@@ -25,11 +25,12 @@ import {
 
 import { API as GRAPHQL, Auth } from "aws-amplify";
 */
-
+/*
 import {
   useIsMountedRef,
   useUserMenu
 } from "@prifina-apps/utils";
+*/
 //import { useHistory } from "react-router-dom";
 
 import { useNavigate } from "react-router";
@@ -42,9 +43,13 @@ import { PrifinaLogo } from "../components/PrifinaLogo";
 import shallow from "zustand/shallow";
 
 import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
+
+import { useUserMenu } from "../utils-v2/components/FloatingUserMenu-v2";
+
+import withUsermenu from "../utils-v2/components/UserMenu-v2";
 
 import PropTypes from "prop-types";
-import { prifinaApps } from "@prifina-apps/utils/src/lib/mocks/coreModels";
 
 const array_chunks = (array, chunk_size) =>
   Array(Math.ceil(array.length / chunk_size))
@@ -106,7 +111,7 @@ const Home = props => {
 
   const { user, getPrifinaUserQuery, updateUserProfileMutation,
     setAppsyncConfig, listAppMarketQuery, getSystemNotificationCountQuery, updateUserActivityMutation,
-    setActiveUser, setPrifinaUser } = useStore(
+    setActiveUser, setPrifinaUser, listSystemNotificationsByDateQuery } = useStore(
       state => ({
         user: state.user,
 
@@ -117,10 +122,13 @@ const Home = props => {
         getSystemNotificationCountQuery: state.getSystemNotificationCountQuery,
         updateUserActivityMutation: state.updateUserActivityMutation,
         setActiveUser: state.setActiveUser,
-        setPrifinaUser: state.setPrifinaUser
+        setPrifinaUser: state.setPrifinaUser,
+        listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery
       }),
       shallow,
     );
+
+  const { CoreApiClient, UserApiClient } = useGraphQLContext();
 
   const effectCalled = useRef(false);
 
@@ -222,7 +230,7 @@ const Home = props => {
 
       const initials = appProfile.initials;
 
-      //console.log("APP PROFILE ", appProfile);
+      console.log("APP PROFILE ", appProfile);
 
       //console.log(prifinaApps);
 
@@ -237,16 +245,21 @@ const Home = props => {
 
       //console.log("COUNT ", notificationCountResult);
       const userMenuInit = {
-        initials: initials,
         //effect: { hover: { width: 42 } },
         notifications:
           notificationCountResult.data.getSystemNotificationCount,
         RecentApps: [],
-        prifinaID: currentUser.id
+        prifinaID: currentUser.id,
+        activeUser: activeUser,
+        listSystemNotificationsByDateQuery: listSystemNotificationsByDateQuery,
+        coreApiClient: CoreApiClient
       };
       console.log("User menu init ", userMenuInit);
-      /*
+      console.log("User menu init2 ", userMenu);
+
       userMenu.show(userMenuInit);
+      /*
+      
 
       userMenu.setClientHandler(clientHandler);
       userMenu.setActiveUser(activeUser);
@@ -344,5 +357,5 @@ const Home = props => {
 
 Home.displayName = "Home";
 
-//export default withUsermenu()(Home);
-export default Home;
+export default withUsermenu()(Home);
+//export default Home;

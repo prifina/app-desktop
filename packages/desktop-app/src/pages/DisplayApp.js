@@ -6,13 +6,15 @@ import { useTransition, animated } from "react-spring";
 //import { RemoteComponent } from "../RemoteComponent";
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
-import { API as GRAPHQL, Storage } from "aws-amplify";
+//import { API as GRAPHQL, Storage } from "aws-amplify";
 
-import gql from "graphql-tag";
+//import gql from "graphql-tag";
 
 import * as C from "./display-app/components";
 
-import { i18n, getAthenaResults, Navbar, updatePrifinaUserMutation, useIsMountedRef } from "@prifina-apps/utils";
+//import { i18n, getAthenaResults, Navbar, updatePrifinaUserMutation, useIsMountedRef } from "@prifina-apps/utils";
+
+import { Navbar, getAthenaResults } from "@prifina-apps/utils";
 
 import DisplayAppLogo from "../assets/display-app-logo";
 
@@ -45,16 +47,33 @@ import fePlus from "@iconify/icons-fe/plus";
 
 import { Remote } from "@prifina-apps/remote";
 
-i18n.init();
 
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
+
+import shallow from "zustand/shallow";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
 /* 
 const StyledBlendIcon = styled(BlendIcon)`
   cursor: pointer;
 `;
  */
 
-function saveViewSettings(uuid, viewSettings) {
+function saveViewSettings(updateUser, uuid, viewSettings, widgetSettings = []) {
 
+  console.log("SAVE SETTINGS ", viewSettings, widgetSettings);
+
+  const vars = {
+    id: uuid,
+    viewSettings: JSON.stringify(viewSettings),
+  }
+  if (widgetSettings.length > 0) {
+    vars.installedWidgets = JSON.stringify(widgetSettings)
+  }
+  return updateUser(vars);
+  //console.log("SAVE VIEW SETTINGS ", vars);
+  //return Promise.resolve({});
   /*
   return new Promise((resolve, reject) => {
 
@@ -65,22 +84,30 @@ function saveViewSettings(uuid, viewSettings) {
 
      resolve(true);  
   });
+   installedWidgets
 */
-  return updatePrifinaUserMutation(GRAPHQL, {
-    id: uuid,
-    viewSettings: JSON.stringify(viewSettings),
-  });
 
+  // return Promise.resolve(true);
+
+
+  /*
+    return updatePrifinaUserMutation(GRAPHQL, {
+      id: uuid,
+      viewSettings: JSON.stringify(viewSettings),
+    });
+  */
 
 }
 function getSystemSettings(settings, currentSettings) {
   console.log("getSystemSettings ", settings, currentSettings);
   // default values.... should not be needed, if all is configured correctly.
-  let theme = "dark";
-  let size = "300x300";
+  //let theme = "dark";
+  //let size = "300x300";
+  const systemSettings = { size: "300x300", theme: "dark" }
 
   if (settings && settings.length > 0) {
     settings.forEach(s => {
+      /*
       if (s.field === "sizes") {
         size = currentSettings[s.field] || JSON.parse(s.value)[0].value;
         //"[{\"option\":\"300x300\",\"value\":\"300x300\"}]"
@@ -88,14 +115,18 @@ function getSystemSettings(settings, currentSettings) {
       if (s.field === "theme") {
         theme = currentSettings[s.field] || JSON.parse(s.value)[0].value;
       }
+      */
+      if (s.type === "system") {
+        systemSettings[s.field] = currentSettings[s.field] || s.value;
+      }
     });
   }
-  return { theme: theme, size: size };
+  console.log("GET SYSTEM SETTINGS ", systemSettings)
+  return systemSettings;
 }
 const DisplayApp = ({
   widgetConfigData,
   widgetViewSettings,
-  appSyncClient,
   prifinaID,
   dataSources,
 }) => {
@@ -105,13 +136,33 @@ const DisplayApp = ({
   console.log("WIDGET VIEW SETTINGS ", widgetViewSettings);
   console.log("DISPLAY APP ", prifinaID);
 
-  const isMountedRef = useIsMountedRef();
+
+  //const { AuthClient, CoreApiClient, UserApiClient } = useGraphQLContext();
+  const { CoreApiClient, UserApiClient } = useGraphQLContext();
+  // const client = useGraphQLContext();
+
+  console.log("USER APPSYNC", UserApiClient);
+
+  //  const { __ } = useTranslate();
+
+
+  const effectCalled = useRef(false);
 
   const { currentUser, getCallbacks, removeCallbacks, deleteCallback, registerClient, Prifina, check } =
     usePrifina();
   console.log("DISPLAY APP ", currentUser);
   console.log("DISPLAY APP DATASOURCES", dataSources);
   //const WidgetHooks = new Prifina({ appId: "WIDGETS" });
+
+
+  const { updatePrifinaUserMutation } = useStore(
+    state => ({
+      //getAthenaResultsSubscription: state.getAthenaResultsSubscription,
+      updatePrifinaUserMutation: state.updatePrifinaUserMutation
+
+    }),
+    shallow,
+  );
 
   const athenaSubscription = useRef(null);
 
@@ -156,9 +207,7 @@ const DisplayApp = ({
     },
   );
 
-
   const widgetSettings = useRef([]);
-
 
   const viewSettings = useRef(widgetViewSettings);
   //const viewSettings=useRef(JSON.parse(savedViews).views);
@@ -245,76 +294,8 @@ const DisplayApp = ({
       setIsVisible(true);
     }
   };
-  /*
-    useEffect(() => {
-      let ignore = false;
-      console.log("OPEN CHANGE ", isVisible);
-  
-      return () => {
-        ignore = true;
-      };
-    }, [isVisible]);
-  */
 
-
-  useEffect(() => {
-    registerClient([appSyncClient, GRAPHQL, Storage]);
-    console.log("SUBSCRIPTION INIT...");
-    athenaSubscription.current = appSyncClient
-      .subscribe({
-        query: gql(getAthenaResults),
-        variables: { id: prifinaID },
-      })
-      .subscribe({
-        next: res => {
-          console.log("ATHENA SUBS RESULTS ", res);
-
-          const currentAppId = res.data.athenaResults.appId;
-          //console.log("SUBS CHECK ", currentAppId, state,widgetSettings.current);
-
-          const widgetIndex = widgetSettings.current.findIndex(
-            w => w.appId === currentAppId,
-          );
-          console.log("WIDGET SETTINGS CHECK ", widgetIndex, widgetSettings.current);
-          const widgetInstallCount = widgetSettings.current[widgetIndex].installCount;
-
-          console.log(widgetIndex, widgetInstallCount);
-          const c = getCallbacks();
-          console.log("CALLBACKS ", c);
-
-          if (
-            c.hasOwnProperty(currentAppId) &&
-            typeof c[currentAppId][widgetInstallCount] === "function"
-          ) {
-            console.log("FOUND CALLBACK ");
-            c[currentAppId][widgetInstallCount]({
-              data: JSON.parse(res.data.athenaResults.data),
-            });
-          }
-        },
-        error: error => {
-          console.log("ATHENA SUBS ERROR ");
-          console.log("WIDGET SETTINGS ", widgetSettings.current);
-          console.error(error);
-          // handle this error ???
-          ///message: "Connection failed: com.amazon.coral.service#ExpiredTokenException"
-        },
-      });
-
-
-
-    return () => {
-      // unsubscribe...
-      if (athenaSubscription.current) {
-        console.log("UNSUBS ATHENA ");
-        athenaSubscription.current.unsubscribe();
-      }
-    };
-
-  }, []);
-
-
-  useEffect(() => {
+  const initWidgets = () => {
     console.log("WIDGET VIEW, create widgets... ");
 
     console.log("widgets in view", state.views, viewSettings.current[activeTab]);
@@ -325,7 +306,7 @@ const DisplayApp = ({
       return { ...v.view }
     });
 
-    if (isMountedRef.current && viewSettings.current[activeTab] !== "undefied") {
+    if (viewSettings.current[activeTab] !== "undefied") {
       const visibleWidgets = Object.keys(viewSettings.current[activeTab].widgets).length;
       currentViewConfig = Array(visibleWidgets).fill({});
 
@@ -341,7 +322,7 @@ const DisplayApp = ({
               w.widget.settings, // config settings... 
               viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings
             );
-
+            //console.log("SYSTEM SETTINGS VALUES ", theme, size)
             currentViewConfig[viewSettings.current[activeTab].widgets[w.widget.appID].order] = {
               dataSources: w.dataSources,
               currentSettings: viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings,
@@ -379,7 +360,7 @@ const DisplayApp = ({
         let dataSourceModules = {};
 
         Object.keys(dataSources).forEach(s => {
-          if (dataSources[s].modules !== null) {
+          if (dataSources[s]?.modules && dataSources[s].modules !== null) {
             for (let m = 0; m < dataSources[s].modules.length; m++) {
               const moduleName = dataSources[s].modules[m];
               dataSourceModules[moduleName] = {
@@ -430,37 +411,8 @@ const DisplayApp = ({
           // save this to currentViewConfig 
           let widgetRef = useRef();
 
-          // const removeWidget = e => {
-          //   var array = [...widgetConfig];
-          //   var index = array[e];
-          //   if (index !== -1) {
-          //     array.splice(index, 1);
-          //     setWidgetConfig(array);
-          //   }
-          // };
 
-          // localStorage.setItem(
-          //   `viewsContent-${viewID}`,
-          //   JSON.stringify(widgetConfig),
-          // );
-
-          //let settingsInit = {};
-          /*
-              if (appSettings.hasOwnProperty("settings") || appSettings.settings != null) {
-                //console.log("APP SETTINGS INIT ", appSettings);
-                let data = {};
-                appSettings.settings.forEach(s => {
-                  if (s.field != "sizes" && s.field != "theme") {
-                    data[s.field] = s.value;
-                  }
-                });
-                console.log("APP SETTINGS INIT ", data);
-                settingsInit = data;
-              } else {
-                appSettings.settings = {};
-              }
-            */
-
+          console.log("CHECK WIDGET SIZE", w.widget);
           const size = w.widget.size.split("x");
           return (
             <React.Fragment>
@@ -473,63 +425,7 @@ const DisplayApp = ({
                 }}
               >
                 <div>
-                  {/* 
-                  <div>
-                    {w.settingsExists && (
-                      <C.IconDiv
-                        open={props.open}
 
-                        onClick={toggleWidgetMenu}
-                        widgetTheme={w.widget.theme}
-                      />
-                    )}
-                    {!w.settingsExists && <C.EmptyDiv />}
-                  </div>
-                  <div>
-
-
-                    {widgetMenu && (
-                      <C.WidgetDropDownContainer
-                        ref={widgetMenuRef}
-                        className="dropdown-menu+1"
-                      >
-                        <C.DropDownListContainer>
-                          <C.DropDownList>
-                            <C.InteractiveMenuItem
-                              title="Duplicate"
-                              iconify={mdiPlusBoxMultipleOutline}
-                            />
-
-                            <C.InteractiveMenuItem
-                              title="Remove"
-                              iconify={mdiEyeOffOutline}
-                              data-widgetindex={i}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                toggleWidgetMenu();
-                                removeWidget(Number(e.currentTarget.dataset['widgetindex']));
-                              }}
-                            />
-                            <Divider as="div" />
-                            <C.InteractiveMenuItem
-                              title="Settings >"
-                              iconify={mdiGearOutline}
-                              data-widgetindex={i}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                //console.log("SETTINGS CLICK ",e.currentTarget.dataset,e.currentTarget.dataset['widgetindex']);
-                                toggleWidgetMenu();
-                                openSettings(Number(e.currentTarget.dataset['widgetindex']));
-                              }}
-                            />
-                          </C.DropDownList>
-                        </C.DropDownListContainer>
-                      </C.WidgetDropDownContainer>
-                    )}
-
-                    {!w.settingsExists && <C.EmptyDiv />}
-                  </div>
-                  */}
                   <div
                     style={{
                       position: "absolute",
@@ -546,6 +442,7 @@ const DisplayApp = ({
                       ref={ref}
                     >
                       {userDataSourceStatus < 3 && datasourcesFound && (
+
                         <div
                           style={{
                             width: "100%",
@@ -654,8 +551,9 @@ const DisplayApp = ({
                           )}
                         </div>
                       )}
-                      {userDataSourceStatus === 3 && datasourcesFound && (
 
+
+                      {userDataSourceStatus === 3 && datasourcesFound && (
 
                         <Remote ref={widgetRef}
                           componentProps={{ ...props }}
@@ -668,10 +566,13 @@ const DisplayApp = ({
 
                             module: "./App",
                           }} />
+
+
 
                       )}
 
                       {dataSourceType === 0 && !datasourcesFound && (
+
                         <Remote ref={widgetRef}
                           componentProps={{ ...props }}
                           system={{
@@ -685,6 +586,7 @@ const DisplayApp = ({
                           }} />
 
                       )}
+
 
                     </C.WidgetWrapper>
                   </div>
@@ -701,6 +603,7 @@ const DisplayApp = ({
 
       console.log("WIDGETS ON VIEW", widgets);
 
+
       //setWidgetList(widgets);
       widgetSettings.current = currentViewSettings;
       setState({
@@ -710,7 +613,7 @@ const DisplayApp = ({
         views: currentViews
       });
     }
-
+    /*
     return () => {
 
       widgets = [];
@@ -721,8 +624,463 @@ const DisplayApp = ({
       console.log("CLEANUP....");
       removeCallbacks();
     };
+    */
+  }
 
-  }, [isMountedRef, widgetConfigData, activeTab, reloadViewWidgets]);
+  useEffect(() => {
+    if (!effectCalled.current) {
+      effectCalled.current = true;
+      registerClient([UserApiClient, CoreApiClient, {}]);
+      console.log("SUBSCRIPTION INIT...");
+      UserApiClient.setCallback((res) => {
+        console.log("ATHENA SUBS RESULTS ", res);
+
+        const currentAppId = res.data.athenaResults.appId;
+        //console.log("SUBS CHECK ", currentAppId, state,widgetSettings.current);
+
+        const widgetIndex = widgetSettings.current.findIndex(
+          w => w.appId === currentAppId,
+        );
+        console.log("WIDGET SETTINGS CHECK ", widgetIndex, widgetSettings.current);
+        const widgetInstallCount = widgetSettings.current[widgetIndex].installCount;
+
+        console.log(widgetIndex, widgetInstallCount);
+        const c = getCallbacks();
+        console.log("CALLBACKS ", c);
+
+        if (
+          c.hasOwnProperty(currentAppId) &&
+          typeof c[currentAppId][widgetInstallCount] === "function"
+        ) {
+          console.log("FOUND CALLBACK ");
+          c[currentAppId][widgetInstallCount]({
+            data: JSON.parse(res.data.athenaResults.data),
+          });
+        }
+      }
+      )
+      const subsID = UserApiClient.subscribe(getAthenaResults, { id: prifinaID });
+      athenaSubscription.current = subsID;
+
+      initWidgets();
+      /*
+      const subsID = getAthenaResultsSubscription({ id: prifinaID }).subscribe({
+        next: res => {
+          console.log("NEXT ATHENA SUBS RESULTS ", res);
+        },
+        error: error => {
+          console.log("ATHENA SUBS ERROR ");
+          console.log("WIDGET SETTINGS ", widgetSettings.current);
+          console.error(error);
+        }
+      })
+      */
+      /*
+   
+       const subsID = UserApiClient.subscribe(getAthenaResults, { id: prifinaID }).subscribe(
+         {
+           next: res => {
+             console.log("NEXT ATHENA SUBS RESULTS ", res);
+           },
+           error: error => {
+             console.log("ATHENA SUBS ERROR ");
+             console.log("WIDGET SETTINGS ", widgetSettings.current);
+             console.error(error);
+           }
+         }
+       );
+       console.log("SUBS ATHENA ", subsID);
+       */
+      /*
+      athenaSubscription.current = appSyncClient
+        .subscribe({
+          query: gql(getAthenaResults),
+          variables: { id: prifinaID },
+        })
+        .subscribe({
+          next: res => {
+            console.log("ATHENA SUBS RESULTS ", res);
+  
+            const currentAppId = res.data.athenaResults.appId;
+            //console.log("SUBS CHECK ", currentAppId, state,widgetSettings.current);
+  
+            const widgetIndex = widgetSettings.current.findIndex(
+              w => w.appId === currentAppId,
+            );
+            console.log("WIDGET SETTINGS CHECK ", widgetIndex, widgetSettings.current);
+            const widgetInstallCount = widgetSettings.current[widgetIndex].installCount;
+  
+            console.log(widgetIndex, widgetInstallCount);
+            const c = getCallbacks();
+            console.log("CALLBACKS ", c);
+  
+            if (
+              c.hasOwnProperty(currentAppId) &&
+              typeof c[currentAppId][widgetInstallCount] === "function"
+            ) {
+              console.log("FOUND CALLBACK ");
+              c[currentAppId][widgetInstallCount]({
+                data: JSON.parse(res.data.athenaResults.data),
+              });
+            }
+          },
+          error: error => {
+            console.log("ATHENA SUBS ERROR ");
+            console.log("WIDGET SETTINGS ", widgetSettings.current);
+            console.error(error);
+            // handle this error ???
+            ///message: "Connection failed: com.amazon.coral.service#ExpiredTokenException"
+          },
+        });
+  
+  */
+    }
+    return () => {
+      // unsubscribe...
+      if (athenaSubscription.current) {
+        console.log("UNSUBS ATHENA ");
+        //athenaSubscription.current.unsubscribe();
+      }
+    };
+
+  }, []);
+
+
+
+
+  /*
+    useEffect(() => {
+      console.log("WIDGET VIEW, create widgets... ");
+  
+      console.log("widgets in view", state.views, viewSettings.current[activeTab]);
+      let widgets = [];
+      let currentViewConfig = [];
+      let currentViewSettings = [];
+      let currentViews = viewSettings.current.map(v => {
+        return { ...v.view }
+      });
+  
+      if (isMountedRef.current && viewSettings.current[activeTab] !== "undefied") {
+        const visibleWidgets = Object.keys(viewSettings.current[activeTab].widgets).length;
+        currentViewConfig = Array(visibleWidgets).fill({});
+  
+        if (visibleWidgets > 0) {
+          widgetConfigData.forEach((w, i) => {
+  
+            console.log("CREATE WIDGET ", w)
+  
+            if (viewSettings.current[activeTab].widgets?.[w.widget.appID]) {
+  
+              //console.log("ADD WIDGET IN VIEW ", viewSettings.current[activeTab])
+              const { theme, size } = getSystemSettings(
+                w.widget.settings, // config settings... 
+                viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings
+              );
+  
+              currentViewConfig[viewSettings.current[activeTab].widgets[w.widget.appID].order] = {
+                dataSources: w.dataSources,
+                currentSettings: viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings,
+                url: w.url,
+                settingsExists: viewSettings.current[activeTab].widgets[w.widget.appID].settingsExists,
+                widget: { theme: theme, size: size, ...w.widget },
+                //version: w.version,
+              };
+  
+              currentViewSettings[viewSettings.current[activeTab].widgets[w.widget.appID].order] = {
+                theme: theme,
+                size: size,
+                settings: w.widget.settings || [],
+                title: w.widget.title,
+                appId: w.widget.appID,
+                installCount: w.widget.installCount,
+                currentSettings: viewSettings.current[activeTab].widgets[w.widget.appID].currentSettings,
+                image: w.widget.image,
+                dataSources: w.dataSources,
+                publisher: w.widget.publisher,
+                version: w.widget.version,
+                shortDescription: w.widget.shortDescription
+              };
+            }
+  
+          });
+        }
+        console.log(" CURRENT ", currentViewConfig, currentViewSettings)
+  
+        console.log("CREATE WIDGETS...");
+        // const widgets = widgetConfig.map((w, i) => {
+        widgets = currentViewConfig.map((w, i) => {
+          console.log("WIDGET COMPONENT ", w);
+          //React.forwardRef((props, ref) =>
+          let dataSourceModules = {};
+  
+          Object.keys(dataSources).forEach(s => {
+            if (dataSources[s]?.modules && dataSources[s].modules !== null) {
+              for (let m = 0; m < dataSources[s].modules.length; m++) {
+                const moduleName = dataSources[s].modules[m];
+                dataSourceModules[moduleName] = {
+                  source: s,
+                  sourceType: dataSources[s].sourceType,
+                };
+              }
+            }
+          });
+          console.log("MODULES ", dataSourceModules);
+          const userDataSources = Object.keys(currentUser.dataSources);
+          console.log("USER DATASOURCES...", i, userDataSources);
+          let userDataSourceStatus = 0;
+          let dataSourceType = 0;
+          let datasourcesFound = false;
+          if (
+            w.hasOwnProperty("dataSources") &&
+            w.dataSources !== null &&
+            w.dataSources.length > 0
+          ) {
+            console.log("DATASOURCE FOUND ", w);
+            datasourcesFound = true;
+            const widgetDataSourceModule = w.dataSources[0];
+            const widgetDataSource =
+              dataSourceModules[widgetDataSourceModule].source;
+            if (
+              userDataSources.length > 0 &&
+              userDataSources.indexOf(widgetDataSource) > -1
+            ) {
+              // check dataSource status
+              userDataSourceStatus =
+                currentUser.dataSources[widgetDataSource].status;
+            }
+  
+            dataSourceType = dataSources[widgetDataSource].sourceType;
+          }
+          console.log(
+            "USER DATASOURCE STATUS ",
+            i,
+            userDataSourceStatus,
+            dataSourceType,
+            datasourcesFound,
+          );
+          const Widget = forwardRef((props, ref) => {
+            console.log("W ", props);
+            console.log("W 2", w);
+  
+            // save this to currentViewConfig 
+            let widgetRef = useRef();
+  
+  
+            console.log("CHECK WIDGET SIZE", w.widget);
+            const size = w.widget.size.split("x");
+            return (
+              <React.Fragment>
+                <div
+                  style={{
+                    width: size[0] + "px",
+                    height: size[1] + "px",
+                    margin: "10px",
+                    position: "relative",
+                  }}
+                >
+                  <div>
+  
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <C.WidgetWrapper
+                        className={"prifina-widget"}
+                        data-widget-index={i}
+                        key={"widget-wrapper-" + i}
+                        ref={ref}
+                      >
+                        {userDataSourceStatus < 3 && datasourcesFound && (
+  
+                          <div
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                            }}
+                          >
+                            <C.BlurImageDiv
+                              key={"prifina-widget-" + i}
+                              style={{
+                                backgroundImage: `url(${w.widget.image})`,
+                              }}
+                            />
+                            {userDataSourceStatus === 2 && (
+                              <div>
+                                <div
+                                  key={"widget-dot-" + i}
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    top: "0px",
+                                    zIndex: 19,
+                                    position: "absolute",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <C.DotLoader widgetTheme={w.widget.theme} />
+                                </div>
+                                <div
+                                  style={{
+                                    width: size[0] + "px",
+                                    bottom: 0,
+                                    position: "absolute",
+                                    padding: "5px",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <Text
+                                    textStyle={"h6"}
+                                    color={
+                                      w.widget.theme === "dark"
+                                        ? "white"
+                                        : "black"
+                                    }
+                                  >
+                                    Prosessing your data...
+                                  </Text>
+                                  <Text
+                                    textStyle={"caption"}
+                                    color={
+                                      w.widget.theme === "dark"
+                                        ? "white"
+                                        : "black"
+                                    }
+                                  >
+                                    You will be notified as soon as the data
+                                    becomes available in your cloud.
+                                  </Text>
+                                </div>
+                              </div>
+                            )}
+                            {userDataSourceStatus < 2 && (
+                              <div
+                                style={{
+                                  width: size[0] + "px",
+                                  bottom: "10px",
+                                  padding: "10px",
+                                  position: "absolute",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <Text
+                                  textStyle={"h6"}
+                                  color={
+                                    w.widget.theme === "dark" ? "white" : "black"
+                                  }
+                                >
+                                  {w.widget.title}
+                                </Text>
+                                <Text
+                                  textStyle={"caption"}
+                                  color={
+                                    w.widget.theme === "dark" ? "white" : "black"
+                                  }
+                                >
+                                  {w.widget.shortDescription}
+                                </Text>
+                                <div
+                                  style={{
+                                    marginTop: "10px",
+                                  }}
+                                >
+                                  {userDataSourceStatus === 0 && (
+                                    <Button>
+                                      {dataSourceType === 1
+                                        ? "Connect Data"
+                                        : "Import"}
+                                    </Button>
+                                  )}
+                                  {userDataSourceStatus === 1 && (
+                                    <Button>Activate</Button>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+  
+  
+                        {userDataSourceStatus === 3 && datasourcesFound && (
+  
+                          <Remote ref={widgetRef}
+                            componentProps={{ ...props }}
+                            system={{
+  
+                              remote: w.widget.appID,
+                              //remote: "x3LSdcSs1kcPskBWBJvqGto",
+                              url: w.url,
+                              //url: "dist/remoteEntry.js",
+  
+                              module: "./App",
+                            }} />
+  
+  
+  
+                        )}
+  
+                        {dataSourceType === 0 && !datasourcesFound && (
+  
+                          <Remote ref={widgetRef}
+                            componentProps={{ ...props }}
+                            system={{
+  
+                              remote: w.widget.appID,
+                              //remote: "x3LSdcSs1kcPskBWBJvqGto",
+                              url: w.url,
+                              //url: "dist/remoteEntry.js",
+  
+                              module: "./App",
+                            }} />
+  
+                        )}
+  
+  
+                      </C.WidgetWrapper>
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          });
+  
+          Widget.displayName = "Widget";
+  
+          return Widget;
+        });
+  
+        console.log("WIDGETS ON VIEW", widgets);
+       
+  
+        //setWidgetList(widgets);
+        widgetSettings.current = currentViewSettings;
+        setState({
+          widgetConfig: currentViewConfig,
+          //widgetSettings:currentViewSettings,
+          widgetList: widgets,
+          views: currentViews
+        });
+      }
+  
+      return () => {
+  
+        widgets = [];
+        currentViewSettings = [];
+        currentViewConfig = [];
+        currentViews = [];
+  
+        console.log("CLEANUP....");
+        removeCallbacks();
+      };
+  
+    }, [isMountedRef, widgetConfigData, activeTab, reloadViewWidgets]);
+  */
 
   const onUpdate = data => {
     console.log("Update settings ", data, activeTab);
@@ -754,7 +1112,7 @@ const DisplayApp = ({
           data[dataField];
       }
       if (
-        ["sizes"].indexOf(dataField) > -1 &&
+        ["size"].indexOf(dataField) > -1 &&
         currentSettings["size"] !== data[k]
       ) {
         dataField = "size";
@@ -787,7 +1145,12 @@ const DisplayApp = ({
 
     console.log("UPDATED SETTINGS ", widgetSettings.current, currentAppId, currentViewSettings, currentWidgetSettings);
 
-
+    const modifiedWidgetSettings = currentWidgetSettings.map(w => {
+      const newSettings = w.settings.map(s => {
+        return { field: s.field, value: w.currentSettings[s.field] || s.value }
+      });
+      return { id: w.appId, settings: newSettings }
+    })
 
     const c = getCallbacks();
     console.log("CALLBACKS ", c);
@@ -821,84 +1184,16 @@ const DisplayApp = ({
     }
     widgetSettings.current = currentWidgetSettings;
     viewSettings.current = currentViewSettings;
-    saveViewSettings(prifinaID, viewSettings.current).then(res => {
+    saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current, modifiedWidgetSettings).then(res => {
       setIsVisible(false);
     })
 
   };
 
-
-  // VIEWS CONFIGURATION ================================================================================================================
-  /*
-    useEffect(() => {
-      localStorage.setItem("views", JSON.stringify(views));
-      console.log("log3");
-    }, [views]);
-  */
-  /*
-    const handleInputChange = e => {
-      setView(e.target.value);
-    };
-  */
-  /*
-  const handleFormSubmit = e => {
-    e.preventDefault();
-
-    if (view !== "") {
-      setViews([
-        ...views,
-        {
-          // id: short.generate(),
-          id: 'prifina-view-'+views.length,
-          title: view.trim(),
-        },
-      ]);
-    }
-
-    setView("");
-  };
-*/
-  /*
-    function handleDeleteClick(id) {
-      //console.log("DELE CLICK ",id)
-      viewSettings.current.splice(id,1);
-     // set new active tab 
-      setActiveTab(viewSettings.current.length-1);
-      
-    }
-  */
-  //console.log("views", views);
-  // console.log("view", view);
-  // ================================================================================================================
-
-  // ====================== MENU
-
   const toggling = () => setMenuOpen(!menuOpen);
 
   let menuRef = useRef(null);
 
-  //FOR OUTSIDE CLICK CLOSE
-  // function onOutsideClose(ref, state, setState, listener) {
-  //   const handleClickOutside = event => {
-  //     if (ref.current && !ref.current.contains(event.target)) {
-  //       setState(false);
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     document.addEventListener("menu", handleClickOutside);
-  //     return () => {
-  //       document.removeEventListener("menu", handleClickOutside);
-  //     };
-  //   }, [ref, state]);
-
-  //   return { ref, state, setState };
-  // }
-  // onOutsideClose(menuRef, menuOpen, setMenuOpen, "menu");
-
-  // console.log("ref", menuRef);
-
-  // ==========================================================================
 
   const addWidgetToView = (appID) => {
     console.log("ADD THIS WIDGET ", widgetConfigData.find(w => w.widget.appID === appID));
@@ -911,8 +1206,9 @@ const DisplayApp = ({
       currentSettings: selectedWidget.currentSettings,
       settingsExists: selectedWidget.settings
     };
-    saveViewSettings(prifinaID, viewSettings.current).then(res => {
-      setReloadViewWidgets(!reloadViewWidgets);
+    saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current).then(res => {
+      initWidgets();
+      //setReloadViewWidgets(!reloadViewWidgets);
     })
 
   }
@@ -949,8 +1245,9 @@ const DisplayApp = ({
 
     viewSettings.current[activeTab] = sortedWidgets;
 
-    saveViewSettings(prifinaID, viewSettings.current).then(res => {
-      setReloadViewWidgets(!reloadViewWidgets);
+    saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current).then(res => {
+      //setReloadViewWidgets(!reloadViewWidgets);
+      initWidgets();
     })
 
   }
@@ -1078,7 +1375,7 @@ const DisplayApp = ({
                                       if (ev.key === "Enter" && viewTitle !== "") {
                                         ev.preventDefault();
 
-                                        saveViewSettings(prifinaID, viewSettings.current).then(res => {
+                                        saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current).then(res => {
                                           viewsRef.current[viewIndex].innerText = viewTitle;
                                           viewSettings.current[viewIndex].view.title = viewTitle;
                                         })
@@ -1096,7 +1393,7 @@ const DisplayApp = ({
                                       if (viewTitle !== "") {
                                         //console.log("TAB TITLE ",viewsRef.current[viewIndex],viewsRef.current[viewIndex].innerText);
 
-                                        saveViewSettings(prifinaID, viewSettings.current).then(res => {
+                                        saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current).then(res => {
                                           viewsRef.current[viewIndex].innerText = viewTitle;
                                           viewSettings.current[viewIndex].view.title = viewTitle;
                                         })
@@ -1113,7 +1410,7 @@ const DisplayApp = ({
                                         //console.log("DELE CLICK ",index, e.currentTarget.dataset)
                                         viewSettings.current.splice(e.currentTarget.dataset['view'], 1);
 
-                                        saveViewSettings(prifinaID, viewSettings.current);
+                                        saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current);
 
                                         setEditView(!editView);
                                         setMenuOpen(!menuOpen);
@@ -1166,7 +1463,7 @@ const DisplayApp = ({
                                       if (ev.key === "Enter" && viewTitle !== "") {
                                         ev.preventDefault();
                                         viewSettings.current.push({ widgets: {}, view: { title: viewTitle } });
-                                        saveViewSettings(prifinaID, viewSettings.current).then(res => {
+                                        saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current).then(res => {
                                           setEditView(!editView);
                                           setMenuOpen(!menuOpen);
                                           // set active tab +1 
@@ -1190,7 +1487,7 @@ const DisplayApp = ({
                                       if (viewTitle !== "") {
                                         // inputRef length is views +1 
                                         viewSettings.current.push({ widgets: {}, view: { title: viewTitle } });
-                                        saveViewSettings(prifinaID, viewSettings.current).then(res => {
+                                        saveViewSettings(updatePrifinaUserMutation, prifinaID, viewSettings.current).then(res => {
                                           setEditView(!editView);
                                           setMenuOpen(!menuOpen);
                                           // set active tab +1 
@@ -1306,7 +1603,6 @@ const DisplayApp = ({
 DisplayApp.propTypes = {
   widgetConfigData: PropTypes.instanceOf(Array).isRequired,
   widgetViewSettings: PropTypes.instanceOf(Array).isRequired,
-  appSyncClient: PropTypes.instanceOf(Object).isRequired,
   prifinaID: PropTypes.string.isRequired,
   open: PropTypes.bool,
   width: PropTypes.string,

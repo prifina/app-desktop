@@ -11,14 +11,13 @@ import createContext from "zustand/context";
 import { useGraphQLContext } from "../graphql/GraphQLContext";
 import {
   sendVerification, changeUserPassword, addPrifinaSession, deletePrifinaSession,
-  updateUserProfile, updateActivity, updateCognitoUser, installWidget
+  updateUserProfile, updateActivity, updateCognitoUser, installWidget, updatePrifinaUser
 } from "../graphql/mutations";
 import {
   getPrifinaUser, listAppMarket, getSystemNotificationCount, listDataSources,
   listSystemNotificationsByDate, listNotificationsByDate, getCountryCode, checkUsername,
-  checkCognitoAttribute, getVerification, getRequestToken, getLoginUserIdentityPool
+  checkCognitoAttribute, getVerification, getRequestToken, getLoginUserIdentityPool, getAddressBook,
 } from "../graphql/queries";
-
 /*
 import {
   getCognitoUserCount, getCognitoMetrics, getCognitoMetricImage, getCognitoUserDetails,
@@ -192,7 +191,40 @@ const PrifinaStoreProvider = ({ children }) => {
               //console.log("SESSION ", prifinaSession);
             }
 
-            set({ authenticated: true, user: currentUser, refreshSession: refreshSession });
+            // check if prifinaUser exists
+            /* 
+            const activeUser = {
+              name: appProfile.name,
+              initials: appProfile.initials,
+              uuid: currentUser.id,
+              endpoint: appProfile.endpoint,
+              region: appProfile.region,
+              dataSources: currentUser.dataSources
+                ? JSON.parse(currentUser.dataSources)
+                : {},
+            }; */
+            const updates = { authenticated: true, user: currentUser, refreshSession: refreshSession };
+            if (get().prifinaUser?.id === undefined) {
+              const pUser = await get().getPrifinaUserQuery(currentUser.prifinaID);
+              const prifinaUserData = pUser.data.getPrifinaUser;
+              let appProfile = JSON.parse(
+                prifinaUserData.appProfile
+              );
+              const activeUser = {
+                name: appProfile.name,
+                initials: appProfile.initials,
+                uuid: currentUser.prifinaID,
+                endpoint: appProfile.endpoint,
+                region: appProfile.region,
+                dataSources: prifinaUserData.dataSources
+                  ? JSON.parse(prifinaUserData.dataSources)
+                  : {},
+              };
+              updates.prifinaUser = prifinaUserData;
+              updates.activeUser = activeUser;
+            }
+
+            set(updates);
             return Promise.resolve(true);
 
           } catch (e) {
@@ -334,7 +366,28 @@ const PrifinaStoreProvider = ({ children }) => {
         signUp: async (vars) => {
           console.log("SIGNUP ", vars);
           return await AuthClient.signUp(vars);
-        }
+        },
+        getAddressBookQuery: async (vars) => {
+          return await UserApiClient.query(getAddressBook, vars);
+        },
+        // Note this is returning string... but "pipe" (next) to receive push messages..
+        /*
+        getAthenaResultsSubscription: (vars) => {
+          return UserApiClient.subscribe(getAthenaResults, vars);
+        }*/
+        updatePrifinaUserMutation: async (vars) => {
+          return await CoreApiClient.graphql(updatePrifinaUser, vars);
+        },
+        /*
+        export const updatePrifinaUserMutation = (API, input) => {
+          return API.graphql({
+            query: updatePrifinaUser,
+            variables: { input: input },
+            authMode: "AMAZON_COGNITO_USER_POOLS",
+          });
+        };
+        */
+
       }))}
     >
       {children}

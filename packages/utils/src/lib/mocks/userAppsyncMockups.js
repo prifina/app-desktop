@@ -7,7 +7,27 @@ export const userMockups = {
       // systemNotifications is wrong.... ????
       return { data: { listNotificationsByDate: { items: systemNotifications, nextToken: null } } }
     },
+    addressBook: (variables, Options) => {
+      /*
+         address.... {
+           name: user.name,
+           endpoint: user.endpoint,
+           region: user.region,
+         };
+         */
 
+      return { data: { getUserAddressBook: { items: [], nextToken: null } } }
+    },
+
+
+    /*
+    export const getAddressBook = `query addressBook($id: String!) {
+      getUserAddressBook(id: $id) {
+        id
+        addressBook
+      }
+    }`;
+    */
   },
   mutation: {
     updateUserActivity: (variables, Options) => ({ data: { updateActivity: true } }),

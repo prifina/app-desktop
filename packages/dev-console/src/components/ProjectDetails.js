@@ -63,6 +63,10 @@ import {
 } from "./helper";
 
 const userRegion = config.cognito.USER_IDENTITY_POOL_ID.split(":")[0];
+console.log("S3 CONFIG", {
+  bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
+  region: userRegion,
+});
 
 Storage.configure({
   bucket: `prifina-data-${config.prifinaAccountId}-${config.main_region}`,
@@ -72,6 +76,7 @@ Storage.configure({
 const getImage = s3Key => {
   console.log("GET IMAGE URL ", s3Key);
   return new Promise(function (resolve, reject) {
+
     Storage.get(s3Key, { level: "public", download: false })
       .then(url => {
         var myRequest = new Request(url);
@@ -80,12 +85,13 @@ const getImage = s3Key => {
             console.log("URL ", url);
             resolve(url);
           } else {
+            console.log("S3 ERROR ", response);
             reject(response.status);
           }
         });
       })
       .catch(err => {
-        console.log(err);
+        console.log("S3 ERROR ", err);
         reject(err);
       });
   });
@@ -220,7 +226,8 @@ const ProjectDetails = props => {
         setNewDataSources(JSON.parse(currentApp.dataSources));
       }
 
-      const assetList = await listAssets(appID + "/assets/");
+      //const assetList = await listAssets(appID + "/assets/");
+      const assetList = [];
       //      console.log("PROCESS THIS ", assetList);
       if (assetList.length > 0) {
         const statuses = new Array(4).fill(false);
@@ -231,6 +238,7 @@ const ProjectDetails = props => {
           "screenshot-3.png",
         ];
         let images = [];
+        /*
         assetList.forEach(asset => {
           const assetKey = asset.key.split("/").pop();
           const idx = checkList.indexOf(assetKey);
@@ -239,6 +247,7 @@ const ProjectDetails = props => {
             images.push(getImage(appID + "/assets/" + assetKey));
           }
         });
+        */
 
         await Promise.all(images).then(res => {
           //console.log("URLS ", res);
@@ -653,7 +662,7 @@ const ProjectDetails = props => {
                   <Flex flexDirection="row" alignItems="center" mr="15px">
                     <Radio
                       fontSize="8px"
-                      onChange={() => {}}
+                      onChange={() => { }}
                       onClick={() => {
                         setNewValues(existing => {
                           return { ...existing, appType: 1 };
@@ -666,7 +675,7 @@ const ProjectDetails = props => {
                   <Flex flexDirection="row" alignItems="center">
                     <Radio
                       fontSize="10px"
-                      onChange={() => {}}
+                      onChange={() => { }}
                       onClick={() => {
                         setNewValues(existing => {
                           return { ...existing, appType: 2 };
@@ -1307,7 +1316,7 @@ const ProjectDetails = props => {
                     type="icon"
                     numId="1"
                     onFinish={updateAssetStatus}
-                    // passAssetInfo={passAssetInfo}
+                  // passAssetInfo={passAssetInfo}
                   />
                 </Flex>
                 <Divider as={"div"} color="#393838" mb={56} />
@@ -1547,9 +1556,9 @@ const ProjectDetails = props => {
               </Flex>
 
               {appData.dataSources !== null &&
-              appData.dataSources !== "[]" &&
-              appData.dataSources !== 0 &&
-              appData.dataSources !== ["[null]"] ? (
+                appData.dataSources !== "[]" &&
+                appData.dataSources !== 0 &&
+                appData.dataSources !== ["[null]"] ? (
                 <Flex flexDirection="column" justifyContent="center">
                   {newDataSources.length > 0 &&
                     newDataSources.map((item, index) => (

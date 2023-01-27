@@ -11,12 +11,15 @@ const CoreApps = React.lazy(() => import("../components/CoreApps"));
 
 const Login = React.lazy(() => import("../pages/Login"));
 const CreateAccount = React.lazy(() => import("../pages/CreateAccount-v2"));
+import TestPage from "./TestPage";
+//const TestPage = () => <div>TEST OK</div>;
 //const AuthenticatedPage = () => <div>AUTH OK</div>;
 //const UnAuthenticatedPage = () => <div>UNAUTH OK</div>;
 
 export default (props) => (
   <Routes>
     <Route element={<AuthLayout />}>
+      <Route path="/test" element={<TestPage />} />
       <Route path="/home" element={<Home />} />
       <Route
         path="/system/:app"

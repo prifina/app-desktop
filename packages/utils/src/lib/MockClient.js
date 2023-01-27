@@ -53,6 +53,21 @@ wrapRefreshSessionCallback
 
 import config from "../config";
 
+import { getSandboxData } from "./mocks/athenaData";
+import { getSubscriptionData } from "./mocks/subscriptionData";
+
+import { getRandomInt } from "./mocks/helpers";
+
+
+//import 
+//const test = require("@dynamic-data/oura-mockups")["getSleepMockupData"];
+//console.log("OURA", test);
+//import * as TEST from "@dynamic-data/oura-mockups";
+//console.log("OURA", TEST);
+
+//parseFilter,
+//getMockedData,
+
 const qlMockups = {
   query: { ...coreMockups.query },
   mutation: { ...coreMockups.mutation }
@@ -63,6 +78,10 @@ const appsyncMockups = {
   mutation: { ...userMockups.mutation }
 }
 
+const shortId = () => {
+  // this is unique enough...
+  return Math.random().toString(36).slice(-10);
+}
 
 // Auth Client...
 class AUTHClient {
@@ -171,6 +190,25 @@ class AUTHClient {
 
 }
 
+class SubscribeClient {
+  constructor(init) {
+    // query,variables...
+    console.log("INIT ", init)
+    this.query = init.query;
+    this.variables = init.variables;
+  }
+
+  subscribe(args) {
+    // next(), error()
+    console.log("ARGS ", args)
+    // send test notification..
+    args.next({ data: "Subsription Testing..." });
+    // random subscription handler
+    // this should be unsubscribe()
+    return shortId();
+  }
+}
+
 // AppSync ...
 class AppSyncClient {
   constructor(cnf) {
@@ -179,6 +217,8 @@ class AppSyncClient {
     this.client = "MOCKUP";
     this.config = cnf?.AppSyncConfig || {}
     this.Options = cnf?.Options || {}
+    this.subscriptions = [];
+    this.callback = undefined;
   }
 
   AppSyncConfigure(cnf) {
@@ -188,10 +228,20 @@ class AppSyncClient {
   setOption(opt) {
     this.Options = { ...this.Options, ...opt };
   }
+  setCallback(fn) {
+    this.callback = fn;
+  }
   // APPSYNC client Query
   query(rq, vars) {
+    console.log("APPSYNC QUERY ", rq);
+    console.log("APPSYNC QUERY VARS ", vars);
 
-    //console.log("QUERY ", gql(rq));
+    if (vars === undefined && rq?.query !== undefined && rq?.variables !== undefined && rq.variables.input !== undefined) {
+      console.log("PROVIDER QUERY ", rq.variables);
+      //console.log("SANDBOX ", SANDBOX)
+      return getSandboxData(rq.variables, this.callback);
+    }
+    console.log("APPSYNC QUERY ", gql(rq));
     const ql = gql(rq);
     //console.log(ql.definitions[0].name)
     //console.log(ql.definitions[0])
@@ -211,6 +261,12 @@ class AppSyncClient {
     return Promise.resolve(appsyncMockups["mutation"][ql.definitions[0].name.value](vars, this.Options));
     // return Promise.resolve(true);
   }
+  subscribe(rq, vars) {
+    // return new SubscribeClient({ query: gql(rq), variables: vars })
+    const subscribtionID = shortId();
+    this.subscriptions.push(subscribtionID);
+    return subscribtionID;
+  }
 }
 
 /*
@@ -229,6 +285,9 @@ class CoreGraphQLApi {
     console.log("CORE MOCK ");
     this.config = cnf?.config || {}
     this.Options = cnf?.Options || {}
+    this.subscriptions = {};
+    this.callback = undefined;
+    this.timers = {};
   }
   configure(apiConfig) {
     this.config = { ...this.config, ...apiConfig };
@@ -238,11 +297,39 @@ class CoreGraphQLApi {
   setOption(opt) {
     this.Options = { ...this.Options, ...opt };
   }
+
+  setCallback(fn) {
+    this.callback = fn;
+  }
+  unsubscribe(subscribtionID) {
+    this.subscriptions[subscriptionID].disconnect();
+  }
+  subscribe(rq, vars) {
+
+    const subscribtionID = shortId();
+
+    const ql = gql(rq);
+    const socket = getSubscriptionData(this.callback, vars, ql.definitions[0].name.value);
+    this.subscriptions[subscribtionID] = socket;
+
+    //console.log("Subscribe ", ql, vars);
+    /*
+    // there are no back end subscription notifications.... create something timer based examples, so can call registered callback
+    const timerInterval = getRandomInt(5, 15);
+    const timer = setInterval(() => {
+      // generate mockup notification.... 
+      this.callback({ "data": "OK" });
+    }, timerInterval * 1000 * 60);
+    this.timers[subscribtionID] = timer;
+    */
+    return subscribtionID;
+  }
   graphql(
     query = undefined,
     variables = {},
     authMode = "AMAZON_COGNITO_USER_POOLS",
   ) {
+
     const ql = graphqlOperation(query, variables);
     // console.log("QL ", ql);
     // query:"mutation updateCognitoUser($attrName: String!, $attrValue: String!) {\n  \n  updateCognitoUser( attrName: $attrName, attrValue: $attrValue)\n}"

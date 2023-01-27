@@ -404,8 +404,8 @@ export const SettingsDialog = ({
   const { colors } = useTheme();
 
   // note size.... not sizes
-  const settingsSystemFields = ["theme", "size"];
-
+  //const settingsSystemFields = ["theme", "size"];
+  /*
   Object.keys(widgetSettings.currentSettings).forEach(f => {
     if (settingsSystemFields.indexOf(f) > -1) {
       if (f === "size") {
@@ -417,6 +417,21 @@ export const SettingsDialog = ({
       inputFields.current[f] = widgetSettings.currentSettings[f];
     }
   });
+  */
+  widgetSettings.settings.forEach(f => {
+    if (f.type === "system") {
+      systemFields.current[f.field] = f.value;
+      // if user have changed the widget default value.... 
+      if (widgetSettings.currentSettings?.[f.field] !== undefined) {
+        systemFields.current[f.field] = widgetSettings.currentSettings[f.field];
+      }
+    } else if (widgetSettings.currentSettings?.[f.field] !== undefined) {
+      inputFields.current[f.field] = widgetSettings.currentSettings[f.field];
+    } else {
+      inputFields.current[f.field] = f.value;
+    }
+  });
+
   console.log("FLDS ", inputFields, systemFields);
   console.log("DIALOG ", props);
   let fieldTypeCheck = [];
@@ -620,9 +635,9 @@ export const SettingsDialog = ({
                     mb={10}
                     size={"sm"}
                     width={"90px"}
-                    id={"system-setting-sizes"}
-                    name={"system-setting-sizes"}
-                    defaultValue={systemFields.current.sizes}
+                    id={"system-setting-size"}
+                    name={"system-setting-size"}
+                    defaultValue={systemFields.current.size}
                     onChange={handleChange}
                   >
                     <option value="300x300">300x300</option>
@@ -654,17 +669,17 @@ export const SettingsDialog = ({
                     onClick={e => {
                       console.log("UPDATE BUTTON ", fields);
                       if (
-                        (systemFields.current["sizes"] !==
-                          fields["system-setting-sizes"] &&
-                          fields?.["system-setting-sizes"]) ||
+                        (systemFields.current["size"] !==
+                          fields["system-setting-size"] &&
+                          fields?.["system-setting-size"]) ||
                         (systemFields.current["theme"] !==
                           fields["system-setting-theme"] &&
                           fields?.["system-setting-theme"])
                       ) {
                         const updates = {
-                          sizes: fields?.["system-setting-sizes"]
-                            ? fields["system-setting-sizes"]
-                            : systemFields.current["sizes"],
+                          size: fields?.["system-setting-size"]
+                            ? fields["system-setting-size"]
+                            : systemFields.current["size"],
                           theme: fields?.["system-setting-theme"]
                             ? fields["system-setting-theme"]
                             : systemFields.current["theme"],

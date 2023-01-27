@@ -1,0 +1,146 @@
+{
+  "name": "@prifina-apps/test-setup",
+  "version": "0.0.0-alpha.0",
+  "description": "Desktop App",
+  "author": "Tero <tero@prifina.com>",
+  "license": "MIT",
+  "main": "dist/esm/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "cross-env PORT=3000 node ./scripts/start.js",
+    "build": "node ./scripts/build.js",
+    "xxstart": "react-scripts start",
+    "xstart": "GENERATE_SOURCEMAP=false && cross-env PORT=3000 react-app-rewired start",
+    "xbuild": "react-app-rewired build",
+    "storybook": "start-storybook -p 6006 -s public"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.20.7",
+    "@babel/eslint-parser": "^7.17.0",
+    "@babel/plugin-syntax-jsx": "^7.18.6",
+    "@babel/plugin-transform-react-jsx-source": "^7.18.6",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.14.5",
+    "@notionhq/client": "^1.0.4",
+    "@storybook/addon-actions": "^6.5.12",
+    "@storybook/addon-essentials": "^6.5.12",
+    "@storybook/addon-interactions": "^6.5.12",
+    "@storybook/addon-links": "^6.5.12",
+    "@storybook/builder-webpack5": "^6.5.12",
+    "@storybook/jest": "^0.0.10",
+    "@storybook/manager-webpack5": "^6.5.12",
+    "@storybook/node-logger": "^6.5.12",
+    "@storybook/preset-create-react-app": "^4.1.2",
+    "@storybook/react": "^6.5.12",
+    "@storybook/test-runner": "^0.4.0",
+    "@storybook/testing-library": "^0.0.13",
+    "@styled-system/prop-types": "^5.1.5",
+    "@svgr/cli": "^6.5.1",
+    "babel-jest": "^27.1.1",
+    "babel-loader": "^9.1.0",
+    "babel-plugin-react-docgen": "^4.2.1",
+    "babel-plugin-styled-components": "^2.0.7",
+    "copy-webpack-plugin": "^11.0.0",
+    "msw": "^0.47.4",
+    "msw-storybook-addon": "^1.6.3",
+    "null-loader": "^4.0.1",
+    "progress-bar-webpack-plugin": "^2.1.0",
+    "prop-types": "^15.8.1",
+    "storybook-module-federation": "^0.6.2",
+    "url-loader": "^4.1.1",
+    "webpack-bundle-analyzer": "^4.6.1"
+  },
+  "dependencies": {
+    "@blend-ui/auto-complete": "^1.0.1-alpha.0",
+    "@blend-ui/core": "1.1.68-alpha.0",
+    "@blend-ui/css-grid": "1.0.7-alpha.0",
+    "@blend-ui/icon-field": "^1.0.1-alpha.0",
+    "@blend-ui/icons": "^1.1.10-alpha.0",
+    "@blend-ui/modal": "1.0.14-alpha.0",
+    "@blend-ui/progress": "1.0.12-alpha.0",
+    "@blend-ui/search-select": "^1.0.6-alpha.0",
+    "@blend-ui/tabs": "1.0.17-alpha.0",
+    "@blend-ui/toast": "0.0.16-alpha.0",
+    "@floating-ui/react-dom": "^1.0.0",
+    "@floating-ui/react-dom-interactions": "^0.10.1",
+    "@iconify-icons/emojione-v1": "^1.2.2",
+    "@iconify/icons-bx": "^1.2.3",
+    "@iconify/icons-fe": "^1.2.1",
+    "@iconify/icons-mdi": "^1.2.17",
+    "@iconify/react": "^3.2.1",
+    "@popperjs/core": "^2.9.2",
+    "@prifina-apps/remote": "^0.0.0-alpha.1",
+    "@prifina-apps/utils": "^0.0.12-alpha.0",
+    "@prifina/hooks-v2": "^0.0.4",
+    "@reach/auto-id": "^0.16.0",
+    "@react-spring/web": "^9.4.4",
+    "@styled-system/theme-get": "^5.1.2",
+    "@svgr/webpack": "^6.2.1",
+    "@testing-library/jest-dom": "^5.14.1",
+    "aria-hidden": "^1.1.1",
+    "aws-amplify": "^4.3.19",
+    "aws-appsync": "^4.1.5",
+    "body-scroll-lock": "^4.0.0-beta.0",
+    "crypto-js": "^4.1.1",
+    "exenv": "^1.2.2",
+    "graphql-tag": "^2.12.5",
+    "https-browserify": "^1.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "react": "^18.2.0",
+    "react-dnd": "^14.0.3",
+    "react-dnd-html5-backend": "^14.0.1",
+    "react-dom": "^18.2.0",
+    "react-grid-layout": "^1.3.4",
+    "react-popper": "^2.3.0",
+    "react-router-dom": "^6.4.2",
+    "react-scripts": "^5.0.0",
+    "react-spring": "^9.2.4",
+    "react-table": "^7.7.0",
+    "short-uuid": "^4.2.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "styled-components": "^5.3.5",
+    "styled-system": "^5.1.5",
+    "url-loader": "^4.1.1",
+    "uuid": "^8.3.2",
+    "zustand": "^4.1.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "msw": {
+    "workerDirectory": "public"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-syntax-jsx",
+      [
+        "babel-plugin-styled-components",
+        {
+          "displayName": true
+        }
+      ]
+    ]
+  }
+}

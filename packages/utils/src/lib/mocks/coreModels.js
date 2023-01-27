@@ -20,7 +20,7 @@ export const prifinaUser = {
   "id": "6145b3af07fa22f66456e20eca49e98bfe35",
   "appProfile": JSON.stringify({
     "endpoint": "https://5uoho2oolnf33odmojf2n3z6te.appsync-api.eu-west-1.amazonaws.com/graphql",
-    "initials": "",
+    "initials": "TRO",
     "name": "TERO",
     "region": "eu-west-1"
   }),
@@ -31,6 +31,7 @@ export const prifinaUser = {
     "DisplayApp",
     "DevConsole"
   ]),
+  /* DryRun
   "installedWidgets": JSON.stringify([
     {
       "id": "x3LSdcSs1kcPskBWBJvqGto",
@@ -50,24 +51,74 @@ export const prifinaUser = {
       ]
     }
   ]),
+  */
+  "installedWidgets": JSON.stringify([
+    {
+      "id": "o3CH1e2kbrLgBxjbG2iLzd",
+      "settings": [
+        {
+          "field": "size",
+          "value": "300x300"
+        },
+        {
+          "field": "theme",
+          "value": "dark"
+        },
+        {
+          "field": "city",
+          "value": "Pori"
+        }
+      ]
+    },
+    /*
+    {
+      "id": "nsEjj21WhsSAhPigePiLSY",
+      "settings": [
+        {
+          "field": "size",
+          "value": "300x300"
+        },
+        {
+          "field": "theme",
+          "value": "dark"
+        }
+      ]
+    } */
+  ]),
   "viewSettings": JSON.stringify([
     {
       "view": {
         "title": "TERO's home"
       },
       "widgets": {
-        "x3LSdcSs1kcPskBWBJvqGto": {
+        "o3CH1e2kbrLgBxjbG2iLzd": {
           "currentSettings": {
-            "city": "London",
+            "city": "Pori",
             "size": "300x300",
             "theme": "dark"
           },
           "order": 0,
           "settingsExists": true
-        }
+        }, /*
+        "nsEjj21WhsSAhPigePiLSY": {
+          "currentSettings": {
+            "size": "300x300",
+            "theme": "dark"
+          },
+          "order": 1,
+          "settingsExists": true
+        } */
       }
     }
-  ])
+  ]),
+  "dataSources": JSON.stringify({
+    "fitbit": {
+      "status": 3
+    },
+    "oura": {
+      "status": 3
+    }
+  }),
 };
 
 

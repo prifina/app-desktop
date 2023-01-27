@@ -482,9 +482,10 @@ const Content = forwardRef((props, ref) => {
                   //remote: "sCUiMz2m9JsRSnRJ5favnP",
                   //remote: "csd88KWnuft8fHfMrKSBAD",
 
-                  remote: appID,
-                  url: appSettings.remoteUrl,
-                  //url: "dist/remoteEntry.js",
+                  //remote: appID,
+                  remote: "o3CH1e2kbrLgBxjbG2iLzd",
+                  //url: appSettings.remoteUrl,
+                  url: "dist/remoteEntry.js",
                   //url:"http://internal.prifina.com.s3-website-us-east-1.amazonaws.com/dist/remoteEntry.js",
                   //url: "https://cdn.jsdelivr.net/gh/data-modelling/builder-plugins@main/packages/json-view/dist/remoteEntry.js",
                   //https://github.com/tro9999/module-federation-examples/blob/master/dynamic-system-host/app2/dist/remoteEntry.js

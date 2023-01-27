@@ -1,0 +1,15 @@
+yarn run v1.22.19
+$ cross-env PORT=3000 node ./scripts/start.js
+Starting the development server...
+
+Compiled with warnings.
+
+Critical dependency: the request of a dependency is an expression
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in ../utils/src/lib/mocks/athenaData.js 128:6-26
+Critical dependency: the request of a dependency is an expression
+
+webpack compiled with 1 warning

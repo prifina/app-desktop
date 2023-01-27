@@ -1,0 +1,80 @@
+{
+  "name": "@prifina-apps/test-setup",
+  "version": "0.0.0-alpha.0",
+  "description": "Desktop App",
+  "author": "Tero <tero@prifina.com>",
+  "license": "MIT",
+  "main": "dist/esm/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "cross-env PORT=3000 node ./scripts/start.js",
+    "build": "node ./scripts/build.js",
+    "xxstart": "react-scripts start",
+    "xstart": "GENERATE_SOURCEMAP=false && cross-env PORT=3000 react-app-rewired start",
+    "xbuild": "react-app-rewired build",
+    "storybook": "start-storybook -p 6006 -s public"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.20.7",
+    "@babel/eslint-parser": "^7.17.0",
+    "@babel/plugin-syntax-jsx": "^7.18.6",
+    "@babel/plugin-transform-react-jsx-source": "^7.18.6",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.14.5",
+    "@styled-system/prop-types": "^5.1.5",
+    "@svgr/cli": "^6.5.1",
+    "babel-jest": "^27.1.1",
+    "babel-loader": "^9.1.0",
+    "babel-plugin-react-docgen": "^4.2.1",
+    "babel-plugin-styled-components": "^2.0.7",
+    "copy-webpack-plugin": "^11.0.0",
+    "null-loader": "^4.0.1",
+    "progress-bar-webpack-plugin": "^2.1.0",
+    "prop-types": "^15.8.1",
+    "url-loader": "^4.1.1"
+  },
+  "dependencies": {
+    "@prifina-apps/remote": "^0.0.0-alpha.1",
+    "@prifina/hooks-v2": "^0.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.2",
+    "react-scripts": "^5.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "msw": {
+    "workerDirectory": "public"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-syntax-jsx",
+      [
+        "babel-plugin-styled-components",
+        {
+          "displayName": true
+        }
+      ]
+    ]
+  }
+}

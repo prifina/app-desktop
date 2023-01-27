@@ -45,7 +45,28 @@ const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
   aws_appsync_region: config.main_region,
   aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
+  //aws_cognito_identity_pool_id: config.cognito.IDENTITY_POOL_ID,
+  //aws_cognito_region: config.auth_region
 };
+
+/*
+const awsmobile = {
+  aws_project_region: "us-east-2",
+  aws_appsync_graphqlEndpoint:
+    "https://js34zn5dafaxjatn52jom6cqde.appsync-api.us-east-2.amazonaws.com/graphql",
+  aws_appsync_region: "us-east-2",
+  aws_appsync_authenticationType: "AWS_IAM",
+};
+const awsmobile = {
+  aws_project_region: "us-east-2",
+  aws_appsync_graphqlEndpoint:
+    "https://js34zn5dafaxjatn52jom6cqde.appsync-api.us-east-2.amazonaws.com/graphql",
+  aws_appsync_region: "us-east-2",
+  aws_appsync_authenticationType: "AWS_IAM",
+  aws_cognito_identity_pool_id:  "us-east-2:HERE_ID",
+  aws_cognito_region: "us-east-2",
+};
+*/
 
 let AUTHConfig = {
   // To get the aws credentials, you need to configure
@@ -69,8 +90,20 @@ function App() {
     AUTHConfig.region = lastIdentityPool.split(":")[0];
   }
 
+  console.log("AUTH ", AUTHConfig);
+  console.log("API ", APIConfig);
+
   Auth.configure(AUTHConfig);
   API.configure(APIConfig);
+
+  //  console.log("AUTH ", Auth);
+  //  console.log("API ", API);
+  /*
+    Auth.currentCredentials()
+      .then((d) => console.log("data: ", d))
+      .catch((e) => console.log("error: ", e));
+  */
+
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
 
@@ -139,7 +172,12 @@ function App() {
         let _s3Client = {};
 
         if (_currentSession) {
+          localStorage.setItem(
+            "LastSessionIdentityPool",
+            Auth._config.identityPoolId
+          );
           const currentCredentials = await Auth.currentCredentials();
+          console.log("CURRENT CREDS ", currentCredentials);
           const token = _currentSession.getIdToken().payload;
           _currentUser = {
             username: token["cognito:username"],
@@ -150,7 +188,7 @@ function App() {
             identity: currentCredentials.identityId,
             identityPool: Auth._config.identityPoolId,
           };
-
+          //console.log("CURRENT CREDS ",cognitoCredentials);
           const currentCognitoCredentials = await cognitoCredentials(
             _currentSession,
           );
@@ -219,6 +257,8 @@ function App() {
             });
             console.log("SESSION ", prifinaSession);
           }
+
+
         }
 
         setState({
@@ -229,8 +269,10 @@ function App() {
         });
       } catch (e) {
         console.log("ERR ", e);
-        if (typeof e === "string" && e === "No current user") {
+        if (typeof e === "string" && e === "xNo current user") {
           console.log("GET SESSION....");
+          console.log("GET SESSION API ....", API);
+
           const prifinaSession = await getPrifinaSessionQuery(API, tracker);
           console.log("AUTH SESSION ", prifinaSession);
           if (prifinaSession.data.getSession === null) {
@@ -276,7 +318,17 @@ function App() {
           }
         }
         if (e !== "No current user") {
+
         }
+        /*
+                if (typeof e === "string" && e === "No current user") {
+                  //setLogin(false);
+                  const user = await Auth.signIn("test-user", "xxxx");
+                  console.log("AUTH ", user);
+                  //console.log("APP DEBUG ", appCode);
+                }
+                */
+
         //userHasAuthenticated(true);
         setState({
           isAuthenticating: false,
