@@ -54,8 +54,8 @@ const dev = {
     aws_appsync_authenticationType: process.env.REACT_APP_APPSYNC_AUTH_TYPE,
   },
   S3: {
-    bucket: "prifina-data-" + process.env.REACT_APP_PRIFINA_ACCOUNT,
-    region: "us-east-1",
+    bucket: "prifina-data-" + process.env.REACT_APP_PRIFINA_ACCOUNT + "-" + process.env.REACT_APP_MAIN_REGION,
+    region: process.env.REACT_APP_MAIN_REGION, // user data...
   },
   prifinaAccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
 };

@@ -1,41 +1,40 @@
-import React from "react";
-
-export const PhoneIcon = () => (
-  <>
-    <svg
-      width="68"
-      height="135"
-      viewBox="0 0 68 135"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M0 6C0 2.68629 2.68629 0 6 0H60C64.4183 0 68 3.58172 68 8V129C68 132.314 65.3137 135 62 135H8C3.58172 135 0 131.418 0 127V6Z"
-        fill="#01544E"
-      />
-      <rect width="66" height="133" rx="5" fill="#00847A" />
-      <rect x="2" y="6" width="62" height="116" rx="5" fill="#F5F8F7" />
-      <rect x="24" y="125" width="18" height="5" rx="2.5" fill="#F5F8F7" />
-      <rect x="24" y="3" width="18" height="1" rx="0.5" fill="#F5F8F7" />
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M46 49V58H42.3809C40.015 60.4653 36.6867 62 33 62C29.3133 62 25.985 60.4653 23.6191 58H20V49C20 41.8203 25.8203 36 33 36C40.1797 36 46 41.8203 46 49Z"
-        fill="#01544E"
-      />
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M42 49C42 44.0294 37.9706 40 33 40C28.0294 40 24 44.0294 24 49V58H33H42V49Z"
-        fill="#F5F8F7"
-      />
-      <rect x="14" y="58" width="38" height="34" rx="3" fill="#00847A" />
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M35 74.2361C35.6137 73.6868 36 72.8885 36 72C36 70.3431 34.6569 69 33 69C31.3431 69 30 70.3431 30 72C30 72.8885 30.3863 73.6868 31 74.2361V80C31 81.1046 31.8954 82 33 82C34.1046 82 35 81.1046 35 80V74.2361Z"
-        fill="#01544E"
-      />
-    </svg>
-  </>
+import * as React from "react";
+const SvgPhone = props => (
+  <svg
+    width={68}
+    height={135}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M0 6a6 6 0 0 1 6-6h54a8 8 0 0 1 8 8v121a6 6 0 0 1-6 6H8a8 8 0 0 1-8-8V6Z"
+      fill="#01544E"
+    />
+    <rect width={66} height={133} rx={5} fill="#00847A" />
+    <rect x={2} y={6} width={62} height={116} rx={5} fill="#F5F8F7" />
+    <rect x={24} y={125} width={18} height={5} rx={2.5} fill="#F5F8F7" />
+    <rect x={24} y={3} width={18} height={1} rx={0.5} fill="#F5F8F7" />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M46 49v9h-3.62A12.963 12.963 0 0 1 33 62a12.963 12.963 0 0 1-9.38-4H20v-9c0-7.18 5.82-13 13-13s13 5.82 13 13Z"
+      fill="#01544E"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M42 49a9 9 0 1 0-18 0v9h18v-9Z"
+      fill="#F5F8F7"
+    />
+    <rect x={14} y={58} width={38} height={34} rx={3} fill="#00847A" />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M35 74.236a3 3 0 1 0-4 0V80a2 2 0 1 0 4 0v-5.764Z"
+      fill="#01544E"
+    />
+  </svg>
 );
+export default SvgPhone;
+

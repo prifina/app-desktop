@@ -12,6 +12,11 @@ const baseWhite = "#F5F8F7DE";
 const baseHover = "#c91684";
 const baseMuted = "#292828";
 
+// these were not defined .... 
+const baseError = "#C3C2C2";
+const baseErrorHover = "#C3C2C2";
+/// 
+
 const borderPrimary = "#C3C2C2";
 
 const baseBright = "#4B4B4B";
@@ -41,6 +46,8 @@ const colors = {
   baseTertiary,
   baseMuted,
   baseWhite,
+  baseError,
+  baseErrorHover,
   componentPrimary: brandAccent,
   componentAccent: brandAccent,
   backroundAccent: brandAccent,
@@ -62,6 +69,7 @@ const radii = defaultTheme.radii;
 const fontSizes = defaultTheme.fontSizes;
 
 const borderWidths = { ...sizeOptions.borderWidths };
+//"yellow" //props.theme.borders.input.error
 
 const borders = {
   input: {

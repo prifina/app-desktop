@@ -59,7 +59,7 @@ const array_chunks = (array, chunk_size) =>
 
 const Content = ({ installedAppIcons, gridCols, prifinaApps }) => {
   const navigate = useNavigate();
-
+  console.log("HOME APPS ", prifinaApps);
   return (
     <StyledBox>
       <PrifinaLogo />
@@ -205,16 +205,19 @@ const Home = props => {
       setActiveUser(activeUser);
       setPrifinaUser(currentUser);
 
+      // Create appsync client 
       setAppsyncConfig({
         aws_appsync_graphqlEndpoint: appProfile.endpoint,
-        aws_appsync_region: appProfile.region
+        aws_appsync_region: appProfile.region,
+        graphql_endpoint_iam_region: appProfile.region
       })
 
       const prifinaAppsData2 = await listAppMarketQuery({
         filter: { appType: { eq: 3 } }, // system apps
+        limit: 1000  // possibly too big....
       });
 
-      //console.log("APPS 2", prifinaAppsData2);
+      console.log("APPS 2", prifinaAppsData2);
       let prifinaAppsJSON = {};
       prifinaAppsData2.data.listAppMarket.items.forEach(item => {
         prifinaAppsJSON[item.id] = item;
@@ -340,7 +343,7 @@ const Home = props => {
     });
   }
   */
-  console.log("APPS ", prifinaApps.current);
+  // console.log("APPS ", prifinaApps.current);
   return (
     <>
       {!loadingStatus && (

@@ -10,8 +10,8 @@ import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 //import { useStore } from "../stores/PrifinaStore";
 
 import shallow from 'zustand/shallow';
-import { useStore } from "../utils-v2/stores/PrifinaStore";
-import { validEmail, } from "@prifina-apps/utils";
+import { useStore } from "../stores/PrifinaStore";
+import { validEmail, } from "../lib//utils";
 import PropTypes from "prop-types";
 
 

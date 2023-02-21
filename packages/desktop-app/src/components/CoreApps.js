@@ -5,10 +5,18 @@ import shallow from "zustand/shallow";
 
 import { useStore } from "../utils-v2/stores/PrifinaStore";
 
+import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
 import { ToastContextProvider } from "@blend-ui/toast";
+/*
 import {
   useUserMenu
 } from "@prifina-apps/utils";
+*/
+import { useUserMenu } from "../utils-v2/components/FloatingUserMenu-v2";
+
+import withUsermenu from "../utils-v2/components/UserMenu-v2";
+
+
 //import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
 /*
 import {
@@ -60,30 +68,24 @@ const Content = ({
   Component,
   notificationCount,
   activeUser,
+  listSystemNotificationsByDateQuery,
+  coreApiClient,
   ...props
 }) => {
   console.log("CONTENT ", props, activeUser, Component);
-  /*
   const userMenu = useUserMenu();
-  console.log(
-    "USERMENU CORE APP INIT  ",
-    { ...props },
-    initials,
-    notificationCount,
-  );
-  userMenu.setClientHandler(appSyncClient);
-  userMenu.setActiveUser(activeUser);
-  useEffect(() => {
-    userMenu.show({
-      initials: initials,
-      //effect: { hover: { width: 42 } },
-      notifications: notificationCount,
-      RecentApps: [],
-      PrifinaGraphQLHandler: GRAPHQL,
-      prifinaID: activeUser.uuid,
-    });
-  }, []);
-  */
+
+  const userMenuInit = {
+    //effect: { hover: { width: 42 } },
+    notifications: notificationCount,
+    RecentApps: [],
+    prifinaID: activeUser.uuid,
+    activeUser: activeUser,
+    listSystemNotificationsByDateQuery: listSystemNotificationsByDateQuery,
+    coreApiClient: coreApiClient
+  };
+  //console.log("User menu init ", userMenuInit);
+  userMenu.show(userMenuInit);
 
   return <Component {...props} />;
 };
@@ -91,7 +93,9 @@ const Content = ({
 Content.propTypes = {
   Component: PropTypes.elementType.isRequired,
   notificationCount: PropTypes.number,
-  activeUser: PropTypes.object
+  activeUser: PropTypes.object,
+  coreApiClient: PropTypes.object,
+  listSystemNotificationsByDateQuery: PropTypes.func
 };
 
 const CoreApps = props => {
@@ -112,7 +116,7 @@ const CoreApps = props => {
   console.log("IMPORT THIS ", coreApp);
 
   const { activeUser, getSystemNotificationCountQuery, updateUserActivityMutation,
-    getAddressBookQuery, listAppMarketQuery, listDataSourcesQuery,
+    getAddressBookQuery, listAppMarketQuery, listDataSourcesQuery, listSystemNotificationsByDateQuery,
     getPrifinaUser } = useStore(
       state => ({
         activeUser: state.activeUser,
@@ -121,12 +125,14 @@ const CoreApps = props => {
         getAddressBookQuery: state.getAddressBookQuery,
         listAppMarketQuery: state.listAppMarketQuery,
         listDataSourcesQuery: state.listDataSourcesQuery,
-        getPrifinaUser: state.getPrifinaUser
+        getPrifinaUser: state.getPrifinaUser,
+        listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery
 
       }),
       shallow,
     );
 
+  const { CoreApiClient, UserApiClient } = useGraphQLContext();
   const effectCalled = useRef(false);
   const componentProps = useRef({});
 
@@ -377,6 +383,8 @@ const CoreApps = props => {
         notificationCountResult.data.getSystemNotificationCount;
 
       componentProps.current.notificationCount = notificationCount.current;
+      componentProps.current.listSystemNotificationsByDateQuery = listSystemNotificationsByDateQuery;
+      componentProps.current.coreApiClient = CoreApiClient
 
       lastActivity.current = new Date().getTime();
       await updateUserActivityMutation({
@@ -724,5 +732,5 @@ CoreApps.propTypes = {
   app: PropTypes.string,
 };
 
-//export default withUsermenu()(CoreApps);
-export default CoreApps;
+export default withUsermenu()(CoreApps);
+//export default CoreApps;

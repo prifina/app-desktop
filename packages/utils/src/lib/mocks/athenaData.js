@@ -144,14 +144,33 @@ const getSandboxData = (event, cb) => {
           console.log("DATAMODULE MOCKUP IMPORT  ", module);
 
           let mockContent = SANDBOX.getMockedData(module, queryType, format, dataModel, mockupFunction, { filter, filterCondition, startDate, endDate, dataDate }, fields)
-          console.log(mockContent);
-          //var dataObject = JSON.parse(res.data[key].result);
+          console.log(mockContent); // this should be ok for both async and sync requests...
+
           const athenaResults = {
             "getDataObject": {
               "result": "{\"headers\":{\"content-length\":\"150\",\"Content-Type\":\"application/x-amz-json-1.0\",\"Date\":\"Wed, 18 Jan 2023 14:36:36 GMT\",\"x-amzn-RequestId\":\"30fb7950-0fe5-4060-aafa-47d812ce9c39\"},\"statusCode\":200,\"body\":\"{\\\"executionArn\\\":\\\"arn:aws:states:us-east-1:429117803886:execution:User-StateMachine:6b764132-7803-41c4-b5e8-2f723266328f\\\",\\\"startDate\\\":1.674052596266E9}\"}",
               "__typename": "ObjectData"
             }
           };
+          /*
+          // provider response...
+          getDataObject:result: "{\"content\":{\"summary_date\":\"2023-02-19\",\"awake\":6330,\"light\":14100,\"deep\":7950,\"rem\":2220,\"total\":24270},\"next\":1650}"
+
+            result...     
+                    {
+                      "getDataObject": {
+                          "content": {
+                              "summary_date": "2023-02-19",
+                              "awake": 6330,
+                              "light": 14100,
+                              "deep": 7950,
+                              "rem": 2220,
+                              "total": 24270
+                          },
+                          "next": 1650
+                      }
+                  }
+          */
           /*
           {
             "getDataObject": {
@@ -174,21 +193,33 @@ const getSandboxData = (event, cb) => {
         }
         */
 
-          resolve({
-            data: athenaResults
-          });
-          //res.data.athenaResults.appId;
-          cb({
-            "data": {
-              "athenaResults": {
-                "data": JSON.stringify({ content: mockContent, dataconnector: inputDataConnector }),
-                "appId": appID,
-                "id": userID,
-                "__typename": "AthenaData"
+          if (queryType === "ASYNC") {
+            resolve({
+              data: athenaResults
+            });
+
+            cb({
+              "data": {
+                "athenaResults": {
+                  "data": JSON.stringify({ content: mockContent, dataconnector: inputDataConnector }),
+                  "appId": appID,
+                  "id": userID,
+                  "__typename": "AthenaData"
+                }
               }
-            }
-          })
-          //resolve(true);
+            })
+          } else {
+            resolve({
+              data: {
+                "getDataObject": {
+                  result: JSON.stringify({
+                    "content": mockContent
+                  })
+                }
+              }
+            });
+          }
+
         })
         .catch((err) => {
           console.log("DATAMODULE MOCKUP IMPORT ERROR ", err);

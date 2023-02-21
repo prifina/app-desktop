@@ -480,7 +480,7 @@ const UserMenuContextProvider = ({
       const subsID = notificationUpdates.current["subscriptions"].subscribe(newSystemNotification, {
         owner: options.prifinaID,
       },);
-
+      console.log("NOTIFICATION ", subsID);
       subscriptionHandler.current = subsID;
 
       //prifinaQraphQLHandler.current = menu.options.PrifinaGraphQLHandler;

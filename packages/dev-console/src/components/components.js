@@ -22,7 +22,7 @@ import styled from "styled-components";
 import { i18n } from "@prifina-apps/utils";
 
 import UploadAsset from "./UploadAsset";
-import placeholderImage from "../assets/placeholder-image.svg";
+//import placeholderImage from "../assets/placeholder-image.svg";
 
 const SidebarContainer = styled(Flex)`
   width: 270px;
@@ -206,9 +206,9 @@ export const DevConsoleSidebar = ({
               style={
                 disabled
                   ? {
-                      pointerEvents: "none",
-                      opacity: 0.5,
-                    }
+                    pointerEvents: "none",
+                    opacity: 0.5,
+                  }
                   : null
               }
               pointerBackground={pointerBackground}
@@ -445,7 +445,7 @@ export const ImageZoom = ({ src }) => {
 ImageZoom.propTypes = {
   src: PropTypes.string,
 };
-
+/*
 export const AssetContainer = ({
   state,
   src,
@@ -513,6 +513,7 @@ export const AssetContainer = ({
 AssetContainer.propTypes = {
   src: PropTypes.string,
 };
+*/
 
 export const CustomSelect = styled.select`
   border-radius: 8px;

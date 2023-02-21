@@ -20,13 +20,25 @@ export const coreMockups = {
       return { data: { listAppMarket: { items: widgets, nextToken: null } } }
     },
     appsList: (variables, Options) => {
+
       return { data: { listApps: { items: apps, nextToken: null } } }
     },
-    appVerion: (variables, Options) => {
+    appVersion: (variables, Options) => {
       let appIdx = 0;
+      //console.log("MOCK OPTIONS ", Options)
       if (Options.hasOwnProperty("appIndex")) {
         appIdx = Options.appIndex;
+      } else {
+
+        const foundIdx = apps.findIndex(app => {
+          return app.id = variables
+        })
+        if (foundIdx > -1) {
+          appIdx = foundIdx
+        }
+
       }
+      //console.log("MOCK OPTIONS ", appIdx)
       return { data: { getAppVersion: apps[appIdx] } }
     },
     listDataSources: (variables, Options) => {
@@ -147,7 +159,13 @@ export const coreMockups = {
       localStorage.setItem("_mockPrifinaUser", JSON.stringify(updates));
       return Promise.resolve({ id: variables.id, ...updates[variables.id] });
 
-    }
+    },
+    addUserToCognitoGroup: (variables, Options) => ({ data: { addUserToCognitoGroup: true } }),
+    newAppVersion: (variables, Options) => ({ data: { newAppVersion: variables } }),
+    deleteApp: (variables, Options) => ({ data: { deleteApp: true } }),
+    updateAppVersion: (variables, Options) => ({ data: { updateAppVersion: variables } })
+
+
     /*
     {
         "id": "6145b3af07fa22f66456e20eca49e98bfe35",

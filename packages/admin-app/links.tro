@@ -36,3 +36,6 @@ https://github.com/aws-samples/serverless-patterns/tree/main/cloudwatch-logs-sub
 https://aws.amazon.com/blogs/devops/building-an-amazon-cloudwatch-dashboard-outside-of-the-aws-management-console/
 
 https://iamjkahn.com/2019/12/invoking-even-more-aws-services-directly-from-aws-appsync.html
+
+### possibly useful ui examples
+https://github.com/ed-roh/react-admin-dashboard

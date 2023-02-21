@@ -3,6 +3,7 @@ export const SEARCH_ENGINE = process.env.REACT_APP_SEARCH_ENGINE;
 export const GOOGLE_URL = "https://customsearch.googleapis.com/customsearch/v1";
 export const REFRESH_TOKEN_EXPIRY = process.env.REACT_APP_REFRESH_TOKEN_EXPIRY;
 
+
 const prod = {
   invalidVerificationLink:
     "https://prifina.zendesk.com/hc/en-us/articles/360051754911",
@@ -48,8 +49,8 @@ const dev = {
     aws_appsync_authenticationType: process.env.REACT_APP_APPSYNC_AUTH_TYPE,
   },
   S3: {
-    bucket: "prifina-data-" + process.env.REACT_APP_PRIFINA_ACCOUNT,
-    region: "us-east-1",
+    bucket: "prifina-data-" + process.env.REACT_APP_PRIFINA_ACCOUNT + "-" + process.env.REACT_APP_MAIN_REGION,
+    region: process.env.REACT_APP_MAIN_REGION, // user data...
   },
   prifinaAccountId: process.env.REACT_APP_PRIFINA_ACCOUNT,
 };

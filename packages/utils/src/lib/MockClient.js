@@ -56,7 +56,7 @@ import config from "../config";
 import { getSandboxData } from "./mocks/athenaData";
 import { getSubscriptionData } from "./mocks/subscriptionData";
 
-import { getRandomInt } from "./mocks/helpers";
+import { getRandomInt, timeout } from "./mocks/helpers";
 
 
 //import 
@@ -141,7 +141,7 @@ class AUTHClient {
     return Promise.resolve(cognitoUserCustom);
   }
 
-  setPreferredMFA(mfaMethod) {
+  setPreferredMFA(user, mfaMethod) {
     //mfaMethod: "TOTP" | "SMS" | "NOMFA" | "SMS_MFA" | "SOFTWARE_TOKEN_MFA"
     return Promise.resolve(mfaMethod);
   }
@@ -301,7 +301,7 @@ class CoreGraphQLApi {
   setCallback(fn) {
     this.callback = fn;
   }
-  unsubscribe(subscribtionID) {
+  unsubscribe(subscriptionID) {
     this.subscriptions[subscriptionID].disconnect();
   }
   subscribe(rq, vars) {
@@ -309,8 +309,14 @@ class CoreGraphQLApi {
     const subscribtionID = shortId();
 
     const ql = gql(rq);
-    const socket = getSubscriptionData(this.callback, vars, ql.definitions[0].name.value);
-    this.subscriptions[subscribtionID] = socket;
+    // const socket = getSubscriptionData(this.callback, vars, ql.definitions[0].name.value);
+    //this.subscriptions[subscribtionID] = socket;
+    if (process.env.REACT_APP_USE_MOCKUP_SERVER === "true") {
+      const socket = getSubscriptionData(this.callback, vars, ql.definitions[0].name.value);
+      this.subscriptions[subscribtionID] = socket;
+    } else {
+      this.subscriptions[subscribtionID] = { disconnect: () => { } };
+    }
 
     //console.log("Subscribe ", ql, vars);
     /*
@@ -344,4 +350,123 @@ class CoreGraphQLApi {
 
 };
 
-export { AUTHClient, CoreGraphQLApi, AppSyncClient };
+class S3Storage {
+  constructor(cnf) {
+    this.client = "MOCKUP";
+    this.config = cnf?.S3Config || {}
+    this.Options = cnf?.Options || {}
+    this.callback = undefined;
+  }
+  configure(cnf) {
+    this.config = { ...this.config, ...cnf };
+    return this.config;
+  }
+  /*
+  const getImage = s3Key => {
+    console.log("GET IMAGE URL ", s3Key);
+    return new Promise(function (resolve, reject) {
+  
+      Storage.get(s3Key, { level: "public", download: false })
+        .then(url => {
+          var myRequest = new Request(url);
+          fetch(myRequest).then(function (response) {
+            if (response.status === 200) {
+              console.log("URL ", url);
+              resolve(url);
+            } else {
+              console.log("S3 ERROR ", response);
+              reject(response.status);
+            }
+          });
+        })
+        .catch(err => {
+          console.log("S3 ERROR ", err);
+          reject(err);
+        });
+    });
+  };
+  */
+  get(s3Key, options) {
+    //getImage(appID + "/assets/" + images[idx]).
+    //const icon = JSON.parse(localStorage.getItem("_mockPrifinaS3_xxxxyyyyzzzzz/assets/icon-1.png"));
+
+    return new Promise(function (resolve, reject) {
+      const img = localStorage.getItem("_mockPrifinaS3_" + s3Key);
+      if (img !== null) {
+        const imgJSON = JSON.parse(img);
+        resolve(imgJSON.url);
+      } else {
+        resolve("");
+      }
+    });
+  }
+  put(s3Key, fileHandler, options) {
+
+    console.log("FILE ", fileHandler.name, fileHandler.size, options)
+    const totalSize = fileHandler.size;
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(fileHandler);
+
+    reader.addEventListener('load', () => {
+      //localStorage.setItem('thumbnail', reader.result);
+      localStorage.setItem("_mockPrifinaS3_" + s3Key, JSON.stringify({ url: reader.result, key: s3Key, ...options }));
+    });
+
+    //options.progressCallback({ loaded: totalSize, total: totalSize });
+    /*
+        {
+          "level": "public",
+          "metadata": {
+              "created": "2023-02-16T05:22:25.590Z",
+              "alt-name": "project_openai_codex-main.zip"
+          },
+          "customPrefix": {
+              "public": "uploads/"
+          }
+      }
+      
+      */
+    return new Promise((resolve, reject) => {
+
+      if (options?.progressCallback !== undefined) {
+        //console.log("PROGRESS OPTION")
+        let splitCnt = 0;
+        let loaded = 0;
+        (async function () {
+          do {
+            loaded = Math.floor(totalSize * (splitCnt * 20 / 100));
+            if (loaded > totalSize) {
+              loaded = totalSize;
+            }
+            splitCnt++;
+            //console.log("PROGRESS OPTION ", loaded, totalSize)
+            options.progressCallback({ loaded: loaded, total: totalSize })
+            await timeout(500)
+          } while (loaded < totalSize);
+
+          resolve({
+            ETag: "\"6805f2cfc46c0f04559748bb039d69ae\"",
+            ServerSideEncryption: "AES256",
+            VersionId: "CG612hodqujkf8FaaNfp8U..FIhLROcp"
+          })
+
+        })()
+
+      }
+      /*
+            resolve({
+              ETag: "\"6805f2cfc46c0f04559748bb039d69ae\"",
+              ServerSideEncryption: "AES256",
+              VersionId: "CG612hodqujkf8FaaNfp8U..FIhLROcp"
+            })
+            */
+
+    });
+
+  }
+}
+
+
+export { AUTHClient, CoreGraphQLApi, AppSyncClient, S3Storage };

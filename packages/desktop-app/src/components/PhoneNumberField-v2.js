@@ -10,10 +10,10 @@ import styled from "styled-components";
 import { space } from "styled-system";
 import bxPhone from "@iconify/icons-bx/bx-phone";
 
-import { isValidNumber, onlyDigitChars } from "@prifina-apps/utils";
+import { isValidNumber, onlyDigitChars } from "../lib/utils";
 
 import shallow from 'zustand/shallow';
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useStore } from "../stores/PrifinaStore";
 //import { useStore } from "../stores/PrifinaStore";
 import PropTypes from "prop-types";
 

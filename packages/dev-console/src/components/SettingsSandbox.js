@@ -28,6 +28,7 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
   function handleChange(event) {
     setSettings(event.target.value);
   }
+  //[{"label":"City","field":"city",type:"text",value:"Pori"}]
 
   return (
     <div>
@@ -36,6 +37,8 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
       </Box>
 
       <TextArea
+        fontSize={"12px"}
+        fontFamily={"monospace"}
         height="217px"
         width="660px"
         label="text"
@@ -58,8 +61,8 @@ const SettingsSandbox = ({ onClick, appSettings, ...props }) => {
 
 
 SettingsSandbox.propTypes = {
-  onClick:PropTypes.func,
-  appSettings:PropTypes.object
-}  
+  onClick: PropTypes.func,
+  appSettings: PropTypes.object
+}
 
 export default SettingsSandbox;

@@ -1,0 +1,240 @@
+/* global localStorage */
+
+import React, { useEffect, useState, useRef, } from "react";
+
+
+import { Box, Flex, Text, Image, } from "@blend-ui/core";
+
+import { ToastContextProvider } from "@blend-ui/toast";
+import { useTranslate } from "@prifina-apps/utils";
+
+import shallow from "zustand/shallow";
+import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
+
+import { useStore } from "../utils-v2/stores/PrifinaStore";
+/*
+import {
+  useAppContext,
+  useIsMountedRef,
+  listAppsQuery,
+  updateAppVersionMutation,
+  deleteAppVersionMutation,
+  getPrifinaUserQuery,
+  updateUserProfileMutation,
+  useUserMenu,
+  withUsermenu,
+  i18n,
+  createClient,
+  // SidebarMenu,
+} from "@prifina-apps/utils";
+*/
+
+//import UploadApp from "../components/UploadApp";
+
+import PropTypes from "prop-types";
+//import { DevConsoleSidebar } from "../components/components";
+
+import docs from "../assets/docs.png";
+import starterResources from "../assets/starterResources.png";
+import slackResources from "../assets/slackResources.png";
+import zendeskResources from "../assets/zendeskResources.png";
+
+//import * as C from "../components/components";
+//import { DevConsoleLogo } from "../components/DevConsoleLogo";
+
+
+//import mdiWidget from "@iconify/icons-mdi/widgets";
+
+import { useNavigate } from "react-router-dom";
+
+import { CssGrid as Grid, CssCell as Cell } from "@blend-ui/css-grid";
+
+
+import mdiWidget from "@iconify/icons-mdi/widgets";
+import AppStudioSidebar from "../components/AppStudioSidebar";
+
+import Header from "../components/Header";
+
+import Projects from "../components/Projects";
+import withUsermenu from "../utils-v2/components/UserMenu-v2";
+
+const ResourceCard = ({ title, description, src }) => {
+  return (
+    <Flex
+      width="221px"
+      height="117px"
+      bg="baseTertiary"
+      borderRadius="5px"
+      alignItems="center"
+      paddingTop="23px"
+      paddingBottom="23px"
+    >
+      <Box position="relative" left={-18} marginRight={0} width="60%">
+        <Image src={src} size={30} />
+      </Box>
+      <Box alignItems="center">
+        <Text fontSize="sm" paddingBottom="5px">
+          {title}
+        </Text>
+        <Text color="#ADADAD" fontSize="xxs">
+          {description}
+        </Text>
+      </Box>
+    </Flex>
+  );
+};
+
+ResourceCard.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
+  src: PropTypes.node,
+};
+
+
+const Home = props => {
+  const { __ } = useTranslate();
+  const navigate = useNavigate();
+
+  const { activeUser, getSystemNotificationCountQuery, updateUserActivityMutation,
+    listSystemNotificationsByDateQuery,
+  } = useStore(
+    state => ({
+      activeUser: state.activeUser,
+      getSystemNotificationCountQuery: state.getSystemNotificationCountQuery,
+      updateUserActivityMutation: state.updateUserActivityMutation,
+      listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery
+
+    }),
+    shallow,
+  );
+
+  const { CoreApiClient, UserApiClient } = useGraphQLContext();
+  const effectCalled = useRef(false);
+  const componentProps = useRef({});
+
+  const lastActivity = useRef(new Date().getTime());
+  const notificationCount = useRef(0);
+
+  const [appReady, setAppReady] = useState(false);
+  const menuItems = [
+
+    {
+      label: __("projects"),
+      icon: mdiWidget,
+      onClick: () => {
+        navigate("/", { replace: true });
+      },
+    },
+  ];
+  const resourceCardItems = [
+    {
+      src: docs,
+      title: __("prifinaDocsResourcesCardHeading"),
+      description: __("docsResourcesCardPara"),
+    },
+    {
+      src: starterResources,
+      title: __("gitResourcesResourcesCardHeading"),
+      description: __("gitResourcesCardPara"),
+    },
+    {
+      src: zendeskResources,
+      title: __("zenDeskResourcesCardHeading"),
+      description: __("zenResourcesCardPara"),
+    },
+    {
+      src: slackResources,
+      title: __("slackResourcesCardHeading"),
+      description: __("slackResourcesCardPara"),
+    },
+  ];
+
+  useEffect(() => {
+    async function fetchData() {
+      effectCalled.current = true;
+
+      const notificationCountResult = await getSystemNotificationCountQuery(
+        {
+          filter: {
+            owner: { eq: activeUser.uuid },
+            status: { eq: 0 },
+          },
+        },
+      );
+
+      console.log("COUNT ", notificationCountResult);
+      notificationCount.current =
+        notificationCountResult.data.getSystemNotificationCount;
+
+      componentProps.current.notificationCount = notificationCount.current;
+      componentProps.current.listSystemNotificationsByDateQuery = listSystemNotificationsByDateQuery;
+      componentProps.current.coreApiClient = CoreApiClient
+
+      lastActivity.current = new Date().getTime();
+      await updateUserActivityMutation({
+        id: activeUser.uuid,
+        activeApp: "appStudio-Home"
+      });
+
+
+      setAppReady(true)
+
+    }
+    if (!effectCalled.current) {
+      fetchData();
+    }
+  }, []);
+
+
+  return (
+    <>
+      <ToastContextProvider>
+        {appReady && (
+          <>
+            <Grid
+              bg="basePrimary"
+              columns={"280px 1fr"}
+              rows={"45px 1fr 225px"}
+              areas={["header header", "menu content", "menu footer"]}
+            >
+              <Cell area="header">
+                <Header  {...componentProps.current}
+                  activeUser={activeUser} />
+              </Cell>
+              <Cell area="content">
+                <Box height={`calc(100vh - 270px)`} >
+
+                  <Projects currentUser={activeUser} />
+                </Box>
+              </Cell>
+              <Cell area="menu">
+                <AppStudioSidebar items={menuItems} />
+              </Cell>
+              <Cell area="footer">
+                <Box marginTop="48px" marginLeft={"20px"}>
+                  <Grid columns="repeat(auto-fit,minmax(120px,1fr))">
+                    {resourceCardItems.map((item, index) => (
+                      <Cell key={"card-" + index}>
+                        <ResourceCard
+                          src={item.src}
+                          title={item.title}
+                          description={item.description}
+                        />
+                      </Cell>
+                    ))}
+                  </Grid>
+                </Box>
+              </Cell>
+            </Grid>
+
+          </>
+        )}
+      </ToastContextProvider>
+    </>
+  );
+};
+
+Home.displayName = "Home";
+
+//export default Home;
+export default withUsermenu()(Home);

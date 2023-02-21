@@ -25,7 +25,7 @@ import PasswordField from "../components/PasswordField-v2";
 import ConfirmAuth from "./ConfirmAuth";
 
 const LoginContainer = styled(Box)`
-  width: 534px;
+  min-width: 534px;
   display: flex;
   flex-direction: column;
   align-items: center;

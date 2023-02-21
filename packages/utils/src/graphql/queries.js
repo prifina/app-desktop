@@ -244,7 +244,7 @@ export const getRequestToken = `query getRequestToken($id: String!,$source:Strin
   }
 }`;
 
-export const getAppVersion = `query appVerion($id: String!) {
+export const getAppVersion = `query appVersion($id: String!) {
   getAppVersion(id: $id) {
       appType
       createdAt

@@ -1,62 +1,43 @@
+/* eslint-disable react/display-name */
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import NotFoundPage from "../components/NotFoundPage";
 
-//import AuthenticatedRoute from "./AuthenticatedRoute";
-//import UnauthenticatedRoute from "./UnauthenticatedRoute";
-//import AppliedRoute from "./AppliedRoute";
+import { NotFoundPage } from "@prifina-apps/utils";
 import AuthLayout from "./AuthLayout";
 import UnAuthLayout from "./UnAuthLayout";
 
-const Home = React.lazy(() => import("../pages/Home"));
-const Logout = React.lazy(() => import("../pages/Logout"));
-const Admin = React.lazy(() => import("../pages/Admin"));
-const Sandbox = React.lazy(() => import("../pages/Sandbox"));
-const NewApp = React.lazy(() => import("../pages/NewApp"));
-const Register = React.lazy(() => import("../pages/Register"));
+//const Home = React.lazy(() => import("../pages/Home-v2"));
+//const CoreApps = React.lazy(() => import("../components/CoreApps"));
+
 const Login = React.lazy(() => import("../pages/Login"));
+const CreateAccount = React.lazy(() => import("../pages/CreateAccount-v2"));
 
-const Landing = React.lazy(() => import("../pages/Landing"));
+//const ProjectDetails = React.lazy(() => import("../pages/ProjectDetails-v2"));
+const Landing = React.lazy(() => import("../pages/Landing-v2"));
 
-const UploadApp = React.lazy(() => import("../components/UploadApp"));
-
-//const RemoteTest = React.lazy(() => import("../pages/RemoteTest"));
-
-//import Landing from "../pages/Landing";
-
-import { ToastContextProvider } from "@blend-ui/toast";
-
-export default () => (
+import Sandbox
+  from "../pages/Sandbox-v2";
+//import TestPage from "./TestPage";
+const TestPage = () => <div>TEST OK</div>;
+const AuthenticatedPage = () => <div>AUTH OK</div>;
+const UnAuthenticatedPage = () => <div>UNAUTH OK</div>;
+export default (props) => (
   <Routes>
     <Route element={<AuthLayout />}>
-      <Route path="/upload" element={<UploadApp />} />
-      <Route path="/new-app" element={<NewApp />} />
-      <Route path="/admin" element={<Admin />} />
-      <Route path="/sandbox" element={<Sandbox />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/project/:app" element={<Home />} />
-      <Route path="/register-role" element={<Register />} />
+      <Route path="/test" element={<TestPage />} />
+      <Route path="/app/*" element={<Landing />} />
+      <Route path="/sandbox/:app" element={<Sandbox />} />
+      <Route path="/register/role/*" element={<CreateAccount />} />
     </Route>
+
     <Route element={<UnAuthLayout />}>
-      <Route
-        path="/login"
-        element={
-          <ToastContextProvider>
-            <Login />
-          </ToastContextProvider>
-        }
-      />
-      <Route path="/register" element={<Landing />} />
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<UnAuthenticatedPage />} />
+
+      <Route path="/login/*" element={<Login />} />
+
+      <Route path="/register/*" element={<CreateAccount />} />
+
     </Route>
-    {/* <Route
-      path="/"
-      element={
-        <React.Suspense fallback={"Loading routing..."}>
-          <Home />
-        </React.Suspense>
-      }
-    /> */}
     <Route path="*" element={<NotFoundPage />} />
   </Routes>
 );
