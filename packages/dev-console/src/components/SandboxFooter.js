@@ -22,6 +22,7 @@ import SystemSettingsSandbox from "./SystemSettingsSandbox-v2";
 import SettingsSandbox from "./SettingsSandbox-v2";
 import { useAppStudioStore } from "../hooks/UseAppStudio";
 import { ParseSettings } from "../pages/Sandbox-v2";
+import SandboxDebugger from "./SandboxDebugger";
 
 const BottomContainer = styled.div`
 position: absolute;
@@ -224,7 +225,7 @@ const SandboxFooter = ({ appData }) => {
 
                   </TabPanel>
                   <TabPanel>
-                    debugger
+                    <SandboxDebugger />
                   </TabPanel>
                   <TabPanel>
                     native assets

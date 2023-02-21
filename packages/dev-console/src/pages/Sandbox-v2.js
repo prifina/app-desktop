@@ -208,6 +208,7 @@ const Sandbox = () => {
     newContent.unshift({ ...data });
     console.log("UPDATE DEBUG", newContent);
     setDebugInfo(newContent);
+
     //setAsyncContent(newContent);
     //setState({ updated: new Date().toString() });
   };
