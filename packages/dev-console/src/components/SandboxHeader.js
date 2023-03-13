@@ -78,15 +78,15 @@ const IconContainer = styled(Flex)`
   height: 32px;
   width: 32px;
   cursor: pointer;
-  border:${props => props.activeTheme ? "1px solid red" : "none"};
+  border:${props => props.activetheme === "true" ? "1px solid red" : "none"};
   :active {
     background: ${props => (props.disabled === true ? null : "lightgray")};
   }
 `;
 
-const IconButton = ({ icon, onClick, disabled, activeTheme }) => {
+const IconButton = ({ icon, onClick, disabled, activetheme }) => {
   return (
-    <IconContainer onClick={onClick} disabled={disabled} activeTheme={activeTheme}>
+    <IconContainer onClick={onClick} disabled={disabled} activetheme={activetheme}>
       <BlendIcon iconify={icon} color="white" width="24px" />
     </IconContainer>
   );
@@ -156,14 +156,14 @@ const SandboxHeader = ({ appData, sandboxTheme, setSandboxTheme, setContainerSiz
           </Flex>
         }
         <Flex>
-          <IconButton activeTheme={sandboxTheme === 'light'} icon={bxSun} onClick={() => {
+          <IconButton activetheme={sandboxTheme === 'light' ? 'true' : 'false'} icon={bxSun} onClick={() => {
             setSandboxTheme("light")
           }
           } />
 
           <div style={{ marginLeft: 8 }}>
             <IconButton
-              activeTheme={sandboxTheme === 'dark'}
+              activetheme={sandboxTheme === 'dark' ? 'true' : 'false'}
               icon={bxMoon}
               onClick={() => {
                 setSandboxTheme("dark")

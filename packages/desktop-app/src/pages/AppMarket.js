@@ -18,15 +18,16 @@ import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 
 import {
   SidebarMenu,
-  Navbar,
-  useTranslate
-} from "@prifina-apps/utils";
+  Navbar
+} from "@prifina-apps/ui-lib";
 
 
 import PropTypes from "prop-types";
 
 import shallow from "zustand/shallow";
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+import { useStore, useTranslate } from "@prifina-apps/utils";
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 import * as C from "./app-market/components";
 import DataSourceModal from "./app-market/DataSourceModal";

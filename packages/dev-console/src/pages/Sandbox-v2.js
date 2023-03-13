@@ -21,7 +21,7 @@ import { useToast } from "@blend-ui/toast";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useStore } from "@prifina-apps/utils";
 
 //import { useRemoteComponent } from "../useRemoteComponent";
 

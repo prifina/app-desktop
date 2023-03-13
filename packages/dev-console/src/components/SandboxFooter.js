@@ -7,7 +7,7 @@ import { BlendIcon } from "@blend-ui/icons";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useStore } from "@prifina-apps/utils";
 
 import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 

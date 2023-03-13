@@ -3,18 +3,24 @@ import { PrifinaProvider, PrifinaContext } from "@prifina/hooks-v2";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
 
-import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
-import { ToastContextProvider } from "@blend-ui/toast";
+import { useStore, useGraphQLContext } from "@prifina-apps/utils";
+
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+//import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
+//import { ToastContextProvider } from "@blend-ui/toast";
 /*
 import {
   useUserMenu
 } from "@prifina-apps/utils";
 */
-import { useUserMenu } from "../utils-v2/components/FloatingUserMenu-v2";
 
-import withUsermenu from "../utils-v2/components/UserMenu-v2";
+
+import { useUserMenu, withUsermenu, ToastContextProvider } from "@prifina-apps/ui-lib";
+//import { useUserMenu } from "../utils-v2/components/FloatingUserMenu-v2";
+
+//import withUsermenu from "../utils-v2/components/UserMenu-v2";
 
 
 //import Amplify, { Auth, API as GRAPHQL } from "aws-amplify";
@@ -59,7 +65,8 @@ const importApp = appName => {
   return React.lazy(() =>
     import("../pages/" + appName).catch((e) => {
       console.log("IMPORT ERROR ", e);
-      return import("./NotFoundPage");
+      //return import("./NotFoundPage");
+      return import("@prifina-apps/ui-lib").NotFoundPage;
     }),
   );
 };
@@ -75,17 +82,27 @@ const Content = ({
   console.log("CONTENT ", props, activeUser, Component);
   const userMenu = useUserMenu();
 
-  const userMenuInit = {
-    //effect: { hover: { width: 42 } },
-    notifications: notificationCount,
-    RecentApps: [],
-    prifinaID: activeUser.uuid,
-    activeUser: activeUser,
-    listSystemNotificationsByDateQuery: listSystemNotificationsByDateQuery,
-    coreApiClient: coreApiClient
-  };
-  //console.log("User menu init ", userMenuInit);
-  userMenu.show(userMenuInit);
+  const effectCalled = useRef(false);
+
+  useEffect(() => {
+    if (!effectCalled.current) {
+      effectCalled.current = true;
+      const userMenuInit = {
+        //effect: { hover: { width: 42 } },
+        notifications: notificationCount,
+        RecentApps: [],
+        prifinaID: activeUser.uuid,
+        activeUser: activeUser,
+        listSystemNotificationsByDateQuery: listSystemNotificationsByDateQuery,
+        coreApiClient: coreApiClient
+      };
+      //console.log("User menu init ", userMenuInit);
+      userMenu.show(userMenuInit);
+    }
+
+  }, [])
+
+
 
   return <Component {...props} />;
 };

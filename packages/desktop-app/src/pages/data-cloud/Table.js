@@ -4,8 +4,6 @@ import { useTable, usePagination } from "react-table";
 
 import { Box, Text } from "@blend-ui/core";
 
-import { i18n } from "@prifina-apps/utils";
-
 import PropTypes from "prop-types";
 
 import { BlendIcon } from "@blend-ui/icons";
@@ -15,7 +13,7 @@ import feDropLeft from "@iconify/icons-fe/drop-left";
 import feArrowRight from "@iconify/icons-fe/arrow-right";
 import feArrowLeft from "@iconify/icons-fe/arrow-left";
 
-i18n.init();
+import { useTranslate } from "@prifina-apps/utils";
 
 const Styles = styled(Box)`
 /* This is required to make the table full-width */
@@ -104,6 +102,8 @@ function Table({ columns, data }) {
     usePagination,
   );
 
+
+  const { __ } = useTranslate();
   // Render the UI for your table
   return (
     <>
@@ -152,13 +152,13 @@ function Table({ columns, data }) {
             }}
           >
             <Text fontSize="xs">
-              {i18n.__("showing")}
+              {__("showing")}
               <strong>
                 {pageIndex + 1} - {pageOptions.length}
               </strong>
             </Text>
             <Text fontSize="xs">
-              {data.length} {i18n.__("itemsTotal")}
+              {data.length} {__("itemsTotal")}
             </Text>
           </div>
           <div>

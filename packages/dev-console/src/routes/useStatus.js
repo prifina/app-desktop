@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useStore } from "@prifina-apps/utils";
 
 const UseStatus = () => {
   // console.log("CHECKED ", checked, checkedStatus);

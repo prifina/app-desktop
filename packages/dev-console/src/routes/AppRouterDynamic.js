@@ -2,7 +2,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { NotFoundPage } from "@prifina-apps/utils";
+import { NotFoundPage } from "@prifina-apps/ui-lib";
 import AuthLayout from "./AuthLayout";
 import UnAuthLayout from "./UnAuthLayout";
 
@@ -25,13 +25,13 @@ export default (props) => (
   <Routes>
     <Route element={<AuthLayout />}>
       <Route path="/test" element={<TestPage />} />
-      <Route path="/app/*" element={<Landing />} />
+      <Route path="/projects/*" element={<Landing />} />
       <Route path="/sandbox/:app" element={<Sandbox />} />
       <Route path="/register/role/*" element={<CreateAccount />} />
     </Route>
 
     <Route element={<UnAuthLayout />}>
-      <Route path="/" element={<UnAuthenticatedPage />} />
+      <Route path="/" element={<Login />} />
 
       <Route path="/login/*" element={<Login />} />
 

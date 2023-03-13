@@ -1,0 +1,49 @@
+{
+  "name": "@prifina-apps/local-sandbox",
+  "version": "0.0.1-alpha.0",
+  "description": "Local Sandbox",
+  "author": "Tero <tero@prifina.com>",
+  "license": "MIT",
+  "main": "dist/cjs/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "start": "webpack serve --config webpack.config.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-react": "^7.17.12",
+    "babel-jest": "^29.3.1",
+    "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.7.3",
+    "dotenv": "^16.0.3",
+    "prop-types": "^15.7.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "source-map-loader": "^4.0.1",
+    "style-loader": "^3.3.1",
+    "url-loader": "^4.1.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.289.0",
+    "@prifina/hooks-v2": "^0.0.4",
+    "@prifina/oura": "^0.0.24",
+    "apollo-link": "^1.2.14",
+    "apollo-link-context": "^1.0.20",
+    "apollo-link-http": "^1.5.17",
+    "aws-appsync": "^4.1.9",
+    "graphql-tag": "^2.12.6",
+    "html-webpack-plugin": "^5.5.0",
+    "webpack": "^5.76.1",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
+  }
+}

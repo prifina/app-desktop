@@ -4,7 +4,8 @@ import { Routes, Route, Outlet, useNavigate, useLocation, } from "react-router-d
 
 import {
   //ConfirmAuth,
-  useTranslate
+  useTranslate,
+  useStore
 } from "@prifina-apps/utils";
 
 import config from "../config";
@@ -19,11 +20,7 @@ import styled from "styled-components";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
-
-import UsernameField from "../utils-v2/components/UsernameField";
-import PasswordField from "../utils-v2/components/PasswordField-v2";
-import ConfirmAuth from "../utils-v2/components/ConfirmAuth";
+import { ConfirmAuth, PasswordField, UsernameField } from "@prifina-apps/ui-lib";
 
 const InnerBox = styled(Box)`
   width: 354px;
@@ -310,7 +307,7 @@ const Login = () => {
       ) {
         setAuthStatus(true);
         //history.replace("/home");
-        navigate("/home", { replace: true });
+        navigate("/projects", { replace: true });
         //console.log("NAV HOME");
       } else {
         if (user.preferredMFA === "NOMFA") {
@@ -365,7 +362,7 @@ const Login = () => {
         console.log("MFA ", mfa);
       }
       setAuthStatus(true);
-      navigate("/home", { replace: true });
+      navigate("/projects", { replace: true });
       return true;
     } catch (e) {
       console.log("ERR", e);

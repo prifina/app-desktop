@@ -13,12 +13,9 @@ import { Box, Button, Text, Flex, Image, useTheme } from "@blend-ui/core";
 import styled from "styled-components";
 
 import PropTypes from "prop-types";
-import { i18n } from "@prifina-apps/utils";
 
 
 import * as C from "../pages/display-app/components";
-
-i18n.init();
 
 const List = styled("ul")`
   margin: 0;

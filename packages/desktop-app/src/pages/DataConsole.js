@@ -15,21 +15,10 @@ import { BlendIcon } from "@blend-ui/icons";
 import { PrifinaLogo } from "../components/PrifinaLogo";
 import { createGlobalStyle } from "styled-components";
 
-/*
-import {
-  listDataSourcesQuery,
-  listNotificationsByDate,
-  SidebarMenu,
-  Navbar,
-  i18n,
-} from "@prifina-apps/utils";
-
-init();
-*/
 import {
   SidebarMenu,
   Navbar,
-} from "@prifina-apps/utils";
+} from "@prifina-apps/ui-lib";
 
 import { useTranslate } from "@prifina-apps/utils";
 
@@ -71,7 +60,10 @@ import mdiTrashCanOutline from "@iconify/icons-mdi/trashcan-outline";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+import { useStore, } from "@prifina-apps/utils";
+
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 const GlobalStyle = createGlobalStyle`
 .data-cloud path {

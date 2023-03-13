@@ -3,7 +3,6 @@ import { Box, Flex, Button, Image, Text, useTheme } from "@blend-ui/core";
 import { Routes, Route, Outlet, useNavigate, useLocation, } from "react-router-dom";
 
 import {
-  //ConfirmAuth,
   useTranslate
 } from "@prifina-apps/utils";
 
@@ -18,11 +17,17 @@ import styled from "styled-components";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
 
+import { useStore, } from "@prifina-apps/utils";
+
+import { UsernameField, PasswordField, ConfirmAuth } from "@prifina-apps/ui-lib";
+/*
 import UsernameField from "../components/UsernameField";
 import PasswordField from "../components/PasswordField-v2";
 import ConfirmAuth from "./ConfirmAuth";
+
+*/
 
 const LoginContainer = styled(Box)`
   min-width: 534px;
@@ -60,8 +65,22 @@ const Layout = () => {
   </>
 }
 
-const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
+const LoginWrapper = ({ children }) => {
+  return <LoginContainer>
 
+    <Box textAlign="start" width="354px">
+
+      <Flex height={40} mb={57} alignItems="center" style={{ position: "relative", left: "-27px" }}>
+        <PrifinaIcon style={{ transform: "scale(0.35)" }} />
+        <Text ml={"-20px"} fontWeight="600">
+          Prifina
+        </Text>
+      </Flex>
+      {children}
+    </Box>
+  </LoginContainer>
+}
+const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
 
   const { colors } = useTheme();
   const { __ } = useTranslate();
@@ -124,32 +143,31 @@ const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
     }
   }
 
-  return <LoginContainer>
+  return <>
+    <LoginWrapper>
 
-    <Box textAlign="start" width="354px">
-      <Flex height={40} mb={57} alignItems="center" style={{ position: "relative", left: "-27px" }}>
-        <PrifinaIcon style={{ transform: "scale(0.35)" }} />
-        <Text ml={"-20px"} fontWeight="600">
-          Prifina
-        </Text>
-      </Flex>
 
       <Text mb={4} textStyle="h3">
         Log in to your account
       </Text>
       <Text mb={32}>Welcome back! Please enter your details.</Text>
+
       <Box>
         <Text fontWeight="600" fontSize="sm">
           Username
         </Text>
+
         <UsernameField autoFocus={true} {...usernameArgs} />
+
         <Box mt={15}>
           <Text fontWeight="600" fontSize="sm">
             Password
           </Text>
           <PasswordField {...passwordArgs} />
         </Box>
+
       </Box>
+
       <Flex mt={77} flexDirection="column" alignItems="center">
         <Button
           width="100%"
@@ -176,9 +194,8 @@ const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
         </Flex>
       </Flex>
 
-    </Box>
-
-  </LoginContainer>
+    </LoginWrapper>
+  </>
 }
 
 const withToast = () => WrappedComponent => {
@@ -290,7 +307,7 @@ const Login = () => {
           console.log("LOGIN2", user);
         } else if (user.challengeName === "SMS_MFA") {
         }
-        //alerts.info(i18n.__("confirmationCodeSent"), {});
+        //alerts.info(__("confirmationCodeSent"), {});
         //setAuthOptions({ user: user, Auth: Auth, setAuth: userAuth });
         //setConfirmCode(true);
         //console.log("NAV CONFIRM...");
@@ -307,7 +324,7 @@ const Login = () => {
         e.code === "NotAuthorizedException" ||
         e.code === "UserNotFoundException"
       ) {
-        alerts.error(i18n.__("invalidLogin"), {});
+        alerts.error(__("invalidLogin"), {});
         inputRefs.current.username.focus();
       }
 
@@ -341,7 +358,7 @@ const Login = () => {
       console.log("ERR", e);
       if (e.code === "CodeMismatchException") {
         // setInputError({ status: true, msg: __("invalidCode") });
-        //alerts.error(i18n.__("invalidCode"), {});
+        //alerts.error(__("invalidCode"), {});
         const errorMsg = __("invalidCode");
         if (!alerts.check().some(alert => alert.message === errorMsg))
           alerts.error(errorMsg, {});
@@ -356,7 +373,8 @@ const Login = () => {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<SignIn inputRefs={inputRefs} createAccountClick={createAccountClick} loginClick={loginClick} />} />
-          <Route path="confirm-auth" element={<ConfirmAuth backClick={backClick} verifyClick={verifyClick} />} />
+
+          <Route path="confirm-auth" element={<LoginWrapper><ConfirmAuth backClick={backClick} verifyClick={verifyClick} /></LoginWrapper>} />
 
         </Route>
 

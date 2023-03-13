@@ -10,7 +10,7 @@ import {
 
 //import { i18n, useAppContext } from "@prifina-apps/utils";
 
-import { useTranslate } from "@prifina-apps/utils";
+//import { useTranslate } from "@prifina-apps/utils";
 
 import config from "../config";
 
@@ -18,7 +18,10 @@ import styled from "styled-components";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+import { useStore, useTranslate } from "@prifina-apps/utils";
+
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 import PrifinaIcon from "../assets/prifina-icon";
 import InfinityIcon from "../assets/infinity-icon";

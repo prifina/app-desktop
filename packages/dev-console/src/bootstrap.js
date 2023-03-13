@@ -4,14 +4,12 @@ import React from "react";
 import { createRoot } from 'react-dom/client';
 import { default as App } from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
+
+import * as UTILS from "@prifina-apps/utils";
 
 import ErrorBoundary from "./ErrorBoundary";
-
-import { GraphQLContext } from "./utils-v2/graphql/GraphQLContext";
-
-import { PrifinaStoreProvider } from "./utils-v2/stores/PrifinaStore";
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
 
@@ -35,80 +33,55 @@ const APIConfig = {
   aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
 };
 
-/* 
-let CoreApiClient;
-let AuthClient;
-let UserApiClient;
-let Client;
+let CoreGraphQLApi;
+let AUTHClient;
+let AppSyncClient;
+let S3Storage;
 
-let container = null; */
+// dynamic import of environment clients
+if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
+  //Client = await import("./utils-v2/lib/MockClient");
+  // Client = await import("@prifina-apps/utils").MockClient;
+  CoreGraphQLApi = UTILS.MockCoreGraphQLApi;
+  AUTHClient = UTILS.MockAUTHClient;
+  AppSyncClient = UTILS.MockAppSyncClient;
+  S3Storage = UTILS.MockS3Storage;
 
-
-//let container = null;
-
-function importBuildClient() {
-  // dynamic import of environment clients
-  if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
-    return import("./utils-v2/lib/MockClient");
-  } else {
-    return import("./utils-v2/lib/ProdClient");
-  }
-
+  ///export { MockAUTHClient, MockCoreGraphQLApi, MockAppSyncClient, MockS3Storage };
+} else {
+  //Client = await import("./utils-v2/lib/ProdClient");
+  // Client = await import("@prifina-apps/utils").ProdClient;
+  CoreGraphQLApi = UTILS.CoreGraphQLApi;
+  AUTHClient = UTILS.AUTHClient;
+  AppSyncClient = UTILS.AppSyncClient;
+  S3Storage = UTILS.S3Storage
 }
-/* 
-function renderContent(step = 0) {
-  console.log("RENDER ", step);
 
-}
- */
-importBuildClient().then(Client => {
 
-  const {
-    AUTHClient, CoreGraphQLApi, AppSyncClient, S3Storage
-  } = Client;
+const CoreApiClient = new CoreGraphQLApi({ config: APIConfig });
+const AuthClient = new AUTHClient({ AuthConfig: AUTHConfig });
+const UserApiClient = new AppSyncClient({ AppSyncConfig: APIConfig })
+const S3StorageClient = new S3Storage({ S3Config: { bucket: config.S3.bucket, region: config.S3.region } })
 
-  //const CoreApiClient = new CoreGraphQLApi({ config: APIConfig, Options: process.env.REACT_APP_MOCKUP_CLIENT === "true" ? { appIndex: 4 } : null });
-  const CoreApiClient = new CoreGraphQLApi({ config: APIConfig });
-  const AuthClient = new AUTHClient({ AuthConfig: AUTHConfig });
-  //UserApiClient = new AppSyncClient({ AppSyncConfig: { url: APIConfig.aws_appsync_graphqlEndpoint, reqion: APIConfig.aws_appsync_region } })
-  const UserApiClient = new AppSyncClient({ AppSyncConfig: APIConfig })
-  const S3StorageClient = new S3Storage({ S3Config: { bucket: config.S3.bucket, region: config.S3.region } })
 
-  /* 
-    if (container) {
-      console.log("ROOT RENDER EXISTS", container);
-      // not shown, but still getting weird warning... 
-    }
-  
-    if (document.readyState === 'loading') {  // Loading hasn't finished yet
-      document.addEventListener('DOMContentLoaded', (ev) => {
-        console.log("EVENT LOADED", ev);
-        console.log("CONTAINER", container);
-        renderContent(1);
-      });
-    } else {  // `DOMContentLoaded` has already fired
-      renderContent(2);
-    } */
-  const container = document.getElementById("root");
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        {AuthClient &&
-          <GraphQLContext.Provider value={{ AuthClient, CoreApiClient, UserApiClient, S3Storage: S3StorageClient }}>
-            <PrifinaStoreProvider>
-              <Router>
-                <App />
-              </Router>
-            </PrifinaStoreProvider>
-          </GraphQLContext.Provider>
-        }
-        {!AuthClient && <div>Initializing Error...</div>}
-      </ErrorBoundary>
-    </React.StrictMode>,
-  );
-
-});
+const container = document.getElementById("root");
+const root = createRoot(container);
+root.render(
+  <React.StrictMode>
+    <ErrorBoundary>
+      {AuthClient &&
+        <UTILS.GraphQLContext.Provider value={{ AuthClient, CoreApiClient, UserApiClient, S3Storage: S3StorageClient }}>
+          <UTILS.PrifinaStoreProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </UTILS.PrifinaStoreProvider>
+        </UTILS.GraphQLContext.Provider>
+      }
+      {!AuthClient && <div>Initializing Error...</div>}
+    </ErrorBoundary>
+  </React.StrictMode>,
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -12,7 +12,8 @@ const baseMuted = "#292828";
 
 const baseBright = "#4B4B4B";
 
-const subtleHiover = "#373436";
+//const subtleHiover = "#373436";
+//const subtleHiover = "#DBF0EE";
 
 const textMuted = "#969595";
 
@@ -31,7 +32,7 @@ const colors = {
   backroundAccent: brandAccent,
   baseHover,
   baseBright,
-  subtleHiover,
+  //subtleHiover,
   text: {
     muted: baseBright,
   },

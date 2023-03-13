@@ -2,7 +2,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { NotFoundPage } from "@prifina-apps/utils";
+import { NotFoundPage } from "@prifina-apps/ui-lib";
 import AuthLayout from "./AuthLayout";
 import UnAuthLayout from "./UnAuthLayout";
 

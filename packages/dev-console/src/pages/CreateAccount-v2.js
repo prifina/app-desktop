@@ -8,35 +8,20 @@ import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-do
 
 //import { Routes, Route, Outlet, useNavigate, useLocation, useParams, } from "react-router-dom";
 
-import { SimpleProgress, useTranslate } from "@prifina-apps/utils";
+import { useTranslate, useStore } from "@prifina-apps/utils";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
-
-//import { useStore } from "../stores/PrifinaStore";
 import shallow from 'zustand/shallow';
 
 import { ToastContextProvider, useToast } from "@blend-ui/toast";
 
-import EmailVerification from "../utils-v2/components/EmailVerification-v2";
-import PhoneVerification from "../utils-v2/components/PhoneVerification-v2";
-import TermsOfUse from "../utils-v2/components/TermsOfUse-v2";
+import {
+  SimpleProgress, EmailVerification, PhoneVerification, TermsOfUse,
+  FinalizingAccount, UsernameField, PasswordField, EmailField, PhoneNumberField, Landing, useComponentFlagList
+} from "@prifina-apps/ui-lib";
 
-import FinalizingAccount from "../utils-v2/components/FinalizingAccount-v2";
-
-
-import UsernameField from "../utils-v2/components/UsernameField";
-import PasswordField from "../utils-v2/components/PasswordField-v2";
-
-import EmailField from "../utils-v2/components/EmailField";
-
-import PhoneNumberField from "../utils-v2/components/PhoneNumberField-v2";
 
 import styled from "styled-components";
 import config from "../config";
-
-import useComponentFlagList from "../hooks/UseComponentFlagList";
-
-import Landing from "../utils-v2/components/Landing";
 
 import PrifinaIcon from "../assets/PrifinaIcon";
 

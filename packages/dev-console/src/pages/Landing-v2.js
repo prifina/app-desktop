@@ -6,12 +6,9 @@ import React, { useEffect, useState, useRef, } from "react";
 import { Box, Flex, Text, Image, } from "@blend-ui/core";
 
 import { ToastContextProvider } from "@blend-ui/toast";
-import { useTranslate } from "@prifina-apps/utils";
-
 import shallow from "zustand/shallow";
-import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+import { useTranslate, useStore, useGraphQLContext } from "@prifina-apps/utils";
 
 import docs from "../assets/docs.png";
 import starterResources from "../assets/starterResources.png";
@@ -23,21 +20,18 @@ import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router-do
 
 import { CssGrid as Grid, CssCell as Cell } from "@blend-ui/css-grid";
 
-
 import mdiWidget from "@iconify/icons-mdi/widgets";
 import AppStudioSidebar from "../components/AppStudioSidebar";
 
 import Header from "../components/Header";
 import ResourceCard from "../components/ResourceCard";
 
-
 const Projects = React.lazy(() => import("../components/Projects"));
 
 const ProjectDetails = React.lazy(() => import("./ProjectDetails-v2"));
 
 //import Projects from "../components/Projects";
-import withUsermenu from "../utils-v2/components/UserMenu-v2";
-
+import { withUsermenu } from "@prifina-apps/ui-lib";
 
 import PropTypes from "prop-types";
 
@@ -196,8 +190,8 @@ const Landing = props => {
       <ToastContextProvider>
         <Routes>
           <Route element={<Layout componentProps={componentProps.current} activeUser={activeUser} menuItems={menuItems} resourceCardItems={resourceCardItems} />}>
-            <Route path="/project/:app" element={<ProjectDetails />} />
-            <Route path="/projects" element={<Projects currentUser={activeUser} />} />
+            <Route path="/:app" element={<ProjectDetails />} />
+            <Route path="/" element={<Projects currentUser={activeUser} />} />
           </Route>
         </Routes>
       </ToastContextProvider>

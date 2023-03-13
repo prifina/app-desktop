@@ -19,18 +19,11 @@ import { IconField } from "@blend-ui/icon-field";
 import config from "../config";
 
 import {
-  validUsername,
   SidebarMenu,
-  useFocus,
-  validEmail,
-  isValidNumber,
-  countryList,
-  lowerCaseChars,
-  addRegionCode,
   Navbar,
-  checkPassword,
-  PhoneNumberField,
-} from "@prifina-apps/utils";
+  useToast,
+  UsernameField, PasswordField, EmailField, PhoneNumberField, useComponentFlagList
+} from "@prifina-apps/ui-lib";
 
 /*
 checkUsernameQuery,
@@ -41,11 +34,20 @@ sendVerificationMutation,
 updateCognitoUserMutation,
 */
 
-import useFlags from "../hooks/UseFlags";
+//import useFlags from "../hooks/UseFlags";
 
-import { useTranslate } from "@prifina-apps/utils";
+import {
+  validUsername,
+  validEmail,
+  isValidNumber,
+  countryList,
+  lowerCaseChars,
+  addRegionCode,
+  checkPassword,
+  useTranslate
+} from "@prifina-apps/utils";
 
-import { useToast } from "@blend-ui/toast";
+//import { useToast, ToastContextProvider } from "@blend-ui/toast";
 
 import * as C from "./settings-app/components";
 
@@ -72,12 +74,31 @@ import bxEnvelope from "@iconify/icons-bx/bx-envelope";
 import newTheme from "../theme/settingsTheme";
 
 import VerificationModal from "../components/VerificationModal";
-
-import PasswordField from "../components/PasswordField";
-
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+import { useStore, mergeDeep } from "@prifina-apps/utils";
+
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
+
+
+/*
+const withToast = () => WrappedComponent => {
+  const WithToast = props => {
+    return (
+      <ToastContextProvider>
+        <WrappedComponent {...props} />
+      </ToastContextProvider>
+    );
+  };
+
+  WithToast.displayName = `WithToast(${WrappedComponent.displayName || WrappedComponent.name || "Component"
+    })`;
+
+  return WithToast;
+};
+*/
+
 
 const Container = styled(Flex)`
   flex-direction: column;
@@ -127,29 +148,29 @@ const IconBox = styled(Box)`
 
 const UnorderedList = styled.ul`
   /* */
-  list-style-type: none;
-  margin: 0;
-  list-style-position: outside;
-  padding-inline-start: 20px;
-  margin-block-start: 0px;
-  padding: 0;
-  padding-left: 20px;
+list - style - type: none;
+margin: 0;
+list - style - position: outside;
+padding - inline - start: 20px;
+margin - block - start: 0px;
+padding: 0;
+padding - left: 20px;
 `;
 
 const ListItem = styled.li`
   /* */
   ::before {
-    content: "•";
-    color: ${props => (props.verified ? "#80BF45" : "gray")}; // from theme
-    display: inline-block;
-    width: 0.9em;
-    margin-left: -0.9em;
-    font-size: 2em;
-  }
+  content: "•";
+  color: ${props => (props.verified ? "#80BF45" : "gray")}; // from theme
+  display: inline - block;
+  width: 0.9em;
+  margin - left: -0.9em;
+  font - size: 2em;
+}
   span {
-    position: relative;
-    top: -5px;
-  }
+  position: relative;
+  top: -5px;
+}
 `;
 
 const BorderIcon = ({ iconify, size, color, border, height, width }) => {
@@ -175,6 +196,356 @@ const BorderIcon = ({ iconify, size, color, border, height, width }) => {
     </Box>
   );
 };
+
+const CurrentSettings = ({ icon, title, info, currentValue, buttonPrompt, verified = false, onClick }) => {
+
+  const { colors } = useTheme();
+  return <>
+    <Flex>
+      <BorderIcon
+        iconify={icon}
+        size="20px"
+        color="#0D2177"
+        border="16px solid #DBDFF0"
+        height="32px"
+        width="32px"
+      />
+      <Box ml={24}>
+        <Flex>
+          <Text mr={16} fontWeight="600">
+            {title}
+          </Text>
+          {verified && <Badge>verified</Badge>}
+        </Flex>
+        <Flex>
+          <Text fontSize="xs" color={colors.textMuted}>
+            {info}
+          </Text>
+          <Text fontWeight="600" fontSize="xs" ml={3}>
+            {currentValue}
+          </Text>
+        </Flex>
+      </Box>
+    </Flex>
+    <Button width={"150px"} onClick={onClick}>
+      {buttonPrompt}
+    </Button>
+  </>
+}
+
+const ChangeUseremail = ({ inputRefs, currentValue, onCancel, updateUseremail }) => {
+
+  const { __ } = useTranslate();
+  const [changeDisabled, setChangeDisabled] = useState(true);
+
+  const emailArgs = {
+    id: "email",
+    name: "email",
+    ref: useRef(),
+    options: {
+      checkExists: true,
+      toast: true,
+      value: currentValue,
+      txt: inputRefs.current["emailTxt"]
+    },
+    inputState: (input, validation = false) => {
+      // console.log("STATE UPDATE", input, input.dataset);
+
+      console.log("STATE UPDATE EMAIL ", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+
+      console.log(input?.value);
+      console.log(input?.dataset);
+      if (changeDisabled && inputRefs.current?.['email']?.dataset['isvalid']) {
+
+        console.log("UPDATE CHANGE EMAIL ", input.dataset['isvalid'])
+        setChangeDisabled(!input.dataset['isvalid']);
+      }
+    }
+  }
+  return <>
+    <Box width={"100%"}>
+      <Text fontWeight="600" fontSize="sm">
+        Email
+      </Text>
+      <Flex flexDirection={"row"} flexWrap="wrap">
+        <Box width="50%">
+          <EmailField autoFocus={true} {...emailArgs} />
+        </Box>
+        <Flex height="33px" width="50%" justifyContent={"end"} alignItems="center">
+          <Button size={"sm"}
+            variation="outline"
+            mr={8}
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+          <Button size={"sm"} disabled={changeDisabled} onClick={updateUseremail}>
+            Change email
+          </Button>
+        </Flex>
+      </Flex>
+    </Box>
+  </>
+
+}
+const ChangeUsername = ({ inputRefs, currentValue, onCancel, updateUsername }) => {
+
+  const { __ } = useTranslate();
+  const [changeDisabled, setChangeDisabled] = useState(true);
+
+  const usernameArgs = {
+    id: "username",
+    name: "username",
+    ref: useRef(),
+    options: {
+      checkExists: true,
+      toast: true,
+      value: currentValue,
+      txt: inputRefs.current["usernameTxt"]
+    },
+    inputState: (input) => {
+      console.log("STATE UPDATE USERNAME ", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+      if (changeDisabled && inputRefs.current?.['username']?.dataset['isvalid']) {
+
+        console.log("UPDATE CHANGE USERNAME ", input.dataset['isvalid'])
+        setChangeDisabled(!input.dataset['isvalid']);
+      }
+    }
+  }
+
+  return <>
+    <Box width={"100%"}>
+      <Text fontWeight="600" fontSize="sm">
+        Username
+      </Text>
+      <Flex flexDirection={"row"} flexWrap="wrap">
+        <Box width="50%">
+          <UsernameField autoFocus={true} {...usernameArgs} />
+        </Box>
+        <Flex height="33px" width="50%" justifyContent={"end"} alignItems="center">
+          <Button size={"sm"}
+            variation="outline"
+            mr={8}
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+          <Button size={"sm"} disabled={changeDisabled} onClick={updateUsername}>
+            Change username
+          </Button>
+        </Flex>
+      </Flex>
+    </Box>
+  </>
+}
+
+const ChangeUserPassword = ({ inputRefs, onCancel, updateUserpassword }) => {
+
+  const { __ } = useTranslate();
+  const [changeDisabled, setChangeDisabled] = useState(true);
+
+  const newPasswordArgs = {
+    id: "newPassword",
+    name: "newPassword",
+    ref: useRef(),
+    options: {
+      addPopup: true,
+      checkList: () => {
+        return [];
+      },
+      toast: false,
+      txt: inputRefs.current["passwordTxt"]
+    },
+    inputState: (input, validation = false) => {
+
+      console.log("STATE UPDATE PASSWORD ", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+
+      /*
+      console.log("PASSWD STATE UPDATE ", input);
+      console.log(input?.value);
+      console.log(input?.dataset);
+      console.log(inputRefs, inputRefs?.password);
+      if (typeof input !== 'undefined') {
+
+        if (inputRefs?.password === undefined) {
+          inputRefs[input.id] = input
+        }
+        if (validation) {
+          let checks = { password: true, passwordConfirm: true };
+          if (typeof input === 'undefined') {
+            checks["password"] = false;
+            return false;
+          } else if (inputRefs?.passwordConfirm === undefined) {
+            checks["password"] = false
+            checks["passwordConfirm"] = false;
+            return false;
+          }
+
+          setStateCheck(checks)
+          return checks.password && checks.passwordConfirm;
+        }
+      } else {
+        setStateCheck({ password: false })
+      }
+        */
+    }
+  }
+
+  const getAccountPassword = () => {
+    //passwordArgs.ref, // note, this is useRef() variable... 
+    if (passwordArgs.ref?.current) {
+
+      return passwordArgs.ref.current.value;
+    } else {
+      return "";
+    }
+  }
+
+  const oldPasswordArgs = {
+    id: "oldPassword",
+    name: "oldPassword",
+    ref: useRef(),
+    options: {
+      addPopup: false,
+      checkList: () => [],
+      toast: false,
+      txt: inputRefs.current["passwordTxt"]
+
+    },
+    inputState: (input) => {
+
+      console.log("STATE UPDATE OLD PASSWORD ", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+      /*
+      if (inputRefs?.passwordConfirm === undefined) {
+        //console.log("UNDEF ");
+        inputRefs[input.id] = input
+      }
+      */
+    }
+  }
+
+
+  return <>
+    <Box width={"100%"}>
+      <Text fontWeight="600" fontSize="sm">
+        Password
+      </Text>
+      <Flex flexDirection={"row"} flexWrap="wrap">
+        <Box width={"50%"}>
+          <Box mt={18}>
+            <PasswordField  {...oldPasswordArgs} />
+          </Box>
+          <Box mt={18}>
+            <PasswordField  {...newPasswordArgs} />
+          </Box>
+        </Box>
+
+        <Flex width="50%" justifyContent={"end"} alignItems="center">
+          <Box height="34px">
+            <Button size={"sm"}
+              variation="outline"
+              mr={8}
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+            <Button size={"sm"} disabled={changeDisabled} onClick={updateUserpassword}>
+              Change password
+            </Button>
+          </Box>
+        </Flex>
+
+      </Flex>
+
+    </Box>
+  </>
+
+}
+
+const ChangePhoneNumber = ({ inputRefs, currentValue, onCancel, updatePhoneNumber }) => {
+
+  //const { __ } = useTranslate();
+  const [changeDisabled, setChangeDisabled] = useState(true);
+
+  const phoneArgs = {
+    id: "phoneNumber",
+    name: "phoneNumber",
+    ref: useRef(),
+    selectOptions: inputRefs.current["selectOptions"],
+    options: {
+      defaultRegion: inputRefs.current["defaultRegion"],
+      searchLength: 3,
+      showList: true,
+      selectOption: "key",
+      value: currentValue,
+      checkExists: true,
+      toast: false,
+      txt: inputRefs.current["phoneNumberTxt"]
+      // txt: { "invalidTxt": __("invalidPhoneNumber"), "placeholderTxt": __("phoneNumberPlaceholder"), "promptTxt": __("phonePrompt") }
+
+    },
+    inputState: (input, validation = false) => {
+
+      console.log("STATE UPDATE PHONE NUM ", input, input.dataset, inputRefs);
+      inputRefs.current = { ...inputRefs.current, [input.id]: input };
+
+      // console.log(input?.nationalNumber);
+      // // console.log(input?.dataset);
+      // console.log(inputRefs, inputRefs?.phoneNumber);
+      // if (typeof input !== 'undefined' && input?.nationalNumber) {
+
+      //   if (inputRefs?.phoneNumber === undefined) {
+      //     //console.log("HAVE NUMBER ", input?.nationalNumber)
+      //     inputRefs['phoneNumber'] = input
+      //   }
+      //   if (validation) {
+      //     //console.log("VALIDATION ", input['nationalNumber'] !== null && input?.['nationalNumber'] && input['nationalNumber'] !== "")
+      //     setStateCheck({ phoneNumber: input['nationalNumber'] !== null && input?.['nationalNumber'] && input['nationalNumber'] !== "" })
+      //     return input['nationalNumber'] !== null && input?.['nationalNumber'] && input['nationalNumber'] !== ""
+      //   }
+      // } else {
+      //   setStateCheck({ phoneNumber: false })
+      // }
+
+    }
+  }
+
+  return <>
+    <Box width={"100%"}>
+      <Text fontWeight="600" fontSize="sm">
+        Phone number
+      </Text>
+      <Flex flexDirection={"row"} flexWrap="wrap">
+        <Box width={"50%"}>
+          <Box mt={18}>
+
+            <PhoneNumberField  {...phoneArgs} />
+
+          </Box>
+        </Box>
+        <Flex width="50%" justifyContent={"end"} alignItems="center">
+          <Box height="34px">
+            <Button size={"sm"}
+              variation="outline"
+              mr={8}
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+            <Button size={"sm"} disabled={changeDisabled} onClick={updatePhoneNumber}>
+              Change number
+            </Button>
+          </Box>
+        </Flex>
+      </Flex>
+    </Box>
+  </>
+}
+
 
 const Settings = props => {
   console.log("SETTINGS PROPS ", props);
@@ -207,17 +578,33 @@ const Settings = props => {
   );
 
   const { colors } = useTheme();
-
   const alerts = useToast();
 
-  const [inputSelect, setSelectFocus] = useFocus();
-  const [inputEmail, setInputEmailFocus] = useFocus();
-  const [inputPhone, setInputPhoneFocus] = useFocus();
+  console.log("ALERTS...", alerts);
 
-  const [inputUsername, setInputUsernameFocus] = useFocus();
+  const inputRefs = useRef({});
 
-  const [inputPassword, setInputPasswordFocus] = useFocus();
+  const [changeUsername, setChangeUsername] = useState(false);
 
+  const [changeUserPassword, setChangePassword] = useState(false);
+  const [changeNumber, setChangeNumber] = useState(false);
+  const [changeEmail, setChangeEmail] = useState(false);
+
+  const [verificationType, setVerificationType] = useState("");
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [dataReady, setDataReady] = useState(false);
+
+  const { selectOptions, flagsLoading } = useComponentFlagList();
+  const effectCalled = useRef(false);
+
+  const onDialogClose = e => {
+    setModalOpen(false);
+    e.preventDefault();
+  };
+
+  const mergedTheme = mergeDeep(defaultTheme, newTheme);
   const items = [
     // {
     //   label: "Profiles",
@@ -231,7 +618,7 @@ const Settings = props => {
       label: "Account Settings",
       icon: mdiShieldAccount,
       onClick: () => {
-        setStep(0);
+        //setStep(0);
       },
     },
     // {
@@ -240,1165 +627,295 @@ const Settings = props => {
     //   disabled: true,
     // },
   ];
-
-  const continents = {
-    XX: { name: "", order: 0 }, //popular...
-    AF: { name: "Africa", order: 5 },
-    AN: { name: "Antarctica", order: 7 },
-    AS: { name: "Asia", order: 3 },
-    EU: { name: "Europe", order: 2 },
-    NA: { name: "North America", order: 1 },
-    OC: { name: "Oceania", order: 6 },
-    SA: { name: "South America", order: 4 },
-    ZZ: { name: "", order: 8 }, //unknowns...
-  };
-  const popularList = ["US", "GB", "FI"];
-
-  const selectOptions = useRef([]);
-
-  const { cList, nList } = countryList(continents, popularList);
-  const { icons, isLoading } = useFlags(nList);
-
-  const [state, setState] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    {
-      email: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: currentUser.email,
-      },
-      phoneNumber: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      accountPassword: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      newPassword: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      username: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: currentUser.loginUsername,
-      },
-      lastName: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-      firstName: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: currentUser.given_name,
-      },
-      passwordConfirm: {
-        status: false,
-        msg: "",
-        valid: false,
-        value: "",
-      },
-
-      regionCode: "000",
-      termsAccepted: false,
-      emailVerified: "",
-      phoneVerified: "",
-    },
-  );
-
-  // console.log("state", state);
-
-  const [flags, setFlags] = useState(false);
+  /*
+    useEffect(() => {
+      async function getCountryCode() {
+        effectCalled.current = true;
+        const countryCode = await getCountryCodeQuery();
+        if (countryCode.data.getCountryCode !== null && countryCode.data?.getCountryCode) {
+          //setState({ countryCode: countryCode.data.getCountryCode });
+          inputRefs.current["countryCode"] = countryCode.data.getCountryCode;
+        }
+      }
+      if (!effectCalled.current) {
+        getCountryCode();
+      }
+    }, []);
+    */
 
   useEffect(() => {
-    if (!icons && isLoading) selectOptions.current = [];
-    if (!icons && !isLoading) selectOptions.current = [];
-    if (isLoading && icons) {
-      let items = [];
-      cList.forEach(item => {
-        const l = Object.keys(item)[0];
-        if (item[l].length > 0) {
-          if (l !== "XX") {
-            items.push({
-              key: "XX",
-              value: "XX",
-              regionCode: "000",
-              component: (
-                <React.Fragment>
-                  <Text mt={18}>{continents[l].name}</Text>
-                  <Divider mb={10} />
-                </React.Fragment>
-              ),
-            });
-          }
-          item[l].forEach(cc => {
-            const flag = icons[cc.regionCode] || null;
-            items.push({
-              key: "+" + cc.countryCode,
-              value: cc.regionName,
-              regionCode: cc.regionCode,
-              searchValue: cc.regionName + " +" + cc.countryCode,
-              component: (
-                <React.Fragment>
-                  <Flex mb={6} alignContent={"center"}>
-                    {flag}
-                    <Text
-                      ml={flag === null ? 22 : 6}
-                      as="span"
-                      fontSize={"xs"}
-                      lineHeight={"16px"}
-                    >
-                      {cc.regionName}
-                    </Text>
-                    <Text
-                      as="span"
-                      color={colors.textMuted}
-                      fontSize={"xs"}
-                      pl={4}
-                      lineHeight={"16px"}
-                    >
-                      +{cc.countryCode}
-                    </Text>
-                  </Flex>
-                </React.Fragment>
-              ),
-            });
-          });
-        }
-      });
-      console.log(items);
-      selectOptions.current = items;
 
-      setFlags(true);
-    }
-  }, [isLoading, icons]);
-
-  useEffect(() => {
-    async function onLoad() {
-      try {
-        if (flags) {
-          const userCountry = await getCountryCodeQuery();
-          console.log("COUNTRY ", userCountry.data.getCountryCode);
-          if (userCountry.data) {
-            const cIndex = selectOptions.current.findIndex(
-              c => c.regionCode === userCountry.data.getCountryCode,
-            );
-            if (cIndex > -1) {
-              setState({ regionCode: selectOptions.current[cIndex].key });
-            }
-          }
+    async function init() {
+      if (!flagsLoading) {
+        const countryCode = await getCountryCodeQuery();
+        if (countryCode.data.getCountryCode !== null && countryCode.data?.getCountryCode) {
+          //setState({ countryCode: countryCode.data.getCountryCode });
+          inputRefs.current["countryCode"] = countryCode.data.getCountryCode;
         }
-      } catch (e) {
-        console.log("ERR ", e);
+
+        console.log("FLAGS ", inputRefs.current["countryCode"], selectOptions);
+
+        const cIndex = selectOptions.findIndex(
+          c => c.regionCode === inputRefs.current["countryCode"],
+        );
+        if (cIndex > -1) {
+          // console.log("FOUND COUNTRY ", cIndex);
+          const defaultOption = selectOptions[cIndex].key;
+          // console.log("FOUND COUNTRY ", cIndex, defaultOption);
+          inputRefs.current["defaultRegion"] = defaultOption;
+          //setDefaultRegion(defaultOption);
+        }
+        inputRefs.current["selectOptions"] = selectOptions;
+        inputRefs.current["phoneNumberTxt"] = { "invalidTxt": __("invalidPhoneNumber"), "placeholderTxt": __("phoneNumberPlaceholder"), "promptTxt": __("phonePrompt") }
+        inputRefs.current["passwordTxt"] = {
+          "invalidTxt": __("invalidPassword"), "invalidEntry": __("invalidEntry"),
+          "passwordQuality": __("passwordQuality"), "placeholderTxt": __("passwordPlaceholder"),
+          "promptTxt": '\u00a0'
+        };
+        inputRefs.current["usernameTxt"] = {
+          "invalidTxt": "", "usernameError": __("usernameError", { length: config.usernameLength }),
+          "usernameError2": __("usernameError2"), "usernameExists": __("usernameExists"),
+          "placeholderTxt": __("usernamePlaceholder"), "promptTxt": ' Must be longer than 6 characters, no spaces available'
+        };
+
+        inputRefs.current["emailTxt"] = { "invalidTxt": __("invalidEmail"), "placeholderTxt": __("emailPlaceholder"), "promptTxt": __("emailPrompt") }
+        setDataReady(true);
       }
     }
-    onLoad();
-  }, [flags]);
-
-  function mergeDeep(...objects) {
-    const isObject = obj => obj && typeof obj === "object";
-
-    return objects.reduce((prev, obj) => {
-      Object.keys(obj).forEach(key => {
-        const pVal = prev[key];
-        const oVal = obj[key];
-
-        if (Array.isArray(pVal) && Array.isArray(oVal)) {
-          prev[key] = pVal.concat(...oVal);
-        } else if (isObject(pVal) && isObject(oVal)) {
-          prev[key] = mergeDeep(pVal, oVal);
-        } else {
-          prev[key] = oVal;
-        }
-      });
-
-      return prev;
-    }, {});
-  }
-
-  const mergedTheme = mergeDeep(defaultTheme, newTheme);
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const onDialogClose = e => {
-    setModalOpen(false);
-    e.preventDefault();
-  };
-
-  const [changeNumber, setChangeNumber] = useState(false);
-  const [changeEmail, setChangeEmail] = useState(false);
-  const [changeUsername, setChangeUsername] = useState(false);
-  const [changeUserPassword, setChangePassword] = useState(false);
-
-  const userNameAlert = (userError, userMsg) => {
-    if (userError && !alerts.check().some(alert => alert.message === userMsg))
-      alerts.error(userMsg, {});
-
-    setState({ username: { ...state.username, status: userError } });
-  };
-
-  const checkUsername = (username, check = false) => {
-    const userState = validUsername(username, config.usernameLength);
-    let userError = userState !== "";
-    let userMsg = "";
-
-    if (userState === "LENGTH") {
-      userMsg = __("usernameError", { length: config.usernameLength });
-    }
-    if (userState === "SPACES") {
-      userMsg = __("usernameError2");
-    }
-    console.log("USER ", username, userError);
-    if (!userError && check) {
-      console.log("CHECKING USER");
-      checkUsernameQuery(username, config.cognito.USER_POOL_ID).then(
-        res => {
-          if (
-            typeof res.data !== "undefined" &&
-            res.data.checkCognitoAttribute
-          ) {
-            userNameAlert(true, __("usernameExists"));
-          } else {
-            setState({ username: { ...state.username, status: false } });
-          }
-        },
-      );
-    } else {
-      userNameAlert(userError, userMsg);
-    }
-
-    return userError;
-  };
-
-  const checkPhoneAttr = (region, phone, phoneOpts = {}) => {
-    console.log("CHECK PHONE APP-DEBUG ", appDebug);
-    if (appDebug) {
-      return Promise.resolve({});
-    } else {
-      let phoneNumber = addRegionCode(region, phone);
-      if (phoneOpts.hasOwnProperty("region")) {
-        phoneNumber = phoneOpts.region + phoneOpts.phoneNumber;
-      }
-      return checkCognitoAttributeQuery(
-        "phone_number",
-        phoneNumber,
-        config.cognito.USER_POOL_ID,
-      );
-    }
-  };
-  const phoneAlert = (errorMsg, phoneState, phoneOpts = {}) => {
-    if (
-      !phoneState &&
-      !alerts.check().some(alert => alert.message === errorMsg)
-    )
-      alerts.error(errorMsg, {});
-    if (phoneOpts.hasOwnProperty("region")) {
-      console.log("CHANGE NUMBER ", phoneOpts);
-      setState({
-        phoneNumber: {
-          ...state.phoneNumber,
-          status: !phoneState,
-          value: phoneOpts.phoneNumber,
-        },
-        regionCode: phoneOpts.region,
-      });
-    } else {
-      setState({ phoneNumber: { ...state.phoneNumber, status: !phoneState } });
-    }
-  };
-
-  const checkPhone = (region, phone, check = false, changeNumber = true) => {
-    console.log(phone, region);
-
-    const errorMsg = __("invalidPhoneNumber");
-
-    if (lowerCaseChars(phone.toLowerCase())) {
-      phoneAlert(errorMsg, false);
-      return false;
-    }
-    let checkResult = {};
-    if (phone.startsWith("+")) {
-      checkResult = isValidNumber(phone);
-    } else {
-      checkResult = isValidNumber(region + phone);
-    }
-    let phoneState = Object.keys(checkResult).length > 0;
-    console.log("PHONE ", checkResult);
-    let phoneOpts = {};
-    if (phone.startsWith("+") && changeNumber && phoneState) {
-      phoneOpts = {
-        region: "+" + checkResult.regionCode,
-        phoneNumber: checkResult.nationalNumber,
-      };
-      inputPhone.current.value = checkResult.nationalNumber;
-      inputSelect.current.value = checkResult.regionCode;
-    }
-
-    if (phoneState && check) {
-      checkPhoneAttr(region, phone, phoneOpts).then(res => {
-        if (typeof res.data !== "undefined" && res.data.checkCognitoAttribute) {
-          phoneAlert(errorMsg, false, phoneOpts);
-        } else {
-          if (phoneOpts.hasOwnProperty("region")) {
-            console.log("CHANGE NUMBER2 ", phoneOpts);
-
-            setState({
-              phoneNumber: {
-                ...state.phoneNumber,
-                status: !phoneState,
-                value: phoneOpts.phoneNumber,
-              },
-              regionCode: phoneOpts.region,
-            });
-          } else {
-            setState({ phoneNumber: { ...state.phoneNumber, status: false } });
-          }
-        }
-      });
-    } else {
-      phoneAlert(errorMsg, phoneState, phoneOpts);
-    }
-
-    const returnState = check ? !phoneState : phoneState;
-    console.log("PHONE CHECK STATE ", check, phoneState, "===>", returnState);
-    return returnState;
-  };
-
-  const checkEmailAttr = email => {
-    return checkCognitoAttributeQuery(
-      "email",
-      email,
-      config.cognito.USER_POOL_ID,
-    );
-  };
-
-  const emailAlert = (errorMsg, emailState) => {
-    if (
-      !emailState &&
-      !alerts.check().some(alert => alert.message === errorMsg)
-    )
-      alerts.error(errorMsg, {});
-
-    setState({ email: { ...state.email, status: !emailState } });
-  };
-
-  const checkEmail = (email, check = false) => {
-    let emailState = validEmail(email);
-    console.log("EMAIL ", emailState);
-
-    const errorMsg = __("invalidEmail");
-
-    if (emailState && check) {
-      console.log("CHECKING EMAIL");
-      checkEmailAttr(email).then(res => {
-        console.log("EMAIL ATTR CHECK ", res);
-        if (typeof res.data !== "undefined" && res.data.checkCognitoAttribute) {
-          emailAlert(errorMsg, false);
-        } else {
-          setState({ email: { ...state.email, status: false } });
-        }
-      });
-    } else {
-      emailAlert(errorMsg, emailState);
-    }
-
-    return check ? emailState : !emailState;
-  };
-
-  const [verificationType, setVerificationType] = useState("");
-
-  const sendCodeEmail = async e => {
-    try {
-      await sendVerificationMutation(
-        "email",
-        JSON.stringify({
-          userId: currentUser.loginUsername,
-          clientId: currentUser.client,
-          email: state.email.value,
-          given_name: currentUser.given_name,
-        }),
-      );
-      setVerificationType("email");
-      setModalOpen(true);
-      alerts.info(__("emailVerificatioSent"), {});
-    } catch (e) {
-      console.log("ERR", e);
-    }
-  };
-
-  const sendCodePhone = async e => {
-    try {
-      await sendVerificationMutation(
-        "phone",
-        JSON.stringify({
-          userId: currentUser.loginUsername,
-          clientId: currentUser.client,
-          phone_number: state.regionCode + state.phoneNumber.value,
-          given_name: currentUser.given_name,
-        }),
-      );
-      setVerificationType("phone");
-      setModalOpen(true);
-      console.log("success send code", e);
-
-      alerts.info(__("phoneVerificatioSent"), {});
-    } catch (e) {
-      console.log("ERR", e);
-    }
-  };
-
-  const handleChange = event => {
-    console.log(event.target.id, document.activeElement.id);
-    if (event.target) {
-      console.log(
-        "HANDLE CHANGE ",
-        event.target.id,
-        event.target.value,
-        document.activeElement.id,
-        document.activeElement.value,
-      );
-      if (
-        event.target.id === "phoneNumber" &&
-        (document.activeElement.id === "accountPassword" ||
-          document.activeElement.id === "passwordConfirm")
-      ) {
-      } else {
-        let id = event.target.id;
-
-        // autofill messes up the onChange event logic...
-        let fld = undefined;
-        if (id !== "regionCode") {
-          fld = Object.assign({}, state[id]);
-          fld.value = event.target.value;
-          fld.valid = false;
-        } else {
-          fld = event.target.value;
-        }
-
-        if (["firstName", "lastName"].indexOf(id) > -1) {
-          fld.status = event.target.value.length === 0;
-        }
-
-        console.log("CHANGE ID ", id, fld);
-        setState({
-          [id]: fld,
-        });
-      }
-    }
-  };
-
-  const [passwordVerification, setPasswordVerification] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
-
-  const checkConfirmPassword = (password, onBlur = false) => {
-    console.log("Confirm ", password, state);
-    const confirmStatus = state.accountPassword.value === password;
-    console.log(confirmStatus, state.accountPassword, password);
-    let checkResult = false;
-
-    const errorMsg = __("invalidPassword");
-    if (!confirmStatus && !onBlur) {
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      checkResult = true;
-    } else if (confirmStatus) {
-      setState({
-        accountPassword: { ...state.accountPassword, status: false },
-        passwordConfirm: { ...state.passwordConfirm, status: false },
-      });
-    }
-
-    return checkResult;
-  };
-  const checkInputPassword = (password, updateVerification = true) => {
-    const checkResult = checkPassword(password, config.passwordLength, [
-      state.firstName.value,
-      state.username.value,
-    ]);
-    console.log("PASS CHECK ", checkResult);
-    setPasswordVerification(checkResult);
-    return checkResult;
-  };
-
-  const checkPasswordQuality = verifications => {
-    console.log(
-      "Checking password quality... ",
-      passwordVerification,
-      verifications,
-    );
-    const verifyList = verifications || passwordVerification;
-    const invalidPasswordStatus = verifyList.some((v, i) => {
-      console.log("STEP ", v, i);
-      return v === false;
-    });
-    return invalidPasswordStatus;
-  };
-
-  const passwordCheck = password => {
-    const passwordCheckResult = checkInputPassword(password);
-    const passwordError = checkPasswordQuality(passwordCheckResult);
-    if (passwordError) {
-      const errorMsg = __("passwordQuality");
-      if (!alerts.check().some(alert => alert.message === errorMsg))
-        alerts.error(errorMsg, {});
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  useEffect(() => { }, [state]);
-
-  // console.log("state email", state.email.value);
-  // console.log("state phoneNumber", state.phoneNumber.value);
-  // console.log("state region Code", state.regionCode);
-
-  // console.log("state username", state.username.value);
-  // console.log("state password", state.accountPassword.value);
-
-  // console.log("state new password", state.newPassword.value);
+    init();
+  }, [flagsLoading])
 
   const updateUsername = () => {
+    console.log("UPDATE ", inputRefs.current['username'].value);
+
+    // better add extra validations here.... 
     updateCognitoUserMutation(
       "preferred_username",
-      state.username.value,
+      inputRefs.current['username'].value
     ).then(res => {
+      setChangeUsername(value => !value)
       alerts.success(__("Username changed"), {});
       console.log("SUCCESS", res);
     });
+
   };
 
-  const handleChangePassword = () => {
+  const updateUseremail = () => {
+    console.log("UPDATE ", inputRefs.current['email'].value);
+    setChangeEmail(value => !value)
+    // better add extra validations here.... 
+    sendVerificationMutation(
+      "email",
+      JSON.stringify({
+        userId: currentUser.loginUsername,
+        clientId: currentUser.client,
+        email: inputRefs.current['email'].value,
+        given_name: currentUser.given_name,
+      }),
+    ).then(() => {
+      setVerificationType("email");
+      setModalOpen(true);
+      // alerts.info(__("emailVerificatioSent"), {});
+    })
+  };
+
+  const updatePhoneNumber = () => {
+    console.log("UPDATE ", inputRefs.current['phoneNumber'].value);
+    setChangeNumber(value => !value)
+    // better add extra validations here.... 
+    sendVerificationMutation(
+      "phone",
+      JSON.stringify({
+        userId: currentUser.loginUsername,
+        clientId: currentUser.client,
+        email: inputRefs.current['phoneNumber'].value,
+        given_name: currentUser.given_name,
+      }),
+    ).then(() => {
+      setVerificationType("phone");
+      setModalOpen(true);
+      // alerts.info(__("emailVerificatioSent"), {});
+    })
+  };
+
+  const updateUserpassword = () => {
+    console.log("UPDATE ", inputRefs.current['newPassword'].value);
+    console.log("UPDATE ", inputRefs.current['oldPassword'].value);
+
+    // better add extra validations here.... 
+    // is the logic here correct.... function expects both old and new password, but new password is not "confirmed"
     currentAuthenticatedUser()
       .then(user => {
         return changePassword(
           user,
-          state.accountPassword.value,
-          state.newPassword.value,
+          inputRefs.current['oldPassword'].value,
+          inputRefs.current['newPassword'].value
         );
       })
       .then(data => {
         console.log(data);
-        //need toast verification success
+        setChangePassword(value => !value)
+        alerts.success(__("Password changed"), {});
       })
       .catch(err => {
         return console.log(err), alerts.error("Password change failed", {});
       });
-  };
 
-  const checkPasswordChangePossibility = () => {
-    if (
-      passwordVerification.includes(false) !== true &&
-      state.accountPassword.value === state.newPassword.value
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  };
 
-  const [disabled, setDisabled] = useState(true);
-
-  useEffect(() => {
-    const checkUsernameChangePossibility = () => {
-      if (!checkUsername(state.username.value, false) === true) {
-        setDisabled(false);
-      } else {
-        setDisabled(true);
-      }
-    };
-    checkUsernameChangePossibility();
-  }, [state.username.value]);
-
-  useEffect(() => {
-    checkPasswordChangePossibility();
-  }, [state.accountPassword.value, state.newPassword.value]);
-
-  return (
-    <ThemeProvider theme={mergedTheme}>
-      <SidebarMenu items={items} />
-      <Navbar backgroundColor="baseWhite">
-        <SettingsLogo />
-      </Navbar>
-      {modalOpen && (
-        <VerificationModal
-          onClose={onDialogClose}
-          state={state}
-          verificationType={verificationType}
-          currentUser={currentUser}
-          sendVerificationMutation={sendVerificationMutation}
-          updateCognitoUserMutation={updateCognitoUserMutation}
-          getVerificationQuery={getVerificationQuery}
-
-        />
-      )}
-      <Container bg={colors.backgroundLight}>
-        <Text textStyle="h3" mb={36}>
-          Account security
-        </Text>
-        <ContentContainer className="account-credentials">
-          <SectionContainer
-            className="info-container"
-            style={{
-              position: "relative",
-              border: 0,
-              minHeight: 66,
+  }
+  return <>
+    {dataReady &&
+      <ThemeProvider theme={mergedTheme}>
+        <SidebarMenu items={items} />
+        <Navbar backgroundColor="baseWhite">
+          <SettingsLogo />
+        </Navbar>
+        {modalOpen && (
+          <VerificationModal
+            onClose={onDialogClose}
+            options={{
+              email: inputRefs.current['email'],
+              phoneNumber: inputRefs.current['phoneNumber'],
+              regionCode: ""
             }}
-          >
-            <IconBox>
-              <BorderIcon
-                iconify={mdiShieldAccount}
-                size="14px"
-                color="#0D2177"
-                border="12px solid #DBDFF0"
-                height="24px"
-                width="24px"
-              />
-            </IconBox>
+            verificationType={verificationType}
+            currentUser={currentUser}
+            sendVerificationMutation={sendVerificationMutation}
+            updateCognitoUserMutation={updateCognitoUserMutation}
+            getVerificationQuery={getVerificationQuery}
 
-            <Box ml={10}>
-              <Text textStyle="h4" mr={10}>
-                Account Credentials
-              </Text>
-            </Box>
-          </SectionContainer>
-          <SectionContainer className="change-number">
-            {changeUsername ? (
-              <>
-                <Box ml={24}>
-                  <Text mr={16} mb={5}>
-                    Username
-                  </Text>
-                  <Box className="phone-number" width="378px">
-                    <IconField>
-                      <IconField.LeftIcon
-                        iconify={bxUser}
-                        color={"componentPrimary"}
-                        size={"17"}
-                      />
-                      <IconField.InputField
-                        placeholder="New username"
-                        id={"username"}
-                        name={"username"}
-                        onChange={handleChange}
-                        onBlur={e => checkUsername(e.target.value)}
-                        error={state.username.status}
-                        ref={inputUsername}
-                        defaultValue={state.username.value}
-                        onKeyDown={e => {
-                          if (e.key === "Enter" && e.target.value.length > 4) {
-                            checkUsername(e.target.value, true);
-                          }
-                        }}
-                        tabIndex="2"
-                      />
-                    </IconField>
-                  </Box>
-                  <Text fontSize="xs" color={colors.textMuted}>
-                    Must be longer than 6 characters, no spaces available
-                  </Text>
-                </Box>
-                <Flex>
-                  <Button
-                    variation="outline"
-                    mr={8}
-                    onClick={() => setChangeUsername(value => !value)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button disabled={disabled} onClick={updateUsername}>
-                    Change username
-                  </Button>
-                </Flex>
-              </>
-            ) : (
-              <>
-                <Flex>
-                  <BorderIcon
-                    iconify={mdiCellphone}
-                    size="20px"
-                    color="#0D2177"
-                    border="16px solid #DBDFF0"
-                    height="32px"
-                    width="32px"
-                  />
-                  <Box ml={24}>
-                    <Flex>
-                      <Text mr={16} fontWeight="600">
-                        Username
-                      </Text>
-                      {/* <Badge>verified</Badge> */}
-                    </Flex>
-                    <Flex>
-                      <Text fontSize="xs" color={colors.textMuted}>
-                        Used with your password to access your account. Current
-                        username
-                      </Text>
-                      <Text fontWeight="600" fontSize="xs" ml={3}>
-                        {currentUser.loginUsername}
-                      </Text>
-                    </Flex>
-                  </Box>
-                </Flex>
-                <Button onClick={() => setChangeUsername(value => !value)}>
-                  Change username
-                </Button>
-              </>
-            )}
-          </SectionContainer>
-          <SectionContainer className="change-email">
-            {changeUserPassword ? (
-              <>
-                <Box ml={24}>
-                  <Text mr={16} mb={8} fontWeight="600">
-                    Password
-                  </Text>
-                  <Box className="password" width="378px">
-                    <PasswordField
-                      placeholder={__("passwordPlaceholder")}
-                      onFocus={e => {
-                        if (e.target.value.length > 0) {
-                          if (passwordCheck(e.target.value)) {
-                          } else {
-                            e.preventDefault();
-                          }
-                        } else {
-                        }
-                      }}
-                      id={"accountPassword"}
-                      name={"accountPassword"}
-                      onChange={e => {
-                        handleChange(e);
-                        checkInputPassword(e);
-                      }}
-                      ref={inputPassword}
-                      defaultValue={state.accountPassword.value}
-                      error={state.accountPassword.status}
-                      onBlur={e => {
-                        if (e.target.value.length > 0) {
-                          if (passwordCheck(e.target.value)) {
-                          } else {
-                            console.log("PREVENT BLUR:....");
-                            setInputPasswordFocus();
-                            e.preventDefault();
-                          }
-                        } else {
-                        }
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === "Enter" && e.target.value.length > 4) {
-                          console.log("CHECKING PASSWORD ", e.target.value);
-                          const checkStatus = passwordCheck(e.target.value);
-                          console.log("CHECK STATUS ", checkStatus);
-                          if (checkStatus) {
-                          }
-                        }
-                      }}
-                      autoComplete="new-password"
-                      tabIndex="3"
-                    />
-                  </Box>
-                  <Text mr={16} mb={8} mt={16} fontWeight="600">
-                    Confirm password
-                  </Text>
-                  <Box className="newPassword" width="378px">
-                    <PasswordField
-                      placeholder={__("confirmPlaceholder")}
-                      onFocus={e => {
-                        if (state.accountPassword.value.length === 0) {
-                          setInputPasswordFocus();
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }
-                      }}
-                      id={"newPassword"}
-                      name={"newPassword"}
-                      defaultValue={state.passwordConfirm.value}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      error={
-                        state.accountPassword.status ||
-                        state.passwordConfirm.status
-                      }
-                      onBlur={e => {
-                        if (
-                          e.target.value.length ===
-                          state.accountPassword.value.length
-                        ) {
-                          checkConfirmPassword(e.target.value, false);
-                        }
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === "Enter" && e.target.value.length > 4) {
-                          checkConfirmPassword(e.target.value, false);
-                        }
-                      }}
-                      autoComplete="new-password"
-                      tabIndex="4"
-                    />
-                  </Box>
-                </Box>
-                <Box>
-                  <Text fontSize={"xs"} bold>
-                    Create a password that:
-                    <UnorderedList>
-                      <ListItem
-                        verified={passwordVerification[0]}
-                        theme={mergedTheme}
-                      >
-                        <Text as={"span"} fontSize={"xxs"}>
-                          Contains at least {config.passwordLength} characters
-                        </Text>
-                      </ListItem>
-                      <ListItem
-                        verified={passwordVerification[1]}
-                        theme={mergedTheme}
-                      >
-                        <Text as={"span"} fontSize={"xxs"}>
-                          Contains both lower (a-z) and upper case letters (A-Z)
-                        </Text>
-                      </ListItem>
+          />
+        )}
+        <Container bg={colors.backgroundLight}>
+          <Text textStyle="h3" mb={36}>
+            Account security
+          </Text>
+          <ContentContainer className="account-credentials">
+            <SectionContainer
+              className="info-container"
+              style={{
+                position: "relative",
+                border: 0,
+                minHeight: 66,
+              }}
+            >
+              <IconBox>
+                <BorderIcon
+                  iconify={mdiShieldAccount}
+                  size="14px"
+                  color="#0D2177"
+                  border="12px solid #DBDFF0"
+                  height="24px"
+                  width="24px"
+                />
+              </IconBox>
 
-                      <ListItem
-                        verified={passwordVerification[2]}
-                        theme={mergedTheme}
-                      >
-                        <Text as={"span"} fontSize={"xxs"}>
-                          Contains at least one number (0-9) and a symbol
-                        </Text>
-                      </ListItem>
-                      <ListItem
-                        verified={passwordVerification[3]}
-                        theme={mergedTheme}
-                      >
-                        <Text as={"span"} fontSize={"xxs"}>
-                          Does not contain your name or email address
-                        </Text>
-                      </ListItem>
-                      <ListItem
-                        verified={passwordVerification[4]}
-                        theme={mergedTheme}
-                      >
-                        <Text as={"span"} fontSize={"xxs"}>
-                          Is not commonly used
-                        </Text>
-                      </ListItem>
-                    </UnorderedList>
-                  </Text>
-                </Box>
-                <Flex>
-                  <Button
-                    variation="outline"
-                    mr={8}
-                    onClick={() => setChangePassword(value => !value)}
-                  >
-                    Cancel
-                  </Button>
-
-                  <Button
-                    disabled={checkPasswordChangePossibility()}
-                    onClick={() => handleChangePassword()}
-                  >
-                    Change password
-                  </Button>
-                </Flex>
-              </>
-            ) : (
-              <>
-                <Flex>
-                  <BorderIcon
-                    iconify={mdiEmailOutline}
-                    size="20px"
-                    color="#0D2177"
-                    border="16px solid #DBDFF0"
-                    height="32px"
-                    width="32px"
-                  />
-                  <Box ml={24}>
-                    <Flex>
-                      <Text mr={16} fontWeight="600">
-                        Password
-                      </Text>
-                      {/* <Badge>verified</Badge> */}
-                    </Flex>
-                    <Text fontSize="xs" color={colors.textMuted}>
-                      It's a good idea to use a strong password that you're not
-                      using elsewhere
-                    </Text>
-                  </Box>
-                </Flex>
-                <Button onClick={() => setChangePassword(value => !value)}>
-                  Change password
-                </Button>
-              </>
-            )}
-          </SectionContainer>
-        </ContentContainer>
-
-        <ContentContainer className="securing-account">
-          <SectionContainer
-            className="info-container"
-            style={{
-              position: "relative",
-              border: 0,
-            }}
-          >
-            <IconBox>
-              <BorderIcon
-                iconify={mdiShieldLock}
-                size="14px"
-                color="#0D2177"
-                border="12px solid #DBDFF0"
-                height="24px"
-                width="24px"
-              />
-            </IconBox>
-
-            <Box ml={10}>
-              <Flex mb={8}>
+              <Box ml={10}>
                 <Text textStyle="h4" mr={10}>
-                  Securing Your Account
+                  Account Credentials
                 </Text>
-                <Badge>
-                  <BlendIcon
-                    iconify={mdiLockOutline}
-                    color="#0D2177"
-                    size="10px"
-                  />
-                  <Text ml={6}>always on</Text>
-                </Badge>
-              </Flex>
-              <Text>
-                Primary communication channels used for multifactor
-                authentication, to verify changes in account credentials and
-                other account related communication.
-              </Text>
-            </Box>
-          </SectionContainer>
-          <SectionContainer className="change-number">
-            {changeNumber ? (
-              <>
-                <Box ml={24}>
-                  <Text mr={16} mb={5}>
-                    Mobile Phone Number
-                  </Text>
-                  <Box className="phone-number" width="378px">
-                    <PhoneNumberField>
-                      <PhoneNumberField.RegionField
-                        key={state.regionCode}
-                        defaultValue={state.regionCode}
-                        options={flags ? selectOptions.current : []}
-                        searchLength={2}
-                        showList={true}
-                        maxHeight={"200px"}
-                        ref={inputSelect}
-                        /* id="select-search" */
-                        onChange={(e, code) => {
-                          console.log("REGION SELECT ", e, code);
-                          handleChange({
-                            target: {
-                              id: "regionCode",
-                              value: code,
-                            },
-                          });
-                        }}
-                      />
-                      <PhoneNumberField.InputField
-                        placeholder="555_555_555"
-                        id={"phoneNumber"}
-                        name="phoneNumber"
-                        onChange={e => {
-                          handleChange(e);
-                        }}
-                        promptMsg={
-                          state.phoneNumber.valid ? __("phonePrompt") : ""
-                        }
-                        error={state.phoneNumber.status}
-                        ref={inputPhone}
-                        defaultValue={state.phoneNumber.value}
-                        onBlur={e => {
-                          // weird problem... password autofill changes phonenumber...
-                          if (
-                            !(
-                              e.target.id === "phoneNumber" &&
-                              (document.activeElement.id ===
-                                "accountPassword" ||
-                                document.activeElement.id === "passwordConfirm")
-                            )
-                          ) {
-                            if (e.target.value.length > 4) {
-                              checkPhone(state.regionCode, e.target.value);
-                            }
-                          }
-                        }}
-                        onKeyDown={e => {
-                          if (e.key === "Enter" && e.target.value.length > 4) {
-                            const checkResult = checkPhone(
-                              state.regionCode,
-                              e.target.value,
-                              true,
-                            );
-                          }
-                        }}
-                      />
-                    </PhoneNumberField>
-                  </Box>
-                  <Text fontSize="xs" color={colors.textMuted}>
-                    Number must accept SMS
-                  </Text>
-                </Box>
-                <Flex>
-                  <Button
-                    variation="outline"
-                    mr={8}
-                    onClick={() => setChangeNumber(value => !value)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={sendCodePhone}>Change number</Button>
-                </Flex>
+              </Box>
+            </SectionContainer>
+            <SectionContainer className="change-number" >
+              {!changeUsername && <>
+                <CurrentSettings icon={mdiCellphone} title={"Username"} info={"Used with your password to access your account. Currentusername"} currentValue={currentUser.loginUsername} buttonPrompt={"Change username"} onClick={() => {
+                  setChangeUsername(value => !value)
+                }} />
               </>
-            ) : (
-              <>
-                <Flex>
-                  <BorderIcon
-                    iconify={mdiCellphone}
-                    size="20px"
-                    color="#0D2177"
-                    border="16px solid #DBDFF0"
-                    height="32px"
-                    width="32px"
-                  />
-                  <Box ml={24}>
-                    <Flex>
-                      <Text mr={16} fontWeight="600">
-                        Mobile Phone Number
-                      </Text>
-                      <Badge>verified</Badge>
-                    </Flex>
-                    <Flex>
-                      <Text fontSize="xs" color={colors.textMuted}>
-                        We will send an one time SMS code to your verified phone
-                        number
-                      </Text>
-                      <Text fontWeight="600" fontSize="xs" ml={3}>
-                        {currentUser.phoneNumber}
-                      </Text>
-                    </Flex>
-                  </Box>
-                </Flex>
-                <Button onClick={() => setChangeNumber(value => !value)}>
-                  Change number
-                </Button>
+              }
+              {changeUsername && <>
+                <ChangeUsername inputRefs={inputRefs} currentValue={currentUser.loginUsername} onCancel={() => {
+                  setChangeUsername(value => !value)
+                }} updateUsername={updateUsername} />
+              </>}
+            </SectionContainer>
+            <SectionContainer className="change-email" >
+              {!changeUserPassword && <>
+                <CurrentSettings icon={mdiEmailOutline} title={"Password"} info={"It's a good idea to use a strong password that you're not using elsewhere"} currentValue={""} buttonPrompt={"Change password"} onClick={() => {
+                  setChangePassword(value => !value)
+                }} />
               </>
-            )}
-          </SectionContainer>
-          <SectionContainer className="change-email">
-            {changeEmail ? (
-              <>
-                <Box ml={24}>
-                  <Text mr={16} mb={5} fontWeight="600">
-                    Email
-                  </Text>
-                  <Box className="email" width="378px">
-                    <IconField>
-                      <IconField.LeftIcon
-                        iconify={bxEnvelope}
-                        color={"componentPrimary"}
-                        size={"17"}
-                      />
-                      <IconField.InputField
-                        placeholder={__("emailPlaceholder")}
-                        id={"email"}
-                        name={"email"}
-                        onChange={handleChange}
-                        promptMsg={
-                          state.email.valid ? __("emailPrompt") : ""
-                        }
-                        error={state.email.status}
-                        ref={inputEmail}
-                        onBlur={e => checkEmail(e.target.value)}
-                        defaultValue={state.email.value}
-                        onKeyDown={e => {
-                          if (e.key === "Enter") {
-                            checkEmail(e.target.value, true);
-                          }
-                        }}
-                      />
-                    </IconField>
-                  </Box>
-                </Box>
-                <Flex>
-                  <Button
-                    variation="outline"
-                    mr={8}
-                    onClick={() => setChangeEmail(value => !value)}
-                  >
-                    Cancel
-                  </Button>
+              }
+              {changeUserPassword && <>
+                <ChangeUserPassword inputRefs={inputRefs} onCancel={() => {
+                  setChangePassword(value => !value)
+                }} updateUserpassword={updateUserpassword} />
+              </>
+              }
+            </SectionContainer>
+          </ContentContainer>
 
-                  <Button onClick={sendCodeEmail}>Change email</Button>
+          <ContentContainer className="securing-account">
+            <SectionContainer
+              className="info-container"
+              style={{
+                position: "relative",
+                border: 0,
+              }}
+            >
+              <IconBox>
+                <BorderIcon
+                  iconify={mdiShieldLock}
+                  size="14px"
+                  color="#0D2177"
+                  border="12px solid #DBDFF0"
+                  height="24px"
+                  width="24px"
+                />
+              </IconBox>
+
+              <Box ml={10}>
+                <Flex mb={8}>
+                  <Text textStyle="h4" mr={10}>
+                    Securing Your Account
+                  </Text>
+                  <Badge>
+                    <BlendIcon
+                      iconify={mdiLockOutline}
+                      color="#0D2177"
+                      size="10px"
+                    />
+                    <Text ml={6}>always on</Text>
+                  </Badge>
                 </Flex>
+                <Text>
+                  Primary communication channels used for multifactor
+                  authentication, to verify changes in account credentials and
+                  other account related communication.
+                </Text>
+              </Box>
+            </SectionContainer>
+            <SectionContainer className="change-number" >
+              {!changeNumber && <>
+                <CurrentSettings verified={true} icon={mdiCellphone} title={"Mobile Phone Number"} info={"We will send an one time SMS code to your verified phonenumber"} currentValue={currentUser.phoneNumber} buttonPrompt={"Change number"} onClick={() => setChangeNumber(value => !value)} />
               </>
-            ) : (
-              <>
-                <Flex>
-                  <BorderIcon
-                    iconify={mdiEmailOutline}
-                    size="20px"
-                    color="#0D2177"
-                    border="16px solid #DBDFF0"
-                    height="32px"
-                    width="32px"
-                  />
-                  <Box ml={24}>
-                    <Flex>
-                      <Text mr={16} fontWeight="600">
-                        Primary email
-                      </Text>
-                      <Badge>verified</Badge>
-                    </Flex>
-                    <Flex>
-                      <Text fontSize="xs" color={colors.textMuted}>
-                        We will send an one time code to your verified email
-                        address
-                      </Text>
-                      <Text fontWeight="600" fontSize="xs" ml={3}>
-                        {currentUser.email}
-                      </Text>
-                    </Flex>
-                  </Box>
-                </Flex>
-                <Button onClick={() => setChangeEmail(value => !value)}>
-                  Change email
-                </Button>
+              }
+              {changeNumber && <>
+                <ChangePhoneNumber inputRefs={inputRefs} currentValue={currentUser.phoneNumber} onCancel={() => {
+                  setChangeNumber(value => !value)
+                }} updatePhoneNumber={updatePhoneNumber} />
+              </>}
+            </SectionContainer>
+            <SectionContainer className="change-email" >
+              {!changeEmail && <>
+                <CurrentSettings verified={true} icon={mdiEmailOutline} title={"Primary email"} info={"We will send an one time code to your verified email address"} currentValue={currentUser.email} buttonPrompt={"Change email"} onClick={() => setChangeEmail(value => !value)} />
               </>
-            )}
-          </SectionContainer>
-        </ContentContainer>
-      </Container>
-    </ThemeProvider>
-  );
-};
+              }
+              {changeEmail && <>
+                <ChangeUseremail inputRefs={inputRefs} currentValue={currentUser.email} onCancel={() => {
+                  setChangeEmail(value => !value)
+                }} updateUseremail={updateUseremail} />
+              </>}
+            </SectionContainer>
+          </ContentContainer>
+        </Container>
+      </ThemeProvider>
+    }
+  </>
+}
 
 Settings.displayName = "Settings";
 
+
+//export default withToast()(Settings);
 export default Settings;

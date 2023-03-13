@@ -1,23 +1,24 @@
 import React from "react";
 
-
 //import { render } from "react-dom";
 import ReactDOM from "react-dom/client";
 import { default as App } from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
 import ErrorBoundary from "./ErrorBoundary";
 
 
-import { GraphQLContext } from "./utils-v2/graphql/GraphQLContext";
+import * as UTILS from "@prifina-apps/utils";
 
-import { PrifinaStoreProvider } from "./utils-v2/stores/PrifinaStore";
+//import { GraphQLContext, } from "@prifina-apps/utils";
+
+//import { GraphQLContext } from "./utils-v2/graphql/GraphQLContext";
+
+//import { PrifinaStoreProvider } from "./utils-v2/stores/PrifinaStore";
+
 
 import config, { REFRESH_TOKEN_EXPIRY } from "./config";
-
-
-//import { AUTHClient, CoreGraphQLApi, AppSyncClient } from "./utils-v2/lib/MockClient";
 
 
 let AUTHConfig = {
@@ -38,51 +39,64 @@ const APIConfig = {
   aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
 };
 
-
-let CoreApiClient;
-let AuthClient;
-let UserApiClient;
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-(async () => {
-  let Client;
-  // dynamic import of environment clients
-  if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
-    Client = await import("./utils-v2/lib/MockClient");
-  } else {
-    Client = await import("./utils-v2/lib/ProdClient");
-  }
+//import { GraphQLContext, PrifinaStoreProvider } from "@prifina-apps/utils";
 
-  const {
-    AUTHClient, CoreGraphQLApi, AppSyncClient
-  } = Client;
+let CoreGraphQLApi;
+let AUTHClient;
+let AppSyncClient;
 
-  CoreApiClient = new CoreGraphQLApi({ config: APIConfig });
-  AuthClient = new AUTHClient({ AuthConfig: AUTHConfig });
-  //UserApiClient = new AppSyncClient({ AppSyncConfig: { url: APIConfig.aws_appsync_graphqlEndpoint, reqion: APIConfig.aws_appsync_region } })
-  UserApiClient = new AppSyncClient({ AppSyncConfig: APIConfig })
+// dynamic import of environment clients
+if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
+  //Client = await import("./utils-v2/lib/MockClient");
+  // Client = await import("@prifina-apps/utils").MockClient;
+  CoreGraphQLApi = UTILS.MockCoreGraphQLApi;
+  AUTHClient = UTILS.MockAUTHClient;
+  AppSyncClient = UTILS.MockAppSyncClient;
 
-  //console.log("CLIENT ", CoreApiClient, AuthClient, UserApiClient);
+  ///export { MockAUTHClient, MockCoreGraphQLApi, MockAppSyncClient, MockS3Storage };
+} else {
+  //Client = await import("./utils-v2/lib/ProdClient");
+  // Client = await import("@prifina-apps/utils").ProdClient;
+  CoreGraphQLApi = UTILS.CoreGraphQLApi;
+  AUTHClient = UTILS.AUTHClient;
+  AppSyncClient = UTILS.AppSyncClient;
+}
+//Client = await import("@prifina-apps/utils");
+//console.log("Client import ", Client);
 
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        {AuthClient &&
-          <GraphQLContext.Provider value={{ AuthClient, CoreApiClient, UserApiClient }}>
-            <PrifinaStoreProvider>
-              <Router>
-                <App />
-              </Router>
-            </PrifinaStoreProvider>
-          </GraphQLContext.Provider>
-        }
-        {!AuthClient && <div>Initializing Error...</div>}
-      </ErrorBoundary>
-    </React.StrictMode>,
-  );
-})();
+/*
+const {
+  AUTHClient, CoreGraphQLApi, AppSyncClient
+} = Client;
+*/
 
+const CoreApiClient = new CoreGraphQLApi({ config: APIConfig });
+const AuthClient = new AUTHClient({ AuthConfig: AUTHConfig });
+//UserApiClient = new AppSyncClient({ AppSyncConfig: { url: APIConfig.aws_appsync_graphqlEndpoint, reqion: APIConfig.aws_appsync_region } })
+const UserApiClient = new AppSyncClient({ AppSyncConfig: APIConfig })
+
+//console.log("CLIENT ", CoreApiClient, AuthClient, UserApiClient);
+
+root.render(
+  <React.StrictMode>
+    <ErrorBoundary>
+
+      {AuthClient &&
+        <UTILS.GraphQLContext.Provider value={{ AuthClient, CoreApiClient, UserApiClient }}>
+          <UTILS.PrifinaStoreProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </UTILS.PrifinaStoreProvider>
+        </UTILS.GraphQLContext.Provider>
+      }
+      {!AuthClient && <div>Initializing Error...</div>}
+
+    </ErrorBoundary>
+  </React.StrictMode>,
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

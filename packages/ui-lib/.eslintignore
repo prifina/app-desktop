@@ -1,0 +1,5 @@
+**/stories/*.js
+dist
+build
+backup
+node_modules

@@ -11,7 +11,7 @@ import {
 import {
   appCategory,
   ageAppropriate,
-} from "@prifina-apps/utils";
+} from "@prifina-apps/ui-lib";
 
 import { InnerContainer, FieldContainer, CustomSelect } from "../pages/ProjectDetails-v2";
 

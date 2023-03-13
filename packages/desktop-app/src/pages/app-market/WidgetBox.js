@@ -14,8 +14,6 @@ import {
 
 import { BlendIcon } from "@blend-ui/icons";
 
-import { i18n } from "@prifina-apps/utils";
-
 import PropTypes from "prop-types";
 
 import styled, { css } from "styled-components";
@@ -27,7 +25,6 @@ import undefinedIcon from "../../assets/app-market/undefined-icon.png";
 
 import { PrifinaIcon } from "../app-market/icons";
 
-i18n.init();
 
 const ProductBase = styled(Box)`
   display: inline-block;

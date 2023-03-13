@@ -4,11 +4,10 @@ import React, { useEffect, useState, useRef, } from "react";
 
 import { Box, Flex, Text, Button, } from "@blend-ui/core";
 
-import { useTranslate } from "@prifina-apps/utils";
+import { useTranslate, useStore } from "@prifina-apps/utils";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
 
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +20,7 @@ export const prifinaAppTypes = { "APP": 1, "WIDGET": 2 };
 const Projects = ({ currentUser }) => {
 
 
+  console.log("LIST PROJECTS ", currentUser)
   const navigate = useNavigate();
 
   const { __ } = useTranslate();
@@ -124,7 +124,7 @@ const Projects = ({ currentUser }) => {
               const rowIdx = props.row.index;
               //console.log("EDIT ", props.data[rowIdx])
               //navigate("/app/project/" + props.data[rowIdx].id, { replace: true });
-              navigate("/app/project/" + props.data[rowIdx].id);
+              navigate("/projects/" + props.data[rowIdx].id);
             }}
           >
             Edit

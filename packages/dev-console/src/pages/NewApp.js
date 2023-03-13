@@ -10,9 +10,8 @@ import {
   newAppVersionMutation,
 } from "@prifina-apps/utils";
 
-//import { useHistory } from "react-router-dom";
 
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const short = require("short-uuid");
 

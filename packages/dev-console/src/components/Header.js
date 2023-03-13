@@ -1,9 +1,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { Flex } from "@blend-ui/core";
-import { useUserMenu } from "../utils-v2/components/FloatingUserMenu-v2";
-
-//import withUsermenu from "../utils-v2/components/UserMenu-v2";
+import { useUserMenu } from "@prifina-apps/ui-lib";
 
 import AppStudioLogo from "./AppStudioLogo";
 

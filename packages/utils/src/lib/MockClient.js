@@ -84,7 +84,7 @@ const shortId = () => {
 }
 
 // Auth Client...
-class AUTHClient {
+class MockAUTHClient {
   constructor(cnf) {
     // this.config = cnf || AppSyncConfig;
     //  this.Authconfig = AUTHConfig;
@@ -210,7 +210,7 @@ class SubscribeClient {
 }
 
 // AppSync ...
-class AppSyncClient {
+class MockAppSyncClient {
   constructor(cnf) {
     // this.config = cnf || AppSyncConfig;
     //  this.Authconfig = AUTHConfig;
@@ -280,7 +280,7 @@ if (type === 'mutation') {
 */
 
 // Amplify GRAPHQL Client API ... Authmodes  AMAZON_COGNITO_USER_POOLS | AWS_IAM
-class CoreGraphQLApi {
+class MockCoreGraphQLApi {
   constructor(cnf) {
     console.log("CORE MOCK ");
     this.config = cnf?.config || {}
@@ -307,7 +307,8 @@ class CoreGraphQLApi {
   subscribe(rq, vars) {
 
     const subscribtionID = shortId();
-
+    console.log("SUBSCRIPTIONS", rq, vars);
+    console.log(typeof gql);
     const ql = gql(rq);
     // const socket = getSubscriptionData(this.callback, vars, ql.definitions[0].name.value);
     //this.subscriptions[subscribtionID] = socket;
@@ -350,7 +351,7 @@ class CoreGraphQLApi {
 
 };
 
-class S3Storage {
+class MockS3Storage {
   constructor(cnf) {
     this.client = "MOCKUP";
     this.config = cnf?.S3Config || {}
@@ -469,4 +470,4 @@ class S3Storage {
 }
 
 
-export { AUTHClient, CoreGraphQLApi, AppSyncClient, S3Storage };
+export { MockAUTHClient, MockCoreGraphQLApi, MockAppSyncClient, MockS3Storage };

@@ -29,7 +29,7 @@ import mdiGearOutline from "@iconify/icons-mdi/gear-outline";
 
 import { API_KEY, GOOGLE_URL, SEARCH_ENGINE } from "../../config";
 
-import { i18n, useFetch, useFormFields } from "@prifina-apps/utils";
+import { useFetch, useFormFields } from "@prifina-apps/utils";
 import moment from "moment";
 import "moment-timezone";
 import PropTypes from "prop-types";
@@ -42,8 +42,6 @@ import { Tabs, Tab, TabList, TabPanel, TabPanelList } from "@blend-ui/tabs";
 import AddWidgetLogo from "../../assets/display-app/AddWidget";
 
 import { BlendIcon } from "@blend-ui/icons";
-
-i18n.init();
 
 export const StyledBlendIcon = styled(BlendIcon)`
   cursor: pointer;
@@ -867,7 +865,7 @@ SettingsDialog.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
 };
-
+/*
 export const SearchBox = forwardRef(
   ({ showHistory, chevronOpen, searchKey, searchOpen, saveSearchKey }, ref) => {
     const [fields, handleChange] = useFormFields({
@@ -1027,7 +1025,7 @@ export const SearchHistory = props => {
 SearchHistory.propTypes = {
   searchBox: PropTypes.instanceOf(Object).isRequired,
 };
-
+*/
 export const AddWidgetContainer = styled(Flex)`
   width: 284px;
   height: 284px;

@@ -14,7 +14,7 @@ import * as C from "./display-app/components";
 
 //import { i18n, getAthenaResults, Navbar, updatePrifinaUserMutation, useIsMountedRef } from "@prifina-apps/utils";
 
-import { Navbar, getAthenaResults } from "@prifina-apps/utils";
+import { Navbar } from "@prifina-apps/ui-lib";
 
 import DisplayAppLogo from "../assets/display-app-logo";
 
@@ -47,13 +47,15 @@ import fePlus from "@iconify/icons-fe/plus";
 
 import { Remote } from "@prifina-apps/remote";
 
+import { useStore, useGraphQLContext, getAthenaResults } from "@prifina-apps/utils";
+
 
 //import { useStore } from "../utils-v2/stores/PrifinaStore";
-import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
+//import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
+//import { useStore } from "../utils-v2/stores/PrifinaStore";
 /* 
 const StyledBlendIcon = styled(BlendIcon)`
   cursor: pointer;
@@ -663,6 +665,7 @@ const DisplayApp = ({
       athenaSubscription.current = subsID;
 
       initWidgets();
+
       /*
       const subsID = getAthenaResultsSubscription({ id: prifinaID }).subscribe({
         next: res => {

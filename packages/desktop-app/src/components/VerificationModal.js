@@ -21,11 +21,7 @@ import { IconField } from "@blend-ui/icon-field";
 
 import PropTypes from "prop-types";
 
-import { useToast } from "@blend-ui/toast";
-
-import {
-  useFormFields,
-} from "@prifina-apps/utils";
+import { useFormFields, useToast } from "@prifina-apps/ui-lib";
 
 //import phoneImage from "../assets/settings-app/phone.svg";
 //import emailImage from "../assets/settings-app/email.svg";
@@ -41,7 +37,7 @@ import { useTranslate } from "@prifina-apps/utils";
 
 const VerificationModal = ({
   onClose,
-  state,
+  options,
   verificationType,
   getVerificationQuery,
   sendVerificationMutation,
@@ -70,13 +66,13 @@ const VerificationModal = ({
   });
 
   const updateUserEmail = () => {
-    updateCognitoUserMutation("email", state.email.value).then(res => {
+    updateCognitoUserMutation("email", options.email).then(res => {
       alerts.success("Email changed", {});
       console.log("SUCCESS", res);
     });
   };
 
-  const phoneNumber = state.regionCode + state.phoneNumber.value;
+  const phoneNumber = options.regionCode + options.phoneNumber;
 
   const updateUserPhone = () => {
     updateCognitoUserMutation("phone_number", phoneNumber).then(res => {
@@ -134,10 +130,10 @@ const VerificationModal = ({
       alerts.error(__("invalidCode"), {});
     }
   };
-  console.log("verification state ", state);
+  console.log("verification options ", options);
 
   console.log("ver code ", verificationFields.verificationCode);
-  console.log("verification email ", state);
+  console.log("verification email ", options);
   console.log("verification phone ", phoneNumber);
 
   const resendCodeEmail = async e => {
@@ -148,7 +144,7 @@ const VerificationModal = ({
         JSON.stringify({
           username: currentUser.loginUsername,
           clientId: currentUser.client,
-          email: state.email.value,
+          email: options.email,
           given_name: currentUser.given_name,
         }),
       );
@@ -301,7 +297,7 @@ const VerificationModal = ({
 
 VerificationModal.propTypes = {
   onClose: PropTypes.func.isRequired,
-  state: PropTypes.object,
+  options: PropTypes.object,
   verificationType: PropTypes.string,
   getVerificationQuery: PropTypes.func,
   sendVerificationMutation: PropTypes.func,

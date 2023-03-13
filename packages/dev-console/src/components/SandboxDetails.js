@@ -9,12 +9,16 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
+
+import { useNavigate, } from "react-router-dom";
+
 import { ProjectContainer } from "../pages/ProjectDetails-v2";
 
 const SandboxDetails = forwardRef(({ options, inputState, ...props }, ref) => {
 
-  console.log("SANDBOX DETAILS ", ref, options);
 
+  const navigate = useNavigate();
+  console.log("PROJECT DETAILS ", ref, options);
   const { colors } = useTheme();
   const checkRemoteUrl = (e) => {
     const url = ref.current.value;
@@ -78,7 +82,7 @@ const SandboxDetails = forwardRef(({ options, inputState, ...props }, ref) => {
 
         <Button
           onClick={() => {
-            //navigate("/sandbox", { state: { allValues: appData } });
+            navigate("/sandbox/" + options.appID, { replace: true });
           }}
         >
           Launch Sandbox

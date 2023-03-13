@@ -74,14 +74,14 @@
     "@iconify/icons-fe": "^1.2.1",
     "@reach/auto-id": "^0.16.0",
     "@styled-system/theme-get": "^5.1.2",
-    "aws-amplify": "^5.0.7",
-    "graphql-tag": "^2.12.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "styled-components": "^5.3.1",
     "styled-system": "^5.1.5"
   },
   "dependencies": {
+    "graphql-tag": "^2.12.5",
+    "aws-amplify": "^5.0.7",
     "@aws-sdk/client-appsync": "^3.43.0",
     "@blend-ui/avatar": "^1.0.1-alpha.0",
     "@iconify-icons/emojione-v1": "^1.2.4",

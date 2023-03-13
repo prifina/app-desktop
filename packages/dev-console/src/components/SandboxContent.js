@@ -16,10 +16,8 @@ import shallow from "zustand/shallow";
 
 import { useAppStudioStore } from "../hooks/UseAppStudio";
 
-import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
-import { getAthenaResults } from "@prifina-apps/utils";
+import { getAthenaResults, useGraphQLContext } from "@prifina-apps/utils";
 import PropTypes from "prop-types";
-
 
 const WidgetWrapper = styled.div`
   width: 100%;

@@ -26,16 +26,11 @@ import styled from "styled-components";
 import mdiArrowLeft from "@iconify/icons-mdi/arrow-left";
 
 
-import { useTranslate } from "@prifina-apps/utils";
+import { useTranslate, useStore, useGraphQLContext } from "@prifina-apps/utils";
 
 import shallow from "zustand/shallow";
 
-import { useStore } from "../utils-v2/stores/PrifinaStore";
-
-
-import { useGraphQLContext } from "../utils-v2/graphql/GraphQLContext";
-
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { prifinaAppTypes } from "../components/Projects";
 
@@ -133,6 +128,11 @@ const ProjectDetails = props => {
   const navigate = useNavigate();
   const { __ } = useTranslate();
 
+
+  const { pathname } = useLocation();
+
+  const appID = pathname.split("/")[2];
+  //console.log("PATH", pathname);
   const inputRefs = useRef({});
   const modifiedRefs = useRef({});
   //const [appType, setAppType] = useState(2);
@@ -169,6 +169,7 @@ const ProjectDetails = props => {
       value: () => {
         return inputRefs.current['p-remoteUrl'].value;
       },
+      appID: appID
     },
     inputState: (input, validation = false) => {
       console.log("INPUT STATE UPDATE", input);
@@ -316,7 +317,7 @@ const ProjectDetails = props => {
     async function initDetails() {
       effectCalled.current = true;
 
-      const appVersion = await getAppVersionQuery("cw9aphqcofZkv8pCE9nE181");
+      const appVersion = await getAppVersionQuery(appID);
       //console.log("RESULT ", result)
       //const currentApp = result.data.getAppVersion;
       ['status', 'name', 'appType', 'remoteUrl', 'nextVersion', 'id',
@@ -395,7 +396,7 @@ const ProjectDetails = props => {
         //clearInterval(timer);
       }
     };
-  }, []);
+  }, [appID]);
 
   const deleteApp = () => {
 
