@@ -35,8 +35,11 @@ let AUTHConfig = {
 
 const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
-  aws_appsync_region: config.main_region,
-  aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
+  aws_appsync_region: config.auth_region,
+  aws_appsync_authenticationType: "AMAZON_COGNITO_USER_POOLS"
+  //aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
+  //aws_appsync_region: config.main_region,
+
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -46,6 +49,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 let CoreGraphQLApi;
 let AUTHClient;
 let AppSyncClient;
+let S3Storage;
 
 // dynamic import of environment clients
 if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
@@ -54,6 +58,7 @@ if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
   CoreGraphQLApi = UTILS.MockCoreGraphQLApi;
   AUTHClient = UTILS.MockAUTHClient;
   AppSyncClient = UTILS.MockAppSyncClient;
+  S3Storage = UTILS.MockS3Storage;
 
   ///export { MockAUTHClient, MockCoreGraphQLApi, MockAppSyncClient, MockS3Storage };
 } else {
@@ -62,6 +67,7 @@ if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
   CoreGraphQLApi = UTILS.CoreGraphQLApi;
   AUTHClient = UTILS.AUTHClient;
   AppSyncClient = UTILS.AppSyncClient;
+  S3Storage = UTILS.S3Storage;
 }
 //Client = await import("@prifina-apps/utils");
 //console.log("Client import ", Client);
@@ -75,8 +81,8 @@ const {
 const CoreApiClient = new CoreGraphQLApi({ config: APIConfig });
 const AuthClient = new AUTHClient({ AuthConfig: AUTHConfig });
 //UserApiClient = new AppSyncClient({ AppSyncConfig: { url: APIConfig.aws_appsync_graphqlEndpoint, reqion: APIConfig.aws_appsync_region } })
-const UserApiClient = new AppSyncClient({ AppSyncConfig: APIConfig })
-
+const UserApiClient = new AppSyncClient()
+const S3StorageClient = new S3Storage({ S3Config: { bucket: config.S3.bucket, region: config.S3.region } })
 //console.log("CLIENT ", CoreApiClient, AuthClient, UserApiClient);
 
 root.render(
@@ -84,7 +90,7 @@ root.render(
     <ErrorBoundary>
 
       {AuthClient &&
-        <UTILS.GraphQLContext.Provider value={{ AuthClient, CoreApiClient, UserApiClient }}>
+        <UTILS.GraphQLContext.Provider value={{ AuthClient, CoreApiClient, UserApiClient, S3Storage: S3StorageClient }}>
           <UTILS.PrifinaStoreProvider>
             <BrowserRouter>
               <App />

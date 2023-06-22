@@ -58,8 +58,9 @@ const appPaths = {
   "data-console": "DataConsole",
   "profile-cards": "ProfileCards",
   "smart-search": "SmartSearch",
-};
 
+};
+/* 
 const importApp = appName => {
   console.log("APP ", appName);
   return React.lazy(() =>
@@ -70,6 +71,17 @@ const importApp = appName => {
     }),
   );
 };
+ */
+
+const importApp = appName => {
+  console.log("APP ", appName);
+  return import("../pages/" + appName).catch((e) => {
+    console.log("IMPORT ERROR ", e);
+    //return import("./NotFoundPage");
+    return import("@prifina-apps/ui-lib").NotFoundPage;
+  })
+
+};
 
 const Content = ({
   Component,
@@ -78,8 +90,9 @@ const Content = ({
   listSystemNotificationsByDateQuery,
   coreApiClient,
   ...props
+
 }) => {
-  console.log("CONTENT ", props, activeUser, Component);
+  // console.log("CONTENT ", props, activeUser, Component);
   const userMenu = useUserMenu();
 
   const effectCalled = useRef(false);
@@ -98,13 +111,16 @@ const Content = ({
       };
       //console.log("User menu init ", userMenuInit);
       userMenu.show(userMenuInit);
+
     }
 
   }, [])
 
 
 
-  return <Component {...props} />;
+  return <React.Suspense fallback={"Loading ..."}>
+    <Component {...props} />
+  </React.Suspense>
 };
 
 Content.propTypes = {
@@ -129,12 +145,13 @@ const CoreApps = props => {
     console.log("NO PROPS CORE ", pathname, coreApp);
   }
 
-  const AppComponent = importApp(coreApp);
+  //const AppComponent = importApp(coreApp);
+  const AppComponent = useRef(null);
   console.log("IMPORT THIS ", coreApp);
 
   const { activeUser, getSystemNotificationCountQuery, updateUserActivityMutation,
     getAddressBookQuery, listAppMarketQuery, listDataSourcesQuery, listSystemNotificationsByDateQuery,
-    getPrifinaUser } = useStore(
+    getPrifinaUser, setAppsyncConfig } = useStore(
       state => ({
         activeUser: state.activeUser,
         getSystemNotificationCountQuery: state.getSystemNotificationCountQuery,
@@ -143,7 +160,8 @@ const CoreApps = props => {
         listAppMarketQuery: state.listAppMarketQuery,
         listDataSourcesQuery: state.listDataSourcesQuery,
         getPrifinaUser: state.getPrifinaUser,
-        listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery
+        listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery,
+        setAppsyncConfig: state.setAppsyncConfig
 
       }),
       shallow,
@@ -164,11 +182,22 @@ const CoreApps = props => {
   useEffect(() => {
     async function fetchData() {
       effectCalled.current = true;
+
+      const prifinaID = activeUser.uuid;
+
+      setAppsyncConfig({
+        aws_appsync_graphqlEndpoint: activeUser.endpoint,
+        aws_appsync_region: activeUser.region,
+        graphql_endpoint_iam_region: activeUser.region
+      })
+
       if (coreApp === "DisplayApp") {
-        const prifinaID = activeUser.uuid;
+
         const addressBookResult = await getAddressBookQuery({
           id: prifinaID,
         })
+
+        //const addressBookResult = await getAddressBookQuery(prifinaID);
 
         console.log("ADDRESSBOOK ", addressBookResult);
         if ((addressBookResult.data.getUserAddressBook?.addressBook) &&
@@ -177,11 +206,7 @@ const CoreApps = props => {
           JSON.parse(
             addressBookResult.data.getUserAddressBook.addressBook,
           ).forEach(user => {
-            addressBook.current[user.uuid] = {
-              name: user.name,
-              endpoint: user.endpoint,
-              region: user.region,
-            };
+            addressBook.current[user.id] = user.addressBook;
           });
         }
 
@@ -378,12 +403,12 @@ const CoreApps = props => {
 
         componentProps.current.widgetConfigData = data;
         componentProps.current.widgetViewSettings = viewSettings;
-        componentProps.current.prifinaID = prifinaID;
         componentProps.current.initials = prifinaUser?.appProfile?.initials;
         componentProps.current.dataSources = dataSources;
 
       }
 
+      componentProps.current.prifinaID = prifinaID;
       //uuid: currentUser.id,
       // notificationCount...
       const notificationCountResult = await getSystemNotificationCountQuery(
@@ -409,8 +434,12 @@ const CoreApps = props => {
         activeApp: coreApp
       });
 
+      importApp(coreApp).then(importedComponent => {
+        console.log("CORE APP IMPORT ", importedComponent);
+        AppComponent.current = importedComponent.default;
+        setAppReady(true)
+      })
 
-      setAppReady(true)
 
     }
     if (!effectCalled.current) {
@@ -710,35 +739,33 @@ const CoreApps = props => {
 
   console.log("ACTIVE USER ", activeUser, settingsReady);
 
+  // <React.Suspense fallback={"Loading ..."}> 
   return (
     <>
-      {appReady && coreApp === "DisplayApp" && (
+      {appReady && (coreApp === "DisplayApp") && (
         <PrifinaProvider
           stage={config.STAGE}
           Context={PrifinaContext}
           activeUser={activeUser}
           activeApp={coreApp}
         >
-          <React.Suspense fallback={"Loading ..."}>
-            <Content
-              Component={AppComponent}
-              {...componentProps.current}
-              activeUser={activeUser}
-            />
-          </React.Suspense>
+
+          <Content
+            Component={AppComponent.current}
+            {...componentProps.current}
+            activeUser={activeUser}
+          />
         </PrifinaProvider>
       )}
 
       {appReady && coreApp !== "DisplayApp" && (
-        <React.Suspense fallback={"Loading ..."}>
-          <ToastContextProvider>
-            <Content
-              Component={AppComponent}
-              {...componentProps.current}
-              activeUser={activeUser}
-            />
-          </ToastContextProvider>
-        </React.Suspense>
+        <ToastContextProvider>
+          <Content
+            Component={AppComponent.current}
+            {...componentProps.current}
+            activeUser={activeUser}
+          />
+        </ToastContextProvider>
       )}
       {!appReady && <div />}
     </>

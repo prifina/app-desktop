@@ -311,6 +311,7 @@ const UserMenuContextProvider = ({
   const notificationUpdates = useRef({});
 
   const subscriptionHandler = useRef(null);
+  //const effectCalled = useRef(false);
 
   //const menuEffectCalled = useRef(false);
 
@@ -426,10 +427,12 @@ const UserMenuContextProvider = ({
     }
   }, [isOpen]);
   useEffect(() => {
-
+    //if (!effectCalled.current) {
+    //effectCalled.current = true;
     root.current = document.createElement("div");
     root.current.id = portalId;
     document.body.appendChild(root.current);
+    // }
 
     return () => {
       if (root.current) document.body.removeChild(root.current);
@@ -477,12 +480,12 @@ const UserMenuContextProvider = ({
         console.log("CORE SUBSCRIBTION RESULTS ", res);
         onUpdate(1);
       });
-
-      const subsID = notificationUpdates.current["subscriptions"].subscribe(newSystemNotification, {
-        owner: options.prifinaID,
-      },);
-      console.log("NOTIFICATION ", subsID);
-      subscriptionHandler.current = subsID;
+      /* 
+            const subsID = notificationUpdates.current["subscriptions"].subscribe(newSystemNotification, {
+              owner: options.prifinaID,
+            },);
+            console.log("NOTIFICATION ", subsID);
+            subscriptionHandler.current = subsID; */
 
       //prifinaQraphQLHandler.current = menu.options.PrifinaGraphQLHandler;
       /*

@@ -73,7 +73,7 @@ const propTest = props => {
 };
 
 const AppMarket = ({ prifinaID, ...props }) => {
-  console.log("APP MARKET PROPS ", props);
+  console.log("APP MARKET PROPS ", prifinaID, props);
 
 
   const { __ } = useTranslate();
@@ -119,7 +119,7 @@ const AppMarket = ({ prifinaID, ...props }) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [showAppType, setShowAppType] = useState(4);
+  const [showAppType, setShowAppType] = useState(0);
 
   const [filteredWidgets, setFilteredWidgets] = useState({});
 
@@ -226,14 +226,29 @@ const AppMarket = ({ prifinaID, ...props }) => {
           });
         }
 
+        let iconAsset = `${manifest?.icon}`;
+        // let iconAsset = `${s3path}/${manifest?.id}/${manifest?.icon}`;
+        let screenshotAssets = manifest?.screenshots;
+
+        iconAsset = iconAsset.startsWith("assets/") ? iconAsset : "assets/" + iconAsset;
+
+        if (typeof screenshotAssets === "object" && screenshotAssets.length > 0) {
+          screenshotAssets.forEach((s, i) => {
+            screenshotAssets[i] = screenshotAssets[i].startsWith("assets/") ? screenshotAssets[i] : "assets/" + screenshotAssets[i]
+          })
+        }
+
+
+
         availableWidgets[item.id] = {
           appType: item.appType,
           title: item.title,
           installed: false,
           settings: defaultSettings,
           publisher: manifest?.publisher,
-          icon: `${s3path}/${manifest?.id}/${manifest?.icon}`,
-          bannerImage: `${s3path}/${manifest?.id}/${manifest?.bannerImage}`,
+          icon: [s3path, item.id, iconAsset].join("/"),
+          // bannerImage: `${s3path}/${manifest?.id}/${manifest?.bannerImage}`,
+          bannerImage: null,
           description: manifest?.description,
           shortDescription: manifest?.shortDescription,
           longDescription: manifest?.longDescription,
@@ -242,7 +257,7 @@ const AppMarket = ({ prifinaID, ...props }) => {
           deviceSupport: manifest?.deviceSupport,
           languages: manifest?.languages,
           age: manifest?.age,
-          screenshots: manifest?.screenshots,
+          screenshots: screenshotAssets,
           keyFeatures: manifest?.keyFeatures,
           userHeld: manifest?.userHeld,
           userGenerated: manifest?.userGenerated,
@@ -253,10 +268,7 @@ const AppMarket = ({ prifinaID, ...props }) => {
         };
 
         console.log("MANIFEST", manifest);
-        const screenshots = [
-          `${s3path}/${manifest?.id}/${manifest?.screenshots}`,
-        ];
-        console.log("sreenshots", screenshots);
+
       });
 
       console.log("AVAILABLE WIDGETS ", availableWidgets);
@@ -317,10 +329,14 @@ const AppMarket = ({ prifinaID, ...props }) => {
   const installWidget = (e, id, settings) => {
     console.log("CLICK ", id);
 
-    installWidgetMutation(prifinaID, {
-      id: id,
-      settings: settings,
-      index: -1,
+    //variables: { id: id, widget: widget },
+
+    installWidgetMutation({
+      "id": prifinaID, widget: {
+        id: id,
+        settings: settings,
+        index: -1,
+      }
     }).then(res => {
       console.log("INSTALL ", res);
 
@@ -547,7 +563,12 @@ const AppMarket = ({ prifinaID, ...props }) => {
   // };
 
   useEffect(() => {
-    handleFilter(showAppType);
+    //handleFilter(showAppType);
+    if (showAppType === 0) {
+      setFilteredWidgets(_.omitBy(widgets.current, { appType: 3 }));
+    } else {
+      setFilteredWidgets(_.pickBy(widgets.current, { appType: showAppType }));
+    }
   }, [showAppType]);
 
   // useEffect(() => {
@@ -780,15 +801,17 @@ const AppMarket = ({ prifinaID, ...props }) => {
             </Flex>
             {widgets.current[selectedWidgetIndex].appType !== 3 ? (
               <>
-                <Image
-                  src={widgets.current[selectedWidgetIndex].bannerImage}
-                  alt={"Image"}
-                  shape={"square"}
-                  style={{ filter: "blur(1.5px)" }}
-                />
+                {widgets.current[selectedWidgetIndex].bannerImage &&
+                  <Image
+                    src={widgets.current[selectedWidgetIndex].bannerImage}
+                    alt={"Image"}
+                    shape={"square"}
+                    style={{ filter: "blur(1.5px)" }}
+                  />
+                }
                 <Flex
                   alt="innerContainer"
-                  marginTop={-120}
+                  marginTop={0}
                   borderRadius="8px"
                   width="1026px"
                   height="auto"

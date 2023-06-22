@@ -46,12 +46,12 @@ export const updateNotificationStatus = `mutation updateStatus($notificationId: 
     updatedAt
   }
 }`;
-
+/*
 export const updateActivity = `mutation updateUserActivity($id: String!,$activeApp: String!) {
  
   updateActivity( id: $id,activeApp: $activeApp)
 }`;
-
+*/
 export const addWaiting = `mutation newWaiting($input: WaitingInput) {
   waiting(input: $input) {
     createdAt
@@ -138,6 +138,7 @@ export const updateSystemNotificationStatus = `mutation updateSystemNotification
     updatedAt
   }
 }`;
+
 
 export const updateUserActivity = `mutation updateUserActivity($id: String!,$activeApp: String!) {
  

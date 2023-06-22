@@ -173,12 +173,12 @@ const SidebarMenu = ({
   backgroundColor,
   ...props
 }) => {
-  console.log("SIDEBAR ", props);
+  console.log("SIDEBAR ", props, items);
   return (
     <SidebarContainer bg="baseWhite">
       <ListMenu {...props}>
         {items.map(
-          ({ id, label, onClick, icon, badgeText, disabled, ...rest }) => (
+          ({ id, label, onClick, IconImage, badgeText, disabled, ...rest }) => (
             <ListMenuItem
               key={label}
               onClick={onClick}
@@ -186,9 +186,9 @@ const SidebarMenu = ({
               style={
                 disabled
                   ? {
-                      pointerEvents: "none",
-                      opacity: 0.5,
-                    }
+                    pointerEvents: "none",
+                    opacity: 0.5,
+                  }
                   : null
               }
               pointerBackground={pointerBackground}
@@ -196,7 +196,7 @@ const SidebarMenu = ({
               pointerTextColor={pointerTextColor}
               {...rest}
             >
-              <ListItemIconLink icon={icon} label={label}>
+              <ListItemIconLink icon={IconImage} label={label}>
                 {badgeText ? (
                   <MenuBadge>
                     <Text fontSize="xs" style={{ color: "#f6ad55" }}>

@@ -137,7 +137,7 @@ UploadAsset.propTypes = {
   onFinish: PropTypes.func,
   S3Storage: PropTypes.object,
   updateUploaded: PropTypes.func,
-  imageState: PropTypes.string
+  imageState: PropTypes.bool
 };
 
 UploadAsset.displayName = "UploadAsset";

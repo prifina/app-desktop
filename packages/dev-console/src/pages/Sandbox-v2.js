@@ -121,11 +121,12 @@ const Sandbox = () => {
   console.log("APP ", app);
 
   const {
-    getAppVersionQuery, activeUser
+    getAppVersionQuery, activeUser, setAppsyncConfig
   } = useStore(
     state => ({
       activeUser: state.activeUser,
-      getAppVersionQuery: state.getAppVersionQuery
+      getAppVersionQuery: state.getAppVersionQuery,
+      setAppsyncConfig: state.setAppsyncConfig
     }),
     shallow,
   );
@@ -152,7 +153,12 @@ const Sandbox = () => {
     async function init() {
       effectCalled.current = true;
 
-      const appVersion = await getAppVersionQuery(app);
+      setAppsyncConfig({
+        aws_appsync_graphqlEndpoint: activeUser.endpoint,
+        aws_appsync_region: activeUser.region,
+        graphql_endpoint_iam_region: activeUser.region
+      })
+      const appVersion = await getAppVersionQuery({ id: app });
       appData.current = appVersion.data.getAppVersion;
       if (appData.current?.settings === undefined || appData.current.settings === null) {
         appData.current.settings = [];
@@ -228,7 +234,8 @@ const Sandbox = () => {
               value={{
                 updateDebug: updateDebugInfo,
                 appID: appData.current.id,
-                prifinaID: activeUser.uuid
+                prifinaID: activeUser.uuid,
+                remoteUrl: appData.current.remoteUrl
 
               }}
             >
@@ -244,13 +251,26 @@ const Sandbox = () => {
                 <SandboxHeader appData={{ appType: appData.current.appType, appName: appData.current.name, selectedSize: "300x300" }} sandboxTheme={sandboxTheme} setSandboxTheme={setSandboxTheme} setContainerSize={setContainerSize} />
 
                 <MainContainer flexWrap={"wrap"} >
-                  {containerSize !== "" &&
+                  {appData.current.appType === 2 &&
+                    containerSize !== "" &&
                     <MarginContainer flexWrap={"wrap"} width={parseInt(containerSize.split("x")[0]) + 100} height={parseInt(containerSize.split("x")[1]) + 100}>
                       <StyledContainer sandboxtheme={sandboxTheme} width={parseInt(containerSize.split("x")[0]) + (containerBorderWidth * 2)} height={parseInt(containerSize.split("x")[1]) + (containerBorderWidth * 2)}>
 
                         {/*  HERE REMOTE COMPONENT */}
                         <SandboxContent />
                       </StyledContainer>
+                    </MarginContainer>
+
+                  }
+                  {appData.current.appType === 1 &&
+                    <MarginContainer flexWrap={"wrap"} width={"100%"} height={"100%"}>
+                      <SandboxContent ref={(ref) => {
+                        if (ref) {
+                          // console.log("REMOTE REF ", ref);
+                          // console.log("REMOTE REF STYLE ", ref.style);
+                          ref.style.height = "100%";
+                        }
+                      }} />
                     </MarginContainer>
                   }
 

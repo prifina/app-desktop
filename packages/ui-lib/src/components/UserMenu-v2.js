@@ -10,7 +10,7 @@ const prod = {
   DEV_URL: process.env.REACT_APP_ALPHA_APP_STUDIO,
 };
 const dev = {
-  APP_URL: "http://localhost:3000/home",
+  APP_URL: "http://localhost:3000",
   DEV_URL: "http://localhost:3001",
 };
 
@@ -32,7 +32,7 @@ const withUsermenu = () => WrappedComponent => {
         console.log("LOGOUT...");
         try {
           setLogout(true);
-
+          window.location.replace("/logout");
           //userAuth(false);
         } catch (e) {
           console.log("error signing out: ", e);
@@ -48,7 +48,8 @@ const withUsermenu = () => WrappedComponent => {
         onExit={logOut}
         onHome={() => {
           console.log("HOME CLICK...");
-          window.location.replace(config.APP_URL); // browser-back is / (home)
+          window.location.replace("/");
+          // window.location.replace(config.APP_URL); // browser-back is / (home)
         }}
         onHelp={() => {
           console.log("HELP CLICK...");

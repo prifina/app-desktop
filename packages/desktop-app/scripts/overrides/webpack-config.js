@@ -112,8 +112,19 @@ const override = config => {
   };
   */
 
-  config.output.clean = true;
+  //config.output.clean = true;
   // seems babel 9 & webpack5 requires this babel-loader... 
+  /* 
+    config.module.rules.push({
+      // Test for a polyfill (or any file) and it won't be included in your
+      // bundle
+      //test: path.resolve(__dirname, 'node_modules/library/polyfill.js'),
+      test: /\.(tro|1js)$/,
+      use: 'null-loader',
+    });
+   */
+
+  /* 
   config.module.rules = [
     {
       // Test for a polyfill (or any file) and it won't be included in your
@@ -131,13 +142,7 @@ const override = config => {
     {
       test: /\.m?js$/,
       exclude: [/node_modules/],
-      /*
-      exclude: babelLoaderExcludeNodeModulesExcept([
-        '@dynamic-data/oura-mockups'
-      ]),
-       
-      */
-      //exclude: [excludeThis],
+   
       loader: 'babel-loader',
       options: {
         presets: [
@@ -147,18 +152,20 @@ const override = config => {
 
     }
 
-  ]
-  /*
-    config.module = {
-      rules: [{
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        }
-      }]
-    };
-    */
+  ] */
+
+  // config.module = {
+  //   rules: [{
+  //     test: /\.js$/,
+  //     exclude: /node_modules/,
+  //     use: {
+  //       loader: 'babel-loader',
+  //     }
+  //   }]
+  // };
+
+  //config.resolve.alias['/\.(tro|1js)$/'] = false;
+
 
   //console.log("WEBPACK ", JSON.stringify(config));
   return config;

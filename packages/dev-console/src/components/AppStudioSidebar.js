@@ -12,8 +12,8 @@ import { useTranslate } from "@prifina-apps/utils";
 import PropTypes from "prop-types";
 
 const SidebarContainer = styled(Flex)`
-  width: 270px;
-  /* height: 100%; */
+  width: 288px;
+  height: 100%; 
   z-index: 1;
   padding-left: 44px;
   padding-right: 24px;
@@ -22,7 +22,7 @@ const SidebarContainer = styled(Flex)`
   /* border-radius: 0 40px -40px 0; */
   display: inline-block;
   vertical-align: middle;
-  margin-right: 10px;
+/*   margin-right: 10px; */
   border-right: 1px solid #343233;
 
   /*

@@ -303,7 +303,7 @@ const Login = () => {
       if (
         (appDebug && user.preferredMFA === "NOMFA") ||
         (process.env.REACT_APP_STAGE === "dev" &&
-          username === "test-user")
+          (username === "test-user" || username === "test-user2"))
       ) {
         setAuthStatus(true);
         //history.replace("/home");

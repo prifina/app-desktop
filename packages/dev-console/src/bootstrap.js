@@ -29,8 +29,9 @@ let AUTHConfig = {
 
 const APIConfig = {
   aws_appsync_graphqlEndpoint: config.appSync.aws_appsync_graphqlEndpoint,
-  aws_appsync_region: config.main_region,
-  aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
+  aws_appsync_region: config.auth_region,
+  aws_appsync_authenticationType: "AMAZON_COGNITO_USER_POOLS"
+  //aws_appsync_authenticationType: config.appSync.aws_appsync_authenticationType,
 };
 
 let CoreGraphQLApi;
@@ -60,7 +61,7 @@ if (process.env.REACT_APP_MOCKUP_CLIENT === "true") {
 
 const CoreApiClient = new CoreGraphQLApi({ config: APIConfig });
 const AuthClient = new AUTHClient({ AuthConfig: AUTHConfig });
-const UserApiClient = new AppSyncClient({ AppSyncConfig: APIConfig })
+const UserApiClient = new AppSyncClient()
 const S3StorageClient = new S3Storage({ S3Config: { bucket: config.S3.bucket, region: config.S3.region } })
 
 

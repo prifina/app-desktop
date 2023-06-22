@@ -137,7 +137,7 @@ const Projects = ({ currentUser }) => {
     async function fetchData() {
       effectCalled.current = true;
       const apps = await listAppsQuery({
-        filter: { prifinaId: { eq: currentUser.uuid } },
+        filter: { prifinaId: { eq: currentUser.uuid } }, limit: 100
       });
       const projectList = apps.data.listApps.items;
       setAppList(projectList);

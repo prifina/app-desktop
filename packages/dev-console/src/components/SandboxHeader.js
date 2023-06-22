@@ -11,6 +11,7 @@ import bxMoon from "@iconify/icons-bx/moon";
 
 import styled, { keyframes } from "styled-components";
 
+import { useNavigate, } from "react-router-dom";
 const breatheAnimation = keyframes`
 0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
 50% {opacity: 1.0;}
@@ -96,6 +97,8 @@ const SandboxHeader = ({ appData, sandboxTheme, setSandboxTheme, setContainerSiz
   //<Box height={`calc(100vh - 270px)`} >
   const { colors } = useTheme();
 
+  const navigate = useNavigate();
+
   const validUrl = true;
   const validSizes = ['300x300', '600x600', '300x600', '600x300'];
   return <>
@@ -116,7 +119,7 @@ const SandboxHeader = ({ appData, sandboxTheme, setSandboxTheme, setContainerSiz
             style={{ cursor: "pointer" }}
             onClick={() => {
               //history.goBack();
-              //navigate(-1);
+              navigate(-1);
             }}
           />
           <Text ml={16} mr={100}>

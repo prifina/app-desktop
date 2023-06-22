@@ -67,9 +67,11 @@ function saveViewSettings(updateUser, uuid, viewSettings, widgetSettings = []) {
   console.log("SAVE SETTINGS ", viewSettings, widgetSettings);
 
   const vars = {
-    id: uuid,
-    viewSettings: JSON.stringify(viewSettings),
-  }
+    input: {
+      id: uuid,
+      viewSettings: JSON.stringify(viewSettings),
+    }
+  };
   if (widgetSettings.length > 0) {
     vars.installedWidgets = JSON.stringify(widgetSettings)
   }

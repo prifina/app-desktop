@@ -1,10 +1,10 @@
 /* global localStorage */
 
-import React, { useEffect, useReducer, useState, useRef } from "react";
+import React, { useEffect, useReducer, useState, useRef, createContext, } from "react";
 
 import { CssGrid, CssCell } from "@blend-ui/css-grid";
 
-import { Box } from "@blend-ui/core";
+import { Box, Flex } from "@blend-ui/core";
 /*
 import gql from "graphql-tag";
 
@@ -53,6 +53,11 @@ import { useStore, useGraphQLContext } from "@prifina-apps/utils";
 //import withUsermenu from "../utils-v2/components/UserMenu-v2";
 import { useUserMenu, withUsermenu } from "@prifina-apps/ui-lib";
 
+import UserAppIcon from "../components/UserAppIcon";
+
+export const SmartContext = createContext(null);
+
+import SmartBar from "../components/SmartBar";
 import PropTypes from "prop-types";
 
 const array_chunks = (array, chunk_size) =>
@@ -61,12 +66,48 @@ const array_chunks = (array, chunk_size) =>
     .map((_, index) => index * chunk_size)
     .map(begin => array.slice(begin, begin + chunk_size));
 
-const Content = ({ installedAppIcons, gridCols, prifinaApps }) => {
+const Content = ({ installedAppIcons, gridCols, prifinaApps, dataProps, AIQuery, AIDataQuery, googleSearch, UserApiClient }) => {
   const navigate = useNavigate();
   console.log("HOME APPS ", prifinaApps);
+  const [containerOpen, setContainerOpen] = useState(0);
   return (
-    <StyledBox>
-      <PrifinaLogo />
+    <StyledBox onClick={(e) => {
+      //console.log("HOME CLICK ", e.target)
+      const searchBox = document.getElementById('smart-input');
+
+      if (!searchBox.contains(e.target) && e.target !== searchBox) {
+        console.log('You clicked outside the box! ', searchBox.scrollHeight);
+        if (searchBox.scrollHeight > 33) {
+          setContainerOpen(prev => prev + 1);
+        } else {
+          setContainerOpen(0);
+        }
+
+      } else {
+        console.log('You clicked inside the box! ', searchBox.scrollHeight);
+        /* 
+        if (searchBox.scrollHeight > 33) {
+          setContainerOpen(true);
+        } else {
+          setContainerOpen(false);
+        }
+ */
+      }
+    }} >
+      <Flex>
+        <PrifinaLogo pl={10} />
+        <SmartContext.Provider
+          value={{
+            dataProps,
+            AIDataQuery,
+            AIQuery,
+            googleSearch,
+            UserApiClient
+          }}
+        >
+          <SmartBar containerStatus={containerOpen} />
+        </SmartContext.Provider>
+      </Flex>
       <StyledBackground id="home-styledBackground">
 
         <Box m={8} mt={77} style={{ zIndex: 3 }}>
@@ -86,7 +127,8 @@ const Content = ({ installedAppIcons, gridCols, prifinaApps }) => {
                           "APP CLICK ",
                           prifinaApps[appIcon.name].route,
                         );
-                        navigate("/" + prifinaApps[appIcon.name].route, { replace: true });
+                        //navigate("/" + prifinaApps[appIcon.name].route, { replace: true });
+                        navigate("/" + prifinaApps[appIcon.name].route);
 
                       }}
                     >
@@ -105,8 +147,15 @@ const Content = ({ installedAppIcons, gridCols, prifinaApps }) => {
 Content.propTypes = {
   installedAppIcons: PropTypes.array,
   gridCols: PropTypes.string,
-  prifinaApps: PropTypes.object
+  prifinaApps: PropTypes.object,
+  dataProps: PropTypes.object,
+  AIDataQuery: PropTypes.func,
+  AIQuery: PropTypes.func,
+  googleSearch: PropTypes.func,
+  UserApiClient: PropTypes.object
+
 };
+
 
 const Home = props => {
 
@@ -115,7 +164,8 @@ const Home = props => {
 
   const { user, getPrifinaUserQuery, updateUserProfileMutation,
     setAppsyncConfig, listAppMarketQuery, getSystemNotificationCountQuery, updateUserActivityMutation,
-    setActiveUser, setPrifinaUser, listSystemNotificationsByDateQuery } = useStore(
+    setActiveUser, setPrifinaUser, listSystemNotificationsByDateQuery,
+    listDataconnectorsQuery, listDatasourceQuestionsQuery, getAIDataQuery, getAIQuery, googleSearch } = useStore(
       state => ({
         user: state.user,
 
@@ -127,7 +177,13 @@ const Home = props => {
         updateUserActivityMutation: state.updateUserActivityMutation,
         setActiveUser: state.setActiveUser,
         setPrifinaUser: state.setPrifinaUser,
-        listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery
+        listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery,
+        listDatasourceQuestionsQuery: state.listDatasourceQuestionsQuery,
+        listDataconnectorsQuery: state.listDataconnectorsQuery,
+        getAIDataQuery: state.getAIDataQuery,
+        getAIQuery: state.getAIQuery,
+        googleSearch: state.googleSearch,
+
       }),
       shallow,
     );
@@ -138,6 +194,7 @@ const Home = props => {
 
   //const activeUser = useRef({});
   const prifinaApps = useRef({});
+  const dataProps = useRef({});
 
   const [state, setState] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -182,7 +239,10 @@ const Home = props => {
       let appProfile = JSON.parse(
         currentUser.appProfile,
       );
-
+      let userInstalledApps = [];
+      if (currentUser?.userInstalledApps !== undefined) {
+        userInstalledApps = JSON.parse(currentUser.userInstalledApps);
+      }
 
       let clientEndpoint = "";
       let clientRegion = "";
@@ -266,11 +326,21 @@ const Home = props => {
 
       userMenu.show(userMenuInit);
       /*
-      
-
       userMenu.setClientHandler(clientHandler);
       userMenu.setActiveUser(activeUser);
       */
+
+      //const dataConnectors = await listDataconnectorsQuery({ limit: 100 });
+      //const dataSourceQuestions = await listDatasourceQuestionsQuery({ owner: currentUser.id, limit: 100 });
+
+
+      dataProps.current = {
+        //dataConnectors: dataConnectors.data.listDataconnectors.items,
+        //dataSourceQuestions: dataSourceQuestions.data.listDatasourceQuestions.items,
+        prifinaID: currentUser.id
+
+      };
+
       const updateRes = await updateUserActivityMutation({
         id: currentUser.id,
         activeApp: "Home",
@@ -281,11 +351,41 @@ const Home = props => {
       const appImports = installedAppsJSON.map(app => {
         return import(`../components/${app}Icon`);
       });
+      //const AppIcon = ({ title, icon, ...props }) => {
+      //const userApps = [{ id: "cw9aphqcofZkv8pCE9nE181", name: "CapyChat" }].map(m => {
+      const userApps = userInstalledApps.map(m => {
+        return new Promise(function (resolve, reject) {
+          // app name should be unique, but use app id instead...
+          prifinaApps.current[m.id] = { route: "app/" + m.name }
+          resolve(<UserAppIcon title={m.name} app-id={m.id} name={m.name} />)
+        });
+      })
 
-      Promise.all(appImports).then(components => {
-        //console.log("COMPONENT ", components);
+      Promise.all([appImports, userApps].flat(1)).then(components => {
+        //console.log("COMPONENTS ", components);
         const appComponents = components.map((Component, i) => {
+          //console.log("COMPONENT ", Component, typeof Component);
+          //console.log("COMPONENT ", Component.default);
+          // console.log("COMPONENT ", Component);
+          if (typeof Component.default !== "undefined") {
+            return {
+              component: (
+                <div key={"app-" + i}>
+                  <Component.default />
+                </div>
+              ),
+              name: Component.default.displayName,
+            };
+          } else {
+            //console.log("PROPS ", Component.props)
+            return {
+              component: Component,
+              name: Component.props['app-id']
+            }
+          }
+
           //console.log("COMPONENT NAME ", Component.default.displayName);
+          /*
           return {
             component: (
               <div key={"app-" + i}>
@@ -294,9 +394,10 @@ const Home = props => {
             ),
             name: Component.default.displayName,
           };
+          */
         });
 
-        //console.log("IMPORT APP ICONS...", appComponents);
+        console.log("IMPORT APP ICONS...", appComponents);
         setState({ loadingStatus: false, appIcons: appComponents });
       });
 
@@ -348,6 +449,8 @@ const Home = props => {
   }
   */
   // console.log("APPS ", prifinaApps.current);
+
+  //console.log("HOME USER CLIENT", UserApiClient);
   return (
     <>
       {!loadingStatus && (
@@ -355,6 +458,12 @@ const Home = props => {
           installedAppIcons={installedAppIcons}
           gridCols={gridCols}
           prifinaApps={prifinaApps.current}
+          dataProps={dataProps.current}
+          AIDataQuery={getAIDataQuery}
+          AIQuery={getAIQuery}
+          googleSearch={googleSearch}
+          UserApiClient={UserApiClient}
+
         />
       )}
       {loadingStatus && <div />}

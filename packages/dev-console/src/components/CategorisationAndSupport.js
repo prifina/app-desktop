@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import {
   Box,
@@ -28,6 +28,22 @@ const CategorizationAndSupportDetails = ({ inputRefs, inputState, fields, option
     e.preventDefault();
 
   }
+
+  const effectCalled = useRef(false);
+
+  useEffect(() => {
+    if (!effectCalled.current) {
+      effectCalled.current = true;
+      appCategory.unshift("Choose a category");
+      ageAppropriate.unshift("Choose age category");
+    }
+
+  }, [])
+
+
+  const defaultCategory = options.defaults.category();
+
+  const defaultAge = options.defaults.age();
 
   return <InnerContainer>
     <Text style={{ textTransform: "uppercase" }} mb={5}>
@@ -82,10 +98,13 @@ const CategorizationAndSupportDetails = ({ inputRefs, inputState, fields, option
         <CustomSelect
           name={fields["category"]}
           id={fields["category"]}
+          /*
           defaultValue={() => {
             const defaultCategory = options.defaults.category();
+            console.log("DEFAULT ", defaultCategory)
             return defaultCategory === "" ? "Choose a category" : defaultCategory
           }}
+          */
           showList={true}
           width={"150px"}
           ref={(ref) => {
@@ -99,10 +118,13 @@ const CategorizationAndSupportDetails = ({ inputRefs, inputState, fields, option
               checkEntry(e);
             }
           }}
+          defaultValue={defaultCategory || ""}
         >
-          {appCategory.map((item, index) => (
-            <option key={index}>{item}</option>
-          ))}
+          {appCategory.map((item, index) => {
+            //console.log(defaultCategory, item, defaultCategory === item);
+            //selected={`${defaultCategory === item ? "selected" : ""}`}
+            return <option key={index} value={item}  >{item}</option>
+          })}
         </CustomSelect>
       </Box>
       <Box>
@@ -122,10 +144,11 @@ const CategorizationAndSupportDetails = ({ inputRefs, inputState, fields, option
         <CustomSelect
           name={fields["age"]}
           id={fields["age"]}
+          /* 
           defaultValue={() => {
             const defaultCategory = options.defaults.age();
             return defaultCategory === "" ? "Choose age category" : defaultCategory
-          }}
+          }} */
 
           showList={true}
           width={"150px"}
@@ -140,9 +163,10 @@ const CategorizationAndSupportDetails = ({ inputRefs, inputState, fields, option
               checkEntry(e);
             }
           }}
+          defaultValue={defaultAge || ""}
         >
           {ageAppropriate.map((item, index) => (
-            <option key={index}>{item}</option>
+            <option key={index} value={item}  >{item}</option>
           ))}
         </CustomSelect>
       </Box>

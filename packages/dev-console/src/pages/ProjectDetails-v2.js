@@ -14,6 +14,8 @@ import {
   useTheme,
 } from "@blend-ui/core";
 
+import { useToast } from "@blend-ui/toast";
+
 
 // remove this later...
 //import { ToastContextProvider } from "@blend-ui/toast";
@@ -109,6 +111,7 @@ export const CustomSelect = styled.select`
 `;
 
 
+let timer;
 
 export function useTagInputValues(initialState, cb) {
   const [list, setList] = useState(initialState);
@@ -128,6 +131,8 @@ const ProjectDetails = props => {
   const navigate = useNavigate();
   const { __ } = useTranslate();
 
+  const toast = useToast();
+
 
   const { pathname } = useLocation();
 
@@ -135,6 +140,7 @@ const ProjectDetails = props => {
   //console.log("PATH", pathname);
   const inputRefs = useRef({});
   const modifiedRefs = useRef({});
+  const changedRefs = useRef([]);
   //const [appType, setAppType] = useState(2);
 
   const [loading, setLoading] = useState(true);
@@ -162,8 +168,8 @@ const ProjectDetails = props => {
   const effectCalled = useRef(false);
 
   const sandboxArgs = {
-    id: "remoteUrl",
-    name: "remoreUrl",
+    id: "p-remoteUrl",
+    name: "p-remoreUrl",
     ref: useRef(),
     options: {
       value: () => {
@@ -173,6 +179,10 @@ const ProjectDetails = props => {
     },
     inputState: (input, validation = false) => {
       console.log("INPUT STATE UPDATE", input);
+      console.log("STATE UPDATE", input);
+      console.log("STATE UPDATE", input.id);
+      console.log("STATE UPDATE", input.value);
+      inputRefs.current[input.id].value = input.value;
       /*
       console.log("USER", inputRefs?.username);
       if (typeof input !== 'undefined') {
@@ -266,6 +276,7 @@ const ProjectDetails = props => {
     options: {
       defaults: {
         dataSources: () => {
+          console.log("DATASOURCES ", inputRefs.current);
           return inputRefs.current['p-dataSources'].value;
         },
 
@@ -281,15 +292,16 @@ const ProjectDetails = props => {
     }
   }
   const checkChanged = () => {
-    console.log("INPUT ", inputRefs.current);
-    console.log("MOD ", JSON.stringify(modifiedRefs.current));
+    //console.log("INPUT ", inputRefs.current);
+    //console.log("MOD ", JSON.stringify(modifiedRefs.current));
     //console.log("CUR ", currentProject);
 
-
+    //
+    console.log("CHECK CHANGED --->");
     const keys = Object.keys(inputRefs.current);
     if (keys.length > 0) {
       const check = keys.some(k => {
-        console.log("CHECKING --->", new Date(), k, inputRefs.current[k].value, modifiedRefs.current);
+        //console.log("CHECKING --->", new Date(), k, inputRefs.current[k].value, modifiedRefs.current[k].value);
         // console.log("CHECKING2 --->", test);
         /*
         if (modifiedRefs.current?.[k] === undefined) {
@@ -302,6 +314,7 @@ const ProjectDetails = props => {
 
           console.log("CHANGED --->", k, inputRefs.current[k].value, modifiedRefs.current[k]);
           modifiedRefs.current = JSON.parse(JSON.stringify(inputRefs.current));
+          changedRefs.current.push(k);
           setIsChanged((prev) => prev + 1);
           return true;
         } else {
@@ -312,12 +325,12 @@ const ProjectDetails = props => {
 
   }
   useEffect(() => {
-    let timer;
+
 
     async function initDetails() {
       effectCalled.current = true;
 
-      const appVersion = await getAppVersionQuery(appID);
+      const appVersion = await getAppVersionQuery({ id: appID });
       //console.log("RESULT ", result)
       //const currentApp = result.data.getAppVersion;
       ['status', 'name', 'appType', 'remoteUrl', 'nextVersion', 'id',
@@ -331,6 +344,9 @@ const ProjectDetails = props => {
           } else if (["dataSources", "userGenerated", "public", "userHeld", "keyFeatures"].indexOf(fld) !== -1 && (data?.[fld] === undefined || data[fld] === null)) {
             // just empty array..
             inputRefs.current['p-' + fld] = { value: [] };
+          } else if (fld === "dataSources") {
+            // this is AWSJSON type... 
+            inputRefs.current['p-' + fld] = { value: JSON.parse(data[fld]) };
           } else {
             inputRefs.current['p-' + fld] = { value: data[fld] };
           }
@@ -362,6 +378,7 @@ const ProjectDetails = props => {
       */
 
       //modifiedRefs.current = Object.assign({}, inputRefs.current);
+      console.log("MOD INIT ");
       modifiedRefs.current = JSON.parse(JSON.stringify(inputRefs.current));
       //sandboxArgs.options.value = "https://something.qqq";
       //modifiedRefs.current['p-appType'] = { value: prifinaAppTypes.WIDGET };
@@ -382,7 +399,7 @@ const ProjectDetails = props => {
         }
       })
       setLoading(false);
-      //timer = setInterval(checkChanged, 5000);
+      timer = setInterval(checkChanged, 5000);
 
     }
 
@@ -390,128 +407,157 @@ const ProjectDetails = props => {
       initDetails();
     }
     return () => {
-
-      if (timer && effectCalled.current) {
+      //console.log("EFFECT RETURN.... ", timer, timer === undefined);
+      if (timer) {
         //console.log("TIMER CLEARED --->", effectCalled, timer)
-        //clearInterval(timer);
+        clearInterval(timer);
       }
     };
   }, [appID]);
 
   const deleteApp = () => {
 
-    deleteAppVersionMutation(inputRefs.current['p-id']).then(res => {
+    deleteAppVersionMutation({ id: inputRefs.current['p-id'].value }).then(res => {
       console.log("DELETED ", inputRefs.current);
-      navigate("/app/projects", { replace: true })
+      navigate("/projects", { replace: true })
     });
   };
 
   const publishApp = () => {
 
-    updateAppVersionMutation({ id: inputRefs.current['p-id'], status: 1 }).then(res => {
+    updateAppVersionMutation({ id: inputRefs.current['p-id'].value, status: 1 }).then(res => {
       console.log("PUBLISHED ", inputRefs.current);
-      navigate("/app/projects", { replace: true })
+      navigate("/projects", { replace: true })
     });
   };
+
+  const updateApp = () => {
+
+    console.log("UPDATE APP ", changedRefs.current);
+    const updateThis = { id: inputRefs.current['p-id'].value };
+    if (changedRefs.current.length > 0) {
+      changedRefs.current.forEach(k => {
+        const key = k.substring(2);
+        if (key === "dataSources") {
+          updateThis[key] = JSON.stringify(inputRefs.current[k].value);
+        } else {
+          updateThis[key] = inputRefs.current[k].value
+        }
+
+
+      });
+      console.log("UPDATE APP ", updateThis);
+
+      updateAppVersionMutation(updateThis).then(res => {
+        console.log("UPDATED... ", res);
+        changedRefs.current = [];
+        setIsChanged(0);
+        toast.success(inputRefs.current['p-name'].value + " updated...", {});
+      });
+    }
+
+  }
 
   return (
     <>
       {!loading && <>
-
-        <Box>
-          <ActionContainer
-            mt={10}
-            mb={24}
-            style={{
-              top: 65,
-              position: "sticky",
-              outline: 2,
-              boxShadow: `0px 15px 20px ${colors.basePrimary}`,
-            }}
-          >
-            <CustomShape bg="brandAccent" />
-            <Flex alignItems="center">
-              <BlendIcon
-                style={{ cursor: "pointer" }}
-                color={colors.textPrimary}
-                iconify={mdiArrowLeft}
-                width="24px"
-                onClick={() => {
-                  navigate(-1);
-                }}
-              />
-              <Input
-                style={{ marginLeft: 8 }}
-                width="200px"
-                id="p-name"
-                name="p-name"
-                defaultValue={inputRefs.current['p-name']?.value || ""}
-                ref={(ref) => {
-                  if (ref) {
-                    appRef.current = ref;
-                  }
-                }}
-                onBlur={(e) => {
-                  inputRefs.current['p-name'].value = appRef.current.value;
-                }}
-                onKeyDown={e => {
-                  if (e.key === "Enter") {
+        <Box style={{ minHeight: "100vh", height: "100%", background: "#1E1D1D" }}>
+          <Box>
+            <ActionContainer
+              mt={10}
+              mb={24}
+              style={{
+                top: 65,
+                position: "sticky",
+                outline: 2,
+                boxShadow: `0px 15px 20px ${colors.basePrimary}`,
+              }}
+            >
+              <CustomShape bg="brandAccent" />
+              <Flex alignItems="center">
+                <BlendIcon
+                  style={{ cursor: "pointer" }}
+                  color={colors.textPrimary}
+                  iconify={mdiArrowLeft}
+                  width="24px"
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                />
+                <Input
+                  style={{ marginLeft: 8 }}
+                  width="200px"
+                  id="p-name"
+                  name="p-name"
+                  defaultValue={inputRefs.current['p-name']?.value || ""}
+                  ref={(ref) => {
+                    if (ref) {
+                      appRef.current = ref;
+                    }
+                  }}
+                  onBlur={(e) => {
                     inputRefs.current['p-name'].value = appRef.current.value;
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      inputRefs.current['p-name'].value = appRef.current.value;
 
-                  }
-                }}
-              />
-              <Flex ml={16}>
-                <Flex flexDirection="row" alignItems="center" mr="20px">
-                  <Flex flexDirection="row" alignItems="center" mr="15px">
-                    <Radio
-                      fontSize="8px"
-                      onChange={() => { }}
-                      onClick={() => {
-                        //inputRefs['p-appType'].value = prifinaAppTypes.APP;
-                        inputRefs.current['p-appType'] = { value: prifinaAppTypes.APP };
-                        //setState({ ['p-appType']: prifinaAppTypes.APP });
-                      }}
-                      checked={inputRefs.current['p-appType'].value === prifinaAppTypes.APP ? "checked" : null}
-                    />
-                    <Text fontSize="xs">{__("application")}</Text>
-                  </Flex>
-                  <Flex flexDirection="row" alignItems="center">
-                    <Radio
-                      fontSize="10px"
-                      onChange={() => { }}
-                      onClick={() => {
-                        //inputRefs['p-appType'].value = prifinaAppTypes.WIDGET;
-                        inputRefs.current['p-appType'] = { value: prifinaAppTypes.WIDGET };
-                        //setState({ ['p-appType']: prifinaAppTypes.WIDGET })
-                      }}
-                      checked={inputRefs.current['p-appType'].value === prifinaAppTypes.WIDGET ? "checked" : null}
-                    />
-                    <Text fontSize="xs">{__("widget")}</Text>
+                    }
+                  }}
+                />
+                <Flex ml={16}>
+                  <Flex flexDirection="row" alignItems="center" mr="20px">
+                    <Flex flexDirection="row" alignItems="center" mr="15px">
+                      <Radio
+                        fontSize="8px"
+                        onChange={() => { }}
+                        onClick={() => {
+                          //inputRefs['p-appType'].value = prifinaAppTypes.APP;
+                          inputRefs.current['p-appType'] = { value: prifinaAppTypes.APP };
+                          //setState({ ['p-appType']: prifinaAppTypes.APP });
+                        }}
+                        checked={inputRefs.current['p-appType'].value === prifinaAppTypes.APP ? "checked" : null}
+                      />
+                      <Text fontSize="xs">{__("application")}</Text>
+                    </Flex>
+                    <Flex flexDirection="row" alignItems="center">
+                      <Radio
+                        fontSize="10px"
+                        onChange={() => { }}
+                        onClick={() => {
+                          //inputRefs['p-appType'].value = prifinaAppTypes.WIDGET;
+                          inputRefs.current['p-appType'] = { value: prifinaAppTypes.WIDGET };
+                          //setState({ ['p-appType']: prifinaAppTypes.WIDGET })
+                        }}
+                        checked={inputRefs.current['p-appType'].value === prifinaAppTypes.WIDGET ? "checked" : null}
+                      />
+                      <Text fontSize="xs">{__("widget")}</Text>
+                    </Flex>
                   </Flex>
                 </Flex>
               </Flex>
-            </Flex>
-            <Button onClick={checkChanged}>Save</Button>
-            <div style={{ color: "white" }}>{isChanged > 0 ? "CHANGED " + isChanged : ""}</div>
-          </ActionContainer>
+              <Button disabled={!isChanged} onClick={updateApp}>Save</Button>
+              {/* 
+              <div style={{ color: "white" }}>{isChanged > 0 ? "CHANGED " + isChanged : ""}</div>
+              */}
+            </ActionContainer>
+          </Box>
+          <Box>
+            <SandboxDetails {...sandboxArgs} />
+          </Box>
+          <Box>
+            <ApplicationPackageDetails {...applicationPackageArgs} S3Storage={S3Storage} />
+          </Box>
+
+          <MarketPlaceListingDetails {...marketPlaceListingArgs} S3Storage={S3Storage} />
+
+          <DataSourcesSurvey {...dataSourcesArgs} publicDatasources={dataSources.current.public} prifinaDatasources={dataSources.current.prifina} />
+
+          <DeleteProject deleteApp={deleteApp} appName={inputRefs.current['p-name'].value} />
+
+          <PublishProject publishApp={publishApp} appData={{ id: inputRefs.current['p-status'].value, name: inputRefs.current['p-name'].value }} />
+
         </Box>
-        <Box>
-          <SandboxDetails {...sandboxArgs} />
-        </Box>
-        <Box>
-          <ApplicationPackageDetails {...applicationPackageArgs} />
-        </Box>
-
-        <MarketPlaceListingDetails {...marketPlaceListingArgs} S3Storage={S3Storage} />
-
-        <DataSourcesSurvey {...dataSourcesArgs} publicDatasources={dataSources.current.public} prifinaDatasources={dataSources.current.prifina} />
-
-        <DeleteProject deleteApp={deleteApp} appName={inputRefs.current['p-name'].value} />
-
-        <PublishProject publishApp={publishApp} appData={{ id: inputRefs.current['p-status'].value, name: inputRefs.current['p-name'].value }} />
-
-
       </>
       }
     </>

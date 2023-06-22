@@ -30,8 +30,8 @@ const ImageZoomContainer = styled(Image)`
 
 const ImageZoom = ({ src }) => {
   console.log("ZOOM IMAGE ", src);
-  return (
-    <ImageZoomContainer
+  return <>
+    {src && <ImageZoomContainer
       src={src}
       height="150px"
       onError={e => (e.target.style.display = "none")}
@@ -39,7 +39,10 @@ const ImageZoom = ({ src }) => {
         window.open(src);
       }}
     />
-  );
+    }
+    {!src && null}
+  </>
+
 };
 
 ImageZoom.propTypes = {

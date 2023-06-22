@@ -194,6 +194,7 @@ const EmailVerification = ({ invalidLink, backClick, verifyClick, resendClick, .
 };
 
 EmailVerification.propTypes = {
+
   invalidLink: PropTypes.string.isRequired,
   backClick: PropTypes.func.isRequired,
   verifyClick: PropTypes.func.isRequired,

@@ -31,28 +31,88 @@ const Projects = React.lazy(() => import("../components/Projects"));
 const ProjectDetails = React.lazy(() => import("./ProjectDetails-v2"));
 
 //import Projects from "../components/Projects";
-import { withUsermenu } from "@prifina-apps/ui-lib";
+import { useUserMenu, withUsermenu } from "@prifina-apps/ui-lib";
+
 
 import PropTypes from "prop-types";
 
+/*
+const userMenu = useUserMenu();
+
+const effectCalled = useRef(false);
+
+useEffect(() => {
+  if (!effectCalled.current) {
+    effectCalled.current = true;
+    const userMenuInit = {
+      //effect: { hover: { width: 42 } },
+      notifications: notificationCount,
+      RecentApps: [],
+      prifinaID: activeUser.uuid,
+      activeUser: activeUser,
+      listSystemNotificationsByDateQuery: listSystemNotificationsByDateQuery,
+      coreApiClient: coreApiClient
+    };
+    //console.log("User menu init ", userMenuInit);
+    userMenu.show(userMenuInit);
+  }
+
+}, [])
+*/
 
 const Layout = ({ componentProps, activeUser, menuItems, resourceCardItems }) => {
 
+  const userMenu = useUserMenu();
   const { pathname, search } = useLocation();
+  const { notificationCount, listSystemNotificationsByDateQuery, coreApiClient } = componentProps;
+  const footerExists = pathname === '/projects';
 
-  console.log("PATH ", pathname)
+  //base: `${borderWidths["2xs"]} solid ${colors.baseMuted}`,
+  const areas = ["header header", "menu content"];
+  if (footerExists) {
+    areas.push("menu footer")
+  }
+  console.log("PATH ", pathname);
+  const effectCalled = useRef(false);
+
+  const [menuReady, setMenuReady] = useState(false);
+
+  useEffect(() => {
+    if (!effectCalled.current) {
+      effectCalled.current = true;
+      console.log("INIT USERMENU ", coreApiClient);
+      const userMenuInit = {
+        //effect: { hover: { width: 42 } },
+        notifications: notificationCount,
+        RecentApps: [],
+        prifinaID: activeUser.uuid,
+        activeUser: activeUser,
+        listSystemNotificationsByDateQuery: listSystemNotificationsByDateQuery,
+        coreApiClient: coreApiClient
+      };
+      //console.log("User menu init ", userMenuInit);
+      userMenu.show(userMenuInit);
+      setMenuReady(true);
+    }
+
+  }, [])
   return <>
-    <Box style={{ minHeight: "100vh" }}>
+    {!menuReady && null}
+    {menuReady && <Box style={{ minHeight: "100vh", height: "100vh" }}>
       <Grid
         height="100%"
         bg="basePrimary"
         columns={"280px 1fr"}
-        rows={"50px 1fr 225px"}
-        areas={["header header", "menu content", "menu footer"]}
+        rows={`${footerExists ? "50px 1fr 225px" : "50px 1fr"}`}
+        areas={areas}
       >
         <Cell area="header">
-          <Header  {...componentProps}
+          {/* <Header  {...componentProps} 
+
             activeUser={activeUser} />
+*/}
+          <Header />
+
         </Cell>
         <Cell area="content">
           {/* 
@@ -67,25 +127,27 @@ const Layout = ({ componentProps, activeUser, menuItems, resourceCardItems }) =>
         <Cell area="menu">
           <AppStudioSidebar items={menuItems} />
         </Cell>
-        <Cell area="footer">
-          {pathname.startsWith('/app/projects') &&
-            <Box marginTop="48px" marginLeft={"20px"}>
-              <Grid columns="repeat(auto-fit,minmax(120px,1fr))">
-                {resourceCardItems.map((item, index) => (
-                  <Cell key={"card-" + index}>
-                    <ResourceCard
-                      src={item.src}
-                      title={item.title}
-                      description={item.description}
-                    />
-                  </Cell>
-                ))}
-              </Grid>
-            </Box>
-          }
+        {footerExists && <Cell area="footer">
+
+          <Box marginTop="48px" marginLeft={"20px"}>
+            <Grid columns="repeat(auto-fit,minmax(120px,1fr))">
+              {resourceCardItems.map((item, index) => (
+                <Cell key={"card-" + index}>
+                  <ResourceCard
+                    src={item.src}
+                    title={item.title}
+                    description={item.description}
+                  />
+                </Cell>
+              ))}
+            </Grid>
+          </Box>
+
         </Cell>
+        }
       </Grid>
     </Box>
+    }
   </>
 }
 const Landing = props => {
@@ -93,17 +155,19 @@ const Landing = props => {
   const navigate = useNavigate();
 
   const { activeUser, getSystemNotificationCountQuery, updateUserActivityMutation,
-    listSystemNotificationsByDateQuery,
+    listSystemNotificationsByDateQuery, setAppsyncConfig
   } = useStore(
     state => ({
       activeUser: state.activeUser,
       getSystemNotificationCountQuery: state.getSystemNotificationCountQuery,
       updateUserActivityMutation: state.updateUserActivityMutation,
-      listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery
+      listSystemNotificationsByDateQuery: state.listSystemNotificationsByDateQuery,
+      setAppsyncConfig: state.setAppsyncConfig
 
     }),
     shallow,
   );
+
 
   const { CoreApiClient, UserApiClient } = useGraphQLContext();
   const effectCalled = useRef(false);
@@ -150,6 +214,13 @@ const Landing = props => {
     async function fetchData() {
       effectCalled.current = true;
 
+      console.log("ACTIVE USER ", activeUser);
+      setAppsyncConfig({
+        aws_appsync_graphqlEndpoint: activeUser.endpoint,
+        aws_appsync_region: activeUser.region,
+        graphql_endpoint_iam_region: activeUser.region
+      })
+
       const notificationCountResult = await getSystemNotificationCountQuery(
         {
           filter: {
@@ -172,6 +243,7 @@ const Landing = props => {
         id: activeUser.uuid,
         activeApp: "appStudio-Home"
       });
+
 
 
       setAppReady(true)

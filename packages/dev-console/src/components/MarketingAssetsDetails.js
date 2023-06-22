@@ -39,9 +39,9 @@ const MarketingAssetsDetails = ({ inputState, options, S3Storage, ...props }) =>
     async function initImages() {
       effectCalled.current = true
 
-
+      //Storage.get(s3Key, { level: "public", download: false })
       const imgs = images.map((img, i) => {
-        return S3Storage.get(appID + "/assets/" + images[i])
+        return S3Storage.get(appID + "/assets/" + images[i], { level: "public", download: false })
       })
 
       Promise.all(imgs).then(res => {
@@ -60,7 +60,7 @@ const MarketingAssetsDetails = ({ inputState, options, S3Storage, ...props }) =>
   const updateAssetStatus = (status, idx) => {
 
     if (status) {
-      S3Storage.get(appID + "/assets/" + images[idx]).then(url => {
+      S3Storage.get(appID + "/assets/" + images[idx], { level: "public", download: false }).then(url => {
         imageUrls.current[idx] = url;
         let name = "icon";
         let asset = "assets/icon-1.png";

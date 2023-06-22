@@ -59,7 +59,7 @@ const Content = forwardRef((props, ref) => {
     activeRole,
   } = usePrifina();
 
-  const { updateDebug, appID, prifinaID } = useContext(SandboxContext);
+  const { updateDebug, appID, prifinaID, remoteUrl } = useContext(SandboxContext);
 
   const { CoreApiClient, UserApiClient, S3Storage } = useGraphQLContext();
 
@@ -278,8 +278,8 @@ const Content = forwardRef((props, ref) => {
         }
       }
       )
-      const subsID = UserApiClient.subscribe(getAthenaResults, { id: prifinaID });
-      athenaSubscription.current = subsID;
+      //const subsID = UserApiClient.subscribe(getAthenaResults, { id: prifinaID });
+      //athenaSubscription.current = subsID;
 
     }
     if (!effectCalled.current) {
@@ -292,24 +292,29 @@ const Content = forwardRef((props, ref) => {
     }
   }, [])
 
+  /* 
+    let remoteUrl = "";
+    //const widgetID = "cw9aphqcofZkv8pCE9nE181";
+    //const widgetID = "o3CH1e2kbrLgBxjbG2iLzd";
+    // cECGHdLTCpjaimqviz7N2s  oura-sleep
+    // x866fscSq5Ae7bPgUtb6ffB  data-test
+  
+    if (true) {
+      remoteUrl = [
+        "widgets",
+        appID,
+        "dist",
+        "remoteEntry.js",
+      ].join("/");
+    } */
 
-  let remoteUrl = "";
-  //const widgetID = "cw9aphqcofZkv8pCE9nE181";
-  //const widgetID = "o3CH1e2kbrLgBxjbG2iLzd";
-  // cECGHdLTCpjaimqviz7N2s  oura-sleep
-  // x866fscSq5Ae7bPgUtb6ffB  data-test
+  //const appIDx = "cw9aphqcofZkv8pCE9nE181";
+  //remoteUrl = "widgets/" + appIDx + "/dist/remoteEntry.js";
 
-  if (true) {
-    remoteUrl = [
-      "widgets",
-      appID,
-      "dist",
-      "remoteEntry.js",
-    ].join("/");
-  }
   console.log("REMOTE ", remoteUrl);
   return <>
     <MemoizedRemoteContent ref={ref} componentProps={{ ...settingsInit }}
+
       system={{
         remote: appID,
         url: remoteUrl,

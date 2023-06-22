@@ -1,0 +1,10 @@
+ AUTH_REGION=eu-west-1 
+ MAIN_REGION=eu-west-1 
+ POOL_ID=eu-west-1_uwy3R12FM
+ APP_CLIENT_ID=2vh4cnj9ksl34q6vu5o56trhbi
+ IDENTITY_POOL_ID=eu-west-1:9589f175-270e-418c-b724-23c136db8a7f 
+ USER_IDENTITY_POOL_ID=eu-west-1:5766f4b7-0043-4a6d-8c85-0ecbd7952c22
+ APPSYNC_GRAPHQL_ENDPOINT=https://vwjywyefrjabtcouj3lrraky7q.appsync-api.eu-west-1.amazonaws.com/graphql
+ APPSYNC_AUTH_TYPE=AWS_IAM
+ USER_GRAPHQL_ENDPOINT=https://5uoho2oolnf33odmojf2n3z6te.appsync-api.eu-west-1.amazonaws.com/graphql
+ USER_REGION=eu-west-1 

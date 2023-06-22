@@ -10,14 +10,15 @@ import createContext from "zustand/context";
 import { useGraphQLContext } from "../graphql/GraphQLContext";
 import {
   sendVerification, changeUserPassword, addPrifinaSession, deletePrifinaSession,
-  updateUserProfile, updateActivity, updateCognitoUser, installWidget, updatePrifinaUser,
+  updateUserProfile, updateUserActivity, updateCognitoUser, installWidget, updatePrifinaUser,
   addUserToCognitoGroup, newAppVersion, deleteAppVersion, updateAppVersion
 } from "../graphql/mutations";
 import {
   getPrifinaUser, listAppMarket, getSystemNotificationCount, listDataSources,
   listSystemNotificationsByDate, listNotificationsByDate, getCountryCode, checkUsername,
   checkCognitoAttribute, getVerification, getRequestToken, getLoginUserIdentityPool, getAddressBook,
-  listApps, getAppVersion
+  listApps, getAppVersion, getAIQuery, listDataconnectorsQuery, listDatasourceQuestionsQuery,
+  getAIDataQuery, googleSearchQuery, userDataconnectorsQuery, getParserAIQuery
 } from "../graphql/queries";
 /*
 import {
@@ -128,6 +129,9 @@ const PrifinaStoreProvider = ({ children }) => {
 
               AuthClient.AUTHConfigure(currentConfig);
             }
+            const currentAuthUser = await AuthClient.currentAuthenticatedUser();
+            console.log("APP USER AUTH ", currentAuthUser);
+
             const currentSession = await AuthClient.currentSession();
 
             console.log("APP AUTH ", currentSession);
@@ -320,7 +324,9 @@ const PrifinaStoreProvider = ({ children }) => {
           return await CoreApiClient.graphql(getSystemNotificationCount, vars);
         },
         updateUserActivityMutation: async (vars) => {
-          return await UserApiClient.mutation(updateActivity, vars, "AWS_IAM");
+          // return await UserApiClient.mutation(updateActivity, vars, "AWS_IAM");
+          // variables: { id: id, activeApp: app },
+          return await CoreApiClient.graphql(updateUserActivity, vars, "AWS_IAM");
         },
         listDataSourcesQuery: async (vars) => {
           return await CoreApiClient.graphql(listDataSources, vars);
@@ -344,7 +350,7 @@ const PrifinaStoreProvider = ({ children }) => {
         checkCognitoAttributeQuery: async (attrName, attrValue, poolID = get().poolID) => {
           //console.log("CHECK THIS ", await CoreApiClient.graphql(checkCognitoAttribute, vars))
           // variables: { attrName: attrName, attrValue: attrValue, poolID: poolID },
-          return await CoreApiClient.graphql(checkCognitoAttribute, { attrName: attrName, attrValue: attrValue, poolID: poolID });
+          return await CoreApiClient.graphql(checkCognitoAttribute, { attrName: attrName, attrValue: attrValue, poolID: poolID }, "AWS_IAM");
         },
         updateCognitoUserMutation: async (attrName, attrValue) => {
           //variables: { attrName: attrName, attrValue: attrValue },
@@ -389,11 +395,17 @@ const PrifinaStoreProvider = ({ children }) => {
           return await AuthClient.setPreferredMFA(get().authUser, mfaMethod);
         },
         confirmSignIn: async (code) => {
-          return await AuthClient.confirmSignIn(get().authUser, code, get().mfaMethod);
+          // Optional, MFA Type e.g. SMS_MFA || SOFTWARE_TOKEN_MFA
+          const mfa = get().mfaMethod === "SMS" ? "SMS_MFA" : "SOFTWARE_TOKEN_MFA";
+          return await AuthClient.confirmSignIn(get().authUser, code, mfa);
         },
         signUp: async (vars) => {
           console.log("SIGNUP ", vars);
           return await AuthClient.signUp(vars);
+        },
+        logout: async (global = true) => {
+          //await Auth.signOut({ global: true });
+          return await Auth.signOut({ global });
         },
         getAddressBookQuery: async (vars) => {
           return await UserApiClient.query(getAddressBook, vars);
@@ -426,7 +438,38 @@ const PrifinaStoreProvider = ({ children }) => {
 
           return await CoreApiClient.graphql(getAppVersion, vars);
         },
-        subscribeWithSelector: (() => ({ paw: true, snout: true, fur: true }))
+        subscribeWithSelector: (() => ({ paw: true, snout: true, fur: true })),
+        getAIQuery: async (vars) => {
+          //{ payload: JSON.stringify({ prompt: "this is a test" }) }
+          // return await CoreApiClient.graphql(getAIQuery, { payload: JSON.stringify(vars) });
+
+          return await UserApiClient.query(getAIQuery, { payload: JSON.stringify(vars) });
+        },
+        getAIDataQuery: async (vars) => {
+          //{ payload: JSON.stringify({ prompt: "this is a test" }) }
+          //return await CoreApiClient.graphql(getAIDataQuery, { payload: JSON.stringify(vars) });
+          return await UserApiClient.query(getAIDataQuery, { payload: JSON.stringify(vars) });
+        },
+        googleSearch: async (vars) => {
+          return await UserApiClient.query(googleSearchQuery, { payload: JSON.stringify(vars) });
+        },
+        listDataconnectorsQuery: async (vars) => {
+
+          return await CoreApiClient.graphql(listDataconnectorsQuery, vars);
+        },
+        listDatasourceQuestionsQuery: async (vars) => {
+
+          return await CoreApiClient.graphql(listDatasourceQuestionsQuery, vars);
+        },
+        listUserDataconnectorsQuery: async (vars) => {
+
+          return await UserApiClient.query(userDataconnectorsQuery, vars);
+        },
+        getParserAIQuery: async (vars) => {
+          return await UserApiClient.query(getParserAIQuery, vars);
+        },
+
+
         /*
         variables: {
           id: id,

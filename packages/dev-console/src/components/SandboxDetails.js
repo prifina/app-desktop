@@ -27,7 +27,11 @@ const SandboxDetails = forwardRef(({ options, inputState, ...props }, ref) => {
     e.preventDefault();
 
   }
-
+  /* 
+    const newValue = inputRefs[e.target.id].value;
+    console.log("Checking value ", newValue);
+    inputState(inputRefs[e.target.id]);
+   */
   return <Box>
     <ProjectContainer mb={24}>
       <Box
@@ -82,7 +86,7 @@ const SandboxDetails = forwardRef(({ options, inputState, ...props }, ref) => {
 
         <Button
           onClick={() => {
-            navigate("/sandbox/" + options.appID, { replace: true });
+            navigate("/sandbox/" + options.appID);
           }}
         >
           Launch Sandbox

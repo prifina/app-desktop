@@ -27,7 +27,7 @@ import PrifinaIcon from "../assets/PrifinaIcon";
 
 import { v4 as uuidv4 } from "uuid";
 
-import RegisterRole from "./RegisterRole";
+//import RegisterRole from "./RegisterRole";
 import PropTypes from "prop-types";
 
 
@@ -84,15 +84,7 @@ const withToast = () => WrappedComponent => {
 
 
 const Layout = () => {
-  //const activeIndex = useStore(state => state.activeIndex);
-  /*
-  args: {
-    steps: 3,
-    active: 0,
-    variation: "tracker",
-    w: "700px"
-  }
-*/
+
   const { pathname, search } = useLocation();
   const { __ } = useTranslate();
   const { colors } = useTheme();
@@ -149,6 +141,7 @@ const Layout = () => {
 
 
   return <Landing style={{ height: "100vh" }} leftBackgroundColor={colors.landingGradient} rightBackgroundColor={colors.baseTertiary}>
+
     <Flex height={40} mb={57} alignItems="center" >
       <PrifinaIcon />
       <Text ml={"10px"} fontWeight="600">
@@ -170,7 +163,6 @@ const Layout = () => {
         {subtitles[activeIndex]}
       </Text>
     </Box>
-
     <Outlet />
 
   </Landing>
@@ -187,7 +179,7 @@ const Register = ({ backGroundColor, nextLink, loginLink, inputRefs, inputVals }
 
 
   const [stateCheck, setStateCheck] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
+    (check, newCheck) => ({ ...check, ...newCheck }),
     {
       username: true,
       password: true,
@@ -231,7 +223,7 @@ const Register = ({ backGroundColor, nextLink, loginLink, inputRefs, inputVals }
             return true;
           }
         } else {
-          setStateCheck({ username: input.dataset['isvalid'] })
+          setStateCheck({ username: (input.dataset['isvalid'] === "true") })
 
         }
         console.log("INPUT REF ", inputRefs)
@@ -367,6 +359,8 @@ const Register = ({ backGroundColor, nextLink, loginLink, inputRefs, inputVals }
 
   }
 
+  //  console.log("STATE CHECK ", stateCheck);
+
   return <>
 
     <RegisterContainer>
@@ -454,6 +448,8 @@ const Register = ({ backGroundColor, nextLink, loginLink, inputRefs, inputVals }
 Register.displayName = "Register";
 
 Register.propTypes = {
+
+  backGroundColor: PropTypes.string,
   loginLink: PropTypes.func.isRequired,
   nextLink: PropTypes.func.isRequired,
   inputVals: PropTypes.object.isRequired,
@@ -462,7 +458,7 @@ Register.propTypes = {
 };
 
 
-const RegisterEmailPhone = ({ nextLink, loginLink, inputRefs, inputVals }) => {
+const RegisterEmailPhone = ({ appDebug, nextLink, loginLink, inputRefs, inputVals }) => {
 
   console.log(inputVals);
   const { __ } = useTranslate();
@@ -473,7 +469,7 @@ const RegisterEmailPhone = ({ nextLink, loginLink, inputRefs, inputVals }) => {
 
 
   const [stateCheck, setStateCheck] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
+    (check, newCheck) => ({ ...check, ...newCheck }),
     {
       email: true,
       phoneNumber: true
@@ -527,7 +523,7 @@ const RegisterEmailPhone = ({ nextLink, loginLink, inputRefs, inputVals }) => {
           inputRefs[input.id] = input
         }
         if (validation) {
-          setStateCheck({ email: input.dataset['isvalid'] })
+          setStateCheck({ email: (input.dataset['isvalid'] === "true") })
           return input.dataset['isvalid']
         }
       } else {
@@ -547,7 +543,7 @@ const RegisterEmailPhone = ({ nextLink, loginLink, inputRefs, inputVals }) => {
       showList: true,
       selectOption: "key",
       value: defaultRegion,
-      checkExists: true,
+      checkExists: appDebug ? false : true,
       toast: false,
       txt: { "invalidTxt": __("invalidPhoneNumber"), "placeholderTxt": __("phoneNumberPlaceholder"), "promptTxt": __("phonePrompt") }
 
@@ -559,7 +555,7 @@ const RegisterEmailPhone = ({ nextLink, loginLink, inputRefs, inputVals }) => {
       console.log(inputRefs, inputRefs?.phoneNumber);
       if (typeof input !== 'undefined' && input?.nationalNumber) {
 
-        if (inputRefs?.phoneNumber === undefined) {
+        if (inputRefs?.phoneNumber === undefined || inputRefs.phoneNumber.number !== input.number) {
           //console.log("HAVE NUMBER ", input?.nationalNumber)
           inputRefs['phoneNumber'] = input
         }
@@ -648,23 +644,37 @@ const RegisterEmailPhone = ({ nextLink, loginLink, inputRefs, inputVals }) => {
 RegisterEmailPhone.displayName = "RegisterEmailPhone";
 
 RegisterEmailPhone.propTypes = {
+  appDebug: PropTypes.bool,
   loginLink: PropTypes.func.isRequired,
   nextLink: PropTypes.func.isRequired,
   inputVals: PropTypes.object.isRequired,
   inputRefs: PropTypes.object.isRequired
 
 };
+
 const CreateAccount = () => {
 
 
   const { pathname, search } = useLocation();
+
+
+  const searchKeys = new URLSearchParams(search);
+
+  //console.log("START ", search);
+
+  const appDebug = useRef(process.env.REACT_APP_DEBUG === "true" && searchKeys.get("debug") === "true");
+  //history.location.search === "?debug=true";
+
+  console.log("APP DEBUG ", appDebug);
+
+
   const alerts = useToast();
   const navigate = useNavigate();
   const { colors, borders } = useTheme();
 
   console.log("THEME ", colors, borders);
   const { __ } = useTranslate();
-  const { getCountryCodeQuery, resendCode, getVerificationQuery, addUserToCognitoGroupMutation, getActiveUser } = useStore((state) => ({ getCountryCodeQuery: state.getCountryCodeQuery, getVerificationQuery: state.getVerificationQuery, resendCode: state.resendCode, addUserToCognitoGroupMutation: state.addUserToCognitoGroupMutation, getActiveUser: state.getActiveUser }),
+  const { isLoggedIn, getCountryCodeQuery, resendCode, getVerificationQuery, addUserToCognitoGroupMutation, getActiveUser } = useStore((state) => ({ isLoggedIn: state.isLoggedIn, getCountryCodeQuery: state.getCountryCodeQuery, getVerificationQuery: state.getVerificationQuery, resendCode: state.resendCode, addUserToCognitoGroupMutation: state.addUserToCognitoGroupMutation, getActiveUser: state.getActiveUser }),
     shallow
   );
 
@@ -777,7 +787,7 @@ const CreateAccount = () => {
   */
 
   const inputRefs = {};
-  const currentUser = useRef();
+  const currentUser = useRef({});
   const activeUser = useRef({});
 
   const effectCalled = useRef(false);
@@ -798,10 +808,12 @@ const CreateAccount = () => {
     }
   );
 
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     //getActiveUser
     async function getCountryCode() {
       effectCalled.current = true;
+      await isLoggedIn();
       activeUser.current = getActiveUser();
       //console.log("ACTIVE USER3 ", activeUser);
 
@@ -809,6 +821,7 @@ const CreateAccount = () => {
       if (countryCode.data.getCountryCode !== null && countryCode.data?.getCountryCode) {
         setState({ countryCode: countryCode.data.getCountryCode });
       }
+      setReady(true);
     }
     if (!effectCalled.current) {
       getCountryCode();
@@ -842,7 +855,7 @@ const CreateAccount = () => {
     //addUserToCognitoGroupMutation(GRAPHQL, prifinaID, newGroup)
     //console.log("ACTIVE USER2 ", activeUser);
     addUserToCognitoGroupMutation(activeUser.current.uuid, "DEV").then(() => {
-      navigate("/home", { replace: true });
+      navigate("/projects", { replace: true });
     });
 
     // navigate("/register/email-verification", { replace: true });
@@ -850,18 +863,27 @@ const CreateAccount = () => {
   }
 
   const verifyEmailClick = (code) => {
-    getVerificationQuery(UUID, "email", code).then(verified => {
-      if (verified) {
-        navigate("/register/phone-verification", { replace: true });
-      }
-    });
+    console.log("VERIFY ", appDebug.current, code)
+    if (appDebug.current && code === "123456") {
+      navigate("/register/phone-verification", { replace: true });
+    } else {
+      getVerificationQuery(UUID, "email", code).then(verified => {
+        if (verified) {
+          navigate("/register/phone-verification", { replace: true });
+        }
+      });
+    }
   }
   const verifyPhoneClick = (code) => {
-    getVerificationQuery(UUID, "phone", code).then(verified => {
-      if (verified) {
-        navigate("/register/final", { replace: true });
-      }
-    });
+    if (appDebug.current && code === "123456") {
+      navigate("/register/final", { replace: true });
+    } else {
+      getVerificationQuery(UUID, "phone", code).then(verified => {
+        if (verified) {
+          navigate("/register/final", { replace: true });
+        }
+      });
+    }
   }
   const resendEmailClick = (e) => {
     resendCode("email").then(res => {
@@ -899,12 +921,15 @@ const CreateAccount = () => {
   }
 
   const nextVerificationsClick = (e, inputs) => {
-    console.log("NEXT VERIFICATIONS OK ", inputs);
+    console.log("NEXT VERIFICATIONS USER", currentUser.current);
+    console.log("NEXT VERIFICATIONS INPUTS ", inputs);
+    console.log("NEXT VERIFICATIONS EMAIL ", inputs.email.value);
+    console.log("NEXT VERIFICATIONS PHONE ", inputs.phoneNumber);
     currentUser.current.attributes.email = inputs.email.value;
     currentUser.current.attributes.phone_number = '+' + inputs.phoneNumber.number.replace(/\D/g, ''),  // cognito doesn't accept formatted phone numbers
+
       navigate("/register/email-verification", { replace: true });
 
-    //navigate("/register/terms-of-use", { replace: true });
     e.preventDefault();
   }
 
@@ -912,26 +937,33 @@ const CreateAccount = () => {
   //const backGroundColor = colors.baseWhite;
   const backGroundColor = colors.baseTertiary;
   return <>
-    <ToastContextProvider>
-      <Routes>
-        <Route element={<Layout />}>
-          {pathname.indexOf("role") === -1 && <>
-            <Route index element={<Register backGroundColor={backGroundColor} inputRefs={inputRefs} nextLink={nextClick} loginLink={loginLink} inputVals={{ state, setState }} />} />
-            <Route path="terms-of-use" element={<TermsOfUse texts={texts} backGroundColor={backGroundColor} termsLastUpdated={termsLastUpdated} declineTerms={declineTerms} approveTerms={approveTerms} />} />
-            <Route path="email-and-phone" element={<RegisterEmailPhone inputRefs={inputRefs} nextLink={nextVerificationsClick} loginLink={loginLink} inputVals={{ state, setState }} />} />
-            <Route path="email-verification" element={<EmailVerification resendClick={resendEmailClick} verifyClick={verifyEmailClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
-            <Route path="phone-verification" element={<PhoneVerification resendClick={resendPhoneClick} verifyClick={verifyPhoneClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
-            <Route path="final" element={<FinalizingAccount currentUser={currentUser.current} />} />
-          </>}
-          {pathname.indexOf("role") > -1 && <>
-            <Route index element={<RegisterRole activeUser={activeUser.current} />} />
-            <Route path="terms-of-use" element={<TermsOfUse texts={texts} backGroundColor={backGroundColor} termsLastUpdated={termsLastUpdated} declineTerms={declineRoleTerms} approveTerms={approveRoleTerms} />} />
-          </>}
+    {ready &&
+      <ToastContextProvider>
+        <Routes>
+          <Route element={<Layout />}>
+            {pathname.indexOf("role") === -1 && <>
+              <Route index element={<Register backGroundColor={backGroundColor} inputRefs={inputRefs} nextLink={nextClick} loginLink={loginLink} inputVals={{ state, setState }} />} />
 
-        </Route>
+              <Route path="terms-of-use" element={<TermsOfUse texts={texts} backGroundColor={backGroundColor} termsLastUpdated={termsLastUpdated} declineTerms={declineTerms} approveTerms={approveTerms} />} />
 
-      </Routes>
-    </ToastContextProvider>
+              <Route path="email-and-phone" element={<RegisterEmailPhone appDebug={appDebug.current} inputRefs={inputRefs} nextLink={nextVerificationsClick} loginLink={loginLink} inputVals={{ state, setState }} />} />
+              <Route path="email-verification" element={<EmailVerification resendClick={resendEmailClick} verifyClick={verifyEmailClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
+              <Route path="phone-verification" element={<PhoneVerification resendClick={resendPhoneClick} verifyClick={verifyPhoneClick} backClick={backClick} invalidLink={config.invalidVerificationLink} />} />
+              <Route path="final" element={<FinalizingAccount currentUser={currentUser.current} />} />
+
+            </>}
+
+            {pathname.indexOf("role") > -1 && <>
+              <Route index element={<RegisterRole activeUser={activeUser.current} />} />
+              <Route path="terms-of-use" element={<TermsOfUse texts={texts} backGroundColor={backGroundColor} termsLastUpdated={termsLastUpdated} declineTerms={declineRoleTerms} approveTerms={approveRoleTerms} />} />
+            </>}
+
+
+          </Route>
+
+        </Routes>
+      </ToastContextProvider>
+    }
   </>
 }
 

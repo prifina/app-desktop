@@ -3,6 +3,7 @@ export const getPrifinaUser = `query prifinaUser($id:String!){
           dataSources
           installedApps
           installedWidgets
+          userInstalledApps
           viewSettings
           appProfile
           id
@@ -286,4 +287,59 @@ export const getAppVersion = `query appVersion($id: String!) {
       remoteUrl
       assets
     }
+}`;
+
+export const getAIQuery = `query AIQuery($payload: String!) {
+  getAIQuery(payload: $payload) {
+    result
+  }
+}`;
+
+
+export const getAIDataQuery = `query aiData($payload:String!) {
+  getAIData(payload:$payload) {
+    result
+  }
+}`;
+export const listDatasourceQuestionsQuery = `query listDatasourceQuestions($owner: String!,$limit: Int,$nextToken: String) {
+  listDatasourceQuestions(owner: $owner, limit: $limit, nextToken: $nextToken) {
+    items {
+      config
+      owner
+      question
+    }
+  }
+}`;
+
+export const listDataconnectorsQuery = `query listDataconnectors($limit: Int,$nextToken: String) {
+  listDataconnectors(limit: $limit,nextToken: $nextToken) {
+    items {
+      config
+      id
+      type
+    }
+  }
+}`;
+
+export const googleSearchQuery = `query googleSearch($payload:String!) {
+  googleSearch(payload:$payload) {
+    result
+  }
+}`;
+
+export const userDataconnectorsQuery = `query dataconnectors($dataSource:String!) {
+  listDataconnectors(dataSource: $dataSource) {
+    items {
+      dataSource
+      description
+      id
+      name
+    }
+  }
+}`;
+
+export const getParserAIQuery = `query aiParser($queryStr:String!) {
+  getParserAIQuery(queryStr:$queryStr) {
+    result
+  }
 }`;

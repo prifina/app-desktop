@@ -29,7 +29,7 @@ export default function UnauthenticatedRoute() {
 
   const redirect = querystring("redirect");
 
-  let landingPage = "/home";
+  let landingPage = "/projects";
 
   const getStatus = () => {
     if (error) return <h2>Error while checking: {error}</h2>;

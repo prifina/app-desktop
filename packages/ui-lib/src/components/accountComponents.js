@@ -9,5 +9,6 @@ export { default as PasswordField } from "./PasswordField-v2";
 export { default as EmailField } from "./EmailField";
 export { default as PhoneNumberField } from "./PhoneNumberField-v2";
 export { default as ConfirmAuth } from "./ConfirmAuth";
+export { default as Landing } from "./Landing";
 
 export { default as useComponentFlagList } from "../lib/hooks/UseComponentFlagList";

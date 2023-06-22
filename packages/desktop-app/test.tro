@@ -13,3 +13,5 @@ WARNING in ../utils/src/lib/mocks/athenaData.js 128:6-26
 Critical dependency: the request of a dependency is an expression
 
 webpack compiled with 1 warning
+
+ln -s /Users/Tero/react-projects/local-development/prifina-development/widgets/packages/imessage-v2/dist dist

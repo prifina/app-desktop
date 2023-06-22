@@ -103,7 +103,7 @@ const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
       toast: false,
       value: "",
       txt: {
-        "invalidTxt": "", "usernameError": __("usernameError", { length: config.usernameLength }),
+        "invalidTxt": '\u00a0', "usernameError": __("usernameError", { length: config.usernameLength }),
         "usernameError2": __("usernameError2"), "usernameExists": __("usernameExists"),
         "placeholderTxt": __("usernamePlaceholder"), "promptTxt": '\u00a0'  // otherwise text height is 0
       },
@@ -127,7 +127,7 @@ const SignIn = ({ loginClick, createAccountClick, inputRefs }) => {
       checkList: () => [],
       toast: false,
       txt: {
-        "invalidTxt": "", "invalidEntry": __("invalidEntry"),
+        "invalidTxt": '\u00a0', "invalidEntry": __("invalidEntry"),
         "passwordQuality": __("passwordQuality"), "placeholderTxt": __("passwordPlaceholder"),
         "promptTxt": '\u00a0'  // otherwise text height is 0
       }
@@ -297,6 +297,7 @@ const Login = () => {
       ) {
         setAuthStatus(true);
         //history.replace("/home");
+
         navigate("/home", { replace: true });
         //console.log("NAV HOME");
       } else {

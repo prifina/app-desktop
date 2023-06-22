@@ -1,0 +1,909 @@
+import React, { useEffect, useRef, useState, useContext, } from "react";
+
+
+import { createPortal } from "react-dom";
+
+import { Box, Flex, TextArea } from "@blend-ui/core";
+
+import styled from "styled-components";
+import { SmartContext } from "../pages/Home";
+
+import config from "../config";
+
+import { useEffectOnce, useIsMounted } from 'usehooks-ts'
+
+const Send = props => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M29 3L3 15l12 2.5M29 3L19 29l-4-11.5M29 3L15 17.5" /></svg>
+);
+
+const Mic = props => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="currentColor" d="M16 2a6 6 0 0 0-6 6v8a6 6 0 0 0 12 0V8a6 6 0 0 0-6-6Zm4 14a4 4 0 0 1-8 0V8a4 4 0 0 1 8 0v8ZM7 15a1 1 0 0 1 1 1a8 8 0 1 0 16 0a1 1 0 1 1 2 0c0 5.186-3.947 9.45-9.001 9.95L17 26v3a1 1 0 1 1-2 0v-3l.001-.05C9.947 25.45 6 21.187 6 16a1 1 0 0 1 1-1Z" /></svg>
+);
+/* 
+const propsTest = props => {
+  console.log("PROPS ", props)
+} */
+
+const StyledIconDiv = styled('div')`
+flex: 0 0 auto;
+color: rgba(0, 0, 0, 0.54);
+/* margin-right: 5px; */
+height:33px;
+padding:4px;
+overflow: visible;
+text-align: center;
+transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+border-radius: 50%;
+&:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}
+> svg {
+  height:24px;
+  width:24px;
+}
+> svg:hover {
+  color: ${props => props.theme.colors.baseSecondary}; 
+ 
+}
+
+`;
+
+const AnswerContainer = styled(Box)`
+margin-top:10px;
+border: 1px solid #C3C2C2;
+max-height: calc(100vh - 270px);
+padding:5px;
+box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+word-break: break-all;
+`;
+
+const Dots = styled('div')`
+
+  margin-left: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  color: black;
+  width: 35px;
+  height: 15px;
+  --d: radial-gradient(farthest-side, currentColor 90%, #0000);
+  background: var(--d), var(--d), var(--d), var(--d);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  animation: m 1s infinite;
+
+  @keyframes m {
+    0% {
+      background-position: calc(0*100%/3) 100%, calc(1*100%/3) 100%, calc(2*100%/3) 100%, calc(3*100%/3) 100%
+    }
+  
+    12.5% {
+      background-position: calc(0*100%/3) 0, calc(1*100%/3) 100%, calc(2*100%/3) 100%, calc(3*100%/3) 100%
+    }
+  
+    25% {
+      background-position: calc(0*100%/3) 0, calc(1*100%/3) 0, calc(2*100%/3) 100%, calc(3*100%/3) 100%
+    }
+  
+    37.5% {
+      background-position: calc(0*100%/3) 0, calc(1*100%/3) 0, calc(2*100%/3) 0, calc(3*100%/3) 100%
+    }
+  
+    50% {
+      background-position: calc(0*100%/3) 0, calc(1*100%/3) 0, calc(2*100%/3) 0, calc(3*100%/3) 0
+    }
+  
+    62.5% {
+      background-position: calc(0*100%/3) 100%, calc(1*100%/3) 0, calc(2*100%/3) 0, calc(3*100%/3) 0
+    }
+  
+    75% {
+      background-position: calc(0*100%/3) 100%, calc(1*100%/3) 100%, calc(2*100%/3) 0, calc(3*100%/3) 0
+    }
+  
+    87.5% {
+      background-position: calc(0*100%/3) 100%, calc(1*100%/3) 100%, calc(2*100%/3) 100%, calc(3*100%/3) 0
+    }
+  
+    100% {
+      background-position: calc(0*100%/3) 100%, calc(1*100%/3) 100%, calc(2*100%/3) 100%, calc(3*100%/3) 100%
+    }
+  }
+  
+`;
+
+
+const ListResults = (result) => {
+  let buildList = null;
+  if (typeof result === 'string') {
+    const parts = result.split(",");
+    buildList = parts.map((m, i) => {
+      return <li key={"ll-" + i}>{m}</li>
+    });
+  } else if (typeof result === "object") {
+    buildList = result.map((m, i) => {
+      return <li key={"ll-" + i}>{m.label}:{m.value}</li>
+    });
+  }
+  return <ul>{buildList}</ul>
+}
+
+const dataQuery = `query aiData($payload:String!) {
+  getAIData(payload:$payload) {
+    result
+  }
+}`;
+
+/* 
+
+input DataObjectInput {
+  dataconnector: String!
+  userId: String!
+  fields: [String]
+  filter: String
+  next: Int
+  nextToken: String
+  options: DataOptionsInput
+  sql: String
+  appId: String
+  execId: String
+  stage: String
+}
+
+{
+  "input": {
+      "dataconnector": "Fitbit/queryActivitySummary",
+      "userId": "6145b3af07fa22f66456e20eca49e98bfe35",
+      "fields": [
+          "restingHeartRate"
+      ],
+      "filter": "{\"s3::date\":{\"=\":\"2023-03-21\"}}",
+      "appId": "oJAcUyzR61BfhErkxWZsAE",
+      "execId": "jfvbh8h2xc",
+      "stage": "prod"
+  }
+}
+
+{
+    "input": {
+        "dataconnector": "Oura/queryReadinessSummariesAsync",
+        "userId": "1b723ff8221b95d8442b4969d20d11eb89b1",
+        "fields": [
+            "summary_date",
+            "score"
+        ],
+        "filter": "{\"s3::date\":{\">=\":\"2023-03-23\"}}",
+        "appId": "q5jvWQ9MXhUnUFyotc6L2t",
+        "execId": "vptb3zr3t2",
+        "stage": "prod"
+    }
+}
+
+{
+  "data": {
+    "listDataconnectors": {
+      "items": [
+        {
+          "config": "{\"input\":{\"filter\":\"\",\"stage\":\"\",\"fields\":[],\"userId\":\"\",\"dataconnector\":\"Fitbit/queryActivitySummary\"},\"fields\":[]}",
+          "id": "Fitbit/querySleepSummary",
+          "type": "SYNC"
+        }
+      ]
+    }
+  }
+}
+
+{
+  "data": {
+    "listDatasourceQuestions": {
+      "items": [
+        {
+          "config": "{\"activity\":\"sleep\",\"timePeriod\":\"last night\",\"dataSource\":\"Fitbit/querySleepSummary\"}",
+          "owner": "52d990e84498142bc9637d9c64d72d86703b",
+          "question": "how did I sleep last night"
+        }
+      ]
+    }
+  }
+}
+ */
+
+function toHoursAndMinutes(totalMinutes, opt = false) {
+  const minutes = totalMinutes % 60;
+  const hours = Math.floor(totalMinutes / 60);
+  if (opt) {
+    return `${hours} hours and ${minutes} minutes`;
+  }
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+}
+
+
+const SmartInput = ({ status, container }) => {
+  //console.log("CONTAINER ", container.getBoundingClientRect());
+  const rect = container.getBoundingClientRect();
+  const entry = useRef(null);
+  const [newEntry, setNewEntry] = useState("");
+  const [entryListLength, setEntryListLength] = useState(0);
+  const entryList = useRef([]);
+  const effectCalled = useRef(false);
+  const { dataProps, AIQuery, UserApiClient } = useContext(SmartContext);
+  const dataSourceParser = useRef([]);
+  const timer = useRef(null);
+
+
+  const sendEntry = async () => {
+    setNewEntry(entry.current.value);
+    //console.log(entry.current.value.split("\n"));
+    //console.log("HEIGHT ", entry.current.getBoundingClientRect());
+    entry.current.style.height = '33px';
+    let dataSource = "";
+    let filter = "";
+    let timePeriod = "";
+    let timePeriodDate = "";
+    let dataType = "";
+    let dsConfig = {};
+    let activity = "";
+
+    const questionIndex = dataProps.dataSourceQuestions.findIndex(ds => {
+      console.log(ds.question.toLowerCase())
+      return entry.current.value.toLowerCase().startsWith(ds.question.toLowerCase().replace("?", ""));
+    });
+    if (questionIndex > -1) {
+      dsConfig = JSON.parse(dataProps.dataSourceQuestions[questionIndex].config);
+      dataSource = dsConfig.dataSource;
+      filter = dsConfig.filter;
+      timePeriod = dsConfig.timePeriod;
+      timePeriodDate = getTimePeriodDate(timePeriod, (dsConfig.activity === "sleep"));
+    } else {
+      // use AIQuery.....
+      let createQuery = { prompt: JSON.stringify(dataSourceParser.current.join("\n")) + "\n\n" + entry.current.value };
+
+      createQuery["temperature"] = 0.01;
+      createQuery["max_tokens"] = 256;
+
+      const aiResult = await AIQuery(createQuery);
+      console.log("AI PARSER ", aiResult);
+      const resObj = JSON.parse(aiResult.data.getAIQuery.result);
+      console.log("AI PARSER ", resObj);
+      const parsedRes = resObj.text.split("\n");
+      // check possible matches...
+      if (parsedRes.length > 0) {
+        parsedRes.forEach(m => {
+          const parts = m.split("=");
+          if (parts.length == 2) {
+            if (parts[0] === "activity") {
+              activity = parts[1].trim();
+            }
+            if (parts[0] === "datasource") {
+              dataSource = parts[1].trim();
+            }
+          }
+        })
+      }
+
+      console.log("PARSED ", activity, dataSource);
+      // if we have dataSource, find out the time period... 
+      if (dataSource !== "") {
+        createQuery = { prompt: JSON.stringify(dateParser.join("\n")) + "\n\n" + entry.current.value };
+
+        createQuery["temperature"] = 0.01;
+        createQuery["max_tokens"] = 256;
+
+        const aiResult2 = await AIQuery(createQuery);
+        console.log("AI PARSER TIME PERIOD", aiResult2);
+        const resObj2 = JSON.parse(aiResult2.data.getAIQuery.result);
+        console.log("AI PARSER ", resObj2);
+        const parts = resObj2.text.split("=");
+
+        // filter is "=", if there are 2 parts... 
+        if (parts.length == 2 && parts[1] !== "NOT-FOUND") {
+          if (parts[0] === "timePeriod") {
+            timePeriodDate = parts[1].trim();
+            filter = "=";
+          }
+
+          // sleep activity is requires +1 date...
+          if (timePeriodDate !== "" && activity === "sleep") {
+            timePeriodDate = dateTomorrowDate(new Date(timePeriodDate));
+          }
+        } else if (resObj2.text !== "timePeriod=NOT-FOUND") {
+          // ATHENA Query....
+          timePeriod = resObj2.text.trim();
+        }
+
+        console.log("PARSED2 ", activity, dataSource, filter, timePeriodDate, timePeriod);
+        //"{\"status\":200,\"statusText\":\"OK\",\"text\":\"timePeriod=2023-04-01\"}"
+
+      }
+
+
+      /*
+      {
+        "getAIQuery": {
+            "result": "{\"status\":200,\"statusText\":\"OK\",\"text\":\"?\\nactivity=sleep\\ndatasource=Fitbit/querySleepSummary\"}"
+        }
+    } */
+    }
+    console.log("Question IDX ", questionIndex);
+    //console.log(dateParser);
+    if (filter === "=") {
+      dataType = "SYNC";
+    }
+
+    const dataConnectorIdx = dataProps.dataConnectors.findIndex(dc => {
+      /*  console.log(dc.id, dataSource, dc.type, dataType);
+       console.log(dc.id === dataSource);
+       console.log(dc.id.length, dataSource.length);
+       console.log(dc.type === dataType);
+       console.log(dc.type.length, dataType.length); */
+      //console.log(dc.id, dataSource, dc.type, dataType);
+      //how long i had rem sleep last night
+
+      return dc.id == dataSource && dc.type == dataType;
+    });
+
+    console.log("CONNECTOR IDX ", dataConnectorIdx);
+
+    let queryResult = "";
+    let dataConnector = {}
+    // if dataconnetor is found....
+    if (dataConnectorIdx > -1) {
+      dataConnector = JSON.parse(dataProps.dataConnectors[dataConnectorIdx].config);
+      const buildQuery = dataConnector.input;
+
+      buildQuery.userId = dataProps.prifinaID;
+      // buildQuery.stage = "prod"; 
+      buildQuery.stage = config.STAGE;
+      buildQuery.filter = buildFilter(filter, timePeriodDate);
+      //buildQuery.filter = buildFilter(filter, "2023-03-30");
+
+      if (dsConfig?.fields !== undefined && dsConfig.fields.length > 0) {
+        buildQuery.fields = dsConfig.fields;
+      }
+
+      console.log(buildQuery);
+
+      const getData = await UserApiClient.query(
+        dataQuery, {
+        "input": buildQuery
+      });
+
+      const dataResult = JSON.parse(getData.data.getDataObject.result);
+      queryResult = dataResult;
+      if (dataResult?.content !== undefined) {
+        queryResult = dataResult.content;
+      }
+    }
+
+    if (Object.keys(dsConfig).length > 0) {
+      if (dsConfig?.postProcess !== undefined && dsConfig.postProcess === "xai-summary") {
+        const summary = dsConfig.aiOptions.propmt.join("\n");
+        const ignoreFields = dsConfig?.processOptions?.ignoreFields || [];
+        const convertDates = dsConfig?.processOptions?.convertDates || [];
+        Object.keys(queryResult).forEach(k => {
+          if (ignoreFields.indexOf(k) !== -1) {
+            delete queryResult[k];
+          }
+          if (convertDates.indexOf(k) !== -1) {
+            queryResult[k] = new Date(queryResult[k]).toLocaleString();
+          }
+        })
+
+        const createQuery = { prompt: summary + "\nSleep data: " + JSON.stringify(queryResult) + "\n" };
+        if (dsConfig?.aiOptions.temperature !== undefined) {
+          createQuery["temperature"] = dsConfig?.aiOptions.temperature;
+        }
+        if (dsConfig?.aiOptions.tokens !== undefined) {
+          createQuery["max_tokens"] = dsConfig?.aiOptions.tokens;
+        }
+
+        //{ prompt: summary + "\nSleep data: " + JSON.stringify(queryResult) + "\n", "max_tokens": 1000 }
+        const aiResult = await AIQuery(createQuery);
+        console.log("AI ", aiResult);
+      }
+      if (dsConfig?.visualisation !== undefined && dsConfig.visualisation.type === "field") {
+
+        console.log("RESULT ", queryResult);
+        console.log("VISUALISATION ", dsConfig.visualisation);
+        const fieldResult = [];
+        dsConfig.visualisation.fields.forEach(f => {
+          const key = f.field.split(".");
+          //console.log("KEY ", key, key.length);
+          //console.log(queryResult?.[key[0]]);
+
+          if (key.length == 2 && queryResult?.[key[0]] !== undefined && queryResult[key[0]]?.[key[1]] !== undefined) {
+            switch (f.format) {
+              case "hh:mm":
+                fieldResult.push(toHoursAndMinutes(queryResult[key[0]][key[1]]));
+                break;
+              case "hours and minutes":
+                fieldResult.push(toHoursAndMinutes(queryResult[key[0]][key[1]], true));
+                break;
+
+              default:
+                fieldResult.push(queryResult[key[0]][key[1]]);
+            }
+          }
+        })
+      }
+
+      if (dsConfig?.visualisation !== undefined && dsConfig.visualisation.type === "generic") {
+
+        console.log("RESULT ", queryResult);
+        console.log("VISUALISATION ", dsConfig.visualisation);
+        const fieldResult = [];
+        dsConfig.visualisation.fields.forEach(f => {
+          const key = f.field.split(".");
+          //console.log("KEY ", key, key.length);
+          //console.log(queryResult?.[key[0]]);
+
+          if (key.length == 2 && queryResult?.[key[0]] !== undefined && queryResult[key[0]]?.[key[1]] !== undefined) {
+            switch (f.format) {
+              case "hh:mm":
+                fieldResult.push(toHoursAndMinutes(queryResult[key[0]][key[1]]));
+                break;
+              case "hours and minutes":
+                fieldResult.push(toHoursAndMinutes(queryResult[key[0]][key[1]], true));
+                break;
+
+              default:
+                fieldResult.push(queryResult[key[0]][key[1]]);
+            }
+          }
+        })
+
+        console.log("FIELD RES ", fieldResult);
+
+        if (fieldResult.length > 0) {
+          if (fieldResult.length === 1) {
+            entryList.current = [{ "propmt": entry.current.value, "reply": ListResults(fieldResult[0]) }];
+          } else {
+            entryList.current = [{ "propmt": entry.current.value, "reply": "" }];
+            entryList.current.push({ "propmt": "", "reply": ListResults(fieldResult.join(",")) });
+          }
+
+        }
+
+      }
+    } else {
+      // not stored questions.... 
+      console.log("DATA MODEL ", dataConnector);
+      const createQuery = { prompt: answerParser(queryResult, dataConnector.dataModelExamples) + "\n\n" + entry.current.value };
+
+      createQuery["temperature"] = 0.01;
+      createQuery["max_tokens"] = 100;
+
+      console.log("AI QUERY ANSWER ", createQuery);
+
+      const aiResult = await AIQuery(createQuery);
+      console.log("AI PARSER ANSWER", aiResult);
+      const resObj = JSON.parse(aiResult.data.getAIQuery.result);
+      if (resObj.text.indexOf("NOT-FOUND") !== -1) {
+
+        const usrlang = navigator.language || navigator.userLanguage;
+        const hours = Intl.DateTimeFormat(usrlang, { hour: 'numeric' }).resolvedOptions().hourCycle;
+
+        const localize = { localizeTime: { format: (hours === "h12" ? "12h" : "24h") } }
+        // create summary.... 
+        const createQuery = { prompt: createObjSummary(queryResult, localize) };
+
+        createQuery["temperature"] = 0.7;
+        createQuery["max_tokens"] = 200;
+
+        console.log("AI QUERY SUMMARY ANSWER ", createQuery);
+        const aiResult = await AIQuery(createQuery);
+        console.log("AI SUMMARY ANSWER", aiResult);
+        const resObj = JSON.parse(aiResult.data.getAIQuery.result);
+        const answer = resObj.text.trim();
+        entryList.current = [{ "propmt": entry.current.value, "reply": answer }];
+
+
+        console.log("DC VISUALISATION ", dataConnector.visualisation);
+        const fieldResult = [];
+        dataConnector.visualisation.fields.forEach(f => {
+          const key = f.field.split(".");
+          //console.log("KEY ", key, key.length);
+          //console.log(queryResult?.[key[0]]);
+
+          if (key.length == 2 && queryResult?.[key[0]] !== undefined && queryResult[key[0]]?.[key[1]] !== undefined) {
+            switch (f.format) {
+              case "hh:mm":
+                fieldResult.push({ label: f.label, value: toHoursAndMinutes(queryResult[key[0]][key[1]]) });
+                break;
+              case "hours and minutes":
+                fieldResult.push({ label: f.label, value: toHoursAndMinutes(queryResult[key[0]][key[1]], true) });
+                break;
+
+              default:
+                fieldResult.push({ label: f.label, value: queryResult[key[0]][key[1]] });
+            }
+          }
+        });
+
+        console.log("DC VISUALISATION RESULT :", fieldResult);
+        entryList.current.push({ "propmt": "", "reply": ListResults(fieldResult) });
+
+      } else {
+        let answer = resObj.text.trim();
+        if (answer.startsWith("A:")) {
+          answer = answer.substring(2).trim();
+        }
+        entryList.current = [{ "propmt": entry.current.value, "reply": ListResults(answer) }];
+      }
+
+
+    }
+
+    /* 
+{
+  {   deep: {
+    count: 4,
+    minutes: 27,
+    thirtyDayAvgMinutes: 67,
+  },
+  light: {
+    count: 20,
+    minutes: 277,
+    thirtyDayAvgMinutes: 228,
+  },
+  rem: {
+    count: 5,
+    minutes: 78,
+    thirtyDayAvgMinutes: 109,
+  },
+  wake: {
+    count: 17,
+    minutes: 78,
+    thirtyDayAvgMinutes: 77,
+  },
+}  
+        const summary = ["Create inspiring summary of my following sleep data. Limit summary max 700 characters.",
+          "Do not use terms am or pm with dates and times.",
+          "Convert all minutes to hours and minutes, when minutes is over 60.",
+          "Example: 345 minutes",
+          "Convert:  5 hours and 45 minutes"].join("\n");
+    
+        const ignoreFields = ["startTimeTS", "endTimeTS"];
+        const convertDates = ["startTime", "endTime"]; 
+
+
+    const aiResult = await AIQuery({ prompt: summary + "\nSleep data: " + JSON.stringify(queryResult) + "\n", "max_tokens": 1000 });
+    console.log("AI ", aiResult);
+      
+       */
+
+    //promptData.temperature = promptData.temperature || 1;
+    //promptData.max_tokens = promptData.max_tokens || 256;
+    // console.log("DATA ", getData);
+    /*
+      entryList.current.push({ "propmt": "dataSource", "reply": "=>" + dataSource });
+      entryList.current.push({ "propmt": "timePeriod", "reply": "=>" + timePeriodDate + " " + timePeriod });
+      entryList.current.push({ "propmt": "filter", "reply": "=>" + filter });
+  */
+    entry.current.value = "";
+    setEntryListLength(prev => prev + 1)
+    setNewEntry("");
+
+    /*
+    timer.current = setTimeout(function () {
+      entryList.current = [];
+      setEntryListLength(0);
+    }, 25000);
+*/
+
+
+    /*
+    timer.current = setTimeout(function () {
+      //entryList.current.unshift({ "propmt": newEntry, "reply": "Done" });
+      entryList.current = [{ "propmt": entry.current.value, "reply": "" },
+      { "propmt": "dataSource", "reply": "=>" + dataSource },
+      { "propmt": "timePeriod", "reply": "=>" + timePeriodDate + " " + timePeriod },
+      { "propmt": "filter", "reply": "=>" + filter },].concat(entryList.current);
+      entry.current.value = "";
+      setEntryListLength(prev => prev + 1)
+      setNewEntry("");
+    }, 5000);
+    */
+
+    /* 
+        const getData = UserApiClient.query(
+          dataQuery, {
+          "input": {
+            "dataconnector": "Fitbit/querySleepSummary",
+            "userId": "52d990e84498142bc9637d9c64d72d86703b",
+            "fields": [],
+            "filter": "{\"s3::date\":{\"=\":\"2023-03-30\"}}",
+            "stage": "prod"
+          }
+        }
+        ).then(res => {
+          console.log("DATA ", res);
+        })
+     */
+
+
+    //const dataSource = "Fitbit/querySleepSummary";
+
+
+  }
+  /*
+  useEffect(() => {
+    let timer = null;
+    if (newEntry !== "") {
+      timer = setTimeout(function () {
+        entryList.current.unshift({ "propmt": newEntry, "reply": "Done" });
+        entry.current.value = "";
+        setEntryListLength(prev => prev + 1)
+        setNewEntry("");
+      }, 5000);
+    }
+ 
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+ 
+  }, [newEntry]);
+ 
+  */
+  useEffect(() => {
+    if (status > 0 || entryList.current.length > 0) {
+      console.log("CLOSE ", status)
+      entryList.current = [];
+      setEntryListLength(0);
+    }
+
+  }, [status]);
+
+  /* 
+    useEffectOnce(() => {
+      console.log(dataProps);
+      if (dataProps.dataSourceQuestions.length > 0) {
+        const dataSources = [];
+        const pairs = [];
+        const activities = [];
+        dataProps.dataSourceQuestions.forEach(ds => {
+          const dsConfig = JSON.parse(ds.config);
+          dataSources.push(`"${dsConfig.dataSource}"`);
+          activities.push(dsConfig.activity);
+          pairs.push({ word: dsConfig.activity, datasource: dsConfig.dataSource });
+        });
+        dataSourceParser.current.push(`Available datasources are [${dataSources.join(',')}].`);
+        dataSourceParser.current.push("The following is a list of words found in questions and the datasource they fall into:");
+        dataSourceParser.current.push("");
+        pairs.forEach(m => {
+          dataSourceParser.current.push(`word: ${m.word}`)
+          dataSourceParser.current.push(`datasource: ${m.datasource}`)
+        })
+        dataSourceParser.current.push("");
+        dataSourceParser.current.push("The following is a list of questions and the datasource they fall into:");
+        dataSourceParser.current.push("");
+        dataProps.dataSourceQuestions.forEach(ds => {
+          const dsConfig = JSON.parse(ds.config);
+          dataSourceParser.current.push(ds.question + "?");
+          dataSourceParser.current.push(`datasource: ${dsConfig.dataSource}`)
+        });
+  
+        dataSourceParser.current.push("Answer questions in following format:");
+        dataSourceParser.current.push(`activity=${activities[0]}`);
+        dataSourceParser.current.push(`datasource=${dataSources[0].replace(/\"/g, "")}`);
+  
+        dataSourceParser.current.push("");
+        dataSourceParser.current.push("Answer questions in following format, when activity is not found");
+        dataSourceParser.current.push("activity= NOT-FOUND");
+        dataSourceParser.current.push("");
+  
+        dataSourceParser.current.push("Answer questions in following format, when datasource  is not found");
+        dataSourceParser.current.push("datasource= NOT-FOUND");
+        dataSourceParser.current.push("");
+  
+      }
+  
+      console.log(dataSourceParser.current);
+  
+      return () => {
+        if (timer.current) {
+          clearTimeout(timer.current);
+          timer.current = null;
+        }
+      };
+    }) */
+
+  // for some reason useEffectOnce didn't work properly...
+  useEffect(() => {
+    if (!effectCalled.current) {
+      effectCalled.current = true;
+      console.log(dataProps);
+      if (dataProps.dataSourceQuestions.length > 0) {
+        const dataSources = [];
+        const pairs = [];
+        const activities = [];
+
+
+        dataProps.dataConnectors.forEach(dc => {
+          const dcConfig = JSON.parse(dc.config);
+          let addPair = false;
+          if (dataSources.indexOf(dc.id) === -1) {
+            dataSources.push(dc.id);
+            addPair = true;
+          }
+          if (activities.indexOf(dcConfig.activity) === -1) {
+            activities.push(dcConfig.activity);
+            addPair = true;
+          }
+
+          if (addPair) {
+            pairs.push({ word: dcConfig.activity, datasource: dc.id });
+          }
+        });
+
+        dataProps.dataSourceQuestions.forEach(ds => {
+          const dsConfig = JSON.parse(ds.config);
+          let addPair = false;
+          //console.log("CHECK ", dataSources.indexOf(dsConfig.dataSource));
+          //console.log("CHECK ", dataSources, dsConfig.dataSource);
+
+          if (dataSources.indexOf(dsConfig.dataSource) === -1) {
+            dataSources.push(dsConfig.dataSource);
+            addPair = true;
+          }
+          if (activities.indexOf(dsConfig.activity) === -1) {
+            activities.push(dsConfig.activity);
+            addPair = true;
+          }
+
+          if (addPair) {
+            pairs.push({ word: dsConfig.activity, datasource: dsConfig.dataSource });
+          }
+        });
+
+        dataSourceParser.current.push(`Available datasources are [${dataSources.join(',')}].`);
+        dataSourceParser.current.push("The following is a list of words found in questions and the datasource they fall into:");
+        dataSourceParser.current.push("");
+        pairs.forEach(m => {
+          dataSourceParser.current.push(`word= ${m.word}`)
+          dataSourceParser.current.push(`datasource= ${m.datasource}`)
+        })
+        dataSourceParser.current.push("");
+        dataSourceParser.current.push("The following is a list of questions and the activity and datasource they fall into:");
+        dataSourceParser.current.push("");
+
+        dataProps.dataSourceQuestions.forEach(ds => {
+          const dsConfig = JSON.parse(ds.config);
+          dataSourceParser.current.push(ds.question + "?");
+          dataSourceParser.current.push(`activity= ${dsConfig.activity}`)
+          dataSourceParser.current.push(`datasource= ${dsConfig.dataSource}`)
+
+          dataSourceParser.current.push("");
+        });
+        dataSourceParser.current.push("");
+
+        dataProps.dataConnectors.forEach(dc => {
+          const dcConfig = JSON.parse(dc.config);
+          dcConfig.dataSourceExamples.forEach(m => {
+            dataSourceParser.current.push(m);
+            dataSourceParser.current.push(`activity= ${dcConfig.activity}`)
+            dataSourceParser.current.push(`datasource= ${dc.id}`)
+
+            dataSourceParser.current.push("");
+          })
+        });
+        dataSourceParser.current.push("");
+
+        dataSourceParser.current.push("Answer questions in following format:");
+        dataSourceParser.current.push(`activity=${activities[0]}`);
+        dataSourceParser.current.push(`datasource=${dataSources[0].replace(/\"/g, "")}`);
+
+        dataSourceParser.current.push("");
+        dataSourceParser.current.push("Answer questions in following format, when activity is not found");
+        dataSourceParser.current.push("activity= NOT-FOUND");
+        dataSourceParser.current.push("");
+
+        dataSourceParser.current.push("Answer questions in following format, when datasource  is not found");
+        dataSourceParser.current.push("datasource= NOT-FOUND");
+        dataSourceParser.current.push("");
+
+      }
+
+      console.log(dataSourceParser.current);
+      //console.log(UserApiClient)
+
+
+    }
+    return () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+        timer.current = null;
+      }
+    };
+  }, []);
+
+  console.log("STATUS ", status, entryListLength);
+  return <>
+    <Box id={"smart-input"} style={{ width: rect.width, left: rect.left, top: rect.top, position: 'absolute', zIndex: 3 }} >
+      <Flex>
+        <StyledIconDiv mr={"5px"}>
+          <Mic />
+        </StyledIconDiv>
+        <TextArea rows={0} expand={true} ref={entry} onKeyDown={e => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            sendEntry();
+          }
+          if (e.key === "Enter" && e.shiftKey) {
+            //console.log("SHIFT ENTER ", entry.current.getAttribute("height"));
+            entry.current.style.height = entry.current.getAttribute("height") + "px";
+          }
+        }} />
+        <StyledIconDiv ml={"5px"} onClick={sendEntry} >
+          <Send />
+        </StyledIconDiv>
+      </Flex>
+      {(newEntry !== "" || entryListLength > 0) && <AnswerContainer>
+        {newEntry !== "" && <>
+          {newEntry}
+          <Dots />
+        </>}
+        {(newEntry === "" && entryListLength > 0) && <>
+          {entryList.current.map((m, i) => {
+            //console.log("LIST ", m)
+            return <div key={"entry-" + i}>
+
+              <strong style={{ display: "block", backgroundColor: "lightgrey", margin: "5px" }}>{m.propmt}</strong>
+              <div style={{ padding: "5px" }}>{m.reply}</div>
+            </div>
+          })}
+        </>
+        }
+      </AnswerContainer>
+      }
+
+    </Box>
+  </>
+}
+const SmartBar = ({ containerStatus }) => {
+  const effectCalled = useRef(false);
+  const searchBar = useRef(null);
+  //const mountNode = useRef(null);
+  const [portalReady, setPortalReady] = useState(false);
+  const isMounted = useIsMounted();
+
+  /* 
+    useEffectOnce(() => {
+      console.log("MOUNT ONCE");
+      setPortalReady(true);
+    });
+   */
+
+  useEffect(() => {
+    console.log("MOUNT ");
+    setPortalReady(true);
+  }, [isMounted])
+
+
+  /* 
+    useEffect(() => {
+      if (!effectCalled.current) {
+        effectCalled.current = true;
+        // const node = document.getElementById("search-bar");
+        // console.log("NODE FOUND ", node);
+        //console.log("NODE FOUND2 ", searchBar);
+        // mountNode.current = findDOMNode(searchBar.current);
+        // console.log("NODE FOUND3 ", mountNode);
+        setPortalReady(true);
+        // createPortal(children, mountNode) : mountNode;
+  
+  
+      }
+  
+    }, []) */
+
+  return <>
+    <Flex width={"100%"} alignItems={"center"} justifyContent={"center"} >
+      <Box width={"400px"} id={"search-bar"} ref={searchBar} height={"27px"} />
+      {portalReady && createPortal(<SmartInput status={containerStatus} container={searchBar.current} />, document.body)}
+    </Flex>
+  </>
+}
+
+export default SmartBar;

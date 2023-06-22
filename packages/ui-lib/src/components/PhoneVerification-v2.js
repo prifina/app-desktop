@@ -26,7 +26,7 @@ const PhoneVerification = ({ invalidLink, backClick, verifyClick, resendClick, .
 
   const { __ } = useTranslate();
   const inputRef = useRef();
-  const verificationOptions = { toast: true, txt: {} };
+  const verificationOptions = { toast: true, txt: {}, };
   verificationOptions.txt = Object.assign({}, initTexts(__));
 
   const [inputIsValid, setInputIsValid] = useState(false);
@@ -122,6 +122,7 @@ const PhoneVerification = ({ invalidLink, backClick, verifyClick, resendClick, .
 };
 
 PhoneVerification.propTypes = {
+
   invalidLink: PropTypes.string.isRequired,
   backClick: PropTypes.func.isRequired,
   verifyClick: PropTypes.func.isRequired,

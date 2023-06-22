@@ -80,7 +80,7 @@
     "styled-system": "^5.1.5"
   },
   "dependencies": {
-    "graphql-tag": "^2.12.5",
+    "graphql-tag": "^2.12.6",
     "aws-amplify": "^5.0.7",
     "@aws-sdk/client-appsync": "^3.43.0",
     "@blend-ui/avatar": "^1.0.1-alpha.0",
