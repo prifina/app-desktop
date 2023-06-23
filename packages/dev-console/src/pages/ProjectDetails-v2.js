@@ -331,13 +331,16 @@ const ProjectDetails = props => {
       effectCalled.current = true;
 
       const appVersion = await getAppVersionQuery({ id: appID });
-      //console.log("RESULT ", result)
-      //const currentApp = result.data.getAppVersion;
+      console.log("RESULT ", appVersion);
+
       ['status', 'name', 'appType', 'remoteUrl', 'nextVersion', 'id',
         'publisher', 'languages', 'deviceSupport', 'category',
         'age', 'title', 'shortDescription', 'longDescription', 'keyFeatures',
         'public', 'userHeld', 'userGenerated', 'icon', 'screenshots', 'dataSources'].forEach(fld => {
+
+
           const data = appVersion.data.getAppVersion;
+          //console.log("DATA ", data);
 
           if (fld === "screenshots" && (data?.screenshots === undefined || data.screenshots === null)) {
             inputRefs.current['p-screenshots'] = { value: ["", "", ""] };
@@ -350,7 +353,9 @@ const ProjectDetails = props => {
           } else {
             inputRefs.current['p-' + fld] = { value: data[fld] };
           }
+
         })
+
 
       /*
       inputRefs.current['p-status'] = { value: 0 };
@@ -378,7 +383,7 @@ const ProjectDetails = props => {
       */
 
       //modifiedRefs.current = Object.assign({}, inputRefs.current);
-      console.log("MOD INIT ");
+      console.log("MOD INIT ", inputRefs.current);
       modifiedRefs.current = JSON.parse(JSON.stringify(inputRefs.current));
       //sandboxArgs.options.value = "https://something.qqq";
       //modifiedRefs.current['p-appType'] = { value: prifinaAppTypes.WIDGET };

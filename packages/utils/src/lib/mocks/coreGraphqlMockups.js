@@ -2,6 +2,7 @@ import { getRandomInt, countryCodes } from "./helpers";
 
 import { prifinaSession, prifinaUser, systemNotifications, dataSources, apps, widgets, prifinaApps } from "./coreModels";
 
+//console.log("FIRST APP VERSION ", apps[0].name, apps[0].id);
 const countryCode = () => {
   // console.log("CODES ", codes)
   return countryCodes[getRandomInt(0, countryCodes.length - 1)];
@@ -25,20 +26,22 @@ export const coreMockups = {
     },
     appVersion: (variables, Options) => {
       let appIdx = 0;
-      //console.log("MOCK OPTIONS ", Options)
+      //console.log("MOCK APP VERSION ", variables, Options);
       if (Options.hasOwnProperty("appIndex")) {
         appIdx = Options.appIndex;
       } else {
-
+        //console.log("ALL APPS VERSIONS ", apps);
         const foundIdx = apps.findIndex(app => {
-          return app.id = variables
+          //console.log("APP VERSION ", variables.id, app);
+          return app.id === variables.id
         })
+        // console.log("Found app version ", foundIdx);
         if (foundIdx > -1) {
           appIdx = foundIdx
         }
 
       }
-      //console.log("MOCK OPTIONS ", appIdx)
+      //console.log("MOCK OPTIONS ", appIdx);
       return { data: { getAppVersion: apps[appIdx] } }
     },
     listDataSources: (variables, Options) => {
@@ -163,8 +166,8 @@ export const coreMockups = {
     addUserToCognitoGroup: (variables, Options) => ({ data: { addUserToCognitoGroup: true } }),
     newAppVersion: (variables, Options) => ({ data: { newAppVersion: variables } }),
     deleteApp: (variables, Options) => ({ data: { deleteApp: true } }),
-    updateAppVersion: (variables, Options) => ({ data: { updateAppVersion: variables } })
-
+    updateAppVersion: (variables, Options) => ({ data: { updateAppVersion: variables } }),
+    updateUserActivity: (variables, Options) => ({ data: { updateUserActivity: true } })
 
     /*
     {

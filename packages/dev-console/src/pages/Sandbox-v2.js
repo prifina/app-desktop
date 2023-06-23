@@ -160,6 +160,7 @@ const Sandbox = () => {
       })
       const appVersion = await getAppVersionQuery({ id: app });
       appData.current = appVersion.data.getAppVersion;
+      // local remoteURL ??
       if (appData.current?.settings === undefined || appData.current.settings === null) {
         appData.current.settings = [];
       }

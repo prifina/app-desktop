@@ -338,13 +338,13 @@ class MockCoreGraphQLApi {
   ) {
 
     const ql = graphqlOperation(query, variables);
-    // console.log("QL ", ql);
+    console.log("QL ", ql);
     // query:"mutation updateCognitoUser($attrName: String!, $attrValue: String!) {\n  \n  updateCognitoUser( attrName: $attrName, attrValue: $attrValue)\n}"
     const op = ql.query.split(" ")[0];
     const fn = ql.query.split(" ")[1].split("(")[0];
-    /* console.log("MOCK QL ", qlMockups);
+    console.log("MOCK QL ", qlMockups);
     console.log("MOCK OP ", op);
-    console.log("MOCK FN ", fn); */
+    console.log("MOCK FN ", fn);
 
     return Promise.resolve(qlMockups[op][fn](ql.variables, this.Options));
   }

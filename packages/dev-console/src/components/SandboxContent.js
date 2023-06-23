@@ -309,15 +309,28 @@ const Content = forwardRef((props, ref) => {
     } */
 
   //const appIDx = "cw9aphqcofZkv8pCE9nE181";
+
   //remoteUrl = "widgets/" + appIDx + "/dist/remoteEntry.js";
 
-  console.log("REMOTE ", remoteUrl);
+  const mockupEnvironment = (process.env.REACT_APP_MOCKUP_CLIENT && process.env.REACT_APP_MOCKUP_CLIENT === "true");
+  let actualRemoteURL = remoteUrl
+  if (mockupEnvironment) {
+    actualRemoteURL = [
+      "widgets",
+      appID,
+      "dist",
+      "remoteEntry.js",
+    ].join("/");
+  }
+
+
+  console.log("REMOTE ", actualRemoteURL);
   return <>
     <MemoizedRemoteContent ref={ref} componentProps={{ ...settingsInit }}
 
       system={{
         remote: appID,
-        url: remoteUrl,
+        url: actualRemoteURL,
         module: "./App",
       }} />
     {/*
